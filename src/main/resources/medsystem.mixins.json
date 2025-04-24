@@ -1,0 +1,14 @@
+{
+  "compatibilityLevel": "JAVA_21",
+  "required": true,
+  "package": "tnt.tarkovcraft.medsystem.mixin",
+  "minVersion": "0.8.7",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+  ],
+  "client": [
+    "client.LivingEntityRendererMixin"
+  ]
+}
