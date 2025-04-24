@@ -6,6 +6,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
@@ -65,13 +67,27 @@ public final class HealthContainerDefinition {
             BodyPartHealthDefinition definition = entry.getValue();
             bodyParts.put(partName, definition.createContainer());
         }
+        float maxHealth = this.getMaxHealth();
+        AttributeInstance instance = entity.getAttribute(Attributes.MAX_HEALTH);
+        if (instance != null) {
+            instance.setBaseValue(maxHealth);
+        }
         HealthContainer container = new HealthContainer(this, bodyParts);
+        container.updateHealth(entity);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
         HealthSystem.synchronizeEntity(entity);
     }
 
     public List<EntityType<?>> getTargets() {
         return targets;
+    }
+
+    public float getMaxHealth() {
+        float value = 0.0F;
+        for (BodyPartHealthDefinition definition : this.bodyParts.values()) {
+            value += definition.getMaxHealth();
+        }
+        return value;
     }
 
     public HealthContainerDefinition merge(HealthContainerDefinition other) {

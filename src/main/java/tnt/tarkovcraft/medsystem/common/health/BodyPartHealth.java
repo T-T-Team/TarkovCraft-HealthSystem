@@ -29,6 +29,10 @@ public final class BodyPartHealth {
         this.group = group;
     }
 
+    public boolean shouldOwnerDie() {
+        return this.vital && this.health <= 0.0F;
+    }
+
     public boolean isVital() {
         return vital;
     }

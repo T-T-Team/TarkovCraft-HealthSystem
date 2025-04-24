@@ -23,6 +23,10 @@ public final class BodyPartHealthDefinition {
         this.bodyPartGroup = bodyPartGroup;
     }
 
+    public float getMaxHealth() {
+        return maxHealth;
+    }
+
     public BodyPartHealth createContainer() {
         return new BodyPartHealth(this.vital, this.maxHealth, this.bodyPartGroup);
     }
