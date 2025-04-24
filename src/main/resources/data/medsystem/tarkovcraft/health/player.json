@@ -5,6 +5,7 @@
   ],
   "health": {
     "head": {
+      "parent": "body",
       "health": 4.0,
       "vital": true,
       "group": "HEAD"
@@ -15,22 +16,27 @@
       "group": "TORSO"
     },
     "stomach": {
+      "parent": "body",
       "health": 8.0,
       "group": "STOMACH"
     },
     "rightArm": {
+      "parent": "body",
       "health": 6.0,
       "group": "ARM"
     },
     "leftArm": {
+      "parent": "body",
       "health": 6.0,
       "group": "ARM"
     },
     "rightLeg": {
+      "parent": "stomach",
       "health": 7.0,
       "group": "LEG"
     },
     "leftLeg": {
+      "parent": "stomach",
       "health": 7.0,
       "group": "LEG"
     }

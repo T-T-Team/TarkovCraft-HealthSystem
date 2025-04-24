@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.util.Codecs;
 
 public final class BodyPartHealth {
@@ -45,8 +46,16 @@ public final class BodyPartHealth {
         return health;
     }
 
+    public float getHealthPercent() {
+        return this.health / this.maxHealth;
+    }
+
     public void setHealth(float health) {
-        this.health = health;
+        this.health = Mth.clamp(health, 0, maxHealth);
+    }
+
+    public void heal(float amount) {
+        this.setHealth(this.health + amount);
     }
 
     public float getMaxHealth() {
@@ -55,5 +64,10 @@ public final class BodyPartHealth {
 
     public void setMaxHealth(float maxHealth) {
         this.maxHealth = maxHealth;
+        this.setHealth(this.health);
+    }
+
+    public float getMaxHealAmount() {
+        return this.maxHealth - this.health;
     }
 }

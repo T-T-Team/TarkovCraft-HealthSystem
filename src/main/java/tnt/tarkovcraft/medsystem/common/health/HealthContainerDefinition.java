@@ -45,6 +45,7 @@ public final class HealthContainerDefinition {
                 return DataResult.error(() -> "Missing hitbox definition for body part " + owner);
             }
         }
+        // TODO validate body part links
         return DataResult.success(container);
     }
 
@@ -75,7 +76,6 @@ public final class HealthContainerDefinition {
         HealthContainer container = new HealthContainer(this, bodyParts);
         container.updateHealth(entity);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
-        HealthSystem.synchronizeEntity(entity);
     }
 
     public List<EntityType<?>> getTargets() {
