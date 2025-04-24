@@ -34,6 +34,10 @@ public final class BodyPartHealth {
         return this.vital && this.health <= 0.0F;
     }
 
+    public boolean isDead() {
+        return this.health <= 0.0F;
+    }
+
     public boolean isVital() {
         return vital;
     }

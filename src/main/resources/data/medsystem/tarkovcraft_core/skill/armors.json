@@ -1,0 +1,13 @@
+{
+  "description": {
+    "translate": "skill.medsystem.armors"
+  },
+  "leveling": {
+    "maxLevel": 100,
+    "baseExperience": 10.0,
+    "additionalExperience": 5.0,
+    "maxStack": 18
+  },
+  "trackers": [],
+  "stats": []
+}

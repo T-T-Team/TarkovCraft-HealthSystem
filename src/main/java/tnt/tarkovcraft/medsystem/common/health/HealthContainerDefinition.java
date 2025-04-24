@@ -20,19 +20,22 @@ public final class HealthContainerDefinition {
             Codec.BOOL.optionalFieldOf("replace", false).forGetter(t -> t.replace),
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets",Collections.emptyList()).forGetter(t -> t.targets),
             Codec.unboundedMap(Codec.STRING, BodyPartHealthDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.bodyParts),
-            BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes)
+            BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
+            BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerDefinition::validate);
 
     private final boolean replace;
     private final List<EntityType<?>> targets;
     private final Map<String, BodyPartHealthDefinition> bodyParts;
     private final List<BodyPartHitbox> hitboxes;
+    private final List<BodyPartDisplay> display;
 
-    public HealthContainerDefinition(boolean replace, List<EntityType<?>> targets, Map<String, BodyPartHealthDefinition> bodyParts, List<BodyPartHitbox> hitboxes) {
+    public HealthContainerDefinition(boolean replace, List<EntityType<?>> targets, Map<String, BodyPartHealthDefinition> bodyParts, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
         this.replace = replace;
         this.targets = targets;
         this.bodyParts = bodyParts;
         this.hitboxes = hitboxes;
+        this.display = display;
     }
 
     private static DataResult<HealthContainerDefinition> validate(HealthContainerDefinition container) {
@@ -90,6 +93,10 @@ public final class HealthContainerDefinition {
         return value;
     }
 
+    public List<BodyPartDisplay> getDisplayConfiguration() {
+        return display;
+    }
+
     public HealthContainerDefinition merge(HealthContainerDefinition other) {
         if (other.replace) {
             return other;
@@ -97,21 +104,28 @@ public final class HealthContainerDefinition {
         List<EntityType<?>> targets = new ArrayList<>(this.targets);
         targets.addAll(other.targets);
         Map<String, BodyPartHealthDefinition> newBodyParts = new HashMap<>(this.bodyParts);
+        Set<String> deletedParts = new HashSet<>();
         for (Map.Entry<String, BodyPartHealthDefinition> entry : other.bodyParts.entrySet()) {
             BodyPartGroup group = entry.getValue().getBodyPartGroup();
             if (group.isInactive()) {
                 newBodyParts.remove(entry.getKey());
+                deletedParts.add(entry.getKey());
             } else {
                 newBodyParts.put(entry.getKey(), entry.getValue());
             }
         }
         List<BodyPartHitbox> hitboxes = new ArrayList<>(this.hitboxes);
         hitboxes.addAll(other.hitboxes);
+        hitboxes.removeIf(t -> deletedParts.contains(t.getOwner()));
+        List<BodyPartDisplay> display = new ArrayList<>(this.display);
+        display.addAll(other.display);
+        display.removeIf(t -> deletedParts.contains(t.source()));
         return new HealthContainerDefinition(
                 this.replace,
                 targets,
                 newBodyParts,
-                hitboxes
+                hitboxes,
+                display
         );
     }
 }

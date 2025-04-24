@@ -34,6 +34,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
     }
 
+    public HealthContainerDefinition getDefinition() {
+        return definition;
+    }
+
     public boolean hasBodyPart(String part) {
         return this.bodyParts.containsKey(part);
     }
