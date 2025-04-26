@@ -13,10 +13,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHitboxTransforms;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemTransformConditions;
+import tnt.tarkovcraft.medsystem.common.init.*;
 
 @Mod(MedicalSystem.MOD_ID)
 public final class MedicalSystem {
@@ -36,6 +33,7 @@ public final class MedicalSystem {
         MedSystemDataAttachments.REGISTRY.register(modEventBus);
         MedSystemTransformConditions.REGISTRY.register(modEventBus);
         MedSystemHitboxTransforms.REGISTRY.register(modEventBus);
+        MedSystemItemComponents.REGISTRY.register(modEventBus);
     }
 
     private void createRegistries(NewRegistryEvent event) {

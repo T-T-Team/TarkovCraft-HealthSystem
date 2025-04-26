@@ -8,6 +8,8 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 public final class HealthContainer implements Synchronizable<HealthContainer> {
 
@@ -18,19 +20,24 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     private final HealthContainerDefinition definition;
     private final Map<String, BodyPartHealth> bodyParts;
-    private final Map<String, String> bodyPartLinks;
-    private final Set<String> vitalParts;
+    private final Map<BodyPartHealth, BodyPartHealth> bodyPartLinks;
+    private final List<BodyPartHealth> vitalParts;
     private final String root;
+    private DamageContext activeDamageContext;
 
     public HealthContainer() {
-        throw new UnsupportedOperationException("Cannot instantiate default health container");
+        this.definition = null;
+        this.bodyParts = Collections.emptyMap();
+        this.bodyPartLinks = Collections.emptyMap();
+        this.vitalParts = Collections.emptyList();
+        this.root = "";
     }
 
     public HealthContainer(HealthContainerDefinition definition, Map<String, BodyPartHealth> bodyParts) {
         this.definition = definition;
         this.bodyParts = bodyParts;
-        this.bodyPartLinks = new HashMap<>();
-        this.vitalParts = new HashSet<>();
+        this.bodyPartLinks = new IdentityHashMap<>();
+        this.vitalParts = new ArrayList<>();
         this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
     }
 
@@ -82,8 +89,17 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         entity.setHealth(health);
     }
 
-    public void hurt(LivingEntity entity, float amount, @Nullable String bodyPart) {
-
+    public void hurt(float amount, BodyPartHealth bodyPart) {
+        float damage = Math.min(bodyPart.getHealth(), amount);
+        float leftover = amount - damage;
+        bodyPart.hurt(damage);
+        if (leftover > 0) {
+            BodyPartHealth parent = this.bodyPartLinks.get(bodyPart);
+            if (parent != null) {
+                float scale = parent.getParentDamageScale();
+                this.hurt(leftover * scale, parent);
+            }
+        }
     }
 
     public float heal(float amount, @Nullable String bodyPart) {
@@ -106,24 +122,62 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return amount;
     }
 
+    public void setDamageContext(DamageContext damageContext) {
+        if (this.activeDamageContext == null || this.activeDamageContext.getId() != damageContext.getId())
+            this.activeDamageContext = damageContext;
+    }
+
+    public void clearDamageContext() {
+        this.activeDamageContext = null;
+    }
+
+    public DamageContext getDamageContext() {
+        return this.activeDamageContext;
+    }
+
     @Override
     public Codec<HealthContainer> networkCodec() {
         return CODEC;
     }
 
+    public boolean shouldDie() {
+        float health = 0.0F;
+        for (BodyPartHealth part : this.bodyParts.values()) {
+            health += part.getHealth();
+            if (part.shouldOwnerDie()) {
+                return true;
+            }
+        }
+        return health <= 0.0F;
+    }
+
+    public void acceptHitboxes(BiConsumer<BodyPartHitbox, BodyPartHealth> consumer) {
+        this.acceptHitboxes((hb, p) -> true, consumer);
+    }
+
+    public void acceptHitboxes(BiPredicate<BodyPartHitbox, BodyPartHealth> filter, BiConsumer<BodyPartHitbox, BodyPartHealth> consumer) {
+        for (BodyPartHitbox hitbox : this.definition.getHitboxes()) {
+            BodyPartHealth part = this.bodyParts.get(hitbox.getOwner());
+            if (part == null)
+                continue;
+            if (filter.test(hitbox, part)) {
+                consumer.accept(hitbox, part);
+            }
+        }
+    }
+
     private BodyPartHealth getPartToHeal() {
-        String targetPart = null;
+        BodyPartHealth targetPart = null;
         float targetPercentage = 1.0F;
-        for (String vitalPart : this.vitalParts) {
-            BodyPartHealth part = this.getBodyPart(vitalPart);
-            float percentage = part.getHealthPercent();
+        for (BodyPartHealth vitalPart : this.vitalParts) {
+            float percentage = vitalPart.getHealthPercent();
             if (percentage < 0.75F && percentage < targetPercentage) {
                 targetPercentage = percentage;
                 targetPart = vitalPart;
             }
         }
         if (targetPart != null) {
-            return this.getBodyPart(targetPart);
+            return targetPart;
         }
         BodyPartHealth target = null;
         for (BodyPartHealth part : this.bodyParts.values()) {
@@ -136,7 +190,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return target;
     }
 
-    private String resolveBodyParts(HealthContainerDefinition definition, Map<String, String> links, Set<String> vitalParts) {
+    private String resolveBodyParts(HealthContainerDefinition definition, Map<BodyPartHealth, BodyPartHealth> links, List<BodyPartHealth> vitalParts) {
         String root = null;
         for (Map.Entry<String, BodyPartHealthDefinition> health : definition.getBodyParts().entrySet()) {
             String part = health.getKey();
@@ -144,11 +198,11 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             if (parent == null) {
                 root = part;
             } else {
-                links.put(part, parent);
+                links.put(this.bodyParts.get(part), this.bodyParts.get(parent));
             }
             BodyPartHealthDefinition healthDef = health.getValue();
             if (healthDef.isVital()) {
-                vitalParts.add(part);
+                vitalParts.add(this.bodyParts.get(part));
             }
         }
         return root;

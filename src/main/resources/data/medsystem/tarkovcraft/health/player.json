@@ -17,26 +17,31 @@
     },
     "stomach": {
       "parent": "body",
+      "parentDamageScale": 0.5,
       "health": 8.0,
       "group": "STOMACH"
     },
     "rightArm": {
       "parent": "body",
+      "parentDamageScale": 0.4,
       "health": 6.0,
       "group": "ARM"
     },
     "leftArm": {
       "parent": "body",
+      "parentDamageScale": 0.4,
       "health": 6.0,
       "group": "ARM"
     },
     "rightLeg": {
       "parent": "stomach",
+      "parentDamageScale": 0.5,
       "health": 7.0,
       "group": "LEG"
     },
     "leftLeg": {
       "parent": "stomach",
+      "parentDamageScale": 0.5,
       "health": 7.0,
       "group": "LEG"
     }
@@ -361,7 +366,6 @@
       "size": [ 0.15, 0.375 ]
     }
   ],
-  "interceptors": [],
   "hud": [
     {
       "source": "head",

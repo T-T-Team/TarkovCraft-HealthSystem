@@ -13,6 +13,7 @@ public final class BodyPartHealthDefinition {
     public static final Codec<BodyPartHealthDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("vital", false).forGetter(t -> t.vital),
             Codec.STRING.optionalFieldOf("parent").forGetter(t -> Optional.ofNullable(t.parent)),
+            Codec.floatRange(0.0F, 10.0F).optionalFieldOf("parentDamageScale", 1.0F).forGetter(t -> t.parentDamageScale),
             ExtraCodecs.POSITIVE_FLOAT.fieldOf("health").forGetter(t -> t.maxHealth),
             Codecs.enumCodec(BodyPartGroup.class).optionalFieldOf("group", BodyPartGroup.OTHER).forGetter(t -> t.bodyPartGroup)
     ).apply(instance, BodyPartHealthDefinition::new));
@@ -20,12 +21,14 @@ public final class BodyPartHealthDefinition {
     private final boolean vital;
     @Nullable
     private final String parent;
+    private final float parentDamageScale;
     private final float maxHealth;
     private final BodyPartGroup bodyPartGroup;
 
-    public BodyPartHealthDefinition(boolean vital, Optional<String> parent, float maxHealth, BodyPartGroup bodyPartGroup) {
+    public BodyPartHealthDefinition(boolean vital, Optional<String> parent, float parentDamageScale, float maxHealth, BodyPartGroup bodyPartGroup) {
         this.vital = vital;
         this.parent = parent.orElse(null);
+        this.parentDamageScale = parentDamageScale;
         this.maxHealth = maxHealth;
         this.bodyPartGroup = bodyPartGroup;
     }
@@ -33,6 +36,10 @@ public final class BodyPartHealthDefinition {
     @Nullable
     public String getParent() {
         return parent;
+    }
+
+    public float getParentDamageScale() {
+        return parentDamageScale;
     }
 
     public boolean isVital() {
@@ -44,7 +51,7 @@ public final class BodyPartHealthDefinition {
     }
 
     public BodyPartHealth createContainer() {
-        return new BodyPartHealth(this.vital, this.maxHealth, this.bodyPartGroup);
+        return new BodyPartHealth(this.vital, this.maxHealth, this.parentDamageScale, this.bodyPartGroup);
     }
 
     public BodyPartGroup getBodyPartGroup() {
