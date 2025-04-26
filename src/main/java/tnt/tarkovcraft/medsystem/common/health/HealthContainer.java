@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.network.Synchronizable;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -102,20 +101,25 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
     }
 
-    public float heal(float amount, @Nullable String bodyPart) {
-        if (bodyPart != null && this.hasBodyPart(bodyPart)) {
+    public boolean canHeal(@Nullable BodyPart part, boolean allowDead) {
+        if (part != null) {
+            return (part.isDead() && allowDead) || part.getMaxHealAmount() > 0;
+        }
+        return this.getPartToHeal(allowDead) != null;
+    }
+
+    public float heal(float amount, @Nullable BodyPart targetPart) {
+        if (targetPart != null) {
             // Heal specific body part only
-            BodyPart part = this.getBodyPart(bodyPart);
-            float healAmount = Math.min(amount, part.getMaxHealAmount());
-            part.heal(healAmount);
+            float healAmount = Math.min(amount, targetPart.getMaxHealAmount());
+            targetPart.heal(healAmount);
             return amount - healAmount;
         } else {
             // Heal body parts, prioritize vitals, then according to health
             BodyPart part;
-            while (amount > 0.0F && (part = this.getPartToHeal()) != null) {
+            while (amount > 0.0F && (part = this.getPartToHeal(false)) != null) {
                 float healAmount = Math.min(amount, part.getMaxHealAmount());
                 part.heal(healAmount);
-                MedicalSystem.LOGGER.info("Healing part {} for amount {}. [{}/{}]", part.getGroup(), healAmount, part.getHealth(), part.getMaxHealth());
                 amount -= healAmount;
             }
         }
@@ -166,10 +170,12 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
     }
 
-    private BodyPart getPartToHeal() {
+    public BodyPart getPartToHeal(boolean allowDead) {
         BodyPart targetPart = null;
         float targetPercentage = 1.0F;
         for (BodyPart vitalPart : this.vitalParts) {
+            if (vitalPart.isDead() && !allowDead)
+                continue;
             float percentage = vitalPart.getHealthPercent();
             if (percentage < 0.75F && percentage < targetPercentage) {
                 targetPercentage = percentage;
@@ -181,6 +187,8 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
         BodyPart target = null;
         for (BodyPart part : this.bodyParts.values()) {
+            if (part.isDead() && !allowDead)
+                continue;
             float percentage = part.getHealthPercent();
             if (percentage < 1.0F && percentage < targetPercentage) {
                 target = part;
