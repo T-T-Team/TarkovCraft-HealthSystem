@@ -15,13 +15,13 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     public static final Codec<HealthContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
-            Codec.unboundedMap(Codec.STRING, BodyPartHealth.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts)
+            Codec.unboundedMap(Codec.STRING, BodyPart.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts)
     ).apply(instance, HealthContainer::new));
 
     private final HealthContainerDefinition definition;
-    private final Map<String, BodyPartHealth> bodyParts;
-    private final Map<BodyPartHealth, BodyPartHealth> bodyPartLinks;
-    private final List<BodyPartHealth> vitalParts;
+    private final Map<String, BodyPart> bodyParts;
+    private final Map<BodyPart, BodyPart> bodyPartLinks;
+    private final List<BodyPart> vitalParts;
     private final String root;
     private DamageContext activeDamageContext;
 
@@ -33,7 +33,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         this.root = "";
     }
 
-    public HealthContainer(HealthContainerDefinition definition, Map<String, BodyPartHealth> bodyParts) {
+    public HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts) {
         this.definition = definition;
         this.bodyParts = bodyParts;
         this.bodyPartLinks = new IdentityHashMap<>();
@@ -49,29 +49,29 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return this.bodyParts.containsKey(part);
     }
 
-    public BodyPartHealth getBodyPart(@Nullable String name) {
+    public BodyPart getBodyPart(@Nullable String name) {
         return this.bodyParts.get(name != null ? name : this.root);
     }
 
-    public BodyPartHealth getRootBodyPart() {
+    public BodyPart getRootBodyPart() {
         return this.getBodyPart(null);
     }
 
     public float getHealth() {
         float health = 0.0F;
-        for (BodyPartHealth bodyPartHealth : bodyParts.values()) {
-            if (bodyPartHealth.shouldOwnerDie()) {
+        for (BodyPart bodyPart : bodyParts.values()) {
+            if (bodyPart.shouldOwnerDie()) {
                 return 0.0F;
             }
-            health += bodyPartHealth.getHealth();
+            health += bodyPart.getHealth();
         }
         return health;
     }
 
     public float getMaxHealth() {
         float maxHealth = 0.0F;
-        for (BodyPartHealth bodyPartHealth : bodyParts.values()) {
-            maxHealth += bodyPartHealth.getMaxHealth();
+        for (BodyPart bodyPart : bodyParts.values()) {
+            maxHealth += bodyPart.getMaxHealth();
         }
         return maxHealth;
     }
@@ -80,7 +80,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         float playerMaxHealth = entity.getMaxHealth();
         float containerMaxHealth = this.getMaxHealth();
         if (playerMaxHealth != containerMaxHealth) {
-            BodyPartHealth rootPart = this.getRootBodyPart();
+            BodyPart rootPart = this.getRootBodyPart();
             float diff = playerMaxHealth - containerMaxHealth;
             float newMaxHealth = rootPart.getMaxHealth() + diff;
             rootPart.setMaxHealth(Math.max(newMaxHealth, 1.0F));
@@ -89,12 +89,12 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         entity.setHealth(health);
     }
 
-    public void hurt(float amount, BodyPartHealth bodyPart) {
+    public void hurt(float amount, BodyPart bodyPart) {
         float damage = Math.min(bodyPart.getHealth(), amount);
         float leftover = amount - damage;
         bodyPart.hurt(damage);
         if (leftover > 0) {
-            BodyPartHealth parent = this.bodyPartLinks.get(bodyPart);
+            BodyPart parent = this.bodyPartLinks.get(bodyPart);
             if (parent != null) {
                 float scale = parent.getParentDamageScale();
                 this.hurt(leftover * scale, parent);
@@ -105,13 +105,13 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     public float heal(float amount, @Nullable String bodyPart) {
         if (bodyPart != null && this.hasBodyPart(bodyPart)) {
             // Heal specific body part only
-            BodyPartHealth part = this.getBodyPart(bodyPart);
+            BodyPart part = this.getBodyPart(bodyPart);
             float healAmount = Math.min(amount, part.getMaxHealAmount());
             part.heal(healAmount);
             return amount - healAmount;
         } else {
             // Heal body parts, prioritize vitals, then according to health
-            BodyPartHealth part;
+            BodyPart part;
             while (amount > 0.0F && (part = this.getPartToHeal()) != null) {
                 float healAmount = Math.min(amount, part.getMaxHealAmount());
                 part.heal(healAmount);
@@ -142,7 +142,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     public boolean shouldDie() {
         float health = 0.0F;
-        for (BodyPartHealth part : this.bodyParts.values()) {
+        for (BodyPart part : this.bodyParts.values()) {
             health += part.getHealth();
             if (part.shouldOwnerDie()) {
                 return true;
@@ -151,13 +151,13 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return health <= 0.0F;
     }
 
-    public void acceptHitboxes(BiConsumer<BodyPartHitbox, BodyPartHealth> consumer) {
+    public void acceptHitboxes(BiConsumer<BodyPartHitbox, BodyPart> consumer) {
         this.acceptHitboxes((hb, p) -> true, consumer);
     }
 
-    public void acceptHitboxes(BiPredicate<BodyPartHitbox, BodyPartHealth> filter, BiConsumer<BodyPartHitbox, BodyPartHealth> consumer) {
+    public void acceptHitboxes(BiPredicate<BodyPartHitbox, BodyPart> filter, BiConsumer<BodyPartHitbox, BodyPart> consumer) {
         for (BodyPartHitbox hitbox : this.definition.getHitboxes()) {
-            BodyPartHealth part = this.bodyParts.get(hitbox.getOwner());
+            BodyPart part = this.bodyParts.get(hitbox.getOwner());
             if (part == null)
                 continue;
             if (filter.test(hitbox, part)) {
@@ -166,10 +166,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
     }
 
-    private BodyPartHealth getPartToHeal() {
-        BodyPartHealth targetPart = null;
+    private BodyPart getPartToHeal() {
+        BodyPart targetPart = null;
         float targetPercentage = 1.0F;
-        for (BodyPartHealth vitalPart : this.vitalParts) {
+        for (BodyPart vitalPart : this.vitalParts) {
             float percentage = vitalPart.getHealthPercent();
             if (percentage < 0.75F && percentage < targetPercentage) {
                 targetPercentage = percentage;
@@ -179,8 +179,8 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         if (targetPart != null) {
             return targetPart;
         }
-        BodyPartHealth target = null;
-        for (BodyPartHealth part : this.bodyParts.values()) {
+        BodyPart target = null;
+        for (BodyPart part : this.bodyParts.values()) {
             float percentage = part.getHealthPercent();
             if (percentage < 1.0F && percentage < targetPercentage) {
                 target = part;
@@ -190,7 +190,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return target;
     }
 
-    private String resolveBodyParts(HealthContainerDefinition definition, Map<BodyPartHealth, BodyPartHealth> links, List<BodyPartHealth> vitalParts) {
+    private String resolveBodyParts(HealthContainerDefinition definition, Map<BodyPart, BodyPart> links, List<BodyPart> vitalParts) {
         String root = null;
         for (Map.Entry<String, BodyPartHealthDefinition> health : definition.getBodyParts().entrySet()) {
             String part = health.getKey();

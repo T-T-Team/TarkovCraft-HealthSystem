@@ -65,7 +65,7 @@ public final class HealthContainerDefinition {
     }
 
     public void bind(LivingEntity entity) {
-        Map<String, BodyPartHealth> bodyParts = new HashMap<>();
+        Map<String, BodyPart> bodyParts = new HashMap<>();
         for (Map.Entry<String, BodyPartHealthDefinition> entry : this.bodyParts.entrySet()) {
             String partName = entry.getKey();
             BodyPartHealthDefinition definition = entry.getValue();

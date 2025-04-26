@@ -78,7 +78,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         return NeoForge.EVENT_BUS.post(new HitboxPiercingEvent(entity, source, container, projectile, pierceLevel)).getPiercing();
     }
 
-    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<BodyPartHitbox, BodyPartHealth> filter) {
+    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<BodyPartHitbox, BodyPart> filter) {
         List<HitResult> results = new ArrayList<>();
         container.acceptHitboxes(
                 filter,

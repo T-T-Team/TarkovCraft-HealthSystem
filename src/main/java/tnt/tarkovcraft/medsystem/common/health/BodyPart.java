@@ -5,15 +5,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.util.Codecs;
 
-public final class BodyPartHealth {
+public final class BodyPart {
 
-    public static final Codec<BodyPartHealth> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<BodyPart> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.fieldOf("vital").forGetter(t -> t.vital),
             Codec.FLOAT.fieldOf("health").forGetter(t -> t.health),
             Codec.FLOAT.fieldOf("maxHealth").forGetter(t -> t.maxHealth),
             Codec.FLOAT.fieldOf("parentDamageScale").forGetter(t -> t.parentDamageScale),
             Codecs.simpleEnumCodec(BodyPartGroup.class).fieldOf("group").forGetter(t -> t.group)
-    ).apply(instance, BodyPartHealth::new));
+    ).apply(instance, BodyPart::new));
 
     private final boolean vital;
     private float health;
@@ -21,11 +21,11 @@ public final class BodyPartHealth {
     private final float parentDamageScale;
     private final BodyPartGroup group;
 
-    public BodyPartHealth(boolean vital, float maxHealth, float parentDamageScale, BodyPartGroup group) {
+    public BodyPart(boolean vital, float maxHealth, float parentDamageScale, BodyPartGroup group) {
         this(vital, maxHealth, maxHealth, parentDamageScale, group);
     }
 
-    private BodyPartHealth(boolean vital, float health, float maxHealth, float parentDamageScale, BodyPartGroup group) {
+    private BodyPart(boolean vital, float health, float maxHealth, float parentDamageScale, BodyPartGroup group) {
         this.vital = vital;
         this.health = health;
         this.maxHealth = maxHealth;

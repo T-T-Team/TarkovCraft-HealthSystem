@@ -118,7 +118,7 @@ public final class MedicalSystemEventHandler {
         // Hit hitbox groups
         EnumSet<BodyPartGroup> hitGroups = EnumSet.noneOf(BodyPartGroup.class);
         for (HitResult hit : hits) {
-            BodyPartHealth bodyPart = hit.bodyPart();
+            BodyPart bodyPart = hit.bodyPart();
             BodyPartGroup group = bodyPart.getGroup();
             hitGroups.add(group);
         }
@@ -160,8 +160,8 @@ public final class MedicalSystemEventHandler {
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageContext context = container.getDamageContext();
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
-        Map<BodyPartHealth, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
-        for (Map.Entry<BodyPartHealth, Float> entry : distributedDamage.entrySet()) {
+        Map<BodyPart, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
+        for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
             container.hurt(entry.getValue(), entry.getKey());
         }
         container.clearDamageContext();

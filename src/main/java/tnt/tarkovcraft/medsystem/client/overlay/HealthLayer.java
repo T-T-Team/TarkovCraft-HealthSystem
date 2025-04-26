@@ -16,8 +16,8 @@ import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartHealth;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
@@ -57,7 +57,7 @@ public class HealthLayer implements LayeredDraw.Layer {
         HealthContainerDefinition definition = container.getDefinition();
         List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
         for (BodyPartDisplay display : displays) {
-            BodyPartHealth health = container.getBodyPart(display.source());
+            BodyPart health = container.getBodyPart(display.source());
             if (health == null)
                 return;
             Vector4f pos = display.getGuiPosition(scale, center);
@@ -67,7 +67,7 @@ public class HealthLayer implements LayeredDraw.Layer {
         }
     }
 
-    public static int getColor(String deadLimbColor, String[] colorSchema, BodyPartHealth part) {
+    public static int getColor(String deadLimbColor, String[] colorSchema, BodyPart part) {
         if (part.isDead()) {
             return Integer.decode(deadLimbColor);
         }
