@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +19,9 @@ import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import tnt.tarkovcraft.core.api.event.StaminaEvent;
+import tnt.tarkovcraft.core.common.energy.EnergySystem;
+import tnt.tarkovcraft.core.common.init.CoreDataAttachments;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorStat;
 import tnt.tarkovcraft.medsystem.common.health.*;
@@ -169,8 +173,47 @@ public final class MedicalSystemEventHandler {
         if (container.shouldDie()) {
             entity.die(event.getSource());
         } else {
+            // disable sprinting
+            if (entity.isSprinting() && entity.hasData(CoreDataAttachments.MOVEMENT_STAMINA)) {
+                if (!EnergySystem.canSprint(entity.getData(CoreDataAttachments.MOVEMENT_STAMINA), entity)) {
+                    entity.setSprinting(false);
+                }
+            }
             HealthSystem.synchronizeEntity(entity);
         }
+    }
+
+    @SubscribeEvent
+    private void canSprint(StaminaEvent.CanSprint event) {
+        LivingEntity entity = event.getEntity();
+        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+            return;
+        // TODO ignore if under painkiller effect - or maybe work with painkiller strength
+        // TODO check for parts with movement blocking status effects
+
+        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+        if (container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.LEG && part.isDead())) {
+            event.setCanSprint(false);
+        }
+    }
+
+    @SubscribeEvent
+    private void onSprinted(StaminaEvent.AfterSprint event) {
+        // TODO if sprinting with painkiller effect on apply sprint damage
+    }
+
+    @SubscribeEvent
+    private void afterJump(StaminaEvent.AfterJump event) {
+        LivingEntity entity = event.getEntity();
+        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+            return;
+
+        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+        // TODO check for broken legs too
+        float damage = container.getBodyPartStream()
+                .filter(part -> part.getGroup() == BodyPartGroup.LEG && part.isDead())
+                .count();
+        entity.hurt(entity.damageSources().fall(), damage);
     }
 
     private float calculateArmor(LivingEntity entity, DamageContext context, Collection<EquipmentSlot> protectedSlots) {

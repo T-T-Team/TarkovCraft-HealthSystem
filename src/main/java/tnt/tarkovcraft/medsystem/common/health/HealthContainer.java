@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.stream.Stream;
 
 public final class HealthContainer implements Synchronizable<HealthContainer> {
 
@@ -54,6 +55,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     public BodyPart getRootBodyPart() {
         return this.getBodyPart(null);
+    }
+
+    public Stream<BodyPart> getBodyPartStream() {
+        return this.bodyParts.values().stream();
     }
 
     public float getHealth() {
