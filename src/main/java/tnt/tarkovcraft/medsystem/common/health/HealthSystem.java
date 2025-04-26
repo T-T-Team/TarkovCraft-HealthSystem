@@ -12,6 +12,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.Marker;
@@ -23,10 +25,8 @@ import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.BiPredicate;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthContainerDefinition> {
 
@@ -56,7 +56,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         if (source.is(DamageTypeTags.IS_FALL)) {
             return FallDamageHitCalculator.INSTANCE;
         }
-        // TODO explosives
+        if (ExplosionHitCalculator.isValidExplosionSource(source)) {
+            return ExplosionHitCalculator.INSTANCE;
+        }
         Entity sourceEntity = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
         if (sourceEntity == null) {
             return GenericHitCalculator.INSTANCE;
@@ -74,6 +76,23 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
             pierceLevel += arrow.getPierceLevel();
         }
         return NeoForge.EVENT_BUS.post(new HitboxPiercingEvent(entity, source, container, projectile, pierceLevel)).getPiercing();
+    }
+
+    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<BodyPartHitbox, BodyPartHealth> filter) {
+        List<HitResult> results = new ArrayList<>();
+        container.acceptHitboxes(
+                filter,
+                (hitbox, part) -> {
+                    AABB aabb = hitbox.getLevelPositionedAABB(entity);
+                    Vec3 aabbCenter = aabb.getCenter();
+                    results.add(new HitResult(hitbox, part, aabb, aabbCenter));
+                }
+        );
+        results.sort(Comparator
+                .<HitResult>comparingDouble(res -> res.aabb().getCenter().y - point.y)
+                .thenComparingDouble(res -> res.aabb().getCenter().distanceToSqr(point))
+        );
+        return results;
     }
 
     public Optional<HealthContainerDefinition> getHealthContainer(EntityType<?> type) {

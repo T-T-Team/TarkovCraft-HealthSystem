@@ -41,6 +41,9 @@ public class HealthLayer implements LayeredDraw.Layer {
             return;
         if (player.isSpectator() && player == camera)
             return;
+        if (player.isCreative()) {
+            return;
+        }
         Window window = client.getWindow();
 
         if (!camera.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))

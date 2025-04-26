@@ -7,14 +7,17 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ProjectileHitCalculator implements HitCalculator {
 
-    public static final ProjectileHitCalculator INSTANCE = new ProjectileHitCalculator();
+    public static final ProjectileHitCalculator INSTANCE = new ProjectileHitCalculator(0.0);
+
+    private final double aabbInflate;
+
+    public ProjectileHitCalculator(double aabbInflate) {
+        this.aabbInflate = aabbInflate;
+    }
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
@@ -25,11 +28,16 @@ public class ProjectileHitCalculator implements HitCalculator {
         List<BodyPartHitbox> hitboxes = container.getDefinition().getHitboxes();
         List<HitResult> hits = new ArrayList<>();
         for (BodyPartHitbox hitbox : hitboxes) {
-            AABB axisAlignedBB = hitbox.getLevelPositionedAABB(entity).inflate(0.3F);
+            AABB axisAlignedBB = hitbox.getLevelPositionedAABB(entity).inflate(this.aabbInflate);
             Optional<Vec3> intersect = PositionedAABB.tryIntersect(axisAlignedBB, position, destPosition);
             intersect.ifPresent(hit -> hits.add(new HitResult(hitbox, container.getBodyPart(hitbox.getOwner()), axisAlignedBB, hit)));
         }
         hits.sort(Comparator.comparingDouble(res -> res.aabb().distanceToSqr(position)));
-        return hits.subList(0, Math.min(pierceAmount, hits.size()));
+        if (!hits.isEmpty()) {
+            return hits.subList(0, Math.min(hits.size(), pierceAmount));
+        }
+
+        List<HitResult> closest = HealthSystem.getClosestPossibleHits(position, entity, container, (hitbox, part) -> true);
+        return closest.isEmpty() ? Collections.emptyList() : Collections.singletonList(closest.getFirst());
     }
 }

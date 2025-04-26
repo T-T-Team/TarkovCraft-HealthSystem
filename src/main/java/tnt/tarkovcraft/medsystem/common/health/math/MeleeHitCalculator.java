@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.PositionedAABB;
 
@@ -35,21 +36,12 @@ public class MeleeHitCalculator implements HitCalculator {
         }
 
         // No hitboxes were hit, get closest most likely hit body part
-        Vec3 center = attacker.getBoundingBox().getCenter();
-        List<HitResult> hitboxPositions = new ArrayList<>();
-        container.acceptHitboxes(
-                (hitbox, part) -> !part.isDead(),
-                (hitbox, part) -> {
-                    AABB aabb = hitbox.getLevelPositionedAABB(entity);
-                    Vec3 aabbCenter = aabb.getCenter();
-                    hitboxPositions.add(new HitResult(hitbox, part, aabb, aabbCenter));
-                }
+        List<HitResult> result = HealthSystem.getClosestPossibleHits(
+                attacker.getBoundingBox().getCenter(),
+                entity,
+                container,
+                (hitbox, part) -> !part.isDead()
         );
-        hitboxPositions.sort(Comparator
-                .<HitResult>comparingDouble(res -> res.aabb().getCenter().y - center.y)
-                .thenComparingDouble(res -> res.aabb().getCenter().distanceToSqr(center))
-        );
-
-        return hitboxPositions.isEmpty() ? Collections.emptyList() : Collections.singletonList(hitboxPositions.getFirst());
+        return result.isEmpty() ? Collections.emptyList() : Collections.singletonList(result.getFirst());
     }
 }
