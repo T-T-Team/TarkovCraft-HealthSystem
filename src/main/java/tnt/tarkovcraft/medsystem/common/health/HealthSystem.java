@@ -59,6 +59,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         if (ExplosionHitCalculator.isValidExplosionSource(source)) {
             return ExplosionHitCalculator.INSTANCE;
         }
+        if (source == entity.damageSources().lava()) {
+            return LavaHitCalculator.INSTANCE;
+        }
         Entity sourceEntity = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
         if (sourceEntity == null) {
             return GenericHitCalculator.INSTANCE;

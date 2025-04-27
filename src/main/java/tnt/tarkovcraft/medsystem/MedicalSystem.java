@@ -1,5 +1,7 @@
 package tnt.tarkovcraft.medsystem;
 
+import dev.toma.configuration.Configuration;
+import dev.toma.configuration.config.format.ConfigFormats;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -12,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
 
@@ -24,7 +27,11 @@ public final class MedicalSystem {
 
     public static final HealthSystem HEALTH_SYSTEM = new HealthSystem();
 
+    private static MedSystemConfig config;
+
     public MedicalSystem(IEventBus modEventBus, ModContainer container) {
+        config = Configuration.registerConfig(MedSystemConfig.class, ConfigFormats.YAML).getConfigInstance();
+
         modEventBus.addListener(this::createRegistries);
 
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
@@ -35,6 +42,10 @@ public final class MedicalSystem {
         MedSystemHitboxTransforms.REGISTRY.register(modEventBus);
         MedSystemItemComponents.REGISTRY.register(modEventBus);
         MedSystemStats.REGISTRY.register(modEventBus);
+    }
+
+    public static MedSystemConfig getConfig() {
+        return config;
     }
 
     private void createRegistries(NewRegistryEvent event) {

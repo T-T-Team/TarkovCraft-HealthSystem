@@ -7,7 +7,7 @@ import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.core.util.VerticalAlignment;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 
-@Config(id = MedicalSystem.MOD_ID, filename = "medicalsystem-client", group = MedicalSystem.MOD_ID)
+@Config(id = MedicalSystem.MOD_ID + "-client", filename = "medicalsystem-client", group = MedicalSystem.MOD_ID)
 public final class MedSystemClientConfig {
 
     @Configurable

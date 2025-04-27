@@ -22,6 +22,7 @@ import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorStat;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
@@ -94,7 +95,8 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         LivingEntity entity = event.getEntity();
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER) || config.simpleArmorCalculation)
             return;
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageContext context = container.getDamageContext();
@@ -145,7 +147,8 @@ public final class MedicalSystemEventHandler {
                 .collect(Collectors.toSet());
 
         context.setAffectedSlots(new ArrayList<>());
-        float armor = this.calculateArmor(entity, context, protectedSlots);
+        MedSystemConfig config = MedicalSystem.getConfig();
+        float armor = config.simpleArmorCalculation ? entity.getArmorValue() : this.calculateArmor(entity, context, protectedSlots);
         float armorToughness = (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
         float previousDamage = event.getAmount();
         float damageAfterArmorAbsorb = CombatRules.getDamageAfterAbsorb(entity, previousDamage, event.getSource(), armor, armorToughness);
