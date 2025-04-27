@@ -1,0 +1,7 @@
+{
+  "label": {
+    "translate": "stat.medsystem.limbs_lost"
+  },
+  "source": "medsystem:limbs_lost",
+  "order": 750
+}

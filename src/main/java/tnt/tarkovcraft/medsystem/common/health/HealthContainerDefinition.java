@@ -9,6 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.*;
@@ -18,7 +19,7 @@ public final class HealthContainerDefinition {
 
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("replace", false).forGetter(t -> t.replace),
-            Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets",Collections.emptyList()).forGetter(t -> t.targets),
+            Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets", Collections.emptyList()).forGetter(t -> t.targets),
             Codec.unboundedMap(Codec.STRING, BodyPartDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.bodyParts),
             BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
             BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
@@ -30,7 +31,7 @@ public final class HealthContainerDefinition {
     private final List<BodyPartHitbox> hitboxes;
     private final List<BodyPartDisplay> display;
 
-    public HealthContainerDefinition(boolean replace, List<EntityType<?>> targets, Map<String, BodyPartDefinition> bodyParts, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
+    HealthContainerDefinition(boolean replace, List<EntityType<?>> targets, Map<String, BodyPartDefinition> bodyParts, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
         this.replace = replace;
         this.targets = targets;
         this.bodyParts = bodyParts;
@@ -40,6 +41,9 @@ public final class HealthContainerDefinition {
 
     private static DataResult<HealthContainerDefinition> validate(HealthContainerDefinition container) {
         Set<String> hitboxOwners = container.hitboxes.stream().map(BodyPartHitbox::getOwner).collect(Collectors.toSet());
+        if (container.bodyParts.isEmpty()) {
+            return DataResult.error(() -> "At least one body part must be specified");
+        }
         if (hitboxOwners.size() != container.bodyParts.size()) {
             return DataResult.error(() -> "Mismatched hitbox count. Got " + hitboxOwners.size() + ", expected " + container.bodyParts.size());
         }
@@ -49,6 +53,7 @@ public final class HealthContainerDefinition {
             }
         }
         // TODO validate body part links
+        // TODO do not allow 0 body parts
         return DataResult.success(container);
     }
 
@@ -69,12 +74,6 @@ public final class HealthContainerDefinition {
             return;
         }
 
-        Map<String, BodyPart> bodyParts = new HashMap<>();
-        for (Map.Entry<String, BodyPartDefinition> entry : this.bodyParts.entrySet()) {
-            String partName = entry.getKey();
-            BodyPartDefinition definition = entry.getValue();
-            bodyParts.put(partName, definition.createContainer());
-        }
         float maxHealth = this.getMaxHealth();
         AttributeInstance instance = entity.getAttribute(Attributes.MAX_HEALTH);
         if (instance != null) {
@@ -83,10 +82,6 @@ public final class HealthContainerDefinition {
         HealthContainer container = new HealthContainer(entity);
         container.updateHealth(entity);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
-    }
-
-    public List<EntityType<?>> getTargets() {
-        return targets;
     }
 
     public float getMaxHealth() {
@@ -101,7 +96,8 @@ public final class HealthContainerDefinition {
         return display;
     }
 
-    public HealthContainerDefinition merge(HealthContainerDefinition other) {
+    public HealthContainerDefinition merge(EntityType<?> type, HealthContainerDefinition other) {
+        MedicalSystem.LOGGER.warn(HealthSystem.MARKER, "Merging multiple health container definitions for entity '{}'", BuiltInRegistries.ENTITY_TYPE.getKey(type));
         if (other.replace) {
             return other;
         }
@@ -124,12 +120,16 @@ public final class HealthContainerDefinition {
         List<BodyPartDisplay> display = new ArrayList<>(this.display);
         display.addAll(other.display);
         display.removeIf(t -> deletedParts.contains(t.source()));
-        return new HealthContainerDefinition(
+        return validate(new HealthContainerDefinition(
                 this.replace,
                 targets,
                 newBodyParts,
                 hitboxes,
                 display
-        );
+        )).getOrThrow();
+    }
+
+    List<EntityType<?>> getTargets() {
+        return targets;
     }
 }

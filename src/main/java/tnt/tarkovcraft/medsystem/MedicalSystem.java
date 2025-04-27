@@ -34,6 +34,7 @@ public final class MedicalSystem {
         MedSystemTransformConditions.REGISTRY.register(modEventBus);
         MedSystemHitboxTransforms.REGISTRY.register(modEventBus);
         MedSystemItemComponents.REGISTRY.register(modEventBus);
+        MedSystemStats.REGISTRY.register(modEventBus);
     }
 
     private void createRegistries(NewRegistryEvent event) {

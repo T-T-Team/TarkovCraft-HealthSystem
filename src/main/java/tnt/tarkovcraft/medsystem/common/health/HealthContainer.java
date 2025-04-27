@@ -5,8 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.Synchronizable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -116,16 +118,28 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         entity.setHealth(health);
     }
 
-    public void hurt(float amount, BodyPart bodyPart) {
-        float damage = Math.min(bodyPart.getHealth(), amount);
+    public void hurt(LivingEntity entity, float amount, BodyPart bodyPart) {
+        hurt(entity, amount, bodyPart, true);
+    }
+
+    public void hurt(LivingEntity entity, float amount, BodyPart part, boolean triggerUpdate) {
+        float damage = Math.min(part.getHealth(), amount * part.getDamageScale());
         float leftover = amount - damage;
-        bodyPart.hurt(damage);
-        if (leftover > 0) {
-            BodyPart parent = this.bodyPartLinks.get(bodyPart);
+        boolean wasDead = part.isDead();
+        part.hurt(damage);
+        if (!part.isVital() && part.isDead() != wasDead) {
+            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
+        }
+        // no need to redistribute damage from vital parts
+        if (!part.isVital() && leftover > 0) {
+            BodyPart parent = this.bodyPartLinks.get(part);
             if (parent != null) {
                 float scale = parent.getParentDamageScale();
-                this.hurt(leftover * scale, parent);
+                this.hurt(entity, leftover * scale, parent, false);
             }
+        }
+        if (triggerUpdate) {
+            this.updateEffects(entity);
         }
     }
 
@@ -136,7 +150,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return this.getPartToHeal(allowDead) != null;
     }
 
-    public float heal(float amount, @Nullable BodyPart targetPart) {
+    public float heal(LivingEntity entity, float amount, @Nullable BodyPart targetPart) {
         if (targetPart != null) {
             // Heal specific body part only
             float healAmount = Math.min(amount, targetPart.getMaxHealAmount());
@@ -151,7 +165,13 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
                 amount -= healAmount;
             }
         }
+
+        this.updateEffects(entity);
         return amount;
+    }
+
+    public void updateEffects(LivingEntity entity) {
+        // TODO reapply stats
     }
 
     public void setDamageContext(DamageContext damageContext) {

@@ -12,6 +12,7 @@ public final class BodyPart {
             Codec.FLOAT.fieldOf("health").forGetter(t -> t.health),
             Codec.FLOAT.fieldOf("maxHealth").forGetter(t -> t.maxHealth),
             Codec.FLOAT.fieldOf("parentDamageScale").forGetter(t -> t.parentDamageScale),
+            Codec.FLOAT.fieldOf("damageScale").forGetter(t -> t.damageScale),
             Codecs.simpleEnumCodec(BodyPartGroup.class).fieldOf("group").forGetter(t -> t.group)
     ).apply(instance, BodyPart::new));
 
@@ -19,22 +20,28 @@ public final class BodyPart {
     private float health;
     private float maxHealth;
     private final float parentDamageScale;
+    private final float damageScale;
     private final BodyPartGroup group;
 
-    public BodyPart(boolean vital, float maxHealth, float parentDamageScale, BodyPartGroup group) {
-        this(vital, maxHealth, maxHealth, parentDamageScale, group);
+    public BodyPart(boolean vital, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
+        this(vital, maxHealth, maxHealth, parentDamageScale, damageScale, group);
     }
 
-    private BodyPart(boolean vital, float health, float maxHealth, float parentDamageScale, BodyPartGroup group) {
+    private BodyPart(boolean vital, float health, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
         this.vital = vital;
         this.health = health;
         this.maxHealth = maxHealth;
         this.parentDamageScale = parentDamageScale;
+        this.damageScale = damageScale;
         this.group = group;
     }
 
     public float getParentDamageScale() {
         return parentDamageScale;
+    }
+
+    public float getDamageScale() {
+        return damageScale;
     }
 
     public boolean shouldOwnerDie() {

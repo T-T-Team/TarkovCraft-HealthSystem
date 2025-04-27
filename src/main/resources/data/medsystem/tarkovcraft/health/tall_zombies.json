@@ -1,0 +1,104 @@
+{
+  "targets": [
+    "minecraft:husk"
+  ],
+  "health": {
+    "head": {
+      "group": "HEAD",
+      "vital": true,
+      "parent": "body",
+      "damageScale": 0.75,
+      "health": 8.0
+    },
+    "body": {
+      "group": "TORSO",
+      "vital": true,
+      "health": 20.0
+    },
+    "legs": {
+      "group": "LEG",
+      "parent": "body",
+      "health": 10.0,
+      "parentDamageScale": 0.7
+    }
+  },
+  "hitboxes": [
+    {
+      "owner": "head",
+      "pos": [ 0.0, 1.85, 0.0 ],
+      "size": [ 0.275, 0.275 ],
+      "transforms": {
+        "if": {
+          "type": "medsystem:is_baby"
+        },
+        "apply": [
+          {
+            "type": "medsystem:move",
+            "pos": [ 0.0, -0.85, 0.0 ]
+          },
+          {
+            "type": "medsystem:scale",
+            "scale": [ 0.75, 0.75 ]
+          }
+        ]
+      }
+    },
+    {
+      "owner": "body",
+      "pos": [ 0.0, 1.2, 0.0 ],
+      "size": [ 0.25, 0.4 ],
+      "transforms": {
+        "if": {
+          "type": "medsystem:is_baby"
+        },
+        "apply": [
+          {
+            "type": "medsystem:move",
+            "pos": [ 0.0, -0.65, 0.0 ]
+          },
+          {
+            "type": "medsystem:scale",
+            "scale": [ 0.65, 0.65 ]
+          }
+        ]
+      }
+    },
+    {
+      "owner": "legs",
+      "pos": [ 0.0, 0.4, 0.0 ],
+      "size": [ 0.25, 0.4 ],
+      "transforms": {
+        "if": {
+          "type": "medsystem:is_baby"
+        },
+        "apply": [
+          {
+            "type": "medsystem:move",
+            "pos": [ 0.0, -0.25, 0.0 ]
+          },
+          {
+            "type": "medsystem:resize",
+            "size": [ 0.1625, 0.15 ]
+          }
+        ]
+      }
+    }
+  ],
+  "hud": [
+    {
+      "source": "head",
+      "pos": [ 0, -48 ],
+      "size": [ 24, 24 ]
+    },
+    {
+      "source": "body",
+      "pos": [ 0, -24 ],
+      "size": [ 18, 28 ]
+    },
+    {
+      "source": "legs",
+      "pos": [ 0, 4 ],
+      "size": [ 18, 22 ]
+    }
+  ]
+}

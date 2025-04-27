@@ -6,7 +6,7 @@
     "maxLevel": 100,
     "baseExperience": 10.0,
     "additionalExperience": 5.0,
-    "maxStack": 18
+    "maxExperience": 100.0
   },
   "trackers": [],
   "stats": []

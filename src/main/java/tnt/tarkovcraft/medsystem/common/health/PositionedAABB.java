@@ -108,6 +108,17 @@ public final class PositionedAABB {
         return transform.apply(this, context);
     }
 
+    public static AABB inflate(AABB aabb, double amount) {
+        return new AABB(
+                aabb.minX - amount,
+                aabb.minY,
+                aabb.minZ - amount,
+                aabb.maxX + amount,
+                aabb.maxY + amount,
+                aabb.maxZ + amount
+        );
+    }
+
     public static Optional<Vec3> tryIntersect(AABB aabb, Vec3 start, Vec3 end) {
         Optional<Vec3> optional = aabb.clip(start, end);
         if (aabb.contains(start)) {

@@ -11,7 +11,7 @@ import java.util.*;
 
 public class ProjectileHitCalculator implements HitCalculator {
 
-    public static final ProjectileHitCalculator INSTANCE = new ProjectileHitCalculator(0.0);
+    public static final ProjectileHitCalculator INSTANCE = new ProjectileHitCalculator(0.3);
 
     private final double aabbInflate;
 
@@ -28,7 +28,7 @@ public class ProjectileHitCalculator implements HitCalculator {
         List<BodyPartHitbox> hitboxes = container.getDefinition().getHitboxes();
         List<HitResult> hits = new ArrayList<>();
         for (BodyPartHitbox hitbox : hitboxes) {
-            AABB axisAlignedBB = hitbox.getLevelPositionedAABB(entity).inflate(this.aabbInflate);
+            AABB axisAlignedBB = PositionedAABB.inflate(hitbox.getLevelPositionedAABB(entity), this.aabbInflate);
             Optional<Vec3> intersect = PositionedAABB.tryIntersect(axisAlignedBB, position, destPosition);
             intersect.ifPresent(hit -> hits.add(new HitResult(hitbox, container.getBodyPart(hitbox.getOwner()), axisAlignedBB, hit)));
         }

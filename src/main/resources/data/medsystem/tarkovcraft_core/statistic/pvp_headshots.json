@@ -1,0 +1,7 @@
+{
+  "label": {
+    "translate": "stat.medsystem.player_headshots"
+  },
+  "source": "medsystem:player_headshots",
+  "order": 155
+}

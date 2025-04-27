@@ -2,46 +2,46 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import net.minecraft.world.entity.EquipmentSlot;
 
-import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Set;
 
 public enum BodyPartGroup {
 
-    HEAD(EquipmentSlot.HEAD, 0xFF0000),
-    TORSO(EquipmentSlot.CHEST, 0xFFFF00),
-    STOMACH(EquipmentSlot.CHEST, 0xFF00),
+    HEAD(0xFF0000, EquipmentSlot.HEAD),
+    TORSO(0xFFFF00, EquipmentSlot.CHEST),
+    STOMACH(0xFF00, EquipmentSlot.CHEST),
     ARM(0xFFFF),
-    LEG(EquipmentSlot.LEGS, 0xFF),
-    ANIMAL(EquipmentSlot.BODY, 0x00FF00),
+    LEG(0xFF, EquipmentSlot.LEGS, EquipmentSlot.FEET),
+    ANIMAL(0x00FF00, EquipmentSlot.BODY),
     OTHER(0x444444),
     // To be used for data loading to mark the body part as removed
     INACTIVE(0);
 
-    private final EquipmentSlot armorSlot;
+    private final Set<EquipmentSlot> armorSlots;
     private final int hitboxColor;
 
     BodyPartGroup(int hitboxColor) {
-        this(null, hitboxColor);
+        this(hitboxColor, null);
     }
 
-    BodyPartGroup(EquipmentSlot armorSlot, int hitboxColor) {
-        this.armorSlot = armorSlot;
+    BodyPartGroup(int hitboxColor, EquipmentSlot first, EquipmentSlot... other) {
         this.hitboxColor = hitboxColor;
+        this.armorSlots = first != null ? EnumSet.of(first, other) : Collections.emptySet();
     }
 
     public static EnumSet<BodyPartGroup> getProtectedByEquipment(EquipmentSlot slot) {
         EnumSet<BodyPartGroup> set = EnumSet.noneOf(BodyPartGroup.class);
         for (BodyPartGroup group : BodyPartGroup.values()) {
-            if (slot.equals(group.armorSlot)) {
+            if (group.armorSlots.contains(slot)) {
                 set.add(group);
             }
         }
         return set;
     }
 
-    @Nullable
-    public EquipmentSlot getArmorSlot() {
-        return armorSlot;
+    public Set<EquipmentSlot> getArmorSlots() {
+        return armorSlots;
     }
 
     public int getHitboxColor() {

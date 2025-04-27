@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,13 +15,11 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.damagesource.IReductionFunction;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.*;
+import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
-import tnt.tarkovcraft.core.common.init.CoreDataAttachments;
+import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorStat;
 import tnt.tarkovcraft.medsystem.common.health.*;
@@ -29,6 +27,7 @@ import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,7 +54,7 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         if (amount > 0.0F && entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER)) {
-            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(amount, null);
+            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(entity, amount, null);
             if (leftover > 0.0F) {
                 event.setAmount(amount - leftover);
             }
@@ -142,8 +141,7 @@ public final class MedicalSystemEventHandler {
         // armor reduction calculation preparation
 
         Set<EquipmentSlot> protectedSlots = protectedGroups.stream()
-                .map(BodyPartGroup::getArmorSlot)
-                .filter(Objects::nonNull)
+                .flatMap(group -> group.getArmorSlots().stream())
                 .collect(Collectors.toSet());
 
         context.setAffectedSlots(new ArrayList<>());
@@ -166,16 +164,18 @@ public final class MedicalSystemEventHandler {
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
         Map<BodyPart, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
-            container.hurt(entry.getValue(), entry.getKey());
+            container.hurt(entity, entry.getValue(), entry.getKey(), false);
         }
+        container.updateEffects(entity);
         container.clearDamageContext();
         container.updateHealth(entity);
         if (container.shouldDie()) {
-            entity.die(event.getSource());
+            entity.setHealth(0.0F);
         } else {
             // disable sprinting
-            if (entity.isSprinting() && entity.hasData(CoreDataAttachments.MOVEMENT_STAMINA)) {
-                if (!EnergySystem.canSprint(entity.getData(CoreDataAttachments.MOVEMENT_STAMINA), entity)) {
+            MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
+            if (entity.isSprinting() && component.isAttached(entity)) {
+                if (!component.canSprint(entity)) {
                     entity.setSprinting(false);
                 }
             }
@@ -216,8 +216,27 @@ public final class MedicalSystemEventHandler {
         entity.hurt(entity.damageSources().fall(), damage);
     }
 
+    @SubscribeEvent
+    private void onLivingDeath(LivingDeathEvent event) {
+        if (event.isCanceled())
+            return;
+        LivingEntity entity = event.getEntity();
+        DamageSource source = event.getSource();
+        Entity killer = source.getEntity();
+        if (killer != null && entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER)) {
+            HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+            boolean headshot = container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
+            if (headshot) {
+                StatisticTracker.incrementOptional(killer, MedSystemStats.HEADSHOTS);
+                if (entity instanceof Player player) {
+                    StatisticTracker.increment(player, MedSystemStats.PLAYER_HEADSHOTS);
+                }
+            }
+        }
+    }
+
     private float calculateArmor(LivingEntity entity, DamageContext context, Collection<EquipmentSlot> protectedSlots) {
-        double result = 0.0D;
+        double result = entity.getAttribute(Attributes.ARMOR).getBaseValue();
         for (EquipmentSlot slot : protectedSlots) {
             ItemStack itemStack = entity.getItemBySlot(slot);
             if (itemStack.isEmpty())

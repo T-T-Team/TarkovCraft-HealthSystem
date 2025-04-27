@@ -4,5 +4,11 @@
   "skill.medsystem.firstaid": "First Aid",
   "skill.medsystem.surgery": "Surgery",
 
+  "stat.medsystem.limbs_lost": "Limbs lost",
+  "stat.medsystem.headshots": "Headshots",
+  "stat.medsystem.headshot_percentage": "Headshot rate",
+  "stat.medsystem.player_headshots": "Headshots (PvP)",
+  "stat.medsystem.player_headshot_percentage": "Headshot rate (PvP)",
+
   "screen.medsystem.health.title": "Health"
 }

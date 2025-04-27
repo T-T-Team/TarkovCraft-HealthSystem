@@ -1,0 +1,110 @@
+{
+  "targets": [
+    "minecraft:zombie",
+    "minecraft:zombie_villager",
+    "minecraft:drowned",
+    "minecraft:zombified_piglin",
+    "minecraft:skeleton",
+    "minecraft:stray",
+    "minecraft:bogged"
+  ],
+  "health": {
+    "head": {
+      "group": "HEAD",
+      "vital": true,
+      "parent": "body",
+      "damageScale": 0.75,
+      "health": 8.0
+    },
+    "body": {
+      "group": "TORSO",
+      "vital": true,
+      "health": 18.0
+    },
+    "legs": {
+      "group": "LEG",
+      "parent": "body",
+      "health": 10.0,
+      "parentDamageScale": 0.7
+    }
+  },
+  "hitboxes": [
+    {
+      "owner": "head",
+      "pos": [ 0.0, 1.75, 0.0 ],
+      "size": [ 0.275, 0.275 ],
+      "transforms": {
+        "if": {
+          "type": "medsystem:is_baby"
+        },
+        "apply": [
+          {
+            "type": "medsystem:move",
+            "pos": [ 0.0, -0.8, 0.0 ]
+          },
+          {
+            "type": "medsystem:scale",
+            "scale": [ 0.7, 0.7 ]
+          }
+        ]
+      }
+    },
+    {
+      "owner": "body",
+      "pos": [ 0.0, 1.125, 0.0 ],
+      "size": [ 0.25, 0.35 ],
+      "transforms": {
+        "if": {
+          "type": "medsystem:is_baby"
+        },
+        "apply": [
+          {
+            "type": "medsystem:move",
+            "pos": [ 0.0, -0.6, 0.0 ]
+          },
+          {
+            "type": "medsystem:scale",
+            "scale": [ 0.65, 0.65 ]
+          }
+        ]
+      }
+    },
+    {
+      "owner": "legs",
+      "pos": [ 0.0, 0.3875, 0.0 ],
+      "size": [ 0.25, 0.3875 ],
+      "transforms": {
+        "if": {
+          "type": "medsystem:is_baby"
+        },
+        "apply": [
+          {
+            "type": "medsystem:move",
+            "pos": [ 0.0, -0.25, 0.0 ]
+          },
+          {
+            "type": "medsystem:resize",
+            "size": [ 0.1625, 0.15 ]
+          }
+        ]
+      }
+    }
+  ],
+  "hud": [
+    {
+      "source": "head",
+      "pos": [ 0, -48 ],
+      "size": [ 24, 24 ]
+    },
+    {
+      "source": "body",
+      "pos": [ 0, -24 ],
+      "size": [ 20, 28 ]
+    },
+    {
+      "source": "legs",
+      "pos": [ 0, 4 ],
+      "size": [ 20, 22 ]
+    }
+  ]
+}

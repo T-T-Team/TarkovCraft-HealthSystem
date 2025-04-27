@@ -108,8 +108,8 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         MedicalSystem.LOGGER.debug(MARKER, "Loading custom entity health containers");
         this.healthContainers.clear();
         for (HealthContainerDefinition definition : map.values()) {
-            List<EntityType<?>> types = definition.getTargets();
-            types.forEach(type -> this.healthContainers.merge(type, definition, HealthContainerDefinition::merge));
+            List<EntityType<?>> targets = definition.getTargets();
+            targets.forEach(type -> this.healthContainers.merge(type, definition, (d0, d1) -> d0.merge(type, d1)));
         }
         MedicalSystem.LOGGER.debug(MARKER, "Loaded {} custom entity health containers", this.healthContainers.size());
     }

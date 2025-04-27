@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.health.transform;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,22 +15,18 @@ import java.util.Set;
 public class EntityPoseTransformCondition implements TransformCondition {
 
     public static final MapCodec<EntityPoseTransformCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codecs.list(Codecs.simpleEnumCodec(Pose.class)).fieldOf("allow").forGetter(t -> new ArrayList<>(t.allows)),
-            Codec.BOOL.optionalFieldOf("invert", false).forGetter(t -> t.invert)
+            Codecs.list(Codecs.simpleEnumCodec(Pose.class)).fieldOf("allow").forGetter(t -> new ArrayList<>(t.allows))
     ).apply(instance, EntityPoseTransformCondition::new));
 
     private final Set<Pose> allows;
-    private final boolean invert;
 
-    public EntityPoseTransformCondition(List<Pose> allows, boolean invert) {
+    public EntityPoseTransformCondition(List<Pose> allows) {
         this.allows = EnumSet.copyOf(allows);
-        this.invert = invert;
     }
 
     @Override
     public boolean canApply(LivingEntity context) {
-        boolean contains = this.allows.contains(context.getPose());
-        return contains != this.invert;
+        return this.allows.contains(context.getPose());
     }
 
     @Override

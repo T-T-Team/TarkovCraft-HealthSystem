@@ -1,0 +1,57 @@
+{
+  "targets": "minecraft:creeper",
+  "health": {
+    "head": {
+      "parent": "body",
+      "damageScale": 0.75,
+      "health": 6.0,
+      "vital": true,
+      "group": "HEAD"
+    },
+    "body": {
+      "health": 15.0,
+      "vital": true,
+      "group": "TORSO"
+    },
+    "legs": {
+      "parent": "body",
+      "parentDamageScale": 0.7,
+      "health": 10.0,
+      "group": "LEG"
+    }
+  },
+  "hitboxes": [
+    {
+      "owner": "head",
+      "pos": [ 0, 1.4, 0 ],
+      "size": [ 0.25, 0.25 ]
+    },
+    {
+      "owner": "body",
+      "pos": [ 0, 0.775, 0 ],
+      "size": [ 0.3, 0.35 ]
+    },
+    {
+      "owner": "legs",
+      "pos": [ 0, 0.2, 0 ],
+      "size": [ 0.4, 0.2 ]
+    }
+  ],
+  "hud": [
+    {
+      "source": "head",
+      "pos": [ 0, -48 ],
+      "size": [ 24, 24 ]
+    },
+    {
+      "source": "body",
+      "pos": [ 0, -24 ],
+      "size": [ 24, 36 ]
+    },
+    {
+      "source": "legs",
+      "pos": [ 0, 12 ],
+      "size": [ 32, 16 ]
+    }
+  ]
+}

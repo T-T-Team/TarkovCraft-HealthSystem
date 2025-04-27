@@ -1,0 +1,7 @@
+{
+  "label": {
+    "translate": "stat.medsystem.headshots"
+  },
+  "source": "medsystem:headshots",
+  "order": 150
+}

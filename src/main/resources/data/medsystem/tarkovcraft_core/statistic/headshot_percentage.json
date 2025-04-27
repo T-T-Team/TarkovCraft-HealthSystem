@@ -1,0 +1,32 @@
+{
+  "label": {
+    "translate": "stat.medsystem.headshot_percentage"
+  },
+  "format": {
+    "decimalPlaces": 2,
+    "multiplier": 100,
+    "suffix": "%"
+  },
+  "source": {
+    "type": "tarkovcraft_core:operand",
+    "operator": "DIV",
+    "values": [
+      {
+        "type": "tarkovcraft_core:statistic",
+        "stat": "medsystem:headshots"
+      },
+      {
+        "type": "tarkovcraft_core:operand",
+        "operator": "MAX",
+        "values": [
+          1,
+          {
+            "type": "tarkovcraft_core:statistic",
+            "stat": "tarkovcraft_core:kills"
+          }
+        ]
+      }
+    ]
+  },
+  "order": 160
+}

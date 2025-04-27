@@ -1,17 +1,15 @@
 {
-  "replace": false,
-  "targets": [
-    "minecraft:player"
-  ],
+  "targets": "minecraft:player",
   "health": {
     "head": {
       "parent": "body",
-      "health": 4.0,
+      "damageScale": 0.75,
+      "health": 6.0,
       "vital": true,
       "group": "HEAD"
     },
     "body": {
-      "health": 10.0,
+      "health": 9.0,
       "vital": true,
       "group": "TORSO"
     },
@@ -77,9 +75,11 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING",
-            "invert": true
+            "type": "medsystem:not",
+            "child": {
+              "type": "medsystem:pose",
+              "allow": "SWIMMING"
+            }
           },
           "apply": {
             "type": "medsystem:entity_head_rotation"
