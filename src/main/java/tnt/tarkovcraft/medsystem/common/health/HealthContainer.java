@@ -1,9 +1,12 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
+import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.network.Synchronizable;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -25,12 +28,28 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     private final String root;
     private DamageContext activeDamageContext;
 
-    public HealthContainer() {
-        this.definition = null;
-        this.bodyParts = Collections.emptyMap();
-        this.bodyPartLinks = Collections.emptyMap();
-        this.vitalParts = Collections.emptyList();
-        this.root = "";
+    public HealthContainer(IAttachmentHolder holder) {
+        if (!(holder instanceof LivingEntity livingEntity)) {
+            throw new IllegalArgumentException("Holder must be an instance of LivingEntity");
+        }
+        this.definition = MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).orElse(null);
+        ImmutableMap.Builder<String, BodyPart> builder = ImmutableMap.builder();
+        if (this.definition != null) {
+            for (Map.Entry<String, BodyPartDefinition> entry : this.definition.getBodyParts().entrySet()) {
+                String key = entry.getKey();
+                BodyPartDefinition partDefinition = entry.getValue();
+                builder.put(key, partDefinition.createContainer());
+            }
+            this.bodyParts = builder.build();
+            this.bodyPartLinks = new IdentityHashMap<>();
+            this.vitalParts = new ArrayList<>();
+            this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
+        } else {
+            this.bodyParts = Collections.emptyMap();
+            this.bodyPartLinks = Collections.emptyMap();
+            this.vitalParts = Collections.emptyList();
+            this.root = "";
+        }
     }
 
     public HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts) {
@@ -39,6 +58,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         this.bodyPartLinks = new IdentityHashMap<>();
         this.vitalParts = new ArrayList<>();
         this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
+    }
+
+    public boolean isInvalid() {
+        return this.definition == null || this.bodyParts.isEmpty();
     }
 
     public HealthContainerDefinition getDefinition() {
@@ -205,7 +228,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     private String resolveBodyParts(HealthContainerDefinition definition, Map<BodyPart, BodyPart> links, List<BodyPart> vitalParts) {
         String root = null;
-        for (Map.Entry<String, BodyPartHealthDefinition> health : definition.getBodyParts().entrySet()) {
+        for (Map.Entry<String, BodyPartDefinition> health : definition.getBodyParts().entrySet()) {
             String part = health.getKey();
             String parent = health.getValue().getParent();
             if (parent == null) {
@@ -213,7 +236,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             } else {
                 links.put(this.bodyParts.get(part), this.bodyParts.get(parent));
             }
-            BodyPartHealthDefinition healthDef = health.getValue();
+            BodyPartDefinition healthDef = health.getValue();
             if (healthDef.isVital()) {
                 vitalParts.add(this.bodyParts.get(part));
             }

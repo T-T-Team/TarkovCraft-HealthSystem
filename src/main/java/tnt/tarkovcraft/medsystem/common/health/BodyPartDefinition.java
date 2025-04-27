@@ -8,15 +8,15 @@ import tnt.tarkovcraft.core.util.Codecs;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public final class BodyPartHealthDefinition {
+public final class BodyPartDefinition {
 
-    public static final Codec<BodyPartHealthDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<BodyPartDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("vital", false).forGetter(t -> t.vital),
             Codec.STRING.optionalFieldOf("parent").forGetter(t -> Optional.ofNullable(t.parent)),
             Codec.floatRange(0.0F, 10.0F).optionalFieldOf("parentDamageScale", 1.0F).forGetter(t -> t.parentDamageScale),
             ExtraCodecs.POSITIVE_FLOAT.fieldOf("health").forGetter(t -> t.maxHealth),
             Codecs.enumCodec(BodyPartGroup.class).optionalFieldOf("group", BodyPartGroup.OTHER).forGetter(t -> t.bodyPartGroup)
-    ).apply(instance, BodyPartHealthDefinition::new));
+    ).apply(instance, BodyPartDefinition::new));
 
     private final boolean vital;
     @Nullable
@@ -25,7 +25,7 @@ public final class BodyPartHealthDefinition {
     private final float maxHealth;
     private final BodyPartGroup bodyPartGroup;
 
-    public BodyPartHealthDefinition(boolean vital, Optional<String> parent, float parentDamageScale, float maxHealth, BodyPartGroup bodyPartGroup) {
+    public BodyPartDefinition(boolean vital, Optional<String> parent, float parentDamageScale, float maxHealth, BodyPartGroup bodyPartGroup) {
         this.vital = vital;
         this.parent = parent.orElse(null);
         this.parentDamageScale = parentDamageScale;

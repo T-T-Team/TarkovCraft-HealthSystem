@@ -19,18 +19,18 @@ public final class HealthContainerDefinition {
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("replace", false).forGetter(t -> t.replace),
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets",Collections.emptyList()).forGetter(t -> t.targets),
-            Codec.unboundedMap(Codec.STRING, BodyPartHealthDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.bodyParts),
+            Codec.unboundedMap(Codec.STRING, BodyPartDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.bodyParts),
             BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
             BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerDefinition::validate);
 
     private final boolean replace;
     private final List<EntityType<?>> targets;
-    private final Map<String, BodyPartHealthDefinition> bodyParts;
+    private final Map<String, BodyPartDefinition> bodyParts;
     private final List<BodyPartHitbox> hitboxes;
     private final List<BodyPartDisplay> display;
 
-    public HealthContainerDefinition(boolean replace, List<EntityType<?>> targets, Map<String, BodyPartHealthDefinition> bodyParts, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
+    public HealthContainerDefinition(boolean replace, List<EntityType<?>> targets, Map<String, BodyPartDefinition> bodyParts, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
         this.replace = replace;
         this.targets = targets;
         this.bodyParts = bodyParts;
@@ -52,11 +52,11 @@ public final class HealthContainerDefinition {
         return DataResult.success(container);
     }
 
-    public BodyPartHealthDefinition getHealthTpl(String id) {
+    public BodyPartDefinition getHealthTpl(String id) {
         return bodyParts.get(id);
     }
 
-    public Map<String, BodyPartHealthDefinition> getBodyParts() {
+    public Map<String, BodyPartDefinition> getBodyParts() {
         return bodyParts;
     }
 
@@ -65,10 +65,14 @@ public final class HealthContainerDefinition {
     }
 
     public void bind(LivingEntity entity) {
+        if (entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER) && !entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).isInvalid()) {
+            return;
+        }
+
         Map<String, BodyPart> bodyParts = new HashMap<>();
-        for (Map.Entry<String, BodyPartHealthDefinition> entry : this.bodyParts.entrySet()) {
+        for (Map.Entry<String, BodyPartDefinition> entry : this.bodyParts.entrySet()) {
             String partName = entry.getKey();
-            BodyPartHealthDefinition definition = entry.getValue();
+            BodyPartDefinition definition = entry.getValue();
             bodyParts.put(partName, definition.createContainer());
         }
         float maxHealth = this.getMaxHealth();
@@ -76,7 +80,7 @@ public final class HealthContainerDefinition {
         if (instance != null) {
             instance.setBaseValue(maxHealth);
         }
-        HealthContainer container = new HealthContainer(this, bodyParts);
+        HealthContainer container = new HealthContainer(entity);
         container.updateHealth(entity);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
     }
@@ -87,7 +91,7 @@ public final class HealthContainerDefinition {
 
     public float getMaxHealth() {
         float value = 0.0F;
-        for (BodyPartHealthDefinition definition : this.bodyParts.values()) {
+        for (BodyPartDefinition definition : this.bodyParts.values()) {
             value += definition.getMaxHealth();
         }
         return value;
@@ -103,9 +107,9 @@ public final class HealthContainerDefinition {
         }
         List<EntityType<?>> targets = new ArrayList<>(this.targets);
         targets.addAll(other.targets);
-        Map<String, BodyPartHealthDefinition> newBodyParts = new HashMap<>(this.bodyParts);
+        Map<String, BodyPartDefinition> newBodyParts = new HashMap<>(this.bodyParts);
         Set<String> deletedParts = new HashSet<>();
-        for (Map.Entry<String, BodyPartHealthDefinition> entry : other.bodyParts.entrySet()) {
+        for (Map.Entry<String, BodyPartDefinition> entry : other.bodyParts.entrySet()) {
             BodyPartGroup group = entry.getValue().getBodyPartGroup();
             if (group.isInactive()) {
                 newBodyParts.remove(entry.getKey());

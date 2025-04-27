@@ -18,7 +18,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartHealthDefinition;
+import tnt.tarkovcraft.medsystem.common.health.BodyPartDefinition;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartHitbox;
 
 @Mixin(LivingEntityRenderer.class)
@@ -39,7 +39,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
             return;
         MedicalSystem.HEALTH_SYSTEM.getHealthContainer(entity).ifPresent(container -> {
             for (BodyPartHitbox hitbox : container.getHitboxes()) {
-                BodyPartHealthDefinition healthTpl = container.getHealthTpl(hitbox.getOwner());
+                BodyPartDefinition healthTpl = container.getHealthTpl(hitbox.getOwner());
                 if (healthTpl == null)
                     continue;
                 BodyPartGroup group = healthTpl.getBodyPartGroup();
