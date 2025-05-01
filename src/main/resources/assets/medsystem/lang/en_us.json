@@ -10,5 +10,13 @@
   "stat.medsystem.player_headshots": "Headshots (PvP)",
   "stat.medsystem.player_headshot_percentage": "Headshot rate (PvP)",
 
-  "screen.medsystem.health.title": "Health"
+  "screen.medsystem.health.title": "Health",
+
+  "medsystem.bodypart.head": "Head",
+  "medsystem.bodypart.body": "Body",
+  "medsystem.bodypart.stomach": "Stomach",
+  "medsystem.bodypart.rightArm": "Right Arm",
+  "medsystem.bodypart.leftArm": "Left Arm",
+  "medsystem.bodypart.rightLeg": "Right Leg",
+  "medsystem.bodypart.leftLeg": "Left Leg"
 }

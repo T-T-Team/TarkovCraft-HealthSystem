@@ -378,11 +378,6 @@
       "size": [ 24, 28 ]
     },
     {
-      "source": "stomach",
-      "pos": [ 0, 4 ],
-      "size": [ 24, 12 ]
-    },
-    {
       "source": "rightArm",
       "pos": [ -18, -24 ],
       "size": [ 12, 38 ]
@@ -391,6 +386,11 @@
       "source": "leftArm",
       "pos": [ 18, -24 ],
       "size": [ 12, 38 ]
+    },
+    {
+      "source": "stomach",
+      "pos": [ 0, 4 ],
+      "size": [ 24, 12 ]
     },
     {
       "source": "rightLeg",
