@@ -4,15 +4,20 @@ import dev.toma.configuration.config.validate.IValidationResult;
 import dev.toma.configuration.config.value.IConfigValueReadable;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.CombatRules;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.damagesource.IReductionFunction;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.ArmorStat;
@@ -21,7 +26,9 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class DefaultArmorComponent implements ArmorComponent {
 
@@ -49,14 +56,33 @@ public class DefaultArmorComponent implements ArmorComponent {
     }
 
     @Override
-    public float handleArmorReductions(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, float incomingDamage, FloatConsumer damageProvider, Consumer<IReductionFunction> reductionProvider) {
+    public float handleReductions(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, Supplier<Float> incomingDamage, FloatConsumer damageProvider, BiConsumer<DamageContainer.Reduction, IReductionFunction> reductionProvider) {
+        float armorReduction = this.calculateArmorReduction(entity, ctx, protectedSlots, incomingDamage.get());
+        reductionProvider.accept(DamageContainer.Reduction.ARMOR, new SetReductionFunction(armorReduction));
+        float enchantReduction = this.calculateEnchantReduction(entity, ctx, protectedSlots, incomingDamage.get());
+        if (enchantReduction >= 0.0F) {
+            reductionProvider.accept(DamageContainer.Reduction.ENCHANTMENTS, new SetReductionFunction(enchantReduction));
+        }
+        return armorReduction;
+    }
+
+    protected float calculateArmorReduction(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, float incomingDamage) {
         MedSystemConfig config = MedicalSystem.getConfig();
         float armor = config.simpleArmorCalculation ? entity.getArmorValue() : this.calculateArmor(entity, ctx, protectedSlots);
         float armorToughness = (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
         float damageAfterArmorAbsorb = CombatRules.getDamageAfterAbsorb(entity, incomingDamage, ctx.getSource(), armor, armorToughness);
-        float reduction = incomingDamage - damageAfterArmorAbsorb;
-        reductionProvider.accept(new SetReductionFunction(reduction));
-        return reduction;
+        return incomingDamage - damageAfterArmorAbsorb;
+    }
+
+    protected float calculateEnchantReduction(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, float incomingDamage) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (config.simpleArmorCalculation) {
+            return -1;
+        }
+        Level level = entity.level();
+        float enchantProtection = level instanceof ServerLevel serverLevel ? this.calculateEnchantReduction(entity, ctx.getSource(), serverLevel, protectedSlots) : 0.0F;
+        float adjustedDamage = CombatRules.getDamageAfterMagicAbsorb(incomingDamage, enchantProtection);
+        return incomingDamage - adjustedDamage;
     }
 
     protected Collection<BodyPartGroup> getItemProtectedGroups(ItemStack itemStack, EquipmentSlot slot) {
@@ -66,6 +92,19 @@ public class DefaultArmorComponent implements ArmorComponent {
         } else {
             return BodyPartGroup.getProtectedByEquipment(slot);
         }
+    }
+
+    protected float calculateEnchantReduction(LivingEntity entity, DamageSource source, ServerLevel level, Set<EquipmentSlot> slots) {
+        MutableFloat mutableFloat = new MutableFloat(0.0F);
+        for (EquipmentSlot slot : slots) {
+            ItemStack stack = entity.getItemBySlot(slot);
+            if (stack.isEmpty())
+                continue;
+
+            EnchantmentHelper.runIterationOnItem(stack, slot, entity, (enchantment, enchLevel, enchantedItem) ->
+                    enchantment.value().modifyDamageProtection(level, enchLevel, enchantedItem.itemStack(), entity, source, mutableFloat));
+        }
+        return mutableFloat.floatValue();
     }
 
     protected float calculateArmor(LivingEntity entity, DamageContext context, Collection<EquipmentSlot> protectedSlots) {

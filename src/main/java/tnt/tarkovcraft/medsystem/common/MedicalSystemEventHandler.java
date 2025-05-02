@@ -2,11 +2,10 @@ package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
@@ -140,13 +139,13 @@ public final class MedicalSystemEventHandler {
                 .collect(Collectors.toSet());
 
         context.setAffectedSlots(new ArrayList<>());
-        float reduction = component.handleArmorReductions(
+        float reduction = component.handleReductions(
                 entity,
                 context,
                 protectedSlots,
-                event.getAmount(),
+                event::getAmount,
                 event::setAmount,
-                fn -> event.addReductionModifier(DamageContainer.Reduction.ARMOR, fn)
+                event::addReductionModifier
         );
         SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, reduction);
     }
@@ -175,6 +174,7 @@ public final class MedicalSystemEventHandler {
             float deathChanceMultiplier = AttributeSystem.getFloatValue(entity, MedSystemAttributes.LIMB_DEATH_CHANCE, 1.0F);
             deathChance *= (deathChanceMultiplier / lostBodyParts.size());
         }
+        HealthSystem.synchronizeEntity(entity); // send status to client before death or further processing so that client knows which body part caused death
         if (container.shouldDie() || (deathChance > 0.0F && entity.getRandom().nextFloat() < deathChance)) {
             entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
         } else {
@@ -185,7 +185,6 @@ public final class MedicalSystemEventHandler {
                     entity.setSprinting(false);
                 }
             }
-            HealthSystem.synchronizeEntity(entity);
         }
     }
 
@@ -234,8 +233,8 @@ public final class MedicalSystemEventHandler {
             boolean headshot = container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
             if (headshot) {
                 StatisticTracker.incrementOptional(killer, MedSystemStats.HEADSHOTS);
-                if (entity instanceof Player player) {
-                    StatisticTracker.increment(player, MedSystemStats.PLAYER_HEADSHOTS);
+                if (entity.getType() == EntityType.PLAYER) {
+                    StatisticTracker.increment(killer, MedSystemStats.PLAYER_HEADSHOTS);
                 }
             }
         }

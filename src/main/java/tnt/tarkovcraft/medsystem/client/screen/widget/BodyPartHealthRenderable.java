@@ -1,0 +1,95 @@
+package tnt.tarkovcraft.medsystem.client.screen.widget;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import tnt.tarkovcraft.core.client.screen.ColorPalette;
+import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
+import tnt.tarkovcraft.core.util.helper.RenderUtils;
+import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
+import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+
+public class BodyPartHealthRenderable extends AbstractWidget {
+
+    private final Font font;
+    private final BodyPart part;
+
+    private int frameSize = 1;
+    private int frameColor = ColorPalette.WHITE;
+    private int backgroundColor = 0xFF << 24;
+    private int textColor = ColorPalette.WHITE;
+    private SimpleClickListener onClick;
+
+    public BodyPartHealthRenderable(int x, int y, int width, int height, Font font, BodyPart part) {
+        super(x, y, width, height, Component.translatable("medsystem.bodypart." + part.getName()).withStyle(ChatFormatting.BOLD));
+        this.font = font;
+        this.part = part;
+    }
+
+    public void setClickListener(SimpleClickListener onClick) {
+        this.onClick = onClick;
+    }
+
+    public void setFrameSize(int frameSize) {
+        this.frameSize = frameSize;
+    }
+
+    public void setFrameColor(int frameColor) {
+        this.frameColor = frameColor;
+    }
+
+    public void setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
+
+    @Override
+    protected boolean isValidClickButton(int button) {
+        return this.onClick != null;
+    }
+
+    @Override
+    public void onClick(double mouseX, double mouseY, int button) {
+        this.onClick.onClick();
+    }
+
+    @Override
+    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        if (this.frameSize > 0 && RenderUtils.isVisibleColor(this.frameColor)) {
+            graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), this.frameColor);
+        }
+        if (RenderUtils.isVisibleColor(this.backgroundColor)) {
+            graphics.fill(this.getX() + this.frameSize, this.getY() + this.frameSize, this.getRight() - this.frameSize, this.getBottom() - this.frameSize, this.backgroundColor);
+        }
+        int textColor = this.part.isDead() ? 0xFF0000 : this.textColor;
+        int titleWidth = this.font.width(this.getMessage());
+        graphics.drawString(this.font, this.getMessage(), this.getX() + (this.width - titleWidth) / 2, this.getY() + 2 + this.frameSize, textColor);
+        String status = Mth.ceil(this.part.getHealth()) + "/" + Mth.ceil(this.part.getMaxHealth());
+        int statusWidth = this.font.width(status);
+        graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getBottom() - 14 - this.frameSize, textColor);
+        HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
+        int background = Integer.decode(overlay.deadLimbColor) | 0xFF << 24;
+        int secondaryBackground = ARGB.scaleRGB(background, 0.8F);
+        int color = HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, this.part) | 0xFF << 24;
+        int secondaryColor = ARGB.scaleRGB(color, 0.8F);
+        float f = this.part.getHealthPercent();
+        graphics.fillGradient(this.getX() + this.frameSize + 1, this.getBottom() - this.frameSize - 5, this.getRight() - this.frameSize - 1, this.getBottom() - this.frameSize - 1, background, secondaryBackground);
+        int left = this.getX() + this.frameSize + 2;
+        int right = this.getRight() - this.frameSize - 2;
+        graphics.fillGradient(left, this.getBottom() - this.frameSize - 4, left + (int) ((right - left) * f), this.getBottom() - this.frameSize - 2, color, secondaryColor);
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    }
+}

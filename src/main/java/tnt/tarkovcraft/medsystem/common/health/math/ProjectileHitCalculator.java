@@ -40,4 +40,9 @@ public class ProjectileHitCalculator implements HitCalculator {
         List<HitResult> closest = HealthSystem.getClosestPossibleHits(position, entity, container, (hitbox, part) -> true);
         return closest.isEmpty() ? Collections.emptyList() : Collections.singletonList(closest.getFirst());
     }
+
+    @Override
+    public DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
+        return new DecayingDamageDistributor(0.5F);
+    }
 }
