@@ -5,35 +5,47 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.util.Codecs;
 
+import java.util.Objects;
+
 public final class BodyPart {
 
     public static final Codec<BodyPart> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("name").forGetter(t -> t.name),
             Codec.BOOL.fieldOf("vital").forGetter(t -> t.vital),
             Codec.FLOAT.fieldOf("health").forGetter(t -> t.health),
             Codec.FLOAT.fieldOf("maxHealth").forGetter(t -> t.maxHealth),
+            Codec.FLOAT.fieldOf("originalMaxHealth").forGetter(t -> t.originalMaxHealth),
             Codec.FLOAT.fieldOf("parentDamageScale").forGetter(t -> t.parentDamageScale),
             Codec.FLOAT.fieldOf("damageScale").forGetter(t -> t.damageScale),
             Codecs.simpleEnumCodec(BodyPartGroup.class).fieldOf("group").forGetter(t -> t.group)
     ).apply(instance, BodyPart::new));
 
+    private final String name;
     private final boolean vital;
+    private final float originalMaxHealth;
     private float health;
     private float maxHealth;
     private final float parentDamageScale;
     private final float damageScale;
     private final BodyPartGroup group;
 
-    public BodyPart(boolean vital, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
-        this(vital, maxHealth, maxHealth, parentDamageScale, damageScale, group);
+    public BodyPart(String name, boolean vital, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
+        this(name, vital, maxHealth, maxHealth, maxHealth, parentDamageScale, damageScale, group);
     }
 
-    private BodyPart(boolean vital, float health, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
+    private BodyPart(String name, boolean vital, float health, float maxHealth, float originalMaxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
+        this.name = name;
         this.vital = vital;
         this.health = health;
         this.maxHealth = maxHealth;
+        this.originalMaxHealth = originalMaxHealth;
         this.parentDamageScale = parentDamageScale;
         this.damageScale = damageScale;
         this.group = group;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public float getParentDamageScale() {
@@ -91,5 +103,20 @@ public final class BodyPart {
 
     public float getMaxHealAmount() {
         return this.maxHealth - this.health;
+    }
+
+    public float getOriginalMaxHealth() {
+        return originalMaxHealth;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BodyPart part)) return false;
+        return Objects.equals(name, part.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
 }

@@ -1,5 +1,7 @@
 {
   "skill.medsystem.resilience": "Resilience",
+  "skill.medsystem.resilience.bonus.limb_death": "Limb loss death",
+  "skill.medsystem.resilience.bonus.limb_death.description": "Decreases chance of death due to loss of non-vital limbs by %s",
   "skill.medsystem.armors": "Armors",
   "skill.medsystem.firstaid": "First Aid",
   "skill.medsystem.surgery": "Surgery",
@@ -18,5 +20,7 @@
   "medsystem.bodypart.rightArm": "Right Arm",
   "medsystem.bodypart.leftArm": "Left Arm",
   "medsystem.bodypart.rightLeg": "Right Leg",
-  "medsystem.bodypart.leftLeg": "Left Leg"
+  "medsystem.bodypart.leftLeg": "Left Leg",
+
+  "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation"
 }

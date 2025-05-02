@@ -33,6 +33,11 @@ public class ExplosionHitCalculator implements HitCalculator {
         return hits;
     }
 
+    @Override
+    public DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
+        return new ScaledDamageDistributor(1.75F, original);
+    }
+
     protected boolean isVisible(AABB hitbox, Vec3 position, Level level, LivingEntity entity) {
         Vec3 hitboxPosition = hitbox.getCenter();
         ClipContext context = new ClipContext(position, hitboxPosition, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);

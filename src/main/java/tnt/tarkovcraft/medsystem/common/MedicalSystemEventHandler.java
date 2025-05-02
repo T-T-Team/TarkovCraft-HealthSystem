@@ -1,33 +1,29 @@
 package tnt.tarkovcraft.medsystem.common;
 
-import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
-import net.neoforged.neoforge.common.damagesource.IReductionFunction;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
+import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
+import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.ArmorStat;
-import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 
 import java.util.*;
@@ -95,8 +91,8 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         LivingEntity entity = event.getEntity();
-        MedSystemConfig config = MedicalSystem.getConfig();
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER) || config.simpleArmorCalculation)
+        ArmorComponent component = HealthSystem.ARMOR.getComponent();
+        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER) || component.useVanillaArmorDamage())
             return;
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageContext context = container.getDamageContext();
@@ -127,17 +123,14 @@ public final class MedicalSystemEventHandler {
             BodyPartGroup group = bodyPart.getGroup();
             hitGroups.add(group);
         }
+        ArmorComponent component = HealthSystem.ARMOR.getComponent();
         // Protected hitbox groups
         EnumSet<BodyPartGroup> protectedGroups = EnumSet.noneOf(BodyPartGroup.class);
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (!slot.isArmor())
-                continue;
-            ItemStack itemStack = entity.getItemBySlot(slot);
-            if (itemStack.isEmpty())
-                continue;
-
-            protectedGroups.addAll(getItemProtectedGroups(itemStack, slot));
-        }
+        component.collectAffectedBodyPartsWithProtection(
+                protectedGroups::add,
+                entity,
+                context
+        );
         // remove not affected groups
         protectedGroups.removeIf(group -> !hitGroups.contains(group));
         // armor reduction calculation preparation
@@ -147,13 +140,15 @@ public final class MedicalSystemEventHandler {
                 .collect(Collectors.toSet());
 
         context.setAffectedSlots(new ArrayList<>());
-        MedSystemConfig config = MedicalSystem.getConfig();
-        float armor = config.simpleArmorCalculation ? entity.getArmorValue() : this.calculateArmor(entity, context, protectedSlots);
-        float armorToughness = (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
-        float previousDamage = event.getAmount();
-        float damageAfterArmorAbsorb = CombatRules.getDamageAfterAbsorb(entity, previousDamage, event.getSource(), armor, armorToughness);
-        float reduction = previousDamage - damageAfterArmorAbsorb;
-        event.addReductionModifier(DamageContainer.Reduction.ARMOR, new SetReductionFunction(reduction));
+        float reduction = component.handleArmorReductions(
+                entity,
+                context,
+                protectedSlots,
+                event.getAmount(),
+                event::setAmount,
+                fn -> event.addReductionModifier(DamageContainer.Reduction.ARMOR, fn)
+        );
+        SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, reduction);
     }
 
     // Entity damage application
@@ -166,14 +161,22 @@ public final class MedicalSystemEventHandler {
         DamageContext context = container.getDamageContext();
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
         Map<BodyPart, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
+        float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
+        List<BodyPart> lostBodyParts = new ArrayList<>();
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
-            container.hurt(entity, entry.getValue(), entry.getKey(), false);
+            container.hurt(entity, entry.getValue(), entry.getKey(), false, lostBodyParts::add);
         }
+        SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
         container.updateEffects(entity);
         container.clearDamageContext();
         container.updateHealth(entity);
-        if (container.shouldDie()) {
-            entity.setHealth(0.0F);
+        float deathChance = lostBodyParts.isEmpty() ? 0.0F : MedicalSystem.getConfig().limbLossDeathCauseChance;
+        if (deathChance > 0.0F) {
+            float deathChanceMultiplier = AttributeSystem.getFloatValue(entity, MedSystemAttributes.LIMB_DEATH_CHANCE, 1.0F);
+            deathChance *= (deathChanceMultiplier / lostBodyParts.size());
+        }
+        if (container.shouldDie() || (deathChance > 0.0F && entity.getRandom().nextFloat() < deathChance)) {
+            entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
         } else {
             // disable sprinting
             MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
@@ -235,43 +238,6 @@ public final class MedicalSystemEventHandler {
                     StatisticTracker.increment(player, MedSystemStats.PLAYER_HEADSHOTS);
                 }
             }
-        }
-    }
-
-    private float calculateArmor(LivingEntity entity, DamageContext context, Collection<EquipmentSlot> protectedSlots) {
-        double result = entity.getAttribute(Attributes.ARMOR).getBaseValue();
-        for (EquipmentSlot slot : protectedSlots) {
-            ItemStack itemStack = entity.getItemBySlot(slot);
-            if (itemStack.isEmpty())
-                continue;
-            context.getAffectedSlots().add(slot);
-            ItemAttributeModifiers modifiers = itemStack.getAttributeModifiers();
-            for (ItemAttributeModifiers.Entry entry : modifiers.modifiers()) {
-                if (entry.attribute().is(Attributes.ARMOR)) {
-                    AttributeModifier modifier = entry.modifier();
-                    if (modifier.operation() == AttributeModifier.Operation.ADD_VALUE) {
-                        result += modifier.amount();
-                    }
-                }
-            }
-        }
-        return (float) result;
-    }
-
-    public static Collection<BodyPartGroup> getItemProtectedGroups(ItemStack itemStack, EquipmentSlot slot) {
-        if (itemStack.has(MedSystemItemComponents.ARMOR_STAT)) {
-            ArmorStat stat = itemStack.get(MedSystemItemComponents.ARMOR_STAT);
-            return stat.protectedArea();
-        } else {
-            return BodyPartGroup.getProtectedByEquipment(slot);
-        }
-    }
-
-    private record SetReductionFunction(float amount) implements IReductionFunction {
-
-        @Override
-        public float modify(DamageContainer container, float reductionIn) {
-            return this.amount();
         }
     }
 }

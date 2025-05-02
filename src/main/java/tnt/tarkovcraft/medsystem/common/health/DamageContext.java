@@ -66,9 +66,8 @@ public final class DamageContext {
     }
 
     public DamageDistributor getDamageDistributor(HealthContainer container) {
-        if (this.hitCalculator.getCustomDamageDistributor(this.entity, this.source, container) != null) {
-            return this.hitCalculator.getCustomDamageDistributor(this.entity, this.source, container);
-        }
-        return this.damageDistributor != null ? this.damageDistributor : EvenDamageDistributor.INSTANCE;
+        DamageDistributor original = this.damageDistributor != null ? this.damageDistributor : EvenDamageDistributor.INSTANCE;
+        DamageDistributor custom = this.hitCalculator.getCustomDamageDistributor(this.entity, this.source, container, original);
+        return custom != null ? custom : original;
     }
 }

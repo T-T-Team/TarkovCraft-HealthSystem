@@ -18,8 +18,10 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import tnt.tarkovcraft.core.compatibility.CompatibilityComponent;
 import tnt.tarkovcraft.core.network.message.S2C_SendDataAttachments;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.event.HitCalculatorResolveEvent;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
@@ -29,6 +31,8 @@ import java.util.*;
 import java.util.function.BiPredicate;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthContainerDefinition> {
+
+    public static final CompatibilityComponent<ArmorComponent> ARMOR = new CompatibilityComponent<>("armor", DefaultArmorComponent.INSTANCE);
 
     public static final Marker MARKER = MarkerManager.getMarker("HealthSystemManager");
     public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_system");

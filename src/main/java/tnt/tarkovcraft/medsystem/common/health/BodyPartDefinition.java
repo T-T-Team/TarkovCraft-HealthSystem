@@ -49,8 +49,8 @@ public final class BodyPartDefinition {
         return maxHealth;
     }
 
-    public BodyPart createContainer() {
-        return new BodyPart(this.vital, this.maxHealth, this.parentDamageScale, this.damageScale, this.bodyPartGroup);
+    public BodyPart createContainer(String key) {
+        return new BodyPart(key, this.vital, this.maxHealth, this.parentDamageScale, this.damageScale, this.bodyPartGroup);
     }
 
     public BodyPartGroup getBodyPartGroup() {

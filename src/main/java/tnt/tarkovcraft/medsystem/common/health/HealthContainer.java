@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public final class HealthContainer implements Synchronizable<HealthContainer> {
@@ -40,7 +41,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             for (Map.Entry<String, BodyPartDefinition> entry : this.definition.getBodyParts().entrySet()) {
                 String key = entry.getKey();
                 BodyPartDefinition partDefinition = entry.getValue();
-                builder.put(key, partDefinition.createContainer());
+                builder.put(key, partDefinition.createContainer(key));
             }
             this.bodyParts = builder.build();
             this.bodyPartLinks = new IdentityHashMap<>();
@@ -118,24 +119,25 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         entity.setHealth(health);
     }
 
-    public void hurt(LivingEntity entity, float amount, BodyPart bodyPart) {
-        hurt(entity, amount, bodyPart, true);
+    public void hurt(LivingEntity entity, float amount, BodyPart bodyPart, Consumer<BodyPart> onBodyPartLoss) {
+        hurt(entity, amount, bodyPart, true, onBodyPartLoss);
     }
 
-    public void hurt(LivingEntity entity, float amount, BodyPart part, boolean triggerUpdate) {
+    public void hurt(LivingEntity entity, float amount, BodyPart part, boolean triggerUpdate, Consumer<BodyPart> onBodyPartLoss) {
         float damage = Math.min(part.getHealth(), amount * part.getDamageScale());
         float leftover = amount - damage;
         boolean wasDead = part.isDead();
         part.hurt(damage);
         if (!part.isVital() && part.isDead() != wasDead) {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
+            onBodyPartLoss.accept(part);
         }
         // no need to redistribute damage from vital parts
         if (!part.isVital() && leftover > 0) {
             BodyPart parent = this.bodyPartLinks.get(part);
             if (parent != null) {
                 float scale = parent.getParentDamageScale();
-                this.hurt(entity, leftover * scale, parent, false);
+                this.hurt(entity, leftover * scale, parent, false, onBodyPartLoss);
             }
         }
         if (triggerUpdate) {

@@ -11,7 +11,7 @@ public interface HitCalculator {
 
     List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container);
 
-    default DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container) {
+    default DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
         return null;
     }
 }
