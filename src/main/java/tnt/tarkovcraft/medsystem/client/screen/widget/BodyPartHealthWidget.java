@@ -5,7 +5,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
@@ -16,7 +15,7 @@ import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 
-public class BodyPartHealthRenderable extends AbstractWidget {
+public class BodyPartHealthWidget extends AbstractWidget {
 
     private final Font font;
     private final BodyPart part;
@@ -27,8 +26,8 @@ public class BodyPartHealthRenderable extends AbstractWidget {
     private int textColor = ColorPalette.WHITE;
     private SimpleClickListener onClick;
 
-    public BodyPartHealthRenderable(int x, int y, int width, int height, Font font, BodyPart part) {
-        super(x, y, width, height, Component.translatable("medsystem.bodypart." + part.getName()).withStyle(ChatFormatting.BOLD));
+    public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
+        super(x, y, width, height, part.getDisplayName().copy().withStyle(ChatFormatting.BOLD));
         this.font = font;
         this.part = part;
     }

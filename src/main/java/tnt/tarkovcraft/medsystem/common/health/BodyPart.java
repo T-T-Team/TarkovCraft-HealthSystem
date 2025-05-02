@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.util.Codecs;
 
@@ -28,6 +29,7 @@ public final class BodyPart {
     private final float parentDamageScale;
     private final float damageScale;
     private final BodyPartGroup group;
+    private final Component displayName;
 
     public BodyPart(String name, boolean vital, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
         this(name, vital, maxHealth, maxHealth, maxHealth, parentDamageScale, damageScale, group);
@@ -42,10 +44,15 @@ public final class BodyPart {
         this.parentDamageScale = parentDamageScale;
         this.damageScale = damageScale;
         this.group = group;
+        this.displayName = Component.translatable("medsystem.bodypart." + name);
     }
 
     public String getName() {
         return name;
+    }
+
+    public Component getDisplayName() {
+        return this.displayName;
     }
 
     public float getParentDamageScale() {
