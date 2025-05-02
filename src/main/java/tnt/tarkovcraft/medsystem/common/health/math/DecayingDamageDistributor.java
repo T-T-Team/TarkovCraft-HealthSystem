@@ -12,6 +12,8 @@ import java.util.Map;
 
 public class DecayingDamageDistributor implements DamageDistributor {
 
+    public static final DecayingDamageDistributor PROJECTILE = new DecayingDamageDistributor(0.5F);
+
     private final float decayFactor;
 
     public DecayingDamageDistributor(float decayFactor) {

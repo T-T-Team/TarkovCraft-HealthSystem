@@ -43,6 +43,6 @@ public class ProjectileHitCalculator implements HitCalculator {
 
     @Override
     public DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
-        return new DecayingDamageDistributor(0.5F);
+        return DecayingDamageDistributor.PROJECTILE;
     }
 }
