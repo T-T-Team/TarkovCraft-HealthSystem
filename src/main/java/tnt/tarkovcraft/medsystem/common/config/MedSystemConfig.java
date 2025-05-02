@@ -11,14 +11,23 @@ public final class MedSystemConfig {
     public boolean simpleArmorCalculation = false;
 
     @Configurable
-    @Configurable.DecimalRange(min = 0.5, max = 5.0)
+    @Configurable.DecimalRange(min = 0.15, max = 3.0)
     @Configurable.Gui.Slider
-    @Configurable.Gui.NumberFormat("0.000")
-    public float explosionDamageScale = 1.75F;
+    @Configurable.Gui.NumberFormat("0.00#")
+    public float explosionDamageScale = 0.6F;
 
     @Configurable
     @Configurable.DecimalRange(min = 0, max = 1.0)
     @Configurable.Gui.Slider
-    @Configurable.Gui.NumberFormat("0.00")
+    @Configurable.Gui.NumberFormat("0.00#")
     public float limbLossDeathCauseChance = 0.05F;
+
+    @Configurable
+    public boolean prioritizeVitalHealing = true;
+
+    @Configurable
+    @Configurable.DecimalRange(min = 0, max = 1.0)
+    @Configurable.Gui.Slider
+    @Configurable.Gui.NumberFormat("0.0##")
+    public float vitalBodyPartHealthTrigger = 0.75F;
 }

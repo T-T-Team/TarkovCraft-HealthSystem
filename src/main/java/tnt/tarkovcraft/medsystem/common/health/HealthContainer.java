@@ -8,6 +8,7 @@ import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.Synchronizable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 
 import javax.annotation.Nullable;
@@ -223,13 +224,16 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     public BodyPart getPartToHeal(boolean allowDead) {
         BodyPart targetPart = null;
         float targetPercentage = 1.0F;
-        for (BodyPart vitalPart : this.vitalParts) {
-            if (vitalPart.isDead() && !allowDead)
-                continue;
-            float percentage = vitalPart.getHealthPercent();
-            if (percentage < 0.75F && percentage < targetPercentage) {
-                targetPercentage = percentage;
-                targetPart = vitalPart;
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (config.prioritizeVitalHealing) {
+            for (BodyPart vitalPart : this.vitalParts) {
+                if (vitalPart.isDead() && !allowDead)
+                    continue;
+                float percentage = vitalPart.getHealthPercent();
+                if (percentage < config.vitalBodyPartHealthTrigger && percentage < targetPercentage) {
+                    targetPercentage = percentage;
+                    targetPart = vitalPart;
+                }
             }
         }
         if (targetPart != null) {

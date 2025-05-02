@@ -38,7 +38,7 @@ public class ExplosionHitCalculator implements HitCalculator {
     @Override
     public DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
         float scale = MedicalSystem.getConfig().explosionDamageScale;
-        return new ScaledDamageDistributor(scale, original);
+        return new ScaledDamageDistributor(scale, FullDamageDistributor.INSTANCE);
     }
 
     protected boolean isVisible(AABB hitbox, Vec3 position, Level level, LivingEntity entity) {
