@@ -5,6 +5,7 @@ import dev.toma.configuration.config.value.IConfigValueReadable;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -58,7 +59,9 @@ public class DefaultArmorComponent implements ArmorComponent {
     @Override
     public float handleReductions(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, Supplier<Float> incomingDamage, FloatConsumer damageProvider, BiConsumer<DamageContainer.Reduction, IReductionFunction> reductionProvider) {
         float armorReduction = this.calculateArmorReduction(entity, ctx, protectedSlots, incomingDamage.get());
-        reductionProvider.accept(DamageContainer.Reduction.ARMOR, new SetReductionFunction(armorReduction));
+        if (armorReduction > 0.0F) {
+            reductionProvider.accept(DamageContainer.Reduction.ARMOR, new SetReductionFunction(armorReduction));
+        }
         float enchantReduction = this.calculateEnchantReduction(entity, ctx, protectedSlots, incomingDamage.get());
         if (enchantReduction >= 0.0F) {
             reductionProvider.accept(DamageContainer.Reduction.ENCHANTMENTS, new SetReductionFunction(enchantReduction));
@@ -67,16 +70,21 @@ public class DefaultArmorComponent implements ArmorComponent {
     }
 
     protected float calculateArmorReduction(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, float incomingDamage) {
-        MedSystemConfig config = MedicalSystem.getConfig();
-        float armor = config.simpleArmorCalculation ? entity.getArmorValue() : this.calculateArmor(entity, ctx, protectedSlots);
-        float armorToughness = (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
-        float damageAfterArmorAbsorb = CombatRules.getDamageAfterAbsorb(entity, incomingDamage, ctx.getSource(), armor, armorToughness);
-        return incomingDamage - damageAfterArmorAbsorb;
+        DamageSource source = ctx.getSource();
+        if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
+            MedSystemConfig config = MedicalSystem.getConfig();
+            float armor = config.simpleArmorCalculation ? entity.getArmorValue() : this.calculateArmor(entity, ctx, protectedSlots);
+            float armorToughness = (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
+            float damageAfterArmorAbsorb = CombatRules.getDamageAfterAbsorb(entity, incomingDamage, ctx.getSource(), armor, armorToughness);
+            return incomingDamage - damageAfterArmorAbsorb;
+        }
+        return 0.0F;
     }
 
     protected float calculateEnchantReduction(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, float incomingDamage) {
         MedSystemConfig config = MedicalSystem.getConfig();
-        if (config.simpleArmorCalculation) {
+        DamageSource source = ctx.getSource();
+        if (config.simpleArmorCalculation || source.is(DamageTypeTags.BYPASSES_EFFECTS) || source.is(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
             return -1;
         }
         Level level = entity.level();

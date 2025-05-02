@@ -26,6 +26,7 @@ import tnt.tarkovcraft.medsystem.api.event.HitCalculatorResolveEvent;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -67,7 +68,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
             return LavaHitCalculator.INSTANCE;
         }
         Entity sourceEntity = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
-        if (sourceEntity == null) {
+        if (sourceEntity == null || source.is(MedSystemTags.DamageTypes.IS_GENERIC)) {
             return GenericHitCalculator.INSTANCE;
         }
         if (source.isDirect()) {

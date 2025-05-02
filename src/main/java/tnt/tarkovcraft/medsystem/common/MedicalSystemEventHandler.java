@@ -147,7 +147,9 @@ public final class MedicalSystemEventHandler {
                 event::setAmount,
                 event::addReductionModifier
         );
-        SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, reduction);
+        if (reduction > 0.0F) {
+            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, reduction);
+        }
     }
 
     // Entity damage application
