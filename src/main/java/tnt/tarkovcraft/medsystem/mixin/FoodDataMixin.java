@@ -32,6 +32,6 @@ public abstract class FoodDataMixin {
             ordinal = 0
     )
     private boolean medsystem$canRegenerateHealth(boolean naturalRegeneration) {
-        return medsystem$player.getData(MedSystemDataAttachments.HEALTH_CONTAINER).canHeal(null, false);
+        return naturalRegeneration && medsystem$player.getData(MedSystemDataAttachments.HEALTH_CONTAINER).canHeal(null, false);
     }
 }
