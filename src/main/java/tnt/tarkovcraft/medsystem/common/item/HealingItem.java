@@ -1,5 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.item;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -7,9 +9,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tnt.tarkovcraft.core.common.data.Duration;
@@ -22,6 +23,8 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
+
+import java.util.function.Consumer;
 
 // TODO make this a normal class to be used by all healing items, all should be controlled by the heal attributes only
 public class HealingItem extends Item {
@@ -45,10 +48,6 @@ public class HealingItem extends Item {
 
     public HealingItem(int useTime, Properties properties) {
         this(Duration.ticks(useTime), properties);
-    }
-
-    protected boolean allowPartialUse() {
-        return true;
     }
 
     @Override
@@ -85,6 +84,10 @@ public class HealingItem extends Item {
         stack.remove(MedSystemItemComponents.SELECTED_BODY_PART);
         container.updateHealth(livingEntity);
         HealthSystem.synchronizeEntity(livingEntity);
+        if (livingEntity instanceof Player player) {
+            ItemCooldowns cooldowns = player.getCooldowns();
+            cooldowns.addCooldown(stack, 10);
+        }
         return stack;
     }
 
@@ -121,13 +124,26 @@ public class HealingItem extends Item {
         return false;
     }
 
+    @Override
+    public int getBarColor(ItemStack stack) {
+        return 0xFF0000;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag flag) {
+        int max = stack.getMaxDamage();
+        int damage = max - stack.getDamageValue();
+        Component durability = Component.literal(damage + "/" + max).withStyle(ChatFormatting.RED);
+        tooltipAdder.accept(Component.translatable("tooltip.medsystem.item.durability", durability).withStyle(ChatFormatting.GRAY));
+    }
+
     public final String getSelectedBodyPart(ItemStack stack) {
         return stack.get(MedSystemItemComponents.SELECTED_BODY_PART);
     }
 
     protected boolean checkDurability(ItemStack stack, int durabilityUse) {
         int consume = this.getConsumeAmount(stack, durabilityUse);
-        if (consume < durabilityUse && !this.allowPartialUse()) {
+        if (consume < durabilityUse) {
             return false;
         }
         return consume > 0;

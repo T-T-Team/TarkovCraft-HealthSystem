@@ -12,11 +12,10 @@
   "stat.medsystem.player_headshots": "Headshots (PvP)",
   "stat.medsystem.player_headshot_percentage": "Headshot rate (PvP)",
 
-  "screen.medsystem.health.title": "Health",
-  "screen.medsystem.select_body_part.title": "Select body part to heal",
-  "screen.medsystem.select_body_part.error.invalid_item": "Invalid item for healing",
-  "screen.medsystem.select_body_part.error.not_healable": "Cannot be healed using this item",
-  "screen.medsystem.select_body_part.text.click_to_select": "Click to select",
+  "tooltip.medsystem.item.durability": "Uses: %s",
+  "tooltip.medsystem.heal_attributes.dead_limb.title": "Dead limb heal:",
+  "tooltip.medsystem.heal_attributes.dead_limb.recovery": "- Recovers limb health to %s",
+  "tooltip.medsystem.heal_attributes.dead_limb.max_health": "- Decreases max health by %s for %s",
 
   "medsystem.bodypart.head": "Head",
   "medsystem.bodypart.body": "Body",
@@ -25,6 +24,12 @@
   "medsystem.bodypart.leftArm": "Left Arm",
   "medsystem.bodypart.rightLeg": "Right Leg",
   "medsystem.bodypart.leftLeg": "Left Leg",
+
+  "screen.medsystem.health.title": "Health",
+  "screen.medsystem.select_body_part.title": "Select body part to heal",
+  "screen.medsystem.select_body_part.error.invalid_item": "Invalid item for healing",
+  "screen.medsystem.select_body_part.error.not_healable": "Cannot be healed using this item",
+  "screen.medsystem.select_body_part.text.click_to_select": "Click to select",
 
   "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation"
 }

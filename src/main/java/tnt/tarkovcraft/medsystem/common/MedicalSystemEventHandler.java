@@ -1,14 +1,19 @@
 package tnt.tarkovcraft.medsystem.common;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
@@ -20,12 +25,10 @@ import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
+import tnt.tarkovcraft.medsystem.common.init.*;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class MedicalSystemEventHandler {
@@ -240,5 +243,16 @@ public final class MedicalSystemEventHandler {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    private void addItemstackTooltips(ItemTooltipEvent event) {
+        ItemStack stack = event.getItemStack();
+        Item.TooltipContext context = event.getContext();
+        List<Component> tooltip = event.getToolTip();
+        TooltipFlag flag = event.getFlags();
+        Consumer<Component> adder = tooltip::add;
+
+        stack.addToTooltip(MedSystemItemComponents.HEAL_ATTRIBUTES, context, adder, flag);
     }
 }

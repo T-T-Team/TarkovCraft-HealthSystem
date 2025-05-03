@@ -18,7 +18,7 @@ public final class MedSystemItems {
                     properties.durability(5)
                             .setNoCombineRepair()
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
-                                    .deadLimbHealing(1.0F)
+                                    .deadLimbHealing(1.0F, 0.6F)
                                     .build()
                             )
             )
