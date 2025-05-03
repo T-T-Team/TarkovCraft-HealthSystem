@@ -49,7 +49,7 @@ public final class MedicalSystemEventHandler {
         float amount = event.getAmount();
         if (event.isCanceled())
             return;
-        if (amount > 0.0F && entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER)) {
+        if (amount > 0.0F && HealthSystem.hasCustomHealth(entity)) {
             float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(entity, amount, null);
             if (leftover > 0.0F) {
                 event.setAmount(amount - leftover);
@@ -67,7 +67,7 @@ public final class MedicalSystemEventHandler {
         Entity entity = event.getEntity();
         if (!(entity instanceof LivingEntity livingEntity))
             return;
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+        if (!HealthSystem.hasCustomHealth(livingEntity))
             return;
 
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
@@ -91,7 +91,7 @@ public final class MedicalSystemEventHandler {
             return;
         LivingEntity entity = event.getEntity();
         ArmorComponent component = HealthSystem.ARMOR.getComponent();
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER) || component.useVanillaArmorDamage())
+        if (!HealthSystem.hasCustomHealth(entity) || component.useVanillaArmorDamage())
             return;
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageContext context = container.getDamageContext();
@@ -109,7 +109,7 @@ public final class MedicalSystemEventHandler {
     private void onLivingDamage(LivingIncomingDamageEvent event) {
         // calculate correct damage for armor and so on
         LivingEntity entity = event.getEntity();
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+        if (!HealthSystem.hasCustomHealth(entity))
             return;
 
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
@@ -156,7 +156,7 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void onLivingApplyDamage(LivingDamageEvent.Post event) {
         LivingEntity entity = event.getEntity();
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+        if (!HealthSystem.hasCustomHealth(entity))
             return;
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageContext context = container.getDamageContext();
@@ -193,7 +193,7 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void canSprint(StaminaEvent.CanSprint event) {
         LivingEntity entity = event.getEntity();
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+        if (!HealthSystem.hasCustomHealth(entity))
             return;
         // TODO ignore if under painkiller effect - or maybe work with painkiller strength
         // TODO check for parts with movement blocking status effects
@@ -212,7 +212,7 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void afterJump(StaminaEvent.AfterJump event) {
         LivingEntity entity = event.getEntity();
-        if (!entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+        if (!HealthSystem.hasCustomHealth(entity))
             return;
 
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
@@ -230,7 +230,7 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         DamageSource source = event.getSource();
         Entity killer = source.getEntity();
-        if (killer != null && entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER)) {
+        if (killer != null && HealthSystem.hasCustomHealth(entity)) {
             HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
             boolean headshot = container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
             if (headshot) {

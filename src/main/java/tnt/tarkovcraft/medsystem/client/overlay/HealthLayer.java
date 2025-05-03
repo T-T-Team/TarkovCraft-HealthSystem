@@ -16,10 +16,7 @@ import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
+import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.List;
@@ -46,7 +43,7 @@ public class HealthLayer implements LayeredDraw.Layer {
         }
         Window window = client.getWindow();
 
-        if (!camera.hasData(MedSystemDataAttachments.HEALTH_CONTAINER))
+        if (!HealthSystem.hasCustomHealth(camera))
             return;
         float scale = overlay.scale;
         float overlayWidth = 60 * scale;

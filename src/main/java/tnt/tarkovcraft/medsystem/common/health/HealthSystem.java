@@ -43,8 +43,16 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         super(HealthContainerDefinition.CODEC, FileToIdConverter.json("tarkovcraft/health"));
     }
 
+    public static boolean hasCustomHealth(Entity entity) {
+        return entity.getType() == EntityType.PLAYER || entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER);
+    }
+
+    public static HealthContainer getHealthData(LivingEntity entity) {
+        return entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+    }
+
     public static void synchronizeEntity(LivingEntity entity) {
-        if (!entity.level().isClientSide()) {
+        if (!entity.level().isClientSide() && hasCustomHealth(entity)) {
             S2C_SendDataAttachments packet = new S2C_SendDataAttachments(entity, MedSystemDataAttachments.HEALTH_CONTAINER.get());
             PacketDistributor.sendToPlayersTrackingEntity(entity, packet);
             if (entity instanceof ServerPlayer player) {

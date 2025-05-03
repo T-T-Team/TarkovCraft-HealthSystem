@@ -13,6 +13,10 @@
   "stat.medsystem.player_headshot_percentage": "Headshot rate (PvP)",
 
   "screen.medsystem.health.title": "Health",
+  "screen.medsystem.select_body_part.title": "Select body part to heal",
+  "screen.medsystem.select_body_part.error.invalid_item": "Invalid item for healing",
+  "screen.medsystem.select_body_part.error.not_healable": "Cannot be healed using this item",
+  "screen.medsystem.select_body_part.text.click_to_select": "Click to select",
 
   "medsystem.bodypart.head": "Head",
   "medsystem.bodypart.body": "Body",

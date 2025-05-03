@@ -19,6 +19,7 @@ import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.DefaultArmorComponent;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 @Mod(MedicalSystem.MOD_ID)
 public final class MedicalSystem {
@@ -38,10 +39,12 @@ public final class MedicalSystem {
 
 
         modEventBus.addListener(this::createRegistries);
+        modEventBus.addListener(MedicalSystemNetwork::onRegistration);
 
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
 
+        MedSystemItems.REGISTRY.register(modEventBus);
         MedSystemDataAttachments.REGISTRY.register(modEventBus);
         MedSystemTransformConditions.REGISTRY.register(modEventBus);
         MedSystemHitboxTransforms.REGISTRY.register(modEventBus);
