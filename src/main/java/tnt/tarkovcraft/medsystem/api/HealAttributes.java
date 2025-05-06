@@ -105,20 +105,16 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
         return this.deadLimbHealing != null;
     }
 
-    public int getConsumption() {
-        if (this.canHealDeadLimbs()) {
-            return 1;
-        }
-        return 20; // TODO
-    }
-
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         if (this.health != null) {
+            Component healthPoints = Component.literal(String.format(Locale.ROOT, "%.1f", this.health.healthPerCycle)).withStyle(ChatFormatting.GREEN);
+            Component duration = Duration.format(this.health.cycleDuration).copy().withStyle(ChatFormatting.YELLOW);
             if (this.health.maxCycles > 0) {
-                tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.heal.limited", this.health.healthPerCycle, this.health.cycleDuration, this.health.healthPerCycle * this.health.maxCycles));
+                Component healLimit = Component.literal(String.format("%.1f", this.health.healthPerCycle * this.health.maxCycles)).withStyle(ChatFormatting.YELLOW);
+                tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.heal.limited", healthPoints, duration, healLimit).withStyle(ChatFormatting.GRAY));
             } else {
-                tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.heal.infinite", this.health.healthPerCycle, this.health.cycleDuration));
+                tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.heal.infinite", healthPoints, duration).withStyle(ChatFormatting.GRAY));
             }
         }
         if (this.canHealDeadLimbs()) {
@@ -127,7 +123,7 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.recovery", health).withStyle(ChatFormatting.DARK_GRAY));
             Component maxHealth = Component.literal((int) ((1.0F - this.deadLimbHealing.maxHealthMultiplier) * 100) + "%").withStyle(ChatFormatting.YELLOW);
             if (this.deadLimbHealing.hasPostRecovery()) {
-                Component duration = Component.literal("10 minutes").withStyle(ChatFormatting.YELLOW);
+                Component duration = Duration.format(this.deadLimbHealing.recoveryTime).copy().withStyle(ChatFormatting.YELLOW);
                 tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.max_health", maxHealth, duration).withStyle(ChatFormatting.DARK_GRAY));
             }
         }
@@ -151,7 +147,7 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
                 MutableComponent probability = Component.literal(" - " + String.format(Locale.ROOT, "%.1f%%", effect.chance * 100) + " ")
                         .append(type.getDisplayName())
                         .append(" / ")
-                        .append(String.valueOf(effect.duration));
+                        .append(Duration.format(effect.duration));
                 tooltipAdder.accept(probability.withStyle(effectType));
             });
         }

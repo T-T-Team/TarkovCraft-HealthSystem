@@ -56,6 +56,7 @@ public final class MedicalSystem {
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
         MedSystemAttributes.REGISTRY.register(modEventBus);
         MedSystemStatusEffects.REGISTRY.register(modEventBus);
+        MedSystemCreativeTabs.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {

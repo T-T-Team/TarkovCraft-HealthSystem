@@ -1,4 +1,13 @@
 {
+  "item.medsystem.emergency_surgery_kit": "Emergency Surgery Kit",
+  "item.medsystem.bandage": "Bandage",
+  "item.medsystem.tourniquet": "Tourniquet",
+  "item.medsystem.splint": "Splint",
+  "item.medsystem.painkillers": "Painkillers",
+  "item.medsystem.first_aid_kit": "First Aid Kit",
+
+  "itemGroup.medsystem.medical": "Medical",
+
   "skill.medsystem.resilience": "Resilience",
   "skill.medsystem.resilience.bonus.limb_death": "Limb loss death",
   "skill.medsystem.resilience.bonus.limb_death.description": "Decreases chance of death due to loss of non-vital limbs by %s",
