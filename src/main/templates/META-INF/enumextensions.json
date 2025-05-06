@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/world/damagesource/DamageEffects",
+      "name": "MEDSYSTEM_NONE",
+      "constructor": "(Ljava/lang/String;Ljava/util/function/Supplier;)V",
+      "parameters": {
+        "class": "tnt/tarkovcraft/medsystem/MedicalSystemEnumExtensions",
+        "field": "MEDSYSTEM_NONE"
+      }
+    }
+  ]
+}

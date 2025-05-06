@@ -14,11 +14,18 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> EMERGENCY_SURGERY_KIT = REGISTRY.registerItem(
             "emergency_surgery_kit",
             properties -> new HealingItem(
-                    Duration.seconds(15),
-                    properties.durability(5)
+                    properties.durability(20)
                             .setNoCombineRepair()
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
-                                    .deadLimbHealing(1.0F, 0.6F)
+                                    .surgeryItem()
+                                        .useTime(Duration.seconds(10))
+                                        .recoverHealth(1.0F)
+                                        .minLimbHealth(1.0F)
+                                        .recovery(Duration.minutes(10), 0.7F)
+                                        .buildSurgeryAttributes()
+                                    .healing(40, 2, 2.0F)
+                                    .removesEffect(3, MedSystemStatusEffects.FRACTURE)
+                                    .sideEffect(0.5F, Duration.seconds(30), MedSystemStatusEffects.PAIN_RELIEF)
                                     .build()
                             )
             )

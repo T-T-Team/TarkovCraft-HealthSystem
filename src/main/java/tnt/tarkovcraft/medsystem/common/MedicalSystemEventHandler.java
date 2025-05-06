@@ -1,19 +1,23 @@
 package tnt.tarkovcraft.medsystem.common;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
@@ -53,7 +57,7 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         if (amount > 0.0F && HealthSystem.hasCustomHealth(entity)) {
-            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(entity, amount, null);
+            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(amount, null);
             if (leftover > 0.0F) {
                 event.setAmount(amount - leftover);
             }
@@ -168,10 +172,9 @@ public final class MedicalSystemEventHandler {
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         List<BodyPart> lostBodyParts = new ArrayList<>();
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
-            container.hurt(entity, entry.getValue(), entry.getKey(), false, lostBodyParts::add);
+            container.hurt(entity, entry.getValue(), entry.getKey(), lostBodyParts::add);
         }
         SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
-        container.updateEffects(entity);
         container.clearDamageContext();
         container.updateHealth(entity);
         float deathChance = lostBodyParts.isEmpty() ? 0.0F : MedicalSystem.getConfig().limbLossDeathCauseChance;
@@ -196,34 +199,31 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void canSprint(StaminaEvent.CanSprint event) {
         LivingEntity entity = event.getEntity();
-        if (!HealthSystem.hasCustomHealth(entity))
-            return;
-        // TODO ignore if under painkiller effect - or maybe work with painkiller strength
-        // TODO check for parts with movement blocking status effects
-
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        if (container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.LEG && part.isDead())) {
+        if (HealthSystem.isMovementRestricted(entity) && !HealthSystem.hasPainRelief(entity)) {
             event.setCanSprint(false);
         }
     }
 
     @SubscribeEvent
     private void onSprinted(StaminaEvent.AfterSprint event) {
-        // TODO if sprinting with painkiller effect on apply sprint damage
+        LivingEntity entity = event.getEntity();
+        Level level = entity.level();
+        long gametime = level.getGameTime();
+        if (gametime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
+            RegistryAccess access = entity.registryAccess();
+            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
+            entity.hurt(source, 1.0F);
+        }
     }
 
     @SubscribeEvent
     private void afterJump(StaminaEvent.AfterJump event) {
         LivingEntity entity = event.getEntity();
-        if (!HealthSystem.hasCustomHealth(entity))
-            return;
-
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        // TODO check for broken legs too
-        float damage = container.getBodyPartStream()
-                .filter(part -> part.getGroup() == BodyPartGroup.LEG && part.isDead())
-                .count();
-        entity.hurt(entity.damageSources().fall(), damage);
+        if (HealthSystem.isMovementRestricted(entity)) {
+            RegistryAccess access = entity.registryAccess();
+            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
+            entity.hurt(source, 2.5F);
+        }
     }
 
     @SubscribeEvent
@@ -243,6 +243,10 @@ public final class MedicalSystemEventHandler {
                 }
             }
         }
+        if (HealthSystem.hasCustomHealth(entity)) {
+            HealthContainer container = HealthSystem.getHealthData(entity);
+            container.clearBoundData(entity);
+        }
     }
 
     @SubscribeEvent
@@ -254,5 +258,11 @@ public final class MedicalSystemEventHandler {
         Consumer<Component> adder = tooltip::add;
 
         stack.addToTooltip(MedSystemItemComponents.HEAL_ATTRIBUTES, context, adder, flag);
+    }
+
+    @SubscribeEvent
+    private void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        HealthSystem.getHealthData(player).tick(player);
     }
 }

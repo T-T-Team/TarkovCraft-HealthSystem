@@ -10,5 +10,6 @@ public final class MedSystemTags {
     public static final class DamageTypes {
 
         public static final TagKey<DamageType> IS_GENERIC = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("is_generic"));
+        public static final TagKey<DamageType> IS_MOVEMENT_RESTRICTED = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("movement_restricted"));
     }
 }

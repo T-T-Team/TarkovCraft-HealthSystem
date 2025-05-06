@@ -9,12 +9,14 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
+import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.DefaultArmorComponent;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -43,6 +45,7 @@ public final class MedicalSystem {
 
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
+        NeoForge.EVENT_BUS.addListener(this::registerCommands);
 
         MedSystemItems.REGISTRY.register(modEventBus);
         MedSystemDataAttachments.REGISTRY.register(modEventBus);
@@ -52,6 +55,7 @@ public final class MedicalSystem {
         MedSystemStats.REGISTRY.register(modEventBus);
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
         MedSystemAttributes.REGISTRY.register(modEventBus);
+        MedSystemStatusEffects.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -61,10 +65,15 @@ public final class MedicalSystem {
     private void createRegistries(NewRegistryEvent event) {
         event.register(MedSystemRegistries.TRANSFORM_CONDITION);
         event.register(MedSystemRegistries.TRANSFORM);
+        event.register(MedSystemRegistries.STATUS_EFFECT);
     }
 
     private void addReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(HealthSystem.IDENTIFIER, HEALTH_SYSTEM);
+    }
+
+    private void registerCommands(RegisterCommandsEvent event) {
+        TarkovCraftCommand.create(event.getDispatcher(), event.getBuildContext());
     }
 
     public static ResourceLocation resource(String path) {

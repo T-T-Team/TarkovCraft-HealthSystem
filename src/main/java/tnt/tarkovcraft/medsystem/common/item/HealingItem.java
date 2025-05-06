@@ -13,8 +13,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import tnt.tarkovcraft.core.common.data.Duration;
-import tnt.tarkovcraft.core.common.data.TickValue;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.HealAttributes;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -24,63 +22,97 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 
+import java.util.List;
 import java.util.function.Consumer;
 
-// TODO make this a normal class to be used by all healing items, all should be controlled by the heal attributes only
 public class HealingItem extends Item {
 
-    private final TickValue useTime;
     private final ItemUseAnimation useAnimation;
 
-    public HealingItem(TickValue useTime, ItemUseAnimation animation, Properties properties) {
+    public HealingItem(ItemUseAnimation animation, Properties properties) {
         super(properties);
-        this.useTime = useTime;
         this.useAnimation = animation;
     }
 
-    public HealingItem(int useTime, ItemUseAnimation animation, Properties properties) {
-        this(Duration.ticks(useTime), animation, properties);
-    }
-
-    public HealingItem(TickValue useTime, Properties properties) {
-        this(useTime, ItemUseAnimation.BOW, properties);
-    }
-
-    public HealingItem(int useTime, Properties properties) {
-        this(Duration.ticks(useTime), properties);
+    public HealingItem(Properties properties) {
+        this(ItemUseAnimation.BOW, properties);
     }
 
     @Override
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
         if (!this.canUseItem(stack, livingEntity)) {
+            stack.remove(MedSystemItemComponents.SELECTED_BODY_PART);
             livingEntity.stopUsingItem();
+            return;
+        }
+        HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        HealAttributes.HealthRecovery healthRecovery = attributes.health();
+        if (healthRecovery == null)
+            return;
+        int usageTimeElapsed = attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION) - remainingUseDuration + 1;
+        if (usageTimeElapsed % healthRecovery.cycleDuration() == 0) {
+            int cycleLimit = healthRecovery.maxCycles();
+            int cycleIndex = usageTimeElapsed / healthRecovery.cycleDuration();
+            if (cycleIndex <= cycleLimit) {
+                float amount = healthRecovery.healthPerCycle();
+                HealthContainer container = HealthSystem.getHealthData(livingEntity);
+                String partId = this.getSelectedBodyPart(stack);
+                BodyPart part = TextHelper.isNotBlank(partId) && container.hasBodyPart(partId) ? container.getBodyPart(partId) : null;
+                if (livingEntity.level() instanceof ServerLevel serverLevel) {
+                    stack.hurtAndBreak(1, serverLevel, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+                }
+                float leftover = container.heal(amount, part);
+                if (leftover > 0 && container.canHeal(null, false)) {
+                    container.heal(amount, null);
+                }
+                container.updateHealth(livingEntity);
+                if (cycleIndex + 1 > cycleLimit) {
+                    livingEntity.useItemRemaining = 0;
+                } else {
+                    HealthSystem.synchronizeEntity(livingEntity);
+                }
+            }
         }
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
         String targetLimb = this.getTargetLimb(stack);
-        if (!this.canUseItem(stack, livingEntity) || TextHelper.isBlank(targetLimb)) {
-            return stack; // TODO error
-        }
         HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
-        HealthContainer container = HealthSystem.getHealthData(livingEntity);
-        int limit = this.getMaxUseAmount(stack);
-        int consume = this.getConsumeAmount(stack, limit); // TODO remove, instead go action by action
-        float consumptionFactor = consume / (float) limit; // more precise healing amount
+        if (!this.canUseItem(stack, livingEntity) || (attributes.applyGlobally() && TextHelper.isBlank(targetLimb))) {
+            return stack;
+        }
 
+        HealthContainer container = HealthSystem.getHealthData(livingEntity);
+        BodyPart part = TextHelper.isNotBlank(targetLimb) && container.hasBodyPart(targetLimb) ? container.getBodyPart(targetLimb) : null;
+        int consume = 0;
         // dead limb recovery
         if (attributes.canHealDeadLimbs()) {
             HealAttributes.DeadLimbHealing deadLimbHealing = attributes.deadLimbHealing();
-            BodyPart part = container.getBodyPart(targetLimb);
+            consume++; // dead limb fix has hardcoded consumption value of 1
             if (part.isDead()) {
                 part.setHealth(deadLimbHealing.healthAfterHeal());
-                deadLimbHealing.applyPost(livingEntity, container);
+                deadLimbHealing.addRecoveryAttributes(part);
             }
         }
+        // effect recovery + consumption for recovery
+        List<HealAttributes.EffectRecovery> recoveries = attributes.recoveries();
+        for (HealAttributes.EffectRecovery recovery : recoveries) {
+            if (recovery.canRecover(container, part) && checkDurability(stack, consume + recovery.consumption())) {
+                recovery.recover(livingEntity, container, stack, part);
+                consume += recovery.consumption();
+            }
+        }
+        // Side effect application
+        List<HealAttributes.SideEffect> sideEffects = attributes.sideEffects();
+        if (!sideEffects.isEmpty()) {
+            sideEffects.forEach(sideEffect -> sideEffect.apply(livingEntity, container, part));
+        }
+        // Apply durability reduction
         if (!level.isClientSide()) {
             stack.hurtAndBreak(consume, (ServerLevel) level, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
         }
+        // Remove saved body part and sync data
         stack.remove(MedSystemItemComponents.SELECTED_BODY_PART);
         container.updateHealth(livingEntity);
         HealthSystem.synchronizeEntity(livingEntity);
@@ -96,7 +128,8 @@ public class HealingItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (this.canUseItem(stack, player)) {
             String selectedBodyPart = this.getSelectedBodyPart(stack);
-            if (!player.isCrouching() && selectedBodyPart != null && player.getData(MedSystemDataAttachments.HEALTH_CONTAINER).hasBodyPart(selectedBodyPart)) {
+            HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+            if (attributes.applyGlobally() || (!player.isCrouching() && selectedBodyPart != null && player.getData(MedSystemDataAttachments.HEALTH_CONTAINER).hasBodyPart(selectedBodyPart))) {
                 player.startUsingItem(hand);
                 return InteractionResult.SUCCESS;
             } else {
@@ -111,7 +144,8 @@ public class HealingItem extends Item {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return 30;
+        HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        return attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION);
     }
 
     @Override
@@ -141,21 +175,6 @@ public class HealingItem extends Item {
         return stack.get(MedSystemItemComponents.SELECTED_BODY_PART);
     }
 
-    protected boolean checkDurability(ItemStack stack, int durabilityUse) {
-        int consume = this.getConsumeAmount(stack, durabilityUse);
-        if (consume < durabilityUse) {
-            return false;
-        }
-        return consume > 0;
-    }
-
-    protected int getConsumeAmount(ItemStack stack, int requestedAmount) {
-        int damage = stack.getDamageValue();
-        int maxDamage = stack.getMaxDamage();
-        int diff = maxDamage - damage;
-        return Math.min(requestedAmount, diff);
-    }
-
     public boolean canUseItem(ItemStack stack, LivingEntity entity) {
         if (!HealthSystem.hasCustomHealth(entity)) {
             return false;
@@ -164,18 +183,15 @@ public class HealingItem extends Item {
             return false;
         }
         HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
-        return attributes.canUseOn(entity, HealthSystem.getHealthData(entity));
-    }
-
-    protected int getMaxUseAmount(ItemStack stack) {
-        return this.getMaxUseAmount(stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES));
-    }
-
-    protected int getMaxUseAmount(HealAttributes attributes) {
-        return attributes != null ? attributes.getConsumption() : Integer.MAX_VALUE;
+        return attributes.canUseOn(entity, stack, HealthSystem.getHealthData(entity));
     }
 
     protected String getTargetLimb(ItemStack stack) {
         return stack.get(MedSystemItemComponents.SELECTED_BODY_PART);
+    }
+
+    public static boolean checkDurability(ItemStack stack, int durabilityUse) {
+        int maxDamage = stack.getMaxDamage() - stack.getDamageValue();
+        return durabilityUse <= maxDamage;
     }
 }

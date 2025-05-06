@@ -72,6 +72,8 @@ public final class HealthContainerDefinition {
     public void bind(LivingEntity entity) {
         // bind new container only to entities without existing health container or with invalid health data
         if (HealthSystem.hasCustomHealth(entity) && !entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).isInvalid()) {
+            HealthContainer container = HealthSystem.getHealthData(entity);
+            //container.clearBoundData(entity);
             return;
         }
 

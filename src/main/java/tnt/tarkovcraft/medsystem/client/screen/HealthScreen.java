@@ -40,7 +40,7 @@ public class HealthScreen extends CharacterSubScreen {
         Vector2f center = new Vector2f(this.width / 6.0F, this.height / 2.0F);
 
         int left = this.width / 3 - 15;
-        ListWidget<BodyPartHealthWidget> list = this.addRenderableOnly(new ListWidget<>(left, 35, this.width - left, this.height - 35, displays, (display, index) -> this.createBodyPartWidget(display, container, index)));
+        ListWidget<BodyPartHealthWidget> list = this.addRenderableWidget(new ListWidget<>(left, 35, this.width - left, this.height - 35, displays, (display, index) -> this.createBodyPartWidget(display, container, index)));
         list.setAdditionalItemSpacing(5);
         list.setScroll(this.bodyPartScroll);
         list.setScrollListener((x, y) -> this.bodyPartScroll = y);

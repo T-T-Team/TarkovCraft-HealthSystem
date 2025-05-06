@@ -24,6 +24,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SelectBodyPart;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SelectBodyPartScreen extends Screen {
 
@@ -31,6 +32,7 @@ public class SelectBodyPartScreen extends Screen {
     public static final Component LABEL_ERROR = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.invalid_item");
     public static final Component LABEL_NOT_HEALABLE = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.not_healable").withStyle(ChatFormatting.RED);
     public static final Component LABEL_CLICK_TO_SELECT = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "text.click_to_select").withStyle(ChatFormatting.GREEN);
+    public static final Component LABEL_STATUS_EFFECTS = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "text.status_effects").withStyle(ChatFormatting.GRAY);
 
     public SelectBodyPartScreen() {
         super(TITLE);
@@ -58,14 +60,21 @@ public class SelectBodyPartScreen extends Screen {
             BodyPart part = container.getBodyPart(display.source());
             Vector4f rect = display.getGuiPosition(2.0F, center);
             BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget((int) rect.x, (int) rect.y, (int) rect.z, (int) rect.w, part));
-            boolean isPartHealable = attributes.canUseOnPart(part, this.minecraft.player, container);
+            boolean isPartHealable = attributes.canUseOnPart(part, this.minecraft.player, itemStack, container);
             widget.setTooltipHelper(TooltipHelper.screen(this));
+            widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
+
+            List<Component> statusEffectLabels = part.getStatusEffects().getEffectsStream()
+                    .map(effect -> Component.literal("- ").append(effect.getType().getDisplayName().copy()).withStyle(ChatFormatting.DARK_GRAY))
+                    .collect(Collectors.toList());
+            if (!statusEffectLabels.isEmpty()) {
+                widget.addTooltip(LABEL_STATUS_EFFECTS);
+                statusEffectLabels.forEach(widget::addTooltip);
+            }
             if (isPartHealable) {
                 widget.setOnClick(() -> this.bodyPartClicked(part));
-                widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, ChatFormatting.GREEN));
                 widget.addTooltip(LABEL_CLICK_TO_SELECT);
             } else {
-                widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, ChatFormatting.RED));
                 widget.addTooltip(LABEL_NOT_HEALABLE);
             }
         }

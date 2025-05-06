@@ -7,8 +7,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.Synchronizable;
+import tnt.tarkovcraft.core.util.context.ContextImpl;
+import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 
 import javax.annotation.Nullable;
@@ -22,7 +27,8 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     public static final Codec<HealthContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
-            Codec.unboundedMap(Codec.STRING, BodyPart.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts)
+            Codec.unboundedMap(Codec.STRING, BodyPart.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts),
+            StatusEffectMap.CODEC.fieldOf("effects").forGetter(t -> t.statusEffects)
     ).apply(instance, HealthContainer::new));
 
     private final HealthContainerDefinition definition;
@@ -30,6 +36,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     private final Map<BodyPart, BodyPart> bodyPartLinks;
     private final List<BodyPart> vitalParts;
     private final String root;
+    private final StatusEffectMap statusEffects;
     private DamageContext activeDamageContext;
 
     public HealthContainer(IAttachmentHolder holder) {
@@ -37,6 +44,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             throw new IllegalArgumentException("Holder must be an instance of LivingEntity");
         }
         this.definition = MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).orElse(null);
+        this.statusEffects = new StatusEffectMap();
         ImmutableMap.Builder<String, BodyPart> builder = ImmutableMap.builder();
         if (this.definition != null) {
             for (Map.Entry<String, BodyPartDefinition> entry : this.definition.getBodyParts().entrySet()) {
@@ -56,12 +64,46 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
     }
 
-    public HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts) {
+    private HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts, StatusEffectMap statusEffects) {
         this.definition = definition;
         this.bodyParts = bodyParts;
         this.bodyPartLinks = new IdentityHashMap<>();
         this.vitalParts = new ArrayList<>();
         this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
+        this.statusEffects = statusEffects;
+    }
+
+    public void tick(LivingEntity entity) {
+        ContextImpl context = ContextImpl.of(
+                MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                ContextKeys.LIVING_ENTITY, entity
+        );
+        float previousHealth = this.getHealth();
+        this.statusEffects.tick(context);
+        for (BodyPart part : this.bodyParts.values()) {
+            part.tick(context);
+        }
+        float health = this.getHealth();
+        if (health != previousHealth) {
+            updateHealth(entity);
+        }
+    }
+
+    public void clearBoundData(LivingEntity entity) {
+        ContextImpl context = ContextImpl.of(
+                MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                ContextKeys.LIVING_ENTITY, entity
+        );
+        this.statusEffects.removeAll(context);
+        for (BodyPart part : this.bodyParts.values()) {
+            context.set(MedicalSystemContextKeys.BODY_PART, part);
+            StatusEffectMap map = part.getStatusEffects();
+            map.removeAll(context);
+        }
+    }
+
+    public StatusEffectMap getGlobalStatusEffects() {
+        return this.statusEffects;
     }
 
     public boolean isInvalid() {
@@ -86,6 +128,13 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     public Stream<BodyPart> getBodyPartStream() {
         return this.bodyParts.values().stream();
+    }
+
+    public Stream<StatusEffect> getStatusEffectStream() {
+        return Stream.concat(
+                this.statusEffects.getEffectsStream(),
+                this.bodyParts.values().stream().flatMap(part -> part.getStatusEffects().getEffectsStream())
+        );
     }
 
     public float getHealth() {
@@ -120,11 +169,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         entity.setHealth(health);
     }
 
-    public void hurt(LivingEntity entity, float amount, BodyPart bodyPart, Consumer<BodyPart> onBodyPartLoss) {
-        hurt(entity, amount, bodyPart, true, onBodyPartLoss);
-    }
-
-    public void hurt(LivingEntity entity, float amount, BodyPart part, boolean triggerUpdate, Consumer<BodyPart> onBodyPartLoss) {
+    public void hurt(LivingEntity entity, float amount, BodyPart part, Consumer<BodyPart> onBodyPartLoss) {
         float damage = Math.min(part.getHealth(), amount * part.getDamageScale());
         float leftover = amount - damage;
         boolean wasDead = part.isDead();
@@ -138,11 +183,8 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             BodyPart parent = this.bodyPartLinks.get(part);
             if (parent != null) {
                 float scale = parent.getParentDamageScale();
-                this.hurt(entity, leftover * scale, parent, false, onBodyPartLoss);
+                this.hurt(entity, leftover * scale, parent, onBodyPartLoss);
             }
-        }
-        if (triggerUpdate) {
-            this.updateEffects(entity);
         }
     }
 
@@ -153,8 +195,8 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return this.getPartToHeal(allowDead) != null;
     }
 
-    public float heal(LivingEntity entity, float amount, @Nullable BodyPart targetPart) {
-        if (targetPart != null) {
+    public float heal(float amount, @Nullable BodyPart targetPart) {
+        if (targetPart != null && !targetPart.isDead()) {
             // Heal specific body part only
             float healAmount = Math.min(amount, targetPart.getMaxHealAmount());
             targetPart.heal(healAmount);
@@ -168,13 +210,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
                 amount -= healAmount;
             }
         }
-
-        this.updateEffects(entity);
         return amount;
-    }
-
-    public void updateEffects(LivingEntity entity) {
-        // TODO reapply stats
     }
 
     public void setDamageContext(DamageContext damageContext) {

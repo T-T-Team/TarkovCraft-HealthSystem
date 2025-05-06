@@ -36,6 +36,11 @@ public class LavaHitCalculator implements HitCalculator {
         return hits;
     }
 
+    @Override
+    public DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
+        return new ScaledDamageDistributor(2.5F, original);
+    }
+
     protected boolean isInFluid(Level level, AABB aabb) {
         Vec3 pos = aabb.getCenter();
         FluidState state = level.getFluidState(new BlockPos(Mth.floor(pos.x), Mth.floor(pos.y), Mth.floor(pos.z)));

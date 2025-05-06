@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#minecraft:is_projectile",
+    "#minecraft:is_explosion",
+    "#neoforge:is_physical",
+
+    "minecraft:fall"
+  ]
+}

@@ -5,6 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.core.util.context.WritableContext;
+import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 
 import java.util.Objects;
 
@@ -18,7 +21,8 @@ public final class BodyPart {
             Codec.FLOAT.fieldOf("originalMaxHealth").forGetter(t -> t.originalMaxHealth),
             Codec.FLOAT.fieldOf("parentDamageScale").forGetter(t -> t.parentDamageScale),
             Codec.FLOAT.fieldOf("damageScale").forGetter(t -> t.damageScale),
-            Codecs.simpleEnumCodec(BodyPartGroup.class).fieldOf("group").forGetter(t -> t.group)
+            Codecs.simpleEnumCodec(BodyPartGroup.class).fieldOf("group").forGetter(t -> t.group),
+            StatusEffectMap.CODEC.fieldOf("statusEffects").forGetter(t -> t.statusEffects)
     ).apply(instance, BodyPart::new));
 
     private final String name;
@@ -30,12 +34,13 @@ public final class BodyPart {
     private final float damageScale;
     private final BodyPartGroup group;
     private final Component displayName;
+    private final StatusEffectMap statusEffects;
 
     public BodyPart(String name, boolean vital, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
-        this(name, vital, maxHealth, maxHealth, maxHealth, parentDamageScale, damageScale, group);
+        this(name, vital, maxHealth, maxHealth, maxHealth, parentDamageScale, damageScale, group, new StatusEffectMap());
     }
 
-    private BodyPart(String name, boolean vital, float health, float maxHealth, float originalMaxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
+    private BodyPart(String name, boolean vital, float health, float maxHealth, float originalMaxHealth, float parentDamageScale, float damageScale, BodyPartGroup group, StatusEffectMap statusEffects) {
         this.name = name;
         this.vital = vital;
         this.health = health;
@@ -45,6 +50,7 @@ public final class BodyPart {
         this.damageScale = damageScale;
         this.group = group;
         this.displayName = Component.translatable("medsystem.bodypart." + name);
+        this.statusEffects = statusEffects;
     }
 
     public String getName() {
@@ -114,6 +120,15 @@ public final class BodyPart {
 
     public float getOriginalMaxHealth() {
         return originalMaxHealth;
+    }
+
+    public StatusEffectMap getStatusEffects() {
+        return this.statusEffects;
+    }
+
+    public void tick(WritableContext context) {
+        context.set(MedicalSystemContextKeys.BODY_PART, this);
+        this.statusEffects.tick(context);
     }
 
     @Override

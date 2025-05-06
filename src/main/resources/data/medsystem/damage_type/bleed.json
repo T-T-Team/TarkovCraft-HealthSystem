@@ -1,0 +1,6 @@
+{
+  "message_id": "medsystem.bleed",
+  "effects": "medsystem:none",
+  "scaling": "never",
+  "exhaustion": 0.0
+}

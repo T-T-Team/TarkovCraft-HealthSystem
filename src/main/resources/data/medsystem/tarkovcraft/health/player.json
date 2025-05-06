@@ -366,6 +366,73 @@
       "size": [ 0.15, 0.375 ]
     }
   ],
+  "effects": {
+    "38eb4ebd-9521-4488-a608-342e76033a02": {
+      "effect": {
+        "type": "medsystem:fracture"
+      },
+      "sources": [
+        {
+          "type": "medsystem:is_damage_type",
+          "tag": "minecraft:is_fall",
+          "chance": 0.05,
+          "functions": [
+            {
+              "type": "medsystem:fall_distance",
+              "scale": 0.25
+            }
+          ]
+        }
+      ]
+    },
+    "6e55311f-cd6b-4d51-990f-8fdf5cea5e23": {
+      "effect": {
+        "type": "medsystem:light_bleed"
+      },
+      "sources": [
+        {
+          "type": "medsystem:has_effect",
+          "effect": "medsystem:heavy_bleed",
+          "elseApply": {
+            "type": "medsystem:damage_type",
+            "tag": "medsystem:bleed_causing",
+            "chance": 0.05,
+            "functions": [
+              {
+                "type": "medsystem:damage_scale",
+                "scale": 0.75
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "b3982016-5c55-436a-9000-236b363f84ca": {
+      "effect": {
+        "type": "medsystem:heavy_bleed"
+      },
+      "sources": [
+        {
+          "type": "medsystem:damage_type",
+          "tag": "medsystem:bleed_causing",
+          "chance": 0.05,
+          "functions": [
+            {
+              "type": "medsystem:damage_scale",
+              "scale": 0.75
+            }
+          ]
+        }
+      ],
+      "onApply": [
+        {
+          "chance": 1.0,
+          "event": "medsystem:remove_effect",
+          "effect": "medsystem:light_bleed"
+        }
+      ]
+    }
+  },
   "hud": [
     {
       "source": "head",

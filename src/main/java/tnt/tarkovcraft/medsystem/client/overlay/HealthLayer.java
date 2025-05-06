@@ -12,14 +12,22 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HealthLayer implements LayeredDraw.Layer {
 
@@ -61,6 +69,24 @@ public class HealthLayer implements LayeredDraw.Layer {
             int color = overlay.transparency << 24 | getColor(overlay.deadLimbColor, overlay.colorSchema, health);
             RenderUtils.fill(graphics, pos.x, pos.y, pos.x + pos.z, pos.y + pos.w, ARGB.scaleRGB(color, 0.8F));
             RenderUtils.fill(graphics, pos.x + 2, pos.y + 2, pos.x + pos.z - 2, pos.y + pos.w - 2, color);
+        }
+
+        Stream<StatusEffect> effectStream = container.getStatusEffectStream();
+        Map<StatusEffectType<?>, List<StatusEffect>> effects = effectStream.collect(Collectors.groupingBy(StatusEffect::getType, LinkedHashMap::new, Collectors.toList()));
+        int index = 0;
+        for (Map.Entry<StatusEffectType<?>, List<StatusEffect>> entry : effects.entrySet()) {
+            StatusEffectType<?> type = entry.getKey();
+            List<StatusEffect> effectList = entry.getValue();
+            ResourceLocation icon = type.getIcon();
+            int x = (int) (overlayPos.x() + overlayWidth);
+            int y = (int) (overlayPos.y() + index++ * 12);
+
+            RenderUtils.blitFull(graphics, icon, x, y, x + 12, y + 12, -1);
+            int count = effectList.size();
+            if (count > 1) {
+                String text = String.valueOf(count);
+                graphics.drawString(client.font, text, x + 12 - client.font.width(text), y + 4, ColorPalette.WHITE);
+            }
         }
     }
 

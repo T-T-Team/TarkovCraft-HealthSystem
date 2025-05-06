@@ -12,10 +12,21 @@
   "stat.medsystem.player_headshots": "Headshots (PvP)",
   "stat.medsystem.player_headshot_percentage": "Headshot rate (PvP)",
 
+  "status_effect.medsystem.pain_relief": "Pain Relief",
+  "status_effect.medsystem.fracture": "Fracture",
+  "status_effect.medsystem.injury_recovery": "Injury Recovery",
+  "status_effect.medsystem.light_bleed": "Light Bleed",
+  "status_effect.medsystem.heavy_bleed": "Heavy Bleed",
+
   "tooltip.medsystem.item.durability": "Uses: %s",
+  "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",
+  "tooltip.medsystem.heal_attributes.heal.infinite": "Heals %s health points every %s",
   "tooltip.medsystem.heal_attributes.dead_limb.title": "Dead limb heal:",
   "tooltip.medsystem.heal_attributes.dead_limb.recovery": "- Recovers limb health to %s",
   "tooltip.medsystem.heal_attributes.dead_limb.max_health": "- Decreases max health by %s for %s",
+  "tooltip.medsystem.heal_attributes.side_effects.title": "Side effects:",
+  "tooltip.medsystem.heal_attributes.recoveries.title": "Heals effects:",
+  "tooltip.medsystem.heal_attributes.recoveries.use_label": "%s HP",
 
   "medsystem.bodypart.head": "Head",
   "medsystem.bodypart.body": "Body",
@@ -30,6 +41,7 @@
   "screen.medsystem.select_body_part.error.invalid_item": "Invalid item for healing",
   "screen.medsystem.select_body_part.error.not_healable": "Cannot be healed using this item",
   "screen.medsystem.select_body_part.text.click_to_select": "Click to select",
+  "screen.medsystem.select_body_part.text.status_effects": "Status effects:",
 
   "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation"
 }

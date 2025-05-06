@@ -18,18 +18,25 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.compatibility.CompatibilityComponent;
 import tnt.tarkovcraft.core.network.message.S2C_SendDataAttachments;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
+import tnt.tarkovcraft.medsystem.api.BodyPartDamageSource;
+import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
 import tnt.tarkovcraft.medsystem.api.event.HitCalculatorResolveEvent;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.stream.Stream;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthContainerDefinition> {
 
@@ -51,6 +58,22 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         return entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
     }
 
+    public static boolean hasPainRelief(LivingEntity entity) {
+        return AttributeSystem.getIntValue(entity, MedSystemAttributes.PAIN_RELIEF, 0) > 0;
+    }
+
+    public static boolean isMovementRestricted(LivingEntity entity) {
+        if (!hasCustomHealth(entity))
+            return false;
+        HealthContainer healthContainer = getHealthData(entity);
+        Stream<BodyPart> parts = healthContainer.getBodyPartStream();
+        return parts.anyMatch(HealthSystem::isMovementRestrictingPart);
+    }
+
+    public static boolean isMovementRestrictingPart(BodyPart part) {
+        return part.getGroup() == BodyPartGroup.LEG && (part.isDead() || part.getStatusEffects().hasEffect(MedSystemStatusEffects.FRACTURE));
+    }
+
     public static void synchronizeEntity(LivingEntity entity) {
         if (!entity.level().isClientSide() && hasCustomHealth(entity)) {
             S2C_SendDataAttachments packet = new S2C_SendDataAttachments(entity, MedSystemDataAttachments.HEALTH_CONTAINER.get());
@@ -66,6 +89,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         if (eventCalculator != null) {
             return eventCalculator;
         }
+        if (source instanceof SpecificBodyPartDamage bodyPartDamage) {
+            return new SpecificBodyPartHitCalculator(bodyPartDamage.getBodyParts(), bodyPartDamage.allowDeadBodyPartDamage());
+        }
         if (source.is(DamageTypeTags.IS_FALL)) {
             return FallDamageHitCalculator.INSTANCE;
         }
@@ -74,6 +100,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         }
         if (source == entity.damageSources().lava()) {
             return LavaHitCalculator.INSTANCE;
+        }
+        if (source.is(MedSystemTags.DamageTypes.IS_MOVEMENT_RESTRICTED)) {
+            return MovementDamageHitCalculator.INSTANCE;
         }
         Entity sourceEntity = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
         if (sourceEntity == null || source.is(MedSystemTags.DamageTypes.IS_GENERIC)) {

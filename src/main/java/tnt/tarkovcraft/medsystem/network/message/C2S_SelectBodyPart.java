@@ -35,7 +35,7 @@ public record C2S_SelectBodyPart(String bodyPart) implements CustomPacketPayload
         HealthContainer container = HealthSystem.getHealthData(player);
         HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         BodyPart part = container.getBodyPart(this.bodyPart);
-        if (attributes != null && attributes.canUseOnPart(part, player, container)) {
+        if (attributes != null && attributes.canUseOnPart(part, player, stack, container)) {
             stack.set(MedSystemItemComponents.SELECTED_BODY_PART, this.bodyPart);
         }
     }
