@@ -18,5 +18,33 @@
       }
     }
   ],
-  "stats": []
+  "stats": [
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.armors.bonus.armor_durability"
+        },
+        "descriptionKey": "skill.medsystem.armors.bonus.armor_durability.description",
+        "color": "#FFFFFF",
+        "icon": "medsystem:textures/icons/skill/armors.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:skill_level_range",
+          "min": 1
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:armor_durability",
+        "id": "dee47603-d508-4b0d-85f7-0cc22e41df12",
+        "levelValue": -0.005,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": -100,
+          "suffix": "%"
+        }
+      }
+    }
+  ]
 }

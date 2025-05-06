@@ -12,4 +12,5 @@ public final class MedSystemAttributes {
 
     public static final Holder<Attribute> LIMB_DEATH_CHANCE = REGISTRY.register("limb_death_chance", key -> Attribute.create(key, 1.0));
     public static final Holder<Attribute> PAIN_RELIEF = REGISTRY.register("pain_relief", Attribute::create);
+    public static final Holder<Attribute> ARMOR_DURABILITY = REGISTRY.register("armor_durability", key -> Attribute.create(key, 1.0));
 }

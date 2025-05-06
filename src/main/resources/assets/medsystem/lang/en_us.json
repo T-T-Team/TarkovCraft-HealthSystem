@@ -12,6 +12,8 @@
   "skill.medsystem.resilience.bonus.limb_death": "Limb loss death",
   "skill.medsystem.resilience.bonus.limb_death.description": "Decreases chance of death due to loss of non-vital limbs by %s",
   "skill.medsystem.armors": "Armors",
+  "skill.medsystem.armors.bonus.armor_durability": "Armor Durability",
+  "skill.medsystem.armors.bonus.armor_durability.description": "Reduces armor damage by %s",
   "skill.medsystem.firstaid": "First Aid",
   "skill.medsystem.surgery": "Surgery",
 

@@ -104,9 +104,16 @@ public final class MedicalSystemEventHandler {
         DamageContext context = container.getDamageContext();
         Set<EquipmentSlot> hitSlots = new HashSet<>(context.getAffectedSlots());
         Set<EquipmentSlot> armorSlots = new HashSet<>(event.getArmorMap().keySet());
+        Map<EquipmentSlot, ArmorHurtEvent.ArmorEntry> map = event.getArmorMap();
+        float damageReductionMultiplier = AttributeSystem.getFloatValue(entity, MedSystemAttributes.ARMOR_DURABILITY, 1.0F);
         for (EquipmentSlot slot : armorSlots) {
             if (!hitSlots.contains(slot)) {
-                event.getArmorMap().remove(slot);
+                map.remove(slot);
+            } else {
+                float damage = event.getNewDamage(slot);
+                if (damage > 0 && damageReductionMultiplier != 1.0F) {
+                    event.setNewDamage(slot, damage * damageReductionMultiplier);
+                }
             }
         }
     }
