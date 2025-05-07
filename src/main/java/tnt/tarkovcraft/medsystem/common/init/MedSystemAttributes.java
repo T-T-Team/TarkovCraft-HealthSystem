@@ -17,4 +17,6 @@ public final class MedSystemAttributes {
     public static final Holder<Attribute> NEGATIVE_EFFECT_DURATION = REGISTRY.register("negative_effect_duration", key -> Attribute.create(key, 1.0));
     public static final Holder<Attribute> POSITIVE_EFFECT_CHANCE = REGISTRY.register("positive_effect_chance", key -> Attribute.create(key, 1.0));
     public static final Holder<Attribute> NEGATIVE_EFFECT_CHANCE = REGISTRY.register("negative_effect_chance", key -> Attribute.create(key, 1.0));
+    public static final Holder<Attribute> INJURY_RECOVERY_DURATION = REGISTRY.register("injury_recovery_duration", key -> Attribute.create(key, 1.0));
+    public static final Holder<Attribute> INJURY_RECOVERY_AMOUNT = REGISTRY.register("injury_amount", key -> Attribute.create(key, 1.0));
 }

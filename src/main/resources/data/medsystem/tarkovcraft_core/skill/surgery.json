@@ -8,6 +8,70 @@
     "additionalExperience": 5.0,
     "maxExperience": 100.0
   },
-  "trackers": [],
-  "stats": []
+  "trackers": [
+    {
+      "id": "3ea0f284-68eb-43f6-9b2f-004c8d5e2103",
+      "event": "medsystem:limb_fixed",
+      "tracker": {
+        "type": "tarkovcraft_core:unrestricted",
+        "value": 0.5
+      }
+    }
+  ],
+  "stats": [
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.surgery.bonus.injury_duration"
+        },
+        "descriptionKey": "skill.medsystem.surgery.bonus.injury_duration.description",
+        "color": "#FFFFFF",
+        "icon": "medsystem:textures/icons/skill/surgery.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:skill_level_range",
+          "min": 1
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:injury_recovery_duration",
+        "id": "0581d391-3c53-4d59-93e8-a56479769035",
+        "levelValue": -0.005,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": -100,
+          "suffix": "%"
+        }
+      }
+    },
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.surgery.bonus.injury_scale"
+        },
+        "descriptionKey": "skill.medsystem.surgery.bonus.injury_scale.description",
+        "color": "#FFFFFF",
+        "icon": "medsystem:textures/icons/skill/surgery.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:skill_level_range",
+          "min": 1
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:injury_amount",
+        "id": "f694346f-dd40-49bd-b02c-cea106d0dc6f",
+        "levelValue": -0.0075,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": -100,
+          "suffix": "%"
+        }
+      }
+    }
+  ]
 }

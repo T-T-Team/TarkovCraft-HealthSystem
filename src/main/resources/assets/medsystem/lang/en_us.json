@@ -24,6 +24,10 @@
   "skill.medsystem.firstaid.bonus.negative_effect_chance": "Negative effect chance",
   "skill.medsystem.firstaid.bonus.negative_effect_chance.description": "Decreases chance to get negative effect by %s",
   "skill.medsystem.surgery": "Surgery",
+  "skill.medsystem.surgery.bonus.injury_duration": "Injury duration",
+  "skill.medsystem.surgery.bonus.injury_duration.description": "Decreases time of injury after surgery by %s",
+  "skill.medsystem.surgery.bonus.injury_scale": "Injury amount",
+  "skill.medsystem.surgery.bonus.injury_scale.description": "Decreases injury health debuff by %s",
 
   "stat.medsystem.limbs_lost": "Limbs lost",
   "stat.medsystem.headshots": "Headshots",

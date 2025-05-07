@@ -175,11 +175,16 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
             return this.recoveryTime > 0 && this.maxHealthMultiplier < 1.0F;
         }
 
-        public void addRecoveryAttributes(BodyPart part) {
+        public void addRecoveryAttributes(LivingEntity entity, BodyPart part) {
             if (this.hasPostRecovery()) {
-                int reduction = Mth.ceil(part.getMaxHealth() * (1.0F - this.maxHealthMultiplier));
-                InjuryRecoveryStatusEffect effect = new InjuryRecoveryStatusEffect(Duration.minutes(10).tickValue(), reduction);
-                part.getStatusEffects().addEffect(effect);
+                float reductionScale = AttributeSystem.getFloatValue(entity, MedSystemAttributes.INJURY_RECOVERY_AMOUNT, 1.0F);
+                float durationScale = AttributeSystem.getFloatValue(entity, MedSystemAttributes.INJURY_RECOVERY_DURATION, 1.0F);
+                if (durationScale > 0.0F && reductionScale > 0.0F) {
+                    int reduction = Mth.ceil(part.getMaxHealth() * (1.0F - this.maxHealthMultiplier) * reductionScale);
+                    int duration = Mth.ceil(Duration.minutes(10).tickValue() * reduction);
+                    InjuryRecoveryStatusEffect effect = new InjuryRecoveryStatusEffect(duration, reduction);
+                    part.getStatusEffects().addEffect(effect);
+                }
             }
         }
 

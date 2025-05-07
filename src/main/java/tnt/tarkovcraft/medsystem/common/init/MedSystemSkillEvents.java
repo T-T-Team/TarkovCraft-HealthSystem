@@ -13,4 +13,5 @@ public final class MedSystemSkillEvents {
     public static final Holder<SkillTriggerEvent> ARMOR_USE = REGISTRY.register("armor_use", SkillTriggerEvent::new);
     public static final Holder<SkillTriggerEvent> DAMAGE_TAKEN = REGISTRY.register("damage_taken", SkillTriggerEvent::new);
     public static final Holder<SkillTriggerEvent> HEALING_USED = REGISTRY.register("healing_used", SkillTriggerEvent::new);
+    public static final Holder<SkillTriggerEvent> LIMB_FIXED = REGISTRY.register("limb_fixed", SkillTriggerEvent::new);
 }

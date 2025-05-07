@@ -112,7 +112,7 @@ public final class MedicalSystemEventHandler {
             } else {
                 float damage = event.getNewDamage(slot);
                 if (damage > 0 && damageReductionMultiplier != 1.0F) {
-                    event.setNewDamage(slot, damage * damageReductionMultiplier);
+                    event.setNewDamage(slot, Math.max(damage * damageReductionMultiplier, 1.0F));
                 }
             }
         }

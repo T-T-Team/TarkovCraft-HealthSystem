@@ -85,7 +85,7 @@ public class HealingItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
         String targetLimb = this.getTargetLimb(stack);
         HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
-        if (!this.canUseItem(stack, livingEntity) || (attributes.applyGlobally() && TextHelper.isBlank(targetLimb))) {
+        if (!this.canUseItem(stack, livingEntity) || (!attributes.applyGlobally() && TextHelper.isBlank(targetLimb))) {
             return stack;
         }
 
@@ -97,8 +97,9 @@ public class HealingItem extends Item {
             HealAttributes.DeadLimbHealing deadLimbHealing = attributes.deadLimbHealing();
             consume++; // dead limb fix has hardcoded consumption value of 1
             if (part.isDead()) {
+                SkillSystem.trigger(MedSystemSkillEvents.LIMB_FIXED, livingEntity);
                 part.setHealth(deadLimbHealing.healthAfterHeal());
-                deadLimbHealing.addRecoveryAttributes(part);
+                deadLimbHealing.addRecoveryAttributes(livingEntity, part);
             }
         }
         // effect recovery + consumption for recovery
@@ -116,8 +117,9 @@ public class HealingItem extends Item {
         }
         // Apply durability reduction
         if (!level.isClientSide()) {
-            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, livingEntity, consume);
-            stack.hurtAndBreak(consume, (ServerLevel) level, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+            int consumeAmount = Math.max(1, consume);
+            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, livingEntity, consumeAmount);
+            stack.hurtAndBreak(consumeAmount, (ServerLevel) level, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
         }
         // Remove saved body part and sync data
         stack.remove(MedSystemItemComponents.SELECTED_BODY_PART);
