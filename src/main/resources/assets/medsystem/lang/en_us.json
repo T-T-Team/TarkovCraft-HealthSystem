@@ -29,6 +29,16 @@
   "skill.medsystem.surgery.bonus.injury_scale": "Injury amount",
   "skill.medsystem.surgery.bonus.injury_scale.description": "Decreases injury health debuff by %s",
 
+  "attribute.medsystem.limb_death_chance": "Dead limb death cause chance",
+  "attribute.medsystem.pain_relief": "Pain relief",
+  "attribute.medsystem.armor_durability": "Armor durability",
+  "attribute.medsystem.positive_effect_duration": "Positive status effect duration",
+  "attribute.medsystem.negative_effect_duration": "Negative status effect duration",
+  "attribute.medsystem.positive_effect_chance": "Positive status effect chance",
+  "attribute.medsystem.negative_effect_chance": "Negative status effect chance",
+  "attribute.medsystem.injury_recovery_duration": "Injury recovery duration",
+  "attribute.medsystem.injury_amount": "Injury recovery health scale",
+
   "stat.medsystem.limbs_lost": "Limbs lost",
   "stat.medsystem.headshots": "Headshots",
   "stat.medsystem.headshot_percentage": "Headshot rate",

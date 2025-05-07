@@ -102,7 +102,7 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
         if (this.canHealDeadLimbs() && part.isDead()) {
             return true;
         }
-        return this.health != null && part.getHealth() < part.getMaxHealth();
+        return this.health != null && part.getHealth() < part.getMaxHealth() && !part.isDead();
     }
 
     public boolean canHealDeadLimbs() {

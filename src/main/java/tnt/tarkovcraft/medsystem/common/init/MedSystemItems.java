@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
+import net.minecraft.core.component.DataComponents;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.Duration;
@@ -16,6 +17,7 @@ public final class MedSystemItems {
             properties -> new HealingItem(
                     properties.durability(5)
                             .setNoCombineRepair()
+                            .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .surgeryItem()
                                         .useTime(Duration.seconds(15))
@@ -31,6 +33,7 @@ public final class MedSystemItems {
             "bandage",
             properties -> new HealingItem(
                     properties.durability(1)
+                            .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
                                     .removesEffect(1, MedSystemStatusEffects.LIGHT_BLEED)
@@ -42,6 +45,7 @@ public final class MedSystemItems {
             "tourniquet",
             properties -> new HealingItem(
                     properties.durability(1)
+                            .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
                                     .removesEffect(1, MedSystemStatusEffects.HEAVY_BLEED)
@@ -53,6 +57,7 @@ public final class MedSystemItems {
             "splint",
             properties -> new HealingItem(
                     properties.durability(1)
+                            .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .setMinUseTime(Duration.seconds(5))
                                     .removesEffect(1, MedSystemStatusEffects.FRACTURE)
@@ -64,6 +69,7 @@ public final class MedSystemItems {
             "painkillers",
             properties -> new HealingItem(
                     properties.durability(4)
+                            .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .setNoBodyPartSelection()
                                     .setMinUseTime(Duration.seconds(3))
@@ -76,6 +82,7 @@ public final class MedSystemItems {
             "first_aid_kit",
             properties -> new HealingItem(
                     properties.durability(30)
+                            .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .unrestrictedHealing(10, 2)
                                     .removesEffect(4, MedSystemStatusEffects.LIGHT_BLEED)

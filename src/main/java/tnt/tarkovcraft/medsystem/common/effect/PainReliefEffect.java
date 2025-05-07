@@ -3,19 +3,19 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.core.common.attribute.AttributeInstance;
-import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
+import tnt.tarkovcraft.core.common.attribute.Attribute;
 import tnt.tarkovcraft.core.common.attribute.EntityAttributeData;
 import tnt.tarkovcraft.core.common.attribute.modifier.AddValueModifier;
+import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier;
 import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.UUID;
 
-public class PainReliefEffect implements StatusEffect {
+public class PainReliefEffect extends AttributeModifyingStatusEffect {
 
     public static final MapCodec<PainReliefEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.INT.fieldOf("duration").forGetter(StatusEffect::getDuration)
@@ -29,25 +29,18 @@ public class PainReliefEffect implements StatusEffect {
     }
 
     @Override
-    public void apply(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
-        if (AttributeSystem.isEnabledForEntity(entity)) {
-            EntityAttributeData data = AttributeSystem.getAttributes(entity);
-            AttributeInstance instance = data.getAttribute(MedSystemAttributes.PAIN_RELIEF);
-            if (!instance.hasModifier(PAIN_RELIEF_MODIFIER_ID)) {
-                instance.addModifier(new AddValueModifier(PAIN_RELIEF_MODIFIER_ID, 1));
-            }
-        }
+    public UUID getUniqueModifierUUID() {
+        return PAIN_RELIEF_MODIFIER_ID;
     }
 
     @Override
-    public void onRemoved(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
-        if (AttributeSystem.isEnabledForEntity(entity)) {
-            EntityAttributeData data = AttributeSystem.getAttributes(entity);
-            AttributeInstance instance = data.getAttribute(MedSystemAttributes.PAIN_RELIEF);
-            instance.removeModifier(PAIN_RELIEF_MODIFIER_ID);
-        }
+    public Holder<Attribute> getAttribute() {
+        return MedSystemAttributes.PAIN_RELIEF;
+    }
+
+    @Override
+    public AttributeModifier createModifier(UUID uuid, LivingEntity entity, EntityAttributeData attributeData, Context context) {
+        return new AddValueModifier(uuid, 1);
     }
 
     @Override

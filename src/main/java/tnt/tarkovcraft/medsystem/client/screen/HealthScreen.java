@@ -5,6 +5,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
+import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.client.screen.widget.ListWidget;
 import tnt.tarkovcraft.core.util.context.Context;
@@ -12,6 +13,8 @@ import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
+import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -20,6 +23,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class HealthScreen extends CharacterSubScreen {
 
@@ -61,7 +65,16 @@ public class HealthScreen extends CharacterSubScreen {
     private BodyPartHealthWidget createBodyPartWidget(BodyPartDisplay display, HealthContainer container, int index) {
         int left = this.width / 3 - 15;
         BodyPart part = container.getBodyPart(display.source());
-        return new BodyPartHealthWidget(left, index * 35, 100, 30, this.font, part);
+        Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
+        if (container.getRootBodyPart().getName().equals(part.getName())) {
+            stream = Stream.concat(
+                    container.getGlobalStatusEffects().getEffectsStream(),
+                    stream
+            );
+        }
+        BodyPartHealthWidget widget = new BodyPartHealthWidget(left, index * 35, 100, 30, this.font, part);
+        List<StatusEffect> effects = stream.filter(ef -> ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI)).toList();
+        widget.setEffects(effects, TooltipHelper.screen(this));
+        return widget;
     }
-
 }

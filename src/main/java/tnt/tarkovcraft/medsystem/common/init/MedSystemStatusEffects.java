@@ -24,6 +24,7 @@ public final class MedSystemStatusEffects {
     public static final Holder<StatusEffectType<?>> INJURY_RECOVERY = REGISTRY.register("injury_recovery", key -> StatusEffectType.builder(key, (time, pwr) -> new InjuryRecoveryStatusEffect(time, 1))
             .persist(InjuryRecoveryStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
+            .visibility(EffectVisibility.UI)
             .combineEffects(InjuryRecoveryStatusEffect::merge)
             .build()
     );

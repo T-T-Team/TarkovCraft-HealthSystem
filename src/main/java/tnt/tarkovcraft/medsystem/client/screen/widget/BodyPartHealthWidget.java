@@ -5,15 +5,25 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
+import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
+import tnt.tarkovcraft.core.common.data.Duration;
+import tnt.tarkovcraft.core.util.helper.MathHelper;
 import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BodyPartHealthWidget extends AbstractWidget {
 
@@ -25,11 +35,18 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private int backgroundColor = 0xFF << 24;
     private int textColor = ColorPalette.WHITE;
     private SimpleClickListener onClick;
+    private List<StatusEffect> effects;
+    private TooltipHelper tooltipHelper;
 
     public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
         super(x, y, width, height, part.getDisplayName().copy().withStyle(ChatFormatting.BOLD));
         this.font = font;
         this.part = part;
+    }
+
+    public void setEffects(List<StatusEffect> effects, TooltipHelper helper) {
+        this.effects = effects;
+        this.tooltipHelper = helper;
     }
 
     public void setClickListener(SimpleClickListener onClick) {
@@ -86,6 +103,24 @@ public class BodyPartHealthWidget extends AbstractWidget {
         int left = this.getX() + this.frameSize + 2;
         int right = this.getRight() - this.frameSize - 2;
         graphics.fillGradient(left, this.getBottom() - this.frameSize - 4, left + (int) ((right - left) * f), this.getBottom() - this.frameSize - 2, color, secondaryColor);
+
+        if (this.effects != null && !this.effects.isEmpty()) {
+            for (int i = 0; i < this.effects.size(); i++) {
+                StatusEffect effect = this.effects.get(i);
+                StatusEffectType<?> type = effect.getType();
+                int ex = this.getRight() + i * 12;
+                int ey = this.getY();
+                RenderUtils.blitFull(graphics, type.getIcon(), ex, ey, ex + 12, ey + 12, -1);
+                if (MathHelper.isWithinBounds(mouseX, mouseY, ex, ey, 12, 12)) {
+                    List<FormattedCharSequence> tooltip = new ArrayList<>();
+                    tooltip.addAll(this.tooltipHelper.split(type.getDisplayName().copy().withStyle(type.getEffectType())));
+                    if (!effect.isInfinite())
+                        tooltip.addAll(this.tooltipHelper.split(Duration.format(effect.getDuration()).copy().withStyle(ChatFormatting.DARK_GRAY)));
+
+                    this.tooltipHelper.setForNextRenderPass(tooltip);
+                }
+            }
+        }
     }
 
     @Override

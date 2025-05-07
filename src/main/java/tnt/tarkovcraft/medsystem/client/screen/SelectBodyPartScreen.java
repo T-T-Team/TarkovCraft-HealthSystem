@@ -15,6 +15,7 @@ import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.HealAttributes;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
+import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -65,6 +66,7 @@ public class SelectBodyPartScreen extends Screen {
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
             List<Component> statusEffectLabels = part.getStatusEffects().getEffectsStream()
+                    .filter(effect -> effect.getType().getVisibility().isVisibleInMode(EffectVisibility.UI))
                     .map(effect -> Component.literal("- ").append(effect.getType().getDisplayName().copy()).withStyle(ChatFormatting.DARK_GRAY))
                     .collect(Collectors.toList());
             if (!statusEffectLabels.isEmpty()) {

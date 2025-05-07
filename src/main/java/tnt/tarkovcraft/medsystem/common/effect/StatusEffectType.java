@@ -20,6 +20,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final MapCodec<S> codec;
     private final BinaryOperator<S> merger;
     private final EffectType effectType;
+    private final EffectVisibility visibility;
     private final boolean isGlobalEffect;
     private final ResourceLocation icon;
     private final Component displayName;
@@ -30,6 +31,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.codec = builder.codec;
         this.merger = builder.merger;
         this.effectType = builder.effectType;
+        this.visibility = builder.visibility;
         this.isGlobalEffect = builder.globalEffect;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
@@ -45,6 +47,10 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public EffectType getEffectType() {
         return effectType;
+    }
+
+    public EffectVisibility getVisibility() {
+        return visibility;
     }
 
     public Component getDisplayName() {
@@ -96,6 +102,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         private final Factory<S> factory;
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
+        private EffectVisibility visibility = EffectVisibility.ALWAYS;
         private BinaryOperator<S> merger = StatusEffect::merge;
         private boolean globalEffect;
 
@@ -111,6 +118,11 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         public Builder<S> type(EffectType type) {
             this.effectType = type;
+            return this;
+        }
+
+        public Builder<S> visibility(EffectVisibility visibility) {
+            this.visibility = visibility;
             return this;
         }
 
@@ -130,6 +142,7 @@ public final class StatusEffectType<S extends StatusEffect> {
             Objects.requireNonNull(this.codec, "Codec is required");
             Objects.requireNonNull(this.merger, "Merge function is required");
             Objects.requireNonNull(this.effectType, "Effect type is required");
+            Objects.requireNonNull(this.visibility, "Effect visibility is required");
 
             return new StatusEffectType<>(this);
         }

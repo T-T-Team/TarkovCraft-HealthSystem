@@ -17,8 +17,8 @@ import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
+import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
@@ -71,7 +71,7 @@ public class HealthLayer implements LayeredDraw.Layer {
             RenderUtils.fill(graphics, pos.x + 2, pos.y + 2, pos.x + pos.z - 2, pos.y + pos.w - 2, color);
         }
 
-        Stream<StatusEffect> effectStream = container.getStatusEffectStream();
+        Stream<StatusEffect> effectStream = container.getStatusEffectStream().filter(effect -> effect.getType().getVisibility().isVisibleInMode(EffectVisibility.ALWAYS));
         Map<StatusEffectType<?>, List<StatusEffect>> effects = effectStream.collect(Collectors.groupingBy(StatusEffect::getType, LinkedHashMap::new, Collectors.toList()));
         int index = 0;
         for (Map.Entry<StatusEffectType<?>, List<StatusEffect>> entry : effects.entrySet()) {
