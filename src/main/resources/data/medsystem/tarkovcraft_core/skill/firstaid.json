@@ -8,6 +8,124 @@
     "additionalExperience": 5.0,
     "maxExperience": 100.0
   },
-  "trackers": [],
-  "stats": []
+  "trackers": [
+    {
+      "id": "2fde38e4-2b0c-41b0-afc4-257fe2a22df1",
+      "event": "medsystem:healing_used",
+      "tracker": {
+        "type": "tarkovcraft_core:unrestricted",
+        "value": 0.25
+      }
+    }
+  ],
+  "stats": [
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.firstaid.bonus.positive_effect_duration"
+        },
+        "descriptionKey": "skill.medsystem.firstaid.bonus.positive_effect_duration.description",
+        "color": "#FFFFFF",
+        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:skill_level_range",
+          "min": 1
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:positive_effect_duration",
+        "id": "938488ce-b3bc-49f9-98f4-cc6135e3461a",
+        "levelValue": 0.004,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": 100,
+          "suffix": "%"
+        }
+      }
+    },
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.firstaid.bonus.positive_effect_chance"
+        },
+        "descriptionKey": "skill.medsystem.firstaid.bonus.positive_effect_chance.description",
+        "color": "#FFFFFF",
+        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:skill_level_range",
+          "min": 1
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:positive_effect_chance",
+        "id": "d2ced48c-2789-4ee1-97c3-f7f974a0a155",
+        "levelValue": 0.005,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": 100,
+          "suffix": "%"
+        }
+      }
+    },
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.firstaid.bonus.negative_effect_duration"
+        },
+        "descriptionKey": "skill.medsystem.firstaid.bonus.negative_effect_duration.description",
+        "color": "#FFFFFF",
+        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:skill_level_range",
+          "min": 1
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:negative_effect_duration",
+        "id": "b039b3ca-85d2-4b50-99c1-30b223477f6a",
+        "levelValue": -0.004,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": -100,
+          "suffix": "%"
+        }
+      }
+    },
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.firstaid.bonus.negative_effect_chance"
+        },
+        "descriptionKey": "skill.medsystem.firstaid.bonus.negative_effect_chance.description",
+        "color": "#FFFFFF",
+        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:skill_level_range",
+          "min": 1
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:negative_effect_chance",
+        "id": "770c5cf8-1989-4ce7-9249-4b8017f17b81",
+        "levelValue": -0.005,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": -100,
+          "suffix": "%"
+        }
+      }
+    }
+  ]
 }

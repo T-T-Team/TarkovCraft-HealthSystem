@@ -13,6 +13,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
+import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.HealAttributes;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -20,6 +21,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 
 import java.util.List;
@@ -59,6 +61,7 @@ public class HealingItem extends Item {
                 String partId = this.getSelectedBodyPart(stack);
                 BodyPart part = TextHelper.isNotBlank(partId) && container.hasBodyPart(partId) ? container.getBodyPart(partId) : null;
                 if (livingEntity.level() instanceof ServerLevel serverLevel) {
+                    SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, livingEntity);
                     stack.hurtAndBreak(1, serverLevel, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
                 }
                 float leftover = container.heal(amount, part);
@@ -110,6 +113,7 @@ public class HealingItem extends Item {
         }
         // Apply durability reduction
         if (!level.isClientSide()) {
+            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, livingEntity, consume);
             stack.hurtAndBreak(consume, (ServerLevel) level, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
         }
         // Remove saved body part and sync data

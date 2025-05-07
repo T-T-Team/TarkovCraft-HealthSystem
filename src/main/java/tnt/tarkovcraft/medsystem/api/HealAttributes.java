@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import tnt.tarkovcraft.core.common.attribute.Attribute;
+import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.data.Duration;
 import tnt.tarkovcraft.core.common.data.TickValue;
 import tnt.tarkovcraft.core.util.Codecs;
@@ -27,6 +29,7 @@ import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 
@@ -288,13 +291,17 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
 
         public void apply(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
             RandomSource source = entity.getRandom();
-            if (source.nextFloat() < this.chance) {
-                StatusEffectType<?> type = this.effect.value();
+            StatusEffectType<?> type = this.effect.value();
+            Holder<Attribute> chanceAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_CHANCE, MedSystemAttributes.NEGATIVE_EFFECT_CHANCE, null);
+            float effectChance = chanceAttribute != null ? this.chance * AttributeSystem.getFloatValue(entity, chanceAttribute, 1.0F) : this.chance;
+            if (source.nextFloat() < effectChance) {
                 if (!type.isGlobalEffect() && part == null) {
                     MedicalSystem.LOGGER.error(MedicalSystem.MARKER, "Failed to apply side effect {} as effect is not set as global, but target body part was not provided", effect);
                     return;
                 }
-                StatusEffect statusEffect = type.createInstance(this.duration, this.power);
+                Holder<Attribute> durationAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_DURATION, MedSystemAttributes.NEGATIVE_EFFECT_DURATION, null);
+                int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.duration) : this.duration;
+                StatusEffect statusEffect = type.createInstance(duration, this.power);
                 StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
                 effects.addEffect(statusEffect);
             }
