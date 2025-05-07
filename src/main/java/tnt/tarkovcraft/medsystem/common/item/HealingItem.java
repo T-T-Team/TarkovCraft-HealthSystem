@@ -53,7 +53,7 @@ public class HealingItem extends Item {
             return;
         int usageTimeElapsed = attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION) - remainingUseDuration + 1;
         if (usageTimeElapsed % healthRecovery.cycleDuration() == 0) {
-            int cycleLimit = healthRecovery.maxCycles();
+            int cycleLimit = healthRecovery.maxCycles() == 0 ? Integer.MAX_VALUE : healthRecovery.cycleDuration();
             int cycleIndex = usageTimeElapsed / healthRecovery.cycleDuration();
             if (cycleIndex <= cycleLimit) {
                 float amount = healthRecovery.healthPerCycle();
@@ -65,6 +65,9 @@ public class HealingItem extends Item {
                     stack.hurtAndBreak(1, serverLevel, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
                 }
                 float leftover = container.heal(amount, part);
+                if (leftover == amount) {
+                    livingEntity.useItemRemaining = 0;
+                }
                 if (leftover > 0 && container.canHeal(null, false)) {
                     container.heal(amount, null);
                 }

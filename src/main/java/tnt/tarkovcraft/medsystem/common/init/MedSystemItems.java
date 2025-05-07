@@ -32,6 +32,7 @@ public final class MedSystemItems {
             properties -> new HealingItem(
                     properties.durability(1)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
+                                    .setMinUseTime(Duration.seconds(2))
                                     .removesEffect(1, MedSystemStatusEffects.LIGHT_BLEED)
                                     .build()
                             )
@@ -42,6 +43,7 @@ public final class MedSystemItems {
             properties -> new HealingItem(
                     properties.durability(1)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
+                                    .setMinUseTime(Duration.seconds(3))
                                     .removesEffect(1, MedSystemStatusEffects.HEAVY_BLEED)
                                     .build()
                             )
@@ -52,6 +54,7 @@ public final class MedSystemItems {
             properties -> new HealingItem(
                     properties.durability(1)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
+                                    .setMinUseTime(Duration.seconds(5))
                                     .removesEffect(1, MedSystemStatusEffects.FRACTURE)
                                     .build()
                             )
@@ -63,6 +66,7 @@ public final class MedSystemItems {
                     properties.durability(4)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .setNoBodyPartSelection()
+                                    .setMinUseTime(Duration.seconds(3))
                                     .sideEffect(1.0F, Duration.minutes(5), MedSystemStatusEffects.PAIN_RELIEF)
                                     .build()
                             )
@@ -71,10 +75,10 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> FIRST_AID_KIT = REGISTRY.registerItem(
             "first_aid_kit",
             properties -> new HealingItem(
-                    properties.durability(20)
+                    properties.durability(30)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
-                                    .unrestrictedHealing(20, 1)
-                                    .removesEffect(3, MedSystemStatusEffects.LIGHT_BLEED)
+                                    .unrestrictedHealing(10, 2)
+                                    .removesEffect(4, MedSystemStatusEffects.LIGHT_BLEED)
                                     .build()
                             )
             )

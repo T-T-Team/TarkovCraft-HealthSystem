@@ -37,10 +37,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHealing, HealthRecovery health, List<EffectRecovery> recoveries, List<SideEffect> sideEffects) implements TooltipProvider {
+public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHealing deadLimbHealing, HealthRecovery health, List<EffectRecovery> recoveries, List<SideEffect> sideEffects) implements TooltipProvider {
 
     public static final Codec<HealAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealAttributes::applyGlobally),
+            Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealAttributes::minUseTime),
             DeadLimbHealing.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.deadLimbHealing)),
             HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)),
             EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealAttributes::recoveries),
@@ -48,11 +49,11 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
     ).apply(instance, HealAttributes::new));
 
     private HealAttributes(Builder builder) {
-        this(!builder.requiresSpecificBodyPart, builder.deadLimbHealing, builder.healthRecovery, builder.recoveries, builder.sideEffects);
+        this(!builder.requiresSpecificBodyPart, builder.minUseTime, builder.deadLimbHealing, builder.healthRecovery, builder.recoveries, builder.sideEffects);
     }
 
-    private HealAttributes(boolean applyGlobally, Optional<DeadLimbHealing> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<SideEffect> sideEffects) {
-        this(applyGlobally, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries, sideEffects);
+    private HealAttributes(boolean applyGlobally, int minUseTime, Optional<DeadLimbHealing> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<SideEffect> sideEffects) {
+        this(applyGlobally, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries, sideEffects);
     }
 
     public static Builder builder() {
@@ -67,7 +68,7 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
         if (this.health != null) {
             duration = this.health.getMaxUseDuration(max);
         }
-        return duration;
+        return Math.max(duration, this.minUseTime());
     }
 
     public boolean canUseOn(LivingEntity entity, ItemStack stack, HealthContainer container) {
@@ -311,6 +312,7 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
     public static final class Builder {
 
         private boolean requiresSpecificBodyPart = true;
+        private int minUseTime = 20;
         private DeadLimbHealing deadLimbHealing;
         private HealthRecovery healthRecovery;
         private final List<EffectRecovery> recoveries = new ArrayList<>();
@@ -322,6 +324,15 @@ public record HealAttributes(boolean applyGlobally, DeadLimbHealing deadLimbHeal
         public Builder setNoBodyPartSelection() {
             this.requiresSpecificBodyPart = false;
             return this;
+        }
+
+        public Builder setMinUseTime(int minUseTime) {
+            this.minUseTime = minUseTime;
+            return this;
+        }
+
+        public Builder setMinUseTime(TickValue minUseTime) {
+            return this.setMinUseTime(minUseTime.tickValue());
         }
 
         public DeadLimbHealing.SurgeryBuilder surgeryItem() {
