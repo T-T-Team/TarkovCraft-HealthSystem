@@ -179,7 +179,7 @@ public final class MedicalSystemEventHandler {
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         List<BodyPart> lostBodyParts = new ArrayList<>();
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
-            container.hurt(entity, event.getSource(), entry.getValue(), entry.getKey(), lostBodyParts::add);
+            container.hurt(context, entry.getValue(), entry.getKey(), lostBodyParts::add);
         }
         SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
         container.clearDamageContext();

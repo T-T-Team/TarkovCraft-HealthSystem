@@ -170,12 +170,20 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         entity.setHealth(health);
     }
 
-    public void hurt(LivingEntity entity, DamageSource source, float amount, BodyPart part, Consumer<BodyPart> onBodyPartLoss) {
+    public void hurt(DamageContext context, float amount, BodyPart part, Consumer<BodyPart> onBodyPartLoss) {
         float damage = Math.min(part.getHealth(), amount * part.getDamageScale());
         float leftover = amount - damage;
         boolean wasDead = part.isDead();
+        LivingEntity entity = context.getEntity();
+        DamageSource source = context.getSource();
+        ContextImpl ctx = ContextImpl.of(
+                MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                ContextKeys.LIVING_ENTITY, entity,
+                ContextKeys.DAMAGE_SOURCE, source
+        );
+        ctx.copyMissing(context.getData());
         part.hurt(damage);
-        part.trigger(ContextImpl.of(MedicalSystemContextKeys.HEALTH_CONTAINER, this, ContextKeys.LIVING_ENTITY, entity, ContextKeys.DAMAGE_SOURCE, source));
+        part.trigger(ctx);
         if (!part.isVital() && part.isDead() != wasDead) {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
             onBodyPartLoss.accept(part);
@@ -185,7 +193,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             BodyPart parent = this.bodyPartLinks.get(part);
             if (parent != null) {
                 float scale = parent.getParentDamageScale();
-                this.hurt(entity, source, leftover * scale, parent, onBodyPartLoss);
+                this.hurt(context, leftover * scale, parent, onBodyPartLoss);
             }
         }
     }
