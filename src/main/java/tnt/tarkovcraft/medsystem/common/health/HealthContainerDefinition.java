@@ -123,6 +123,7 @@ public final class HealthContainerDefinition {
         List<BodyPartDisplay> display = new ArrayList<>(this.display);
         display.addAll(other.display);
         display.removeIf(t -> deletedParts.contains(t.source()));
+        // TODO finish merging
         return validate(new HealthContainerDefinition(
                 this.replace,
                 targets,

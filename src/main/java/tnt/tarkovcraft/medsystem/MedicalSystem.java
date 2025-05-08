@@ -57,6 +57,9 @@ public final class MedicalSystem {
         MedSystemAttributes.REGISTRY.register(modEventBus);
         MedSystemStatusEffects.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
+        MedSystemChanceFunctions.REGISTRY.register(modEventBus);
+        MedSystemHealthReactionResponses.REGISTRY.register(modEventBus);
+        MedSystemHealthReactions.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -67,6 +70,9 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.TRANSFORM_CONDITION);
         event.register(MedSystemRegistries.TRANSFORM);
         event.register(MedSystemRegistries.STATUS_EFFECT);
+        event.register(MedSystemRegistries.HEALTH_REACTION);
+        event.register(MedSystemRegistries.HEALTH_REACTION_RESPONSE);
+        event.register(MedSystemRegistries.CHANCE_FUNCTION);
     }
 
     private void addReloadListeners(AddServerReloadListenersEvent event) {

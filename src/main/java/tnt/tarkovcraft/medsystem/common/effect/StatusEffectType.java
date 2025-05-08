@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import tnt.tarkovcraft.core.common.data.Duration;
-import tnt.tarkovcraft.core.common.data.TickValue;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
+import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Objects;

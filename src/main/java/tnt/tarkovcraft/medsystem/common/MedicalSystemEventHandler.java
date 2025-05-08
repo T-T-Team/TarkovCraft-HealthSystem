@@ -57,7 +57,7 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         if (amount > 0.0F && HealthSystem.hasCustomHealth(entity)) {
-            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(amount, null);
+            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(entity, amount, null);
             if (leftover > 0.0F) {
                 event.setAmount(amount - leftover);
             }
@@ -179,7 +179,7 @@ public final class MedicalSystemEventHandler {
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         List<BodyPart> lostBodyParts = new ArrayList<>();
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
-            container.hurt(entity, entry.getValue(), entry.getKey(), lostBodyParts::add);
+            container.hurt(entity, event.getSource(), entry.getValue(), entry.getKey(), lostBodyParts::add);
         }
         SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
         container.clearDamageContext();

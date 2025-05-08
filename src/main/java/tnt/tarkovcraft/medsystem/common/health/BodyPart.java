@@ -25,6 +25,7 @@ public final class BodyPart {
             StatusEffectMap.CODEC.fieldOf("statusEffects").forGetter(t -> t.statusEffects)
     ).apply(instance, BodyPart::new));
 
+    private BodyPartDefinition definition;
     private final String name;
     private final boolean vital;
     private final float originalMaxHealth;
@@ -51,6 +52,10 @@ public final class BodyPart {
         this.group = group;
         this.displayName = Component.translatable("medsystem.bodypart." + name);
         this.statusEffects = statusEffects;
+    }
+
+    public void setDefinition(BodyPartDefinition definition) {
+        this.definition = definition;
     }
 
     public String getName() {
@@ -126,9 +131,15 @@ public final class BodyPart {
         return this.statusEffects;
     }
 
+    public void trigger(WritableContext context) {
+        context.set(MedicalSystemContextKeys.BODY_PART, this);
+        this.definition.getReactions().forEach(def -> def.react(context));
+    }
+
     public void tick(WritableContext context) {
         context.set(MedicalSystemContextKeys.BODY_PART, this);
         this.statusEffects.tick(context);
+        this.definition.getReactions().forEach(def -> def.react(context));
     }
 
     @Override

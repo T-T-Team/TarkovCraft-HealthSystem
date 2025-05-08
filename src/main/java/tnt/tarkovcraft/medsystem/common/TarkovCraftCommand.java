@@ -13,7 +13,7 @@ import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.core.common.data.Duration;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;

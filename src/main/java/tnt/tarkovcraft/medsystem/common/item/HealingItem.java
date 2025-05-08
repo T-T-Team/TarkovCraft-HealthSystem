@@ -64,12 +64,12 @@ public class HealingItem extends Item {
                     SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, livingEntity);
                     stack.hurtAndBreak(1, serverLevel, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
                 }
-                float leftover = container.heal(amount, part);
+                float leftover = container.heal(livingEntity, amount, part);
                 if (leftover == amount) {
                     livingEntity.useItemRemaining = 0;
                 }
                 if (leftover > 0 && container.canHeal(null, false)) {
-                    container.heal(amount, null);
+                    container.heal(livingEntity, amount, null);
                 }
                 container.updateHealth(livingEntity);
                 if (cycleIndex + 1 > cycleLimit) {

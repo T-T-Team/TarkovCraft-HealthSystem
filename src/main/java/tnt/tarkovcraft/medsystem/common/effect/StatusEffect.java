@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import tnt.tarkovcraft.core.common.data.TickValue;
+import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.context.Context;
 
 public interface StatusEffect {
@@ -16,6 +16,8 @@ public interface StatusEffect {
     void setDuration(int duration);
 
     int getPower();
+
+    StatusEffect copy();
 
     default void setDuration(TickValue duration) {
         this.setDuration(duration.tickValue());
@@ -40,8 +42,12 @@ public interface StatusEffect {
         if (b.getPower() > a.getPower()) {
             return b;
         }
-        int duration = a.getDuration();
-        a.setDuration(duration + b.getDuration());
+        if (a.isInfinite() || b.isInfinite()) {
+            a.setDuration(-1);
+        } else {
+            int duration = a.getDuration();
+            a.setDuration(duration + b.getDuration());
+        }
         return a;
     }
 }

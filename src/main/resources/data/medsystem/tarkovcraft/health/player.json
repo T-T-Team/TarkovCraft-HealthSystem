@@ -17,7 +17,19 @@
       "parent": "body",
       "parentDamageScale": 0.5,
       "health": 8.0,
-      "group": "STOMACH"
+      "group": "STOMACH",
+      "reactions": {
+        "aad26c66-35ae-4946-a080-20fb69131eb1": {
+          "source": {
+            "type": "medsystem:dead_body_part"
+          },
+          "events": {
+            "type": "medsystem:mob_effect",
+            "effect": "minecraft:hunger",
+            "duration": 50
+          }
+        }
+      }
     },
     "rightArm": {
       "parent": "body",
@@ -35,13 +47,119 @@
       "parent": "stomach",
       "parentDamageScale": 0.5,
       "health": 7.0,
-      "group": "LEG"
+      "group": "LEG",
+      "reactions": {
+        "212afefb-5b0b-400f-81ad-4088a2f871e0": {
+          "source": {
+            "type": "medsystem:and",
+            "values": [
+              {
+                "type": "medsystem:or",
+                "values": [
+                  {
+                    "type": "medsystem:dead_body_part"
+                  },
+                  {
+                    "type": "medsystem:has_effect",
+                    "effect": "medsystem:fracture"
+                  }
+                ]
+              },
+              {
+                "type": "medsystem:not",
+                "value": {
+                  "type": "medsystem:has_effect",
+                  "effect": "medsystem:pain_relief"
+                }
+              }
+            ]
+          },
+          "events": {
+            "type": "medsystem:mob_effect",
+            "effect": "minecraft:slowness",
+            "duration": 40,
+            "amplifier": 2
+          }
+        },
+        "65df1c8c-5ed4-4101-8d47-e1d8a8eb78e2": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "minecraft:is_fall",
+            "chance": 0.05,
+            "chanceModifiers": [
+              {
+                "type": "medsystem:fall_distance",
+                "scale": 1.25
+              }
+            ]
+          },
+          "events": {
+            "type": "medsystem:effect",
+            "effect": {
+              "type": "medsystem:fracture"
+            }
+          }
+        }
+      }
     },
     "leftLeg": {
       "parent": "stomach",
       "parentDamageScale": 0.5,
       "health": 7.0,
-      "group": "LEG"
+      "group": "LEG",
+      "reactions": {
+        "212afefb-5b0b-400f-81ad-4088a2f871e0": {
+          "source": {
+            "type": "medsystem:and",
+            "values": [
+              {
+                "type": "medsystem:or",
+                "values": [
+                  {
+                    "type": "medsystem:dead_body_part"
+                  },
+                  {
+                    "type": "medsystem:has_effect",
+                    "effect": "medsystem:fracture"
+                  }
+                ]
+              },
+              {
+                "type": "medsystem:not",
+                "value": {
+                  "type": "medsystem:has_effect",
+                  "effect": "medsystem:pain_relief"
+                }
+              }
+            ]
+          },
+          "events": {
+            "type": "medsystem:mob_effect",
+            "effect": "minecraft:slowness",
+            "duration": 40,
+            "amplifier": 2
+          }
+        },
+        "65df1c8c-5ed4-4101-8d47-e1d8a8eb78e2": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "minecraft:is_fall",
+            "chance": 0.05,
+            "chanceModifiers": [
+              {
+                "type": "medsystem:fall_distance",
+                "scale": 1.25
+              }
+            ]
+          },
+          "events": {
+            "type": "medsystem:effect",
+            "effect": {
+              "type": "medsystem:fracture"
+            }
+          }
+        }
+      }
     }
   },
   "hitboxes": [
@@ -366,73 +484,6 @@
       "size": [ 0.15, 0.375 ]
     }
   ],
-  "effects": {
-    "38eb4ebd-9521-4488-a608-342e76033a02": {
-      "effect": {
-        "type": "medsystem:fracture"
-      },
-      "sources": [
-        {
-          "type": "medsystem:is_damage_type",
-          "tag": "minecraft:is_fall",
-          "chance": 0.05,
-          "functions": [
-            {
-              "type": "medsystem:fall_distance",
-              "scale": 0.25
-            }
-          ]
-        }
-      ]
-    },
-    "6e55311f-cd6b-4d51-990f-8fdf5cea5e23": {
-      "effect": {
-        "type": "medsystem:light_bleed"
-      },
-      "sources": [
-        {
-          "type": "medsystem:has_effect",
-          "effect": "medsystem:heavy_bleed",
-          "elseApply": {
-            "type": "medsystem:damage_type",
-            "tag": "medsystem:bleed_causing",
-            "chance": 0.05,
-            "functions": [
-              {
-                "type": "medsystem:damage_scale",
-                "scale": 0.75
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "b3982016-5c55-436a-9000-236b363f84ca": {
-      "effect": {
-        "type": "medsystem:heavy_bleed"
-      },
-      "sources": [
-        {
-          "type": "medsystem:damage_type",
-          "tag": "medsystem:bleed_causing",
-          "chance": 0.05,
-          "functions": [
-            {
-              "type": "medsystem:damage_scale",
-              "scale": 0.75
-            }
-          ]
-        }
-      ],
-      "onApply": [
-        {
-          "chance": 1.0,
-          "event": "medsystem:remove_effect",
-          "effect": "medsystem:light_bleed"
-        }
-      ]
-    }
-  },
   "hud": [
     {
       "source": "head",

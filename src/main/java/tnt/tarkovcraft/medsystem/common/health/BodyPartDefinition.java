@@ -2,11 +2,13 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.util.ExtraCodecs;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.medsystem.common.health.reaction.ReactionDefinition;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.*;
 
 public final class BodyPartDefinition {
 
@@ -16,7 +18,8 @@ public final class BodyPartDefinition {
             Codec.floatRange(0.0F, 10.0F).optionalFieldOf("parentDamageScale", 1.0F).forGetter(t -> t.parentDamageScale),
             Codec.floatRange(0.0F, 10.0F).optionalFieldOf("damageScale", 1.0F).forGetter(t -> t.damageScale),
             ExtraCodecs.POSITIVE_FLOAT.fieldOf("health").forGetter(t -> t.maxHealth),
-            Codecs.enumCodec(BodyPartGroup.class).optionalFieldOf("group", BodyPartGroup.OTHER).forGetter(t -> t.bodyPartGroup)
+            Codecs.enumCodec(BodyPartGroup.class).optionalFieldOf("group", BodyPartGroup.OTHER).forGetter(t -> t.bodyPartGroup),
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, ReactionDefinition.CODEC).optionalFieldOf("reactions", Collections.emptyMap()).forGetter(t -> t.reactions)
     ).apply(instance, BodyPartDefinition::new));
 
     private final boolean vital;
@@ -26,14 +29,16 @@ public final class BodyPartDefinition {
     private final float damageScale;
     private final float maxHealth;
     private final BodyPartGroup bodyPartGroup;
+    private final Map<UUID, ReactionDefinition> reactions;
 
-    public BodyPartDefinition(boolean vital, Optional<String> parent, float parentDamageScale, float damageScale, float maxHealth, BodyPartGroup bodyPartGroup) {
+    public BodyPartDefinition(boolean vital, Optional<String> parent, float parentDamageScale, float damageScale, float maxHealth, BodyPartGroup bodyPartGroup, Map<UUID, ReactionDefinition> reactions) {
         this.vital = vital;
         this.parent = parent.orElse(null);
         this.parentDamageScale = parentDamageScale;
         this.damageScale = damageScale;
         this.maxHealth = maxHealth;
         this.bodyPartGroup = bodyPartGroup;
+        this.reactions = reactions;
     }
 
     @Nullable
@@ -50,7 +55,13 @@ public final class BodyPartDefinition {
     }
 
     public BodyPart createContainer(String key) {
-        return new BodyPart(key, this.vital, this.maxHealth, this.parentDamageScale, this.damageScale, this.bodyPartGroup);
+        BodyPart part = new BodyPart(key, this.vital, this.maxHealth, this.parentDamageScale, this.damageScale, this.bodyPartGroup);
+        part.setDefinition(this);
+        return part;
+    }
+
+    public Collection<ReactionDefinition> getReactions() {
+        return reactions.values();
     }
 
     public BodyPartGroup getBodyPartGroup() {

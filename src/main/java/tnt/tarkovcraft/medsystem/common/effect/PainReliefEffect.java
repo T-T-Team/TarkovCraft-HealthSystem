@@ -59,6 +59,11 @@ public class PainReliefEffect extends AttributeModifyingStatusEffect {
     }
 
     @Override
+    public StatusEffect copy() {
+        return new PainReliefEffect(this.getDuration());
+    }
+
+    @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.PAIN_RELIEF.value();
     }

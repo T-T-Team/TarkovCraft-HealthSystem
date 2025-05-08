@@ -26,6 +26,11 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
     }
 
     @Override
+    public StatusEffect copy() {
+        return new HeavyBleedStatusEffect(this.getDuration());
+    }
+
+    @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.HEAVY_BLEED.value();
     }

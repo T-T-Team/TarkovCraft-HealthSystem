@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.common.init;
 import net.minecraft.core.component.DataComponents;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import tnt.tarkovcraft.core.common.data.Duration;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.HealAttributes;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;

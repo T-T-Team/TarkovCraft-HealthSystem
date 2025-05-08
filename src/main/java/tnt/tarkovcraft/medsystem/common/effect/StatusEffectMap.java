@@ -82,7 +82,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     }
 
     public void removeAll(Context context) {
-        Collection<StatusEffectType<?>> keys = this.effects.keySet();
+        Collection<StatusEffectType<?>> keys = new ArrayList<>(this.effects.keySet());
         for (StatusEffectType<?> key : keys) {
             this.remove(key, context);
         }

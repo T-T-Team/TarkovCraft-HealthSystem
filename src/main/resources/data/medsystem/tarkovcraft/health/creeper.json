@@ -17,7 +17,20 @@
       "parent": "body",
       "parentDamageScale": 0.7,
       "health": 10.0,
-      "group": "LEG"
+      "group": "LEG",
+      "reactions": {
+        "dbf9943e-f839-4006-86c1-19974cc0436d": {
+          "source": {
+            "type": "medsystem:dead_body_part"
+          },
+          "events": {
+            "type": "medsystem:mob_effect",
+            "effect": "minecraft:slowness",
+            "duration": -1,
+            "amplifier": 2
+          }
+        }
+      }
     }
   },
   "hitboxes": [

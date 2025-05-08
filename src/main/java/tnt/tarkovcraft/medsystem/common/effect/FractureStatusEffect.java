@@ -13,6 +13,11 @@ public class FractureStatusEffect implements StatusEffect {
     }
 
     @Override
+    public StatusEffect copy() {
+        return this;
+    }
+
+    @Override
     public void apply(Context context) {
     }
 

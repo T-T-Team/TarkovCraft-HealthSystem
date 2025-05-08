@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
@@ -169,11 +170,12 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         entity.setHealth(health);
     }
 
-    public void hurt(LivingEntity entity, float amount, BodyPart part, Consumer<BodyPart> onBodyPartLoss) {
+    public void hurt(LivingEntity entity, DamageSource source, float amount, BodyPart part, Consumer<BodyPart> onBodyPartLoss) {
         float damage = Math.min(part.getHealth(), amount * part.getDamageScale());
         float leftover = amount - damage;
         boolean wasDead = part.isDead();
         part.hurt(damage);
+        part.trigger(ContextImpl.of(MedicalSystemContextKeys.HEALTH_CONTAINER, this, ContextKeys.LIVING_ENTITY, entity, ContextKeys.DAMAGE_SOURCE, source));
         if (!part.isVital() && part.isDead() != wasDead) {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
             onBodyPartLoss.accept(part);
@@ -183,7 +185,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             BodyPart parent = this.bodyPartLinks.get(part);
             if (parent != null) {
                 float scale = parent.getParentDamageScale();
-                this.hurt(entity, leftover * scale, parent, onBodyPartLoss);
+                this.hurt(entity, source, leftover * scale, parent, onBodyPartLoss);
             }
         }
     }
@@ -195,11 +197,15 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return this.getPartToHeal(allowDead) != null;
     }
 
-    public float heal(float amount, @Nullable BodyPart targetPart) {
+    public float heal(LivingEntity entity, float amount, @Nullable BodyPart targetPart) {
         if (targetPart != null && !targetPart.isDead()) {
             // Heal specific body part only
             float healAmount = Math.min(amount, targetPart.getMaxHealAmount());
             targetPart.heal(healAmount);
+            targetPart.trigger(ContextImpl.of(
+                    MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                    ContextKeys.LIVING_ENTITY, entity
+            ));
             return amount - healAmount;
         } else {
             // Heal body parts, prioritize vitals, then according to health
@@ -207,6 +213,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             while (amount > 0.0F && (part = this.getPartToHeal(false)) != null) {
                 float healAmount = Math.min(amount, part.getMaxHealAmount());
                 part.heal(healAmount);
+                part.trigger(ContextImpl.of(
+                        MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                        ContextKeys.LIVING_ENTITY, entity
+                ));
                 amount -= healAmount;
             }
         }
@@ -293,15 +303,17 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         for (Map.Entry<String, BodyPartDefinition> health : definition.getBodyParts().entrySet()) {
             String part = health.getKey();
             String parent = health.getValue().getParent();
+            BodyPart bodyPart = this.bodyParts.get(part);
             if (parent == null) {
                 root = part;
             } else {
-                links.put(this.bodyParts.get(part), this.bodyParts.get(parent));
+                links.put(bodyPart, this.bodyParts.get(parent));
             }
             BodyPartDefinition healthDef = health.getValue();
             if (healthDef.isVital()) {
-                vitalParts.add(this.bodyParts.get(part));
+                vitalParts.add(bodyPart);
             }
+            bodyPart.setDefinition(healthDef);
         }
         return root;
     }

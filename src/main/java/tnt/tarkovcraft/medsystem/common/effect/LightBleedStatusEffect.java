@@ -26,6 +26,11 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
     }
 
     @Override
+    public StatusEffect copy() {
+        return new LightBleedStatusEffect(this.getDuration());
+    }
+
+    @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.LIGHT_BLEED.value();
     }

@@ -96,6 +96,11 @@ public class InjuryRecoveryStatusEffect implements StatusEffect {
     }
 
     @Override
+    public StatusEffect copy() {
+        return new InjuryRecoveryStatusEffect(duration, reduction);
+    }
+
+    @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.INJURY_RECOVERY.value();
     }

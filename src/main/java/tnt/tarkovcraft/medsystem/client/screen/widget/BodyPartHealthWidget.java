@@ -5,14 +5,16 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
-import tnt.tarkovcraft.core.common.data.Duration;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
+import tnt.tarkovcraft.core.common.data.duration.DurationFormatSettings;
+import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
+import tnt.tarkovcraft.core.common.data.duration.DurationUnit;
 import tnt.tarkovcraft.core.util.helper.MathHelper;
 import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -23,6 +25,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BodyPartHealthWidget extends AbstractWidget {
@@ -114,9 +117,12 @@ public class BodyPartHealthWidget extends AbstractWidget {
                 if (MathHelper.isWithinBounds(mouseX, mouseY, ex, ey, 12, 12)) {
                     List<FormattedCharSequence> tooltip = new ArrayList<>();
                     tooltip.addAll(this.tooltipHelper.split(type.getDisplayName().copy().withStyle(type.getEffectType())));
-                    if (!effect.isInfinite())
-                        tooltip.addAll(this.tooltipHelper.split(Duration.format(effect.getDuration()).copy().withStyle(ChatFormatting.DARK_GRAY)));
-
+                    if (!effect.isInfinite()) {
+                        DurationFormatSettings settings = new DurationFormatSettings();
+                        settings.setIncludeZeroValues(true);
+                        settings.setUnits(Arrays.asList(DurationUnit.HOURS, DurationUnit.MINUTES, DurationUnit.SECONDS));
+                        tooltip.addAll(this.tooltipHelper.split(Duration.format(effect.getDuration(), settings, DurationFormats.TIME).copy().withStyle(ChatFormatting.DARK_GRAY)));
+                    }
                     this.tooltipHelper.setForNextRenderPass(tooltip);
                 }
             }
