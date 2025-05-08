@@ -7,6 +7,7 @@ import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 
 import java.util.Set;
 
+@Deprecated
 public record ArmorStat(Set<BodyPartGroup> protectedArea) {
 
     public static final Codec<ArmorStat> CODEC = RecordCodecBuilder.create(instance -> instance.group(

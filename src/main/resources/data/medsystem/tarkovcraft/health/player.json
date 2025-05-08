@@ -6,12 +6,80 @@
       "damageScale": 0.75,
       "health": 6.0,
       "vital": true,
-      "group": "HEAD"
+      "group": "HEAD",
+      "reactions": {
+        "0573cc1d-9490-4067-a68f-cdbafa7ac065": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:bleed_causing",
+            "chance": 0.025
+          },
+          "events": {
+            "type": "medsystem:weighted",
+            "values": [
+              {
+                "weight": 4,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:light_bleed",
+                    "duration": -1
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:heavy_bleed",
+                    "duration": -1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     },
     "body": {
       "health": 10.0,
       "vital": true,
-      "group": "TORSO"
+      "group": "TORSO",
+      "reactions": {
+        "0573cc1d-9490-4067-a68f-cdbafa7ac065": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:bleed_causing",
+            "chance": 0.025
+          },
+          "events": {
+            "type": "medsystem:weighted",
+            "values": [
+              {
+                "weight": 4,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:light_bleed",
+                    "duration": -1
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:heavy_bleed",
+                    "duration": -1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     },
     "stomach": {
       "parent": "body",
@@ -28,6 +96,38 @@
             "effect": "minecraft:hunger",
             "duration": 50
           }
+        },
+        "0573cc1d-9490-4067-a68f-cdbafa7ac065": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:bleed_causing",
+            "chance": 0.025
+          },
+          "events": {
+            "type": "medsystem:weighted",
+            "values": [
+              {
+                "weight": 4,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:light_bleed",
+                    "duration": -1
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:heavy_bleed",
+                    "duration": -1
+                  }
+                }
+              }
+            ]
+          }
         }
       }
     },
@@ -35,13 +135,81 @@
       "parent": "body",
       "parentDamageScale": 0.4,
       "health": 6.0,
-      "group": "ARM"
+      "group": "ARM",
+      "reactions": {
+        "0573cc1d-9490-4067-a68f-cdbafa7ac065": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:bleed_causing",
+            "chance": 0.025
+          },
+          "events": {
+            "type": "medsystem:weighted",
+            "values": [
+              {
+                "weight": 4,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:light_bleed",
+                    "duration": -1
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:heavy_bleed",
+                    "duration": -1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     },
     "leftArm": {
       "parent": "body",
       "parentDamageScale": 0.4,
       "health": 6.0,
-      "group": "ARM"
+      "group": "ARM",
+      "reactions": {
+        "0573cc1d-9490-4067-a68f-cdbafa7ac065": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:bleed_causing",
+            "chance": 0.025
+          },
+          "events": {
+            "type": "medsystem:weighted",
+            "values": [
+              {
+                "weight": 4,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:light_bleed",
+                    "duration": -1
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:heavy_bleed",
+                    "duration": -1
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     },
     "rightLeg": {
       "parent": "stomach",
@@ -96,8 +264,41 @@
           "events": {
             "type": "medsystem:effect",
             "effect": {
-              "type": "medsystem:fracture"
+              "type": "medsystem:fracture",
+              "duration": -1
             }
+          }
+        },
+        "0573cc1d-9490-4067-a68f-cdbafa7ac065": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:bleed_causing",
+            "chance": 0.025
+          },
+          "events": {
+            "type": "medsystem:weighted",
+            "values": [
+              {
+                "weight": 4,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:light_bleed",
+                    "duration": -1
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:heavy_bleed",
+                    "duration": -1
+                  }
+                }
+              }
+            ]
           }
         }
       }
@@ -155,8 +356,41 @@
           "events": {
             "type": "medsystem:effect",
             "effect": {
-              "type": "medsystem:fracture"
+              "type": "medsystem:fracture",
+              "duration": -1
             }
+          }
+        },
+        "0573cc1d-9490-4067-a68f-cdbafa7ac065": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:bleed_causing",
+            "chance": 0.025
+          },
+          "events": {
+            "type": "medsystem:weighted",
+            "values": [
+              {
+                "weight": 4,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:light_bleed",
+                    "duration": -1
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "type": "medsystem:effect",
+                  "effect": {
+                    "type": "medsystem:heavy_bleed",
+                    "duration": -1
+                  }
+                }
+              }
+            ]
           }
         }
       }

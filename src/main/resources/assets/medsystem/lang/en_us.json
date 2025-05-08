@@ -79,5 +79,10 @@
   "screen.medsystem.select_body_part.text.click_to_select": "Click to select",
   "screen.medsystem.select_body_part.text.status_effects": "Status effects:",
 
-  "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation"
+  "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation",
+
+  "death.attack.medsystem.bleed": "%s has bled out",
+  "death.attack.medsystem.bleed.player": "%s has bled out while fighting %s",
+  "death.attack.medsystem.broken_leg": "%s has died due to fracture",
+  "death.attack.medsystem.broken_leg.player": "%s has died due to fracture while fighting %s"
 }
