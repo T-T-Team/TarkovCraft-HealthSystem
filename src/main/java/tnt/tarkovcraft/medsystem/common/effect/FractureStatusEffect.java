@@ -1,20 +1,21 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-public class FractureStatusEffect implements StatusEffect {
+public class FractureStatusEffect extends StatusEffect {
 
-    public static final FractureStatusEffect INSTANCE = new FractureStatusEffect();
-    public static final MapCodec<FractureStatusEffect> CODEC = MapCodec.unit(INSTANCE);
+    public static final MapCodec<FractureStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, FractureStatusEffect::new));
 
-    private FractureStatusEffect() {
+    public FractureStatusEffect(int duration, int delay) {
+        super(duration, delay);
     }
 
     @Override
     public StatusEffect copy() {
-        return this;
+        return new FractureStatusEffect(this.getDuration(), this.getDelay());
     }
 
     @Override
@@ -22,26 +23,8 @@ public class FractureStatusEffect implements StatusEffect {
     }
 
     @Override
-    public void onRemoved(Context context) {
-    }
-
-    @Override
-    public int getDuration() {
-        return 0;
-    }
-
-    @Override
-    public void setDuration(int duration) {
-    }
-
-    @Override
-    public int getPower() {
-        return 0;
-    }
-
-    @Override
-    public boolean isInfinite() {
-        return true;
+    public StatusEffect onRemoved(Context context) {
+        return null;
     }
 
     @Override

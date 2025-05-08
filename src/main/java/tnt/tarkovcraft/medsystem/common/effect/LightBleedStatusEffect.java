@@ -1,18 +1,15 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 public class LightBleedStatusEffect extends BleedStatusEffect {
 
-    public static final MapCodec<LightBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
-            Codec.INT.fieldOf("duration").forGetter(BleedStatusEffect::getDuration)
-    ).apply(instance, LightBleedStatusEffect::new));
+    public static final MapCodec<LightBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, LightBleedStatusEffect::new));
 
-    public LightBleedStatusEffect(int duration) {
-        super(duration);
+    public LightBleedStatusEffect(int duration, int delay) {
+        super(duration, delay);
     }
 
     @Override
@@ -27,7 +24,7 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public StatusEffect copy() {
-        return new LightBleedStatusEffect(this.getDuration());
+        return new LightBleedStatusEffect(this.getDuration(), this.getDelay());
     }
 
     @Override

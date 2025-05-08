@@ -57,24 +57,32 @@ public final class StatusEffectType<S extends StatusEffect> {
         return displayName;
     }
 
-    public S createInstance(int duration, int power) {
-        return this.factory.createNew(duration, power);
+    public S createDelayedEffect(int duration, int delay) {
+        return this.factory.createNew(duration, delay);
     }
 
-    public S createInstance(TickValue duration, int power) {
-        return this.createInstance(duration.tickValue(), power);
+    public S createDelayedEffect(TickValue duration, int delay) {
+        return this.createDelayedEffect(duration.tickValue(), delay);
     }
 
-    public S createInstance(int duration) {
-        return this.createInstance(duration, 0);
+    public S createDelayedEffect(int duration, TickValue delay) {
+        return this.createDelayedEffect(duration, delay.tickValue());
     }
 
-    public S createInstance(TickValue duration) {
-        return this.createInstance(duration.tickValue());
+    public S createDelayedEffect(TickValue duration, TickValue delay) {
+        return this.createDelayedEffect(duration.tickValue(), delay.tickValue());
     }
 
-    public S createInstance() {
-        return this.createInstance(Duration.minutes(1));
+    public S createImmediateEffect(int duration) {
+        return this.createDelayedEffect(duration, 0);
+    }
+
+    public S createImmediateEffect(TickValue duration) {
+        return this.createImmediateEffect(duration.tickValue());
+    }
+
+    public S createImmediateEffect() {
+        return this.createImmediateEffect(Duration.minutes(1));
     }
 
     public boolean isGlobalEffect() {
@@ -150,6 +158,6 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     @FunctionalInterface
     public interface Factory<S extends StatusEffect> {
-        S createNew(int duration, int power);
+        S createNew(int duration, int delay);
     }
 }

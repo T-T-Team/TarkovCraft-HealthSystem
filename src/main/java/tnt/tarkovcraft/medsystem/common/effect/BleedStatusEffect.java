@@ -10,12 +10,10 @@ import tnt.tarkovcraft.medsystem.api.BodyPartDamageSource;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 
-public abstract class BleedStatusEffect implements StatusEffect {
+public abstract class BleedStatusEffect extends StatusEffect {
 
-    private int duration;
-
-    public BleedStatusEffect(int duration) {
-        this.duration = duration;
+    public BleedStatusEffect(int duration, int delay) {
+        super(duration, delay);
     }
 
     public abstract long getDamageInterval();
@@ -38,21 +36,7 @@ public abstract class BleedStatusEffect implements StatusEffect {
     }
 
     @Override
-    public void onRemoved(Context context) {
-    }
-
-    @Override
-    public int getDuration() {
-        return this.duration;
-    }
-
-    @Override
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    @Override
-    public int getPower() {
-        return 0;
+    public StatusEffect onRemoved(Context context) {
+        return null;
     }
 }

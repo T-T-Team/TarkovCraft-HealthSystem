@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -17,15 +16,11 @@ import java.util.UUID;
 
 public class PainReliefEffect extends AttributeModifyingStatusEffect {
 
-    public static final MapCodec<PainReliefEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.INT.fieldOf("duration").forGetter(StatusEffect::getDuration)
-    ).apply(instance, PainReliefEffect::new));
+    public static final MapCodec<PainReliefEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, PainReliefEffect::new));
     public static final UUID PAIN_RELIEF_MODIFIER_ID = UUID.fromString("03d3708f-37bf-42a9-8599-b8af97cc7b4f");
 
-    private int duration;
-
-    public PainReliefEffect(int duration) {
-        this.duration = duration;
+    public PainReliefEffect(int duration, int delay) {
+        super(duration, delay);
     }
 
     @Override
@@ -44,23 +39,8 @@ public class PainReliefEffect extends AttributeModifyingStatusEffect {
     }
 
     @Override
-    public int getDuration() {
-        return duration;
-    }
-
-    @Override
-    public int getPower() {
-        return 0;
-    }
-
-    @Override
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    @Override
     public StatusEffect copy() {
-        return new PainReliefEffect(this.getDuration());
+        return new PainReliefEffect(this.getDuration(), this.getDelay());
     }
 
     @Override

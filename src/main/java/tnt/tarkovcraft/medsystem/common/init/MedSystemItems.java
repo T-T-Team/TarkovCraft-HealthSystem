@@ -73,7 +73,7 @@ public final class MedSystemItems {
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealAttributes.builder()
                                     .setNoBodyPartSelection()
                                     .setMinUseTime(Duration.seconds(3))
-                                    .sideEffect(1.0F, Duration.minutes(5), MedSystemStatusEffects.PAIN_RELIEF)
+                                    .sideEffect(1.0F, Duration.minutes(5), Duration.seconds(30), MedSystemStatusEffects.PAIN_RELIEF)
                                     .build()
                             )
             )

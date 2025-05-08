@@ -1,18 +1,17 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
+import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
-    public static final MapCodec<HeavyBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
-            Codec.INT.fieldOf("duration").forGetter(BleedStatusEffect::getDuration)
-    ).apply(instance, HeavyBleedStatusEffect::new));
+    public static final MapCodec<HeavyBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, HeavyBleedStatusEffect::new));
 
-    public HeavyBleedStatusEffect(int duration) {
-        super(duration);
+    public HeavyBleedStatusEffect(int duration, int delay) {
+        super(duration, delay);
     }
 
     @Override
@@ -27,7 +26,15 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public StatusEffect copy() {
-        return new HeavyBleedStatusEffect(this.getDuration());
+        return new HeavyBleedStatusEffect(this.getDuration(), this.getDelay());
+    }
+
+    @Override
+    public StatusEffect onRemoved(Context context) {
+        return new FreshWoundStatusEffect(
+                Duration.minutes(5).tickValue(),
+                Duration.seconds(5).tickValue()
+        );
     }
 
     @Override

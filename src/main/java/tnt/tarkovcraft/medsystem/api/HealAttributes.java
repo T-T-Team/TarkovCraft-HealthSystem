@@ -19,6 +19,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import tnt.tarkovcraft.core.common.attribute.Attribute;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
+import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.core.util.context.Context;
@@ -37,16 +38,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHealing deadLimbHealing, HealthRecovery health, List<EffectRecovery> recoveries, List<SideEffect> sideEffects) implements TooltipProvider {
+public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHealing deadLimbHealing,
+                             HealthRecovery health, List<EffectRecovery> recoveries,
+                             List<SideEffect> sideEffects) implements TooltipProvider {
 
-    public static final Codec<HealAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealAttributes::applyGlobally),
-            Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealAttributes::minUseTime),
-            DeadLimbHealing.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.deadLimbHealing)),
-            HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)),
-            EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealAttributes::recoveries),
-            SideEffect.CODEC.listOf().optionalFieldOf("sideEffects", Collections.emptyList()).forGetter(HealAttributes::sideEffects)
-    ).apply(instance, HealAttributes::new));
+    public static final Codec<HealAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealAttributes::applyGlobally), Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealAttributes::minUseTime), DeadLimbHealing.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.deadLimbHealing)), HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)), EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealAttributes::recoveries), SideEffect.CODEC.listOf().optionalFieldOf("sideEffects", Collections.emptyList()).forGetter(HealAttributes::sideEffects)).apply(instance, HealAttributes::new));
 
     private HealAttributes(Builder builder) {
         this(!builder.requiresSpecificBodyPart, builder.minUseTime, builder.deadLimbHealing, builder.healthRecovery, builder.recoveries, builder.sideEffects);
@@ -135,11 +131,7 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.title").withStyle(ChatFormatting.GRAY));
             this.recoveries.forEach(recovery -> {
                 StatusEffectType<?> type = recovery.effect.value();
-                MutableComponent recoveryLabel = Component.literal(" - ")
-                        .append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(recovery.consumption)))
-                        .append(" - ")
-                        .append(type.getDisplayName())
-                        .withStyle(ChatFormatting.DARK_GRAY);
+                MutableComponent recoveryLabel = Component.literal(" - ").append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(recovery.consumption))).append(" - ").append(type.getDisplayName()).withStyle(ChatFormatting.DARK_GRAY);
                 tooltipAdder.accept(recoveryLabel);
             });
         }
@@ -148,24 +140,26 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
             this.sideEffects.forEach(effect -> {
                 StatusEffectType<?> type = effect.effect.value();
                 EffectType effectType = type.getEffectType();
-                MutableComponent probability = Component.literal(" - " + String.format(Locale.ROOT, "%.1f%%", effect.chance * 100) + " ")
-                        .append(type.getDisplayName())
+                MutableComponent component = Component.literal(" - ");
+                if (effect.chance < 1.0F) {
+                    component.append(String.format(Locale.ROOT, "%.1f%%", effect.chance * 100) + " ");
+                }
+                component.append(type.getDisplayName())
                         .append(" / ")
-                        .append(Duration.format(effect.duration));
-                tooltipAdder.accept(probability.withStyle(effectType));
+                        .append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(effect.duration, DurationFormats.SHORT_NAME)));
+                if (effect.delay > 0) {
+                    component.append(" / ")
+                            .append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.delay", Duration.format(effect.delay, DurationFormats.SHORT_NAME)));
+                }
+                tooltipAdder.accept(component.withStyle(effectType));
             });
         }
     }
 
-    public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, float minLimbHealth, int recoveryTime, int useTime) {
+    public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, float minLimbHealth,
+                                  int recoveryTime, int useTime) {
 
-        public static final Codec<DeadLimbHealing> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("healthAfterHeal", 1.0F).forGetter(DeadLimbHealing::healthAfterHeal),
-                ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("maxHealthMultiplier", 1.0F).forGetter(DeadLimbHealing::maxHealthMultiplier),
-                Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("minLimbHealth", 0.0F).forGetter(DeadLimbHealing::minLimbHealth),
-                Codecs.NON_NEGATIVE_INT.optionalFieldOf("recoveryTime", 0).forGetter(DeadLimbHealing::recoveryTime),
-                Codecs.NON_NEGATIVE_INT.fieldOf("useTime").forGetter(DeadLimbHealing::useTime)
-        ).apply(instance, DeadLimbHealing::new));
+        public static final Codec<DeadLimbHealing> CODEC = RecordCodecBuilder.create(instance -> instance.group(ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("healthAfterHeal", 1.0F).forGetter(DeadLimbHealing::healthAfterHeal), ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("maxHealthMultiplier", 1.0F).forGetter(DeadLimbHealing::maxHealthMultiplier), Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("minLimbHealth", 0.0F).forGetter(DeadLimbHealing::minLimbHealth), Codecs.NON_NEGATIVE_INT.optionalFieldOf("recoveryTime", 0).forGetter(DeadLimbHealing::recoveryTime), Codecs.NON_NEGATIVE_INT.fieldOf("useTime").forGetter(DeadLimbHealing::useTime)).apply(instance, DeadLimbHealing::new));
 
         public boolean canHeal(LivingEntity entity, HealthContainer container) {
             return container.getBodyPartStream().anyMatch(part -> part.isDead() && part.getMaxHealth() >= this.minLimbHealth);
@@ -239,11 +233,7 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
 
     public record HealthRecovery(int cycleDuration, float healthPerCycle, int maxCycles) {
 
-        public static final Codec<HealthRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ExtraCodecs.POSITIVE_INT.optionalFieldOf("cycleTime", 20).forGetter(HealthRecovery::cycleDuration),
-                ExtraCodecs.POSITIVE_FLOAT.fieldOf("healAmount").forGetter(HealthRecovery::healthPerCycle),
-                Codecs.NON_NEGATIVE_INT.optionalFieldOf("maxCycles", 1).forGetter(HealthRecovery::maxCycles)
-        ).apply(instance, HealthRecovery::new));
+        public static final Codec<HealthRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(ExtraCodecs.POSITIVE_INT.optionalFieldOf("cycleTime", 20).forGetter(HealthRecovery::cycleDuration), ExtraCodecs.POSITIVE_FLOAT.fieldOf("healAmount").forGetter(HealthRecovery::healthPerCycle), Codecs.NON_NEGATIVE_INT.optionalFieldOf("maxCycles", 1).forGetter(HealthRecovery::maxCycles)).apply(instance, HealthRecovery::new));
 
         public int getMaxUseDuration(int itemLimit) {
             return this.maxCycles > 0 ? this.maxCycles * this.cycleDuration : itemLimit;
@@ -252,10 +242,7 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
 
     public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect) {
 
-        public static final Codec<EffectRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ExtraCodecs.POSITIVE_INT.optionalFieldOf("consumption", 1).forGetter(EffectRecovery::consumption),
-                MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(EffectRecovery::effect)
-        ).apply(instance, EffectRecovery::new));
+        public static final Codec<EffectRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(ExtraCodecs.POSITIVE_INT.optionalFieldOf("consumption", 1).forGetter(EffectRecovery::consumption), MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(EffectRecovery::effect)).apply(instance, EffectRecovery::new));
 
         public boolean canRecover(HealthContainer container, @Nullable BodyPart part) {
             StatusEffectType<?> type = this.effect.value();
@@ -277,23 +264,17 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
         public void recover(LivingEntity entity, HealthContainer container, ItemStack stack, @Nullable BodyPart part) {
             StatusEffectType<?> type = this.effect.value();
             StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-            Context context = ContextImpl.of(
-                    ContextKeys.LIVING_ENTITY, entity,
-                    MedicalSystemContextKeys.HEALTH_CONTAINER, container,
-                    LootContextParams.TOOL, stack
-            );
-            effects.remove(this.effect.value(), context);
+            Context context = ContextImpl.of(ContextKeys.LIVING_ENTITY, entity, MedicalSystemContextKeys.HEALTH_CONTAINER, container, LootContextParams.TOOL, stack);
+            StatusEffect statusEffect = effects.remove(this.effect.value(), context);
+            if (statusEffect != null) {
+                effects.addEffect(statusEffect);
+            }
         }
     }
 
-    public record SideEffect(float chance, int duration, int power, Holder<StatusEffectType<?>> effect) {
+    public record SideEffect(float chance, int duration, int delay, Holder<StatusEffectType<?>> effect) {
 
-        public static final Codec<SideEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(t -> t.chance),
-                Codec.INT.optionalFieldOf("duration", 1200).forGetter(t -> t.duration),
-                Codec.INT.optionalFieldOf("power", 1).forGetter(t -> t.power),
-                MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(t -> t.effect)
-        ).apply(instance, SideEffect::new));
+        public static final Codec<SideEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(t -> t.chance), Codec.INT.optionalFieldOf("duration", 1200).forGetter(t -> t.duration), Codec.INT.optionalFieldOf("delay", 1200).forGetter(t -> t.delay), MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(t -> t.effect)).apply(instance, SideEffect::new));
 
         public void apply(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
             RandomSource source = entity.getRandom();
@@ -307,9 +288,12 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
                 }
                 Holder<Attribute> durationAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_DURATION, MedSystemAttributes.NEGATIVE_EFFECT_DURATION, null);
                 int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.duration) : this.duration;
-                StatusEffect statusEffect = type.createInstance(duration, this.power);
                 StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-                effects.addEffect(statusEffect);
+                if (this.delay > 0) {
+                    effects.addEffect(type.createDelayedEffect(duration, this.delay));
+                } else {
+                    effects.addEffect(type.createImmediateEffect(duration));
+                }
             }
         }
     }
@@ -366,13 +350,21 @@ public record HealAttributes(boolean applyGlobally, int minUseTime, DeadLimbHeal
             return this;
         }
 
-        public Builder sideEffect(float chance, int duration, int power, Holder<StatusEffectType<?>> effect) {
-            this.sideEffects.add(new SideEffect(chance, duration, power, effect));
+        public Builder sideEffect(float chance, int duration, int delay, Holder<StatusEffectType<?>> effect) {
+            this.sideEffects.add(new SideEffect(chance, duration, delay, effect));
             return this;
         }
 
-        public Builder sideEffect(float chance, TickValue duration, int power, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration.tickValue(), power, effect);
+        public Builder sideEffect(float chance, TickValue duration, int delay, Holder<StatusEffectType<?>> effect) {
+            return this.sideEffect(chance, duration.tickValue(), delay, effect);
+        }
+
+        public Builder sideEffect(float chance, int duration, TickValue delay, Holder<StatusEffectType<?>> effect) {
+            return this.sideEffect(chance, duration, delay.tickValue(), effect);
+        }
+
+        public Builder sideEffect(float chance, TickValue duration, TickValue delay, Holder<StatusEffectType<?>> effect) {
+            return this.sideEffect(chance, duration.tickValue(), delay.tickValue(), effect);
         }
 
         public Builder sideEffect(float chance, int duration, Holder<StatusEffectType<?>> effect) {

@@ -9,32 +9,37 @@ public final class MedSystemStatusEffects {
 
     public static final DeferredRegister<StatusEffectType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.STATUS_EFFECT, MedicalSystem.MOD_ID);
 
-    public static final Holder<StatusEffectType<?>> PAIN_RELIEF = REGISTRY.register("pain_relief", key -> StatusEffectType.builder(key, (time, pwr) -> new PainReliefEffect(time))
+    public static final Holder<StatusEffectType<?>> PAIN_RELIEF = REGISTRY.register("pain_relief", key -> StatusEffectType.builder(key, PainReliefEffect::new)
             .persist(PainReliefEffect.CODEC)
             .type(EffectType.POSITIVE)
             .setGlobal()
             .build()
     );
-    public static final Holder<StatusEffectType<?>> FRACTURE = REGISTRY.register("fracture", key -> StatusEffectType.builder(key, (time, pwr) -> FractureStatusEffect.INSTANCE)
+    public static final Holder<StatusEffectType<?>> FRACTURE = REGISTRY.register("fracture", key -> StatusEffectType.builder(key, FractureStatusEffect::new)
             .persist(FractureStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .combineEffects((a, b) -> a)
             .build()
     );
-    public static final Holder<StatusEffectType<?>> INJURY_RECOVERY = REGISTRY.register("injury_recovery", key -> StatusEffectType.builder(key, (time, pwr) -> new InjuryRecoveryStatusEffect(time, 1))
+    public static final Holder<StatusEffectType<?>> INJURY_RECOVERY = REGISTRY.register("injury_recovery", key -> StatusEffectType.builder(key, InjuryRecoveryStatusEffect::new)
             .persist(InjuryRecoveryStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .visibility(EffectVisibility.UI)
             .combineEffects(InjuryRecoveryStatusEffect::merge)
             .build()
     );
-    public static final Holder<StatusEffectType<?>> LIGHT_BLEED = REGISTRY.register("light_bleed", key -> StatusEffectType.builder(key, (time, pwr) -> new LightBleedStatusEffect(time))
+    public static final Holder<StatusEffectType<?>> LIGHT_BLEED = REGISTRY.register("light_bleed", key -> StatusEffectType.builder(key, LightBleedStatusEffect::new)
             .persist(LightBleedStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .build()
     );
-    public static final Holder<StatusEffectType<?>> HEAVY_BLEED = REGISTRY.register("heavy_bleed", key -> StatusEffectType.builder(key, (time, pwr) -> new HeavyBleedStatusEffect(time))
+    public static final Holder<StatusEffectType<?>> HEAVY_BLEED = REGISTRY.register("heavy_bleed", key -> StatusEffectType.builder(key, HeavyBleedStatusEffect::new)
             .persist(HeavyBleedStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> FRESH_WOUND = REGISTRY.register("fresh_wound", key -> StatusEffectType.builder(key, FreshWoundStatusEffect::new)
+            .persist(FreshWoundStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .build()
     );

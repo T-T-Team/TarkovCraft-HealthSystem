@@ -1,45 +1,77 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.context.Context;
 
-public interface StatusEffect {
+public abstract class StatusEffect {
 
-    StatusEffectType<?> getType();
+    private int duration;
+    private int delay;
 
-    void apply(Context context);
-
-    void onRemoved(Context context);
-
-    int getDuration();
-
-    void setDuration(int duration);
-
-    int getPower();
-
-    StatusEffect copy();
-
-    default void setDuration(TickValue duration) {
-        this.setDuration(duration.tickValue());
+    public StatusEffect(int duration, int delay) {
+        this.duration = duration;
+        this.delay = delay;
     }
 
-    default void addDuration(int duration) {
+    public abstract StatusEffectType<?> getType();
+
+    public abstract void apply(Context context);
+
+    public abstract StatusEffect onRemoved(Context context);
+
+    public abstract StatusEffect copy();
+
+    public final void markForRemoval() {
+        this.setDuration(1);
+    }
+
+    public final int getDuration() {
+        return this.duration;
+    }
+
+    public final void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public final int getDelay() {
+        return this.delay;
+    }
+
+    public final void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public final void addDuration(int duration) {
         this.setDuration(this.getDuration() + duration);
     }
 
-    default void addDuration(TickValue duration) {
+    public final void addDuration(TickValue duration) {
         this.setDuration(this.getDuration() + duration.tickValue());
     }
 
-    default boolean isInfinite() {
+    public final boolean isActive() {
+        return this.getDelay() <= 0;
+    }
+
+    public final boolean isInfinite() {
         return this.getDuration() < 0;
     }
 
-    static <S extends StatusEffect> S merge(S a, S b) {
-        if (a.getPower() > b.getPower()) {
+    public static <T extends StatusEffect> Products.P2<RecordCodecBuilder.Mu<T>, Integer, Integer> common(RecordCodecBuilder.Instance<T> instance) {
+        return instance.group(
+                Codec.INT.optionalFieldOf("duration", 600).forGetter(StatusEffect::getDuration),
+                Codec.INT.optionalFieldOf("delay", 0).forGetter(StatusEffect::getDelay)
+        );
+    }
+
+    public static <S extends StatusEffect> S merge(S a, S b) {
+        if (a.getDelay() > b.getDelay()) {
             return a;
         }
-        if (b.getPower() > a.getPower()) {
+        if (b.getDelay() > a.getDelay()) {
             return b;
         }
         if (a.isInfinite() || b.isInfinite()) {

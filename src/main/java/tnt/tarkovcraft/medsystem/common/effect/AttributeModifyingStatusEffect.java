@@ -12,7 +12,11 @@ import tnt.tarkovcraft.core.util.context.ContextKeys;
 
 import java.util.UUID;
 
-public abstract class AttributeModifyingStatusEffect implements StatusEffect {
+public abstract class AttributeModifyingStatusEffect extends StatusEffect {
+
+    public AttributeModifyingStatusEffect(int duration, int delay) {
+        super(duration, delay);
+    }
 
     public abstract UUID getUniqueModifierUUID();
 
@@ -35,12 +39,13 @@ public abstract class AttributeModifyingStatusEffect implements StatusEffect {
     }
 
     @Override
-    public void onRemoved(Context context) {
+    public StatusEffect onRemoved(Context context) {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         if (AttributeSystem.isEnabledForEntity(entity)) {
             EntityAttributeData data = AttributeSystem.getAttributes(entity);
             AttributeInstance instance = data.getAttribute(this.getAttribute());
             instance.removeModifier(this.getUniqueModifierUUID());
         }
+        return null;
     }
 }

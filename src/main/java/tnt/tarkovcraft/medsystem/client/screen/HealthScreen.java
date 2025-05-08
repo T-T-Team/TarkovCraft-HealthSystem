@@ -73,7 +73,7 @@ public class HealthScreen extends CharacterSubScreen {
             );
         }
         BodyPartHealthWidget widget = new BodyPartHealthWidget(left, index * 35, 100, 30, this.font, part);
-        List<StatusEffect> effects = stream.filter(ef -> ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI)).toList();
+        List<StatusEffect> effects = stream.filter(ef -> ef.isActive() && ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI)).toList();
         widget.setEffects(effects, TooltipHelper.screen(this));
         return widget;
     }

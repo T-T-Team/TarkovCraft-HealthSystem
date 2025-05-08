@@ -20,18 +20,20 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Locale;
 
-public class InjuryRecoveryStatusEffect implements StatusEffect {
+public class InjuryRecoveryStatusEffect extends StatusEffect {
 
-    public static final MapCodec<InjuryRecoveryStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.INT.fieldOf("duration").forGetter(t -> t.duration),
+    public static final MapCodec<InjuryRecoveryStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(
             Codec.INT.fieldOf("reduction").forGetter(t -> t.reduction)
     ).apply(instance, InjuryRecoveryStatusEffect::new));
 
-    private int duration;
     private int reduction;
 
-    public InjuryRecoveryStatusEffect(int duration, int reduction) {
-        this.duration = duration;
+    public InjuryRecoveryStatusEffect(int duration, int delay) {
+        this(duration, delay, 1);
+    }
+
+    public InjuryRecoveryStatusEffect(int duration, int delay, int reduction) {
+        super(duration, delay);
         this.reduction = reduction;
     }
 
@@ -63,7 +65,7 @@ public class InjuryRecoveryStatusEffect implements StatusEffect {
     }
 
     @Override
-    public void onRemoved(Context context) {
+    public StatusEffect onRemoved(Context context) {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
             part.setMaxHealth(Math.min(part.getMaxHealth() + this.reduction, part.getOriginalMaxHealth()));
@@ -74,6 +76,7 @@ public class InjuryRecoveryStatusEffect implements StatusEffect {
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
             instance.removeModifier(this.getUniqueModifierId(part));
         });
+        return null;
     }
 
     public void setReduction(int reduction) {
@@ -81,23 +84,8 @@ public class InjuryRecoveryStatusEffect implements StatusEffect {
     }
 
     @Override
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    @Override
-    public int getDuration() {
-        return duration;
-    }
-
-    @Override
-    public int getPower() {
-        return 0;
-    }
-
-    @Override
     public StatusEffect copy() {
-        return new InjuryRecoveryStatusEffect(duration, reduction);
+        return new InjuryRecoveryStatusEffect(this.getDuration(), this.getDelay(), this.reduction);
     }
 
     @Override
@@ -110,6 +98,10 @@ public class InjuryRecoveryStatusEffect implements StatusEffect {
     }
 
     public static InjuryRecoveryStatusEffect merge(InjuryRecoveryStatusEffect initial, InjuryRecoveryStatusEffect additional) {
-        return new InjuryRecoveryStatusEffect(initial.getDuration() + additional.getDuration(), initial.reduction + additional.reduction);
+        return new InjuryRecoveryStatusEffect(
+                initial.getDuration() + additional.getDuration(),
+                initial.getDelay() + additional.getDelay(),
+                initial.reduction + additional.reduction
+        );
     }
 }

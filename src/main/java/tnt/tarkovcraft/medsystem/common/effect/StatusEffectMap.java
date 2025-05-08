@@ -33,18 +33,28 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         if (this.effects.isEmpty())
             return;
         Iterator<Map.Entry<StatusEffectType<?>, StatusEffect>> it = effects.entrySet().iterator();
+        List<StatusEffect> newEffects = new ArrayList<>();
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
-            effect.apply(context);
-            if (!effect.isInfinite()) {
-                int newDuration = effect.getDuration() - 1;
-                effect.setDuration(newDuration);
-                if (newDuration <= 0) {
-                    it.remove();
-                    effect.onRemoved(context);
+            if (!effect.isActive()) {
+                int delay = effect.getDelay();
+                effect.setDelay(--delay);
+            } else {
+                effect.apply(context);
+                if (!effect.isInfinite()) {
+                    int newDuration = effect.getDuration() - 1;
+                    effect.setDuration(newDuration);
+                    if (newDuration <= 0) {
+                        it.remove();
+                        StatusEffect statusEffect = effect.onRemoved(context);
+                        if (statusEffect != null) {
+                            newEffects.add(statusEffect);
+                        }
+                    }
                 }
             }
         }
+        newEffects.forEach(this::addEffect);
     }
 
     public <T extends StatusEffect> void addEffect(T effect) {
@@ -58,7 +68,8 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     }
 
     public <T extends StatusEffect> boolean hasEffect(StatusEffectType<T> type) {
-        return this.effects.containsKey(type);
+        StatusEffect effect = this.effects.get(type);
+        return effect != null && effect.isActive();
     }
 
     public <T extends StatusEffect> boolean hasEffect(Supplier<StatusEffectType<T>> type) {
@@ -88,11 +99,12 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         }
     }
 
-    public void remove(StatusEffectType<?> type, Context context) {
+    public StatusEffect remove(StatusEffectType<?> type, Context context) {
         StatusEffect effect = this.effects.remove(type);
         if (effect != null) {
-            effect.onRemoved(context);
+            return effect.onRemoved(context);
         }
+        return null;
     }
 
     public Collection<StatusEffect> listEffects() {

@@ -49,16 +49,16 @@ public final class TarkovCraftCommand {
                                                                                                                 Commands.literal("infinite")
                                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, -1, 0))
                                                                                                                         .then(
-                                                                                                                                Commands.argument("power", IntegerArgumentType.integer(0))
-                                                                                                                                        .executes(ctx -> addLocalStatusEffect(ctx, -1, IntegerArgumentType.getInteger(ctx, "power")))
+                                                                                                                                Commands.argument("delay", IntegerArgumentType.integer(0))
+                                                                                                                                        .executes(ctx -> addLocalStatusEffect(ctx, -1, IntegerArgumentType.getInteger(ctx, "delay")))
                                                                                                                         )
                                                                                                         )
                                                                                                         .then(
                                                                                                                 Commands.argument("duration", IntegerArgumentType.integer(1))
                                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, IntegerArgumentType.getInteger(ctx, "duration"), 0))
                                                                                                                         .then(
-                                                                                                                                Commands.argument("power", IntegerArgumentType.integer(0))
-                                                                                                                                        .executes(ctx -> addLocalStatusEffect(ctx, IntegerArgumentType.getInteger(ctx, "duration"), IntegerArgumentType.getInteger(ctx, "power")))
+                                                                                                                                Commands.argument("delay", IntegerArgumentType.integer(0))
+                                                                                                                                        .executes(ctx -> addLocalStatusEffect(ctx, IntegerArgumentType.getInteger(ctx, "duration"), IntegerArgumentType.getInteger(ctx, "delay")))
                                                                                                                         )
                                                                                                         )
                                                                                         )
@@ -74,16 +74,16 @@ public final class TarkovCraftCommand {
                                                                                                 Commands.literal("infinite")
                                                                                                         .executes(ctx -> addGlobalStatusEffect(ctx, -1, 0))
                                                                                                         .then(
-                                                                                                                Commands.argument("power", IntegerArgumentType.integer(0))
-                                                                                                                        .executes(ctx -> addGlobalStatusEffect(ctx, -1, IntegerArgumentType.getInteger(ctx, "power")))
+                                                                                                                Commands.argument("delay", IntegerArgumentType.integer(0))
+                                                                                                                        .executes(ctx -> addGlobalStatusEffect(ctx, -1, IntegerArgumentType.getInteger(ctx, "delay")))
                                                                                                         )
                                                                                         )
                                                                                         .then(
                                                                                                 Commands.argument("duration", IntegerArgumentType.integer(1))
                                                                                                         .executes(ctx -> addGlobalStatusEffect(ctx, IntegerArgumentType.getInteger(ctx, "duration"), 0))
                                                                                                         .then(
-                                                                                                                Commands.argument("power", IntegerArgumentType.integer(0))
-                                                                                                                        .executes(ctx -> addGlobalStatusEffect(ctx, IntegerArgumentType.getInteger(ctx, "duration"), IntegerArgumentType.getInteger(ctx, "power")))
+                                                                                                                Commands.argument("delay", IntegerArgumentType.integer(0))
+                                                                                                                        .executes(ctx -> addGlobalStatusEffect(ctx, IntegerArgumentType.getInteger(ctx, "duration"), IntegerArgumentType.getInteger(ctx, "delay")))
                                                                                                         )
                                                                                         )
                                                                         )
@@ -110,7 +110,7 @@ public final class TarkovCraftCommand {
         );
     }
 
-    private static int addGlobalStatusEffect(CommandContext<CommandSourceStack> ctx, int duration, int power) throws CommandSyntaxException {
+    private static int addGlobalStatusEffect(CommandContext<CommandSourceStack> ctx, int duration, int delay) throws CommandSyntaxException {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
@@ -119,13 +119,13 @@ public final class TarkovCraftCommand {
             }
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
             StatusEffectMap map = container.getGlobalStatusEffects();
-            addEffect(map, reference, duration, power);
+            addEffect(map, reference, duration, delay);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
     }
 
-    private static int addLocalStatusEffect(CommandContext<CommandSourceStack> ctx, int duration, int power) throws CommandSyntaxException {
+    private static int addLocalStatusEffect(CommandContext<CommandSourceStack> ctx, int duration, int delay) throws CommandSyntaxException {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
         String bodyPartId = StringArgumentType.getString(ctx, "bodypart");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
@@ -139,15 +139,15 @@ public final class TarkovCraftCommand {
             }
             BodyPart bodyPart = container.getBodyPart(bodyPartId);
             StatusEffectMap map = bodyPart.getStatusEffects();
-            addEffect(map, reference, duration, power);
+            addEffect(map, reference, duration, delay);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
     }
 
-    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, Holder<StatusEffectType<?>> holder, int duration, int power) {
+    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, Holder<StatusEffectType<?>> holder, int duration, int delay) {
         StatusEffectType<T> type = (StatusEffectType<T>) holder.value();
-        T effect = type.createInstance(duration, power);
+        T effect = delay > 0 ? type.createDelayedEffect(duration, delay) : type.createImmediateEffect(duration);
         map.replace(effect);
     }
 

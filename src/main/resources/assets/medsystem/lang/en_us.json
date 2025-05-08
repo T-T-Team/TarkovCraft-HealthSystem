@@ -50,6 +50,7 @@
   "status_effect.medsystem.injury_recovery": "Injury Recovery",
   "status_effect.medsystem.light_bleed": "Light Bleed",
   "status_effect.medsystem.heavy_bleed": "Heavy Bleed",
+  "status_effect.medsystem.fresh_wound": "Fresh Wound",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",
@@ -58,6 +59,8 @@
   "tooltip.medsystem.heal_attributes.dead_limb.recovery": "- Recovers limb health to %s",
   "tooltip.medsystem.heal_attributes.dead_limb.max_health": "- Decreases max health by %s for %s",
   "tooltip.medsystem.heal_attributes.side_effects.title": "Side effects:",
+  "tooltip.medsystem.heal_attributes.side_effects.duration": "Dur.: %s",
+  "tooltip.medsystem.heal_attributes.side_effects.delay": "Del.: %s",
   "tooltip.medsystem.heal_attributes.recoveries.title": "Heals effects:",
   "tooltip.medsystem.heal_attributes.recoveries.use_label": "%s HP",
 
