@@ -84,5 +84,29 @@
   "death.attack.medsystem.bleed": "%s has bled out",
   "death.attack.medsystem.bleed.player": "%s has bled out while fighting %s",
   "death.attack.medsystem.broken_leg": "%s has died due to fracture",
-  "death.attack.medsystem.broken_leg.player": "%s has died due to fracture while fighting %s"
+  "death.attack.medsystem.broken_leg.player": "%s has died due to fracture while fighting %s",
+
+  "config.screen.medsystem": "Medical System",
+  "config.medsystem.option.simpleArmorCalculation": "Simple armor calculation",
+  "config.medsystem.option.simpleArmorCalculation.comment.0": "Includes all equipped armors for damage reduction calculation",
+  "config.medsystem.option.explosionDamageScale": "Explosion damage scale",
+  "config.medsystem.option.explosionDamageScale.comment.0": "Damage scale for explosions",
+  "config.medsystem.option.limbLossDeathCauseChance": "Dead limb death cause chance",
+  "config.medsystem.option.limbLossDeathCauseChance.comment.0": "Losing limb has chance to cause immediate death",
+  "config.medsystem.option.prioritizeVitalHealing": "Vital part heal priority",
+  "config.medsystem.option.prioritizeVitalHealing.comment.0": "Health will be primarily recovered into vital parts",
+  "config.medsystem.option.vitalBodyPartHealthTrigger": "Vital part heal priority threshold",
+  "config.medsystem.option.vitalBodyPartHealthTrigger.comment.0": "Threshold for prioritized vital body part health recovery",
+
+  "config.screen.medsystem-client": "Medical System Client",
+  "config.medsystem-client.option.healthOverlay": "Health overlay",
+  "config.medsystem-client.option.scale": "Scale",
+  "config.medsystem-client.option.scale.comment.0": "Health overlay scale",
+  "config.medsystem-client.option.transparency": "Transparency",
+  "config.medsystem-client.option.transparency.comment.0": "Health overlay transparency",
+  "config.medsystem-client.option.deadLimbColor": "Dead limb color",
+  "config.medsystem-client.option.deadLimbColor.comment.0": "Overlay color for dead body parts",
+  "config.medsystem-client.option.colorSchema": "Overlay color for dead body parts",
+  "config.medsystem-client.option.colorSchema.entry": "Color input",
+  "config.medsystem-client.option.colorSchema.comment.0": "Color schema used for color blending of body part overlay based on the part health"
 }
