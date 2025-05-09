@@ -38,8 +38,12 @@ public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip
     }
 
     public void apply(LivingEntity target, HealthContainer container, @Nullable BodyPart part) {
+        this.applyFromDamage(target, null, container, part);
+    }
+
+    public void applyFromDamage(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable BodyPart part) {
         for (SideEffect effect : sideEffects) {
-            effect.apply(target, container, part);
+            effect.applyFromDamage(target, source, container, part);
         }
     }
 
@@ -52,7 +56,7 @@ public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip
             }
         } else {
             Entity projectile = source.getDirectEntity();
-            if (projectile.hasData(MedSystemDataAttachments.SIDE_EFFECTS) && !(projectile instanceof SideEffectProcessor)) {
+            if (projectile != null && projectile.hasData(MedSystemDataAttachments.SIDE_EFFECTS) && !(projectile instanceof SideEffectProcessor)) {
                 return projectile.getData(MedSystemDataAttachments.SIDE_EFFECTS);
             }
         }

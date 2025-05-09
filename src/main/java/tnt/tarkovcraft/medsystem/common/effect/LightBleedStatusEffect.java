@@ -4,9 +4,16 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.Optional;
+import java.util.UUID;
+
 public class LightBleedStatusEffect extends BleedStatusEffect {
 
-    public static final MapCodec<LightBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, LightBleedStatusEffect::new));
+    public static final MapCodec<LightBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, LightBleedStatusEffect::new));
+
+    public LightBleedStatusEffect(int duration, int delay, Optional<UUID> owner) {
+        super(duration, delay);
+    }
 
     public LightBleedStatusEffect(int duration, int delay) {
         super(duration, delay);

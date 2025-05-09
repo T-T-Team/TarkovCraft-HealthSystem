@@ -5,9 +5,16 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-public class FractureStatusEffect extends StatusEffect {
+import java.util.Optional;
+import java.util.UUID;
 
-    public static final MapCodec<FractureStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, FractureStatusEffect::new));
+public class FractureStatusEffect extends EntityCausedStatusEffect {
+
+    public static final MapCodec<FractureStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, FractureStatusEffect::new));
+
+    public FractureStatusEffect(int duration, int delay, Optional<UUID> owner) {
+        super(duration, delay, owner);
+    }
 
     public FractureStatusEffect(int duration, int delay) {
         super(duration, delay);

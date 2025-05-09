@@ -8,6 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
@@ -18,6 +20,7 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.EffectType;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -39,6 +42,10 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
     ).apply(instance, SideEffect::new));
 
     public void apply(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
+        this.applyFromDamage(entity, null, container, part);
+    }
+
+    public void applyFromDamage(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable BodyPart part) {
         RandomSource source = entity.getRandom();
         StatusEffectType<?> type = this.effect.value();
         Holder<Attribute> chanceAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_CHANCE, MedSystemAttributes.NEGATIVE_EFFECT_CHANCE, null);
@@ -51,6 +58,14 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
             Holder<Attribute> durationAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_DURATION, MedSystemAttributes.NEGATIVE_EFFECT_DURATION, null);
             int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.duration) : this.duration;
             StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
+            StatusEffect statusEffect = this.delay > 0 ? type.createDelayedEffect(duration, delay) : type.createImmediateEffect(duration);
+            if (damageSource != null) {
+                Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
+                if (cause != null) {
+                    statusEffect.setCausingEntity(cause.getUUID());
+                }
+            }
+            effects.addEffect(statusEffect);
             if (this.delay > 0) {
                 effects.addEffect(type.createDelayedEffect(duration, this.delay));
             } else {

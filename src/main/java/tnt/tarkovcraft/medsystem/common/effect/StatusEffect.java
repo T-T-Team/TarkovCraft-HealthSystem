@@ -3,8 +3,13 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.context.Context;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public abstract class StatusEffect {
 
@@ -23,6 +28,20 @@ public abstract class StatusEffect {
     public abstract StatusEffect onRemoved(Context context);
 
     public abstract StatusEffect copy();
+
+    public void setCausingEntity(UUID owner) {}
+
+    public UUID getCausingEntity() {
+        return null;
+    }
+
+    public final Optional<Entity> getCausingEntity(ServerLevel level) {
+        UUID owner = this.getCausingEntity();
+        if (owner != null) {
+            return Optional.of(level.getEntity(owner));
+        }
+        return Optional.empty();
+    }
 
     public final void markForRemoval() {
         this.setDuration(1);

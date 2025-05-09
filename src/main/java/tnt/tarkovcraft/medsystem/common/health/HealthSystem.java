@@ -49,7 +49,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
     }
 
     public static boolean hasCustomHealth(Entity entity) {
-        return entity.getType() == EntityType.PLAYER || (entity instanceof LivingEntity && entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER));
+        return entity.getType() == EntityType.PLAYER || entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER);
     }
 
     public static HealthContainer getHealthData(LivingEntity entity) {

@@ -75,22 +75,26 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     }
 
     public void tick(LivingEntity entity) {
-        ContextImpl context = ContextImpl.of(
-                MedicalSystemContextKeys.HEALTH_CONTAINER, this,
-                ContextKeys.LIVING_ENTITY, entity
-        );
-        float previousHealth = this.getHealth();
-        this.statusEffects.tick(context);
-        for (BodyPart part : this.bodyParts.values()) {
-            part.tick(context);
-        }
-        float health = this.getHealth();
-        if (health != previousHealth) {
-            updateHealth(entity);
+        if (entity.isDeadOrDying()) {
+            this.clearBoundData(entity);
+        } else {
+            ContextImpl context = ContextImpl.of(
+                    MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                    ContextKeys.LIVING_ENTITY, entity
+            );
+            float previousHealth = this.getHealth();
+            this.statusEffects.tick(context);
+            for (BodyPart part : this.bodyParts.values()) {
+                part.tick(context);
+            }
+            float health = this.getHealth();
+            if (health != previousHealth) {
+                updateHealth(entity);
+            }
         }
     }
 
-    public void clearBoundData(LivingEntity entity) {
+    private void clearBoundData(LivingEntity entity) {
         ContextImpl context = ContextImpl.of(
                 MedicalSystemContextKeys.HEALTH_CONTAINER, this,
                 ContextKeys.LIVING_ENTITY, entity

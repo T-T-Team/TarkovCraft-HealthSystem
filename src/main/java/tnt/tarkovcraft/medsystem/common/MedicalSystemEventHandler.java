@@ -17,7 +17,6 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
@@ -185,7 +184,7 @@ public final class MedicalSystemEventHandler {
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
             container.hurt(context, entry.getValue(), entry.getKey(), lostBodyParts::add);
             if (sideEffects != null) {
-                sideEffects.apply(entity, container, entry.getKey());
+                sideEffects.applyFromDamage(entity, event.getSource(), container, entry.getKey());
             }
         }
         SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
@@ -257,10 +256,6 @@ public final class MedicalSystemEventHandler {
                 }
             }
         }
-        if (HealthSystem.hasCustomHealth(entity)) {
-            HealthContainer container = HealthSystem.getHealthData(entity);
-            container.clearBoundData(entity);
-        }
     }
 
     @SubscribeEvent
@@ -273,14 +268,6 @@ public final class MedicalSystemEventHandler {
 
         stack.addToTooltip(MedSystemItemComponents.HEAL_ATTRIBUTES, context, adder, flag);
         stack.addToTooltip(MedSystemItemComponents.SIDE_EFFECTS, context, adder, flag);
-    }
-
-    @SubscribeEvent
-    private void onEntityTick(EntityTickEvent.Post event) {
-        Entity entity = event.getEntity();
-        if (HealthSystem.hasCustomHealth(entity)) {
-            HealthSystem.getHealthData((LivingEntity) entity).tick((LivingEntity) entity);
-        }
     }
 
     @SubscribeEvent
