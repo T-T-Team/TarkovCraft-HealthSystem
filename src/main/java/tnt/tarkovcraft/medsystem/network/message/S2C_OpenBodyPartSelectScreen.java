@@ -11,7 +11,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tnt.tarkovcraft.medsystem.client.screen.SelectBodyPartScreen;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 public record S2C_OpenBodyPartSelectScreen() implements CustomPacketPayload {
@@ -25,13 +24,17 @@ public record S2C_OpenBodyPartSelectScreen() implements CustomPacketPayload {
         return TYPE;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void handleMessage(IPayloadContext context) {
         Player player = context.player();
         ItemStack stack = player.getMainHandItem();
-        if (!stack.isEmpty()) {
-            Minecraft client = Minecraft.getInstance();
-            client.setScreen(new SelectBodyPartScreen());
+        if (!stack.isEmpty() && player.level().isClientSide()) {
+            this.handleScreenOpening();
         }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void handleScreenOpening() {
+        Minecraft client = Minecraft.getInstance();
+        client.setScreen(new SelectBodyPartScreen());
     }
 }
