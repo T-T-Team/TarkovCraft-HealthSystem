@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -242,7 +243,7 @@ public final class MedicalSystemEventHandler {
         Entity killer = source.getEntity();
         if (killer != null && HealthSystem.hasCustomHealth(entity)) {
             HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-            boolean headshot = container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
+            boolean headshot = source.is(DamageTypeTags.IS_PROJECTILE) && container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
             if (headshot) {
                 StatisticTracker.incrementOptional(killer, MedSystemStats.HEADSHOTS);
                 if (entity.getType() == EntityType.PLAYER) {
