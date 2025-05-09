@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
@@ -10,6 +11,7 @@ import tnt.tarkovcraft.core.util.context.Context;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public abstract class StatusEffect {
 
@@ -34,6 +36,8 @@ public abstract class StatusEffect {
     public UUID getCausingEntity() {
         return null;
     }
+
+    public void addAdditionalInfo(Consumer<Component> tooltip) {}
 
     public final Optional<Entity> getCausingEntity(ServerLevel level) {
         UUID owner = this.getCausingEntity();

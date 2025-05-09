@@ -45,7 +45,7 @@ public class HealthScreen extends CharacterSubScreen {
 
         int left = this.width / 3 - 15;
         ListWidget<BodyPartHealthWidget> list = this.addRenderableWidget(new ListWidget<>(left, 35, this.width - left, this.height - 35, displays, (display, index) -> this.createBodyPartWidget(display, container, index)));
-        list.setAdditionalItemSpacing(5);
+        list.setAdditionalItemSpacing(4);
         list.setScroll(this.bodyPartScroll);
         list.setScrollListener((x, y) -> this.bodyPartScroll = y);
 
@@ -72,7 +72,7 @@ public class HealthScreen extends CharacterSubScreen {
                     stream
             );
         }
-        BodyPartHealthWidget widget = new BodyPartHealthWidget(left, index * 35, 100, 30, this.font, part);
+        BodyPartHealthWidget widget = new BodyPartHealthWidget(left, index * 40, 125, 36, this.font, part);
         List<StatusEffect> effects = stream.filter(ef -> ef.isActive() && ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI)).toList();
         widget.setEffects(effects, TooltipHelper.screen(this));
         return widget;

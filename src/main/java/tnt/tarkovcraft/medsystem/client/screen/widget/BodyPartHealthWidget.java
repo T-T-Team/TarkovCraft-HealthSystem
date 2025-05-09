@@ -92,7 +92,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
         }
         int textColor = this.part.isDead() ? 0xFF0000 : this.textColor;
         int titleWidth = this.font.width(this.getMessage());
-        graphics.drawString(this.font, this.getMessage(), this.getX() + (this.width - titleWidth) / 2, this.getY() + 2 + this.frameSize, textColor);
+        graphics.drawString(this.font, this.getMessage(), this.getX() + (this.width - titleWidth) / 2, this.getY() + 5 + this.frameSize, textColor);
         String status = Mth.ceil(this.part.getHealth()) + "/" + Mth.ceil(this.part.getMaxHealth());
         int statusWidth = this.font.width(status);
         graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getBottom() - 14 - this.frameSize, textColor);
@@ -109,14 +109,16 @@ public class BodyPartHealthWidget extends AbstractWidget {
 
         if (this.effects != null && !this.effects.isEmpty()) {
             for (int i = 0; i < this.effects.size(); i++) {
+                int row = i % 3;
+                int col = i / 3;
                 StatusEffect effect = this.effects.get(i);
                 StatusEffectType<?> type = effect.getType();
-                int ex = this.getRight() + i * 12;
-                int ey = this.getY();
+                int ex = this.getRight() + col * 12;
+                int ey = this.getY() + row * 12;
                 RenderUtils.blitFull(graphics, type.getIcon(), ex, ey, ex + 12, ey + 12, -1);
                 if (MathHelper.isWithinBounds(mouseX, mouseY, ex, ey, 12, 12)) {
-                    List<FormattedCharSequence> tooltip = new ArrayList<>();
-                    tooltip.addAll(this.tooltipHelper.split(type.getDisplayName().copy().withStyle(type.getEffectType())));
+                    List<FormattedCharSequence> tooltip = new ArrayList<>(this.tooltipHelper.split(type.getDisplayName().copy().withStyle(type.getEffectType())));
+                    effect.addAdditionalInfo(line -> tooltip.addAll(this.tooltipHelper.split(line)));
                     if (!effect.isInfinite()) {
                         DurationFormatSettings settings = new DurationFormatSettings();
                         settings.setIncludeZeroValues(true);

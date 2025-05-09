@@ -3,6 +3,8 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -19,6 +21,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class InjuryRecoveryStatusEffect extends StatusEffect {
 
@@ -86,6 +89,11 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     @Override
     public StatusEffect copy() {
         return new InjuryRecoveryStatusEffect(this.getDuration(), this.getDelay(), this.reduction);
+    }
+
+    @Override
+    public void addAdditionalInfo(Consumer<Component> tooltip) {
+        tooltip.accept(Component.translatable("status_effect.medsystem.injury_recovery.info").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

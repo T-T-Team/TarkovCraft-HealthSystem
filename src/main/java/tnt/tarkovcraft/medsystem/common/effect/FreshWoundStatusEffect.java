@@ -3,11 +3,15 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
+
+import java.util.function.Consumer;
 
 public class FreshWoundStatusEffect extends StatusEffect {
 
@@ -50,6 +54,11 @@ public class FreshWoundStatusEffect extends StatusEffect {
     @Override
     public StatusEffect copy() {
         return new FreshWoundStatusEffect(this.getDuration(), this.getDelay(), this.bleedChance);
+    }
+
+    @Override
+    public void addAdditionalInfo(Consumer<Component> tooltip) {
+        tooltip.accept(Component.translatable("status_effect.medsystem.fresh_wound.info").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

@@ -29,6 +29,11 @@
   "skill.medsystem.surgery.bonus.injury_scale": "Injury amount",
   "skill.medsystem.surgery.bonus.injury_scale.description": "Decreases injury health debuff by %s",
 
+  "skill.trigger.medsystem.armor_use.info": "On armor damaged",
+  "skill.trigger.medsystem.healing_used.info": "On healing item consumed",
+  "skill.trigger.medsystem.damage_taken.info": "On damage taken",
+  "skill.trigger.medsystem.limb_fixed.info": "On limb fixed",
+
   "attribute.medsystem.limb_death_chance": "Dead limb death cause chance",
   "attribute.medsystem.pain_relief": "Pain relief",
   "attribute.medsystem.armor_durability": "Armor durability",
@@ -47,10 +52,15 @@
 
   "status_effect.medsystem.pain_relief": "Pain Relief",
   "status_effect.medsystem.fracture": "Fracture",
+  "status_effect.medsystem.fracture.heal_hint": "Can be healed using splints",
   "status_effect.medsystem.injury_recovery": "Injury Recovery",
+  "status_effect.medsystem.injury_recovery.info": "Decreases limb max health",
   "status_effect.medsystem.light_bleed": "Light Bleed",
+  "status_effect.medsystem.light_bleed.heal_hint": "Can be healed using bandages",
   "status_effect.medsystem.heavy_bleed": "Heavy Bleed",
+  "status_effect.medsystem.heavy_bleed.heal_hint": "Can be healed using tourniquets",
   "status_effect.medsystem.fresh_wound": "Fresh Wound",
+  "status_effect.medsystem.fresh_wound.info": "Sprinting increases risk of reopening the wound and causing bleed",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",

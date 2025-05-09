@@ -2,13 +2,16 @@ package tnt.tarkovcraft.medsystem.common.effect;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.chat.Component;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
@@ -43,6 +46,11 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
                 Duration.minutes(5).tickValue(),
                 Duration.seconds(5).tickValue()
         );
+    }
+
+    @Override
+    public void addAdditionalInfo(Consumer<Component> tooltip) {
+        tooltip.accept(Component.translatable("status_effect.medsystem.heavy_bleed.heal_hint").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override
