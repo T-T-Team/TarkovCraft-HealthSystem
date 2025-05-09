@@ -27,7 +27,7 @@ import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class HealingItem extends Item {
+public class HealingItem extends Item implements SideEffectProcessor {
 
     private final ItemUseAnimation useAnimation;
 
@@ -111,9 +111,9 @@ public class HealingItem extends Item {
             }
         }
         // Side effect application
-        List<SideEffect> sideEffects = attributes.sideEffects();
-        if (!sideEffects.isEmpty()) {
-            sideEffects.forEach(sideEffect -> sideEffect.apply(livingEntity, container, part));
+        if (stack.has(MedSystemItemComponents.SIDE_EFFECTS)) {
+            SideEffectHolder holder = stack.get(MedSystemItemComponents.SIDE_EFFECTS);
+            holder.apply(livingEntity, container, part);
         }
         // Apply durability reduction
         if (!level.isClientSide()) {

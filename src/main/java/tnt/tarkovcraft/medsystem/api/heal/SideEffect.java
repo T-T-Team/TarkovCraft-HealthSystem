@@ -31,7 +31,12 @@ import java.util.function.Consumer;
 
 public record SideEffect(float chance, int duration, int delay, Holder<StatusEffectType<?>> effect) implements TooltipProvider {
 
-    public static final Codec<SideEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(t -> t.chance), Codec.INT.optionalFieldOf("duration", 1200).forGetter(t -> t.duration), Codec.INT.optionalFieldOf("delay", 1200).forGetter(t -> t.delay), MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(t -> t.effect)).apply(instance, SideEffect::new));
+    public static final Codec<SideEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(t -> t.chance),
+            Codec.INT.optionalFieldOf("duration", 1200).forGetter(t -> t.duration),
+            Codec.INT.optionalFieldOf("delay", 1200).forGetter(t -> t.delay),
+            MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(t -> t.effect)
+    ).apply(instance, SideEffect::new));
 
     public void apply(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
         RandomSource source = entity.getRandom();

@@ -6,6 +6,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 
 public final class MedSystemItems {
@@ -73,7 +74,11 @@ public final class MedSystemItems {
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setNoBodyPartSelection()
                                     .setMinUseTime(Duration.seconds(3))
-                                    .sideEffect(1.0F, Duration.minutes(5), Duration.seconds(30), MedSystemStatusEffects.PAIN_RELIEF)
+                                    .setAlwaysConsumable()
+                                    .build()
+                            )
+                            .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.builder()
+                                    .sideEffect(1.0F, Duration.minutes(10), Duration.seconds(45), MedSystemStatusEffects.PAIN_RELIEF)
                                     .build()
                             )
             )

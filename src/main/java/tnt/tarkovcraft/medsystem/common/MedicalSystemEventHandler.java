@@ -27,6 +27,8 @@ import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffectProcessor;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
@@ -88,6 +90,7 @@ public final class MedicalSystemEventHandler {
             DamageContext context = new DamageContext(livingEntity, source);
             context.setHits(hits);
             context.setHitCalculator(hitCalculator);
+            context.setSideEffects(SideEffectHolder.fromDamage(source));
             container.setDamageContext(context);
         }
     }
@@ -179,8 +182,12 @@ public final class MedicalSystemEventHandler {
         Map<BodyPart, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         List<BodyPart> lostBodyParts = new ArrayList<>();
+        SideEffectHolder sideEffects = context.getSideEffects();
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
             container.hurt(context, entry.getValue(), entry.getKey(), lostBodyParts::add);
+            if (sideEffects != null) {
+                sideEffects.apply(entity, container, entry.getKey());
+            }
         }
         SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
         container.clearDamageContext();
@@ -266,11 +273,27 @@ public final class MedicalSystemEventHandler {
         Consumer<Component> adder = tooltip::add;
 
         stack.addToTooltip(MedSystemItemComponents.HEAL_ATTRIBUTES, context, adder, flag);
+        stack.addToTooltip(MedSystemItemComponents.SIDE_EFFECTS, context, adder, flag);
     }
 
     @SubscribeEvent
     private void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         HealthSystem.getHealthData(player).tick(player);
+    }
+
+    @SubscribeEvent
+    private void onItemUseFinished(LivingEntityUseItemEvent.Finish event) {
+        ItemStack stack = event.getItem();
+        LivingEntity entity = event.getEntity();
+        if (!HealthSystem.hasCustomHealth(entity))
+            return;
+        if (stack.has(MedSystemItemComponents.SIDE_EFFECTS) && !(stack.getItem() instanceof SideEffectProcessor)) {
+            SideEffectHolder holder = stack.get(MedSystemItemComponents.SIDE_EFFECTS);
+            HealthContainer container = HealthSystem.getHealthData(entity);
+            String targetLimb = stack.get(MedSystemItemComponents.SELECTED_BODY_PART);
+            BodyPart part = container.getBodyPart(targetLimb);
+            holder.apply(entity, container, part);
+        }
     }
 }

@@ -7,6 +7,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorStat;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 
 import java.util.function.Supplier;
 
@@ -24,6 +25,10 @@ public final class MedSystemItemComponents {
     );
     public static final Supplier<DataComponentType<String>> SELECTED_BODY_PART = REGISTRY.register("selected_body_part", () -> DataComponentType.<String>builder()
             .persistent(Codec.STRING)
+            .build()
+    );
+    public static final Supplier<DataComponentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> DataComponentType.<SideEffectHolder>builder()
+            .persistent(SideEffectHolder.CODEC)
             .build()
     );
 }

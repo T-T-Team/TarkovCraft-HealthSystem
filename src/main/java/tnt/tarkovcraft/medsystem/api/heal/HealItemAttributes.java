@@ -24,18 +24,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public record HealItemAttributes(boolean applyGlobally, int minUseTime, DeadLimbHealing deadLimbHealing,
-                                 HealthRecovery health, List<EffectRecovery> recoveries,
-                                 List<SideEffect> sideEffects) implements TooltipProvider {
+public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, DeadLimbHealing deadLimbHealing,
+                                 HealthRecovery health, List<EffectRecovery> recoveries) implements TooltipProvider {
 
-    public static final Codec<HealItemAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealItemAttributes::applyGlobally), Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealItemAttributes::minUseTime), DeadLimbHealing.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.deadLimbHealing)), HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)), EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealItemAttributes::recoveries), SideEffect.CODEC.listOf().optionalFieldOf("sideEffects", Collections.emptyList()).forGetter(HealItemAttributes::sideEffects)).apply(instance, HealItemAttributes::new));
+    public static final Codec<HealItemAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealItemAttributes::applyGlobally),
+            Codec.BOOL.optionalFieldOf("alwaysConsumable", false).forGetter(HealItemAttributes::alwaysConsumable),
+            Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealItemAttributes::minUseTime),
+            DeadLimbHealing.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.deadLimbHealing)),
+            HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)),
+            EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealItemAttributes::recoveries)
+    ).apply(instance, HealItemAttributes::new));
 
     private HealItemAttributes(Builder builder) {
-        this(!builder.requiresSpecificBodyPart, builder.minUseTime, builder.deadLimbHealing, builder.healthRecovery, builder.recoveries, builder.sideEffects);
+        this(!builder.requiresSpecificBodyPart, builder.alwaysConsumable, builder.minUseTime, builder.deadLimbHealing, builder.healthRecovery, builder.recoveries);
     }
 
-    private HealItemAttributes(boolean applyGlobally, int minUseTime, Optional<DeadLimbHealing> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<SideEffect> sideEffects) {
-        this(applyGlobally, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries, sideEffects);
+    private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<DeadLimbHealing> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries) {
+        this(applyGlobally, alwaysConsumable, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries);
     }
 
     public static Builder builder() {
@@ -54,7 +60,7 @@ public record HealItemAttributes(boolean applyGlobally, int minUseTime, DeadLimb
     }
 
     public boolean canUseOn(LivingEntity entity, ItemStack stack, HealthContainer container) {
-        if (!this.sideEffects.isEmpty()) {
+        if (this.alwaysConsumable) {
             return true;
         }
         if (!this.recoveries.isEmpty()) {
@@ -69,7 +75,7 @@ public record HealItemAttributes(boolean applyGlobally, int minUseTime, DeadLimb
     }
 
     public boolean canUseOnPart(BodyPart part, ItemStack stack, HealthContainer container) {
-        if (!this.sideEffects.isEmpty()) {
+        if (this.alwaysConsumable) {
             return true;
         }
         if (!this.recoveries.isEmpty()) {
@@ -104,26 +110,27 @@ public record HealItemAttributes(boolean applyGlobally, int minUseTime, DeadLimb
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.title").withStyle(ChatFormatting.GRAY));
             this.recoveries.forEach(recovery -> recovery.addToTooltip(context, tooltipAdder, flag, componentGetter));
         }
-        if (!this.sideEffects.isEmpty()) {
-            tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title").withStyle(ChatFormatting.GRAY));
-            this.sideEffects.forEach(effect -> effect.addToTooltip(context, tooltipAdder, flag, componentGetter));
-        }
     }
 
     public static final class Builder {
 
         private boolean requiresSpecificBodyPart = true;
+        private boolean alwaysConsumable = false;
         private int minUseTime = 20;
         DeadLimbHealing deadLimbHealing;
         private HealthRecovery healthRecovery;
         private final List<EffectRecovery> recoveries = new ArrayList<>();
-        private final List<SideEffect> sideEffects = new ArrayList<>();
 
         private Builder() {
         }
 
         public Builder setNoBodyPartSelection() {
             this.requiresSpecificBodyPart = false;
+            return this;
+        }
+
+        public Builder setAlwaysConsumable() {
+            this.alwaysConsumable = true;
             return this;
         }
 
@@ -160,31 +167,6 @@ public record HealItemAttributes(boolean applyGlobally, int minUseTime, DeadLimb
         public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect) {
             this.recoveries.add(new EffectRecovery(cost, effect));
             return this;
-        }
-
-        public Builder sideEffect(float chance, int duration, int delay, Holder<StatusEffectType<?>> effect) {
-            this.sideEffects.add(new SideEffect(chance, duration, delay, effect));
-            return this;
-        }
-
-        public Builder sideEffect(float chance, TickValue duration, int delay, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration.tickValue(), delay, effect);
-        }
-
-        public Builder sideEffect(float chance, int duration, TickValue delay, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration, delay.tickValue(), effect);
-        }
-
-        public Builder sideEffect(float chance, TickValue duration, TickValue delay, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration.tickValue(), delay.tickValue(), effect);
-        }
-
-        public Builder sideEffect(float chance, int duration, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration, 0, effect);
-        }
-
-        public Builder sideEffect(float chance, TickValue duration, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration.tickValue(), effect);
         }
 
         public HealItemAttributes build() {
