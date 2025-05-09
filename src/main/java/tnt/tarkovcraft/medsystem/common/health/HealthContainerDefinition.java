@@ -1,7 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -13,7 +12,6 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class HealthContainerDefinition {
 
@@ -23,7 +21,7 @@ public final class HealthContainerDefinition {
             Codec.unboundedMap(Codec.STRING, BodyPartDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.bodyParts),
             BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
             BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
-    ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerDefinition::validate);
+    ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
 
     private final boolean replace;
     private final List<EntityType<?>> targets;
@@ -37,24 +35,6 @@ public final class HealthContainerDefinition {
         this.bodyParts = bodyParts;
         this.hitboxes = hitboxes;
         this.display = display;
-    }
-
-    private static DataResult<HealthContainerDefinition> validate(HealthContainerDefinition container) {
-        Set<String> hitboxOwners = container.hitboxes.stream().map(BodyPartHitbox::getOwner).collect(Collectors.toSet());
-        if (container.bodyParts.isEmpty()) {
-            return DataResult.error(() -> "At least one body part must be specified");
-        }
-        if (hitboxOwners.size() != container.bodyParts.size()) {
-            return DataResult.error(() -> "Mismatched hitbox count. Got " + hitboxOwners.size() + ", expected " + container.bodyParts.size());
-        }
-        for (String owner : container.bodyParts.keySet()) {
-            if (!hitboxOwners.contains(owner)) {
-                return DataResult.error(() -> "Missing hitbox definition for body part " + owner);
-            }
-        }
-        // TODO validate body part links
-        // TODO do not allow 0 body parts
-        return DataResult.success(container);
     }
 
     public BodyPartDefinition getHealthTpl(String id) {
@@ -99,41 +79,11 @@ public final class HealthContainerDefinition {
         return display;
     }
 
-    public HealthContainerDefinition merge(EntityType<?> type, HealthContainerDefinition other) {
-        MedicalSystem.LOGGER.warn(HealthSystem.MARKER, "Merging multiple health container definitions for entity '{}'", BuiltInRegistries.ENTITY_TYPE.getKey(type));
-        if (other.replace) {
-            return other;
-        }
-        List<EntityType<?>> targets = new ArrayList<>(this.targets);
-        targets.addAll(other.targets);
-        Map<String, BodyPartDefinition> newBodyParts = new HashMap<>(this.bodyParts);
-        Set<String> deletedParts = new HashSet<>();
-        for (Map.Entry<String, BodyPartDefinition> entry : other.bodyParts.entrySet()) {
-            BodyPartGroup group = entry.getValue().getBodyPartGroup();
-            if (group.isInactive()) {
-                newBodyParts.remove(entry.getKey());
-                deletedParts.add(entry.getKey());
-            } else {
-                newBodyParts.put(entry.getKey(), entry.getValue());
-            }
-        }
-        List<BodyPartHitbox> hitboxes = new ArrayList<>(this.hitboxes);
-        hitboxes.addAll(other.hitboxes);
-        hitboxes.removeIf(t -> deletedParts.contains(t.getOwner()));
-        List<BodyPartDisplay> display = new ArrayList<>(this.display);
-        display.addAll(other.display);
-        display.removeIf(t -> deletedParts.contains(t.source()));
-        // TODO finish merging
-        return validate(new HealthContainerDefinition(
-                this.replace,
-                targets,
-                newBodyParts,
-                hitboxes,
-                display
-        )).getOrThrow();
-    }
-
     List<EntityType<?>> getTargets() {
         return targets;
+    }
+
+    public boolean canReplace() {
+        return this.replace;
     }
 }

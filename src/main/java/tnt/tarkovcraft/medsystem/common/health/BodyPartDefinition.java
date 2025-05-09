@@ -54,6 +54,14 @@ public final class BodyPartDefinition {
         return maxHealth;
     }
 
+    public float getParentDamageScale() {
+        return parentDamageScale;
+    }
+
+    public float getDamageScale() {
+        return damageScale;
+    }
+
     public BodyPart createContainer(String key) {
         BodyPart part = new BodyPart(key, this.vital, this.maxHealth, this.parentDamageScale, this.damageScale, this.bodyPartGroup);
         part.setDefinition(this);
@@ -62,6 +70,10 @@ public final class BodyPartDefinition {
 
     public Collection<ReactionDefinition> getReactions() {
         return reactions.values();
+    }
+
+    Map<UUID, ReactionDefinition> getReactionMap() {
+        return reactions;
     }
 
     public BodyPartGroup getBodyPartGroup() {
