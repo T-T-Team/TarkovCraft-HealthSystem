@@ -18,7 +18,7 @@ public final class MedSystemDataAttachments {
             .serialize(HealthContainer.CODEC)
             .build()
     );
-    public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Collections.emptyList()))
+    public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Collections.emptyList(), false))
             .serialize(SideEffectHolder.CODEC)
             .build()
     );

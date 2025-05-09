@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.api.heal;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
@@ -25,9 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public record SideEffectHolder(List<SideEffect> sideEffects) implements TooltipProvider {
+public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip) implements TooltipProvider {
 
-    public static final Codec<SideEffectHolder> CODEC = SideEffect.CODEC.listOf().xmap(SideEffectHolder::new, SideEffectHolder::sideEffects);
+    public static final Codec<SideEffectHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            SideEffect.CODEC.listOf().fieldOf("effects").forGetter(t -> t.sideEffects),
+            Codec.BOOL.optionalFieldOf("hideTooltip", false).forGetter(t -> t.hideTooltip)
+    ).apply(instance, SideEffectHolder::new));
 
     public static Builder builder() {
         return new Builder();
@@ -57,6 +61,8 @@ public record SideEffectHolder(List<SideEffect> sideEffects) implements TooltipP
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
+        if (this.hideTooltip)
+            return;
         tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title").withStyle(ChatFormatting.GRAY));
         this.sideEffects.forEach(effect -> effect.addToTooltip(context, tooltipAdder, flag, componentGetter));
     }
@@ -64,8 +70,14 @@ public record SideEffectHolder(List<SideEffect> sideEffects) implements TooltipP
     public static final class Builder {
 
         private final List<SideEffect> sideEffects = new ArrayList<>();
+        private boolean hideTooltip = false;
 
         private Builder() {}
+
+        public Builder noTooltip() {
+            this.hideTooltip = true;
+            return this;
+        }
 
         public Builder sideEffect(float chance, int duration, int delay, Holder<StatusEffectType<?>> effect) {
             this.sideEffects.add(new SideEffect(chance, duration, delay, effect));
@@ -94,7 +106,7 @@ public record SideEffectHolder(List<SideEffect> sideEffects) implements TooltipP
 
         public SideEffectHolder build() {
             Preconditions.checkState(!sideEffects.isEmpty(), "sideEffects cannot be empty");
-            return new SideEffectHolder(sideEffects);
+            return new SideEffectHolder(sideEffects, hideTooltip);
         }
     }
 }
