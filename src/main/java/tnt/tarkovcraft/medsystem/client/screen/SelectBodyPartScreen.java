@@ -13,7 +13,7 @@ import tnt.tarkovcraft.core.client.screen.renderable.AbstractTextRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.HealAttributes;
+import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -48,7 +48,7 @@ public class SelectBodyPartScreen extends Screen {
             this.addError();
             return;
         }
-        HealAttributes attributes = itemStack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        HealItemAttributes attributes = itemStack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         if (attributes == null) {
             this.addError();
             return;
@@ -61,7 +61,7 @@ public class SelectBodyPartScreen extends Screen {
             BodyPart part = container.getBodyPart(display.source());
             Vector4f rect = display.getGuiPosition(2.0F, center);
             BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget((int) rect.x, (int) rect.y, (int) rect.z, (int) rect.w, part));
-            boolean isPartHealable = attributes.canUseOnPart(part, this.minecraft.player, itemStack, container);
+            boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container);
             widget.setTooltipHelper(TooltipHelper.screen(this));
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 

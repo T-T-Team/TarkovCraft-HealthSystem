@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import tnt.tarkovcraft.medsystem.api.HealAttributes;
+import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -33,9 +33,9 @@ public record C2S_SelectBodyPart(String bodyPart) implements CustomPacketPayload
         Player player = context.player();
         ItemStack stack = player.getMainHandItem();
         HealthContainer container = HealthSystem.getHealthData(player);
-        HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         BodyPart part = container.getBodyPart(this.bodyPart);
-        if (attributes != null && attributes.canUseOnPart(part, player, stack, container)) {
+        if (attributes != null && attributes.canUseOnPart(part, stack, container)) {
             stack.set(MedSystemItemComponents.SELECTED_BODY_PART, this.bodyPart);
         }
     }

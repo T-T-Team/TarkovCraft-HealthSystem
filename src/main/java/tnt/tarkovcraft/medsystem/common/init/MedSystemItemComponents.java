@@ -6,7 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorStat;
-import tnt.tarkovcraft.medsystem.api.HealAttributes;
+import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 
 import java.util.function.Supplier;
 
@@ -18,8 +18,8 @@ public final class MedSystemItemComponents {
             .persistent(ArmorStat.CODEC)
             .build()
     );
-    public static final Supplier<DataComponentType<HealAttributes>> HEAL_ATTRIBUTES = REGISTRY.register("heal_attributes", () -> DataComponentType.<HealAttributes>builder()
-            .persistent(HealAttributes.CODEC)
+    public static final Supplier<DataComponentType<HealItemAttributes>> HEAL_ATTRIBUTES = REGISTRY.register("heal_attributes", () -> DataComponentType.<HealItemAttributes>builder()
+            .persistent(HealItemAttributes.CODEC)
             .build()
     );
     public static final Supplier<DataComponentType<String>> SELECTED_BODY_PART = REGISTRY.register("selected_body_part", () -> DataComponentType.<String>builder()

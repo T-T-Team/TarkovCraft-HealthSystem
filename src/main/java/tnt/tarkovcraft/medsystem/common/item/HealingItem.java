@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
-import tnt.tarkovcraft.medsystem.api.HealAttributes;
+import tnt.tarkovcraft.medsystem.api.heal.*;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -47,8 +47,8 @@ public class HealingItem extends Item {
             livingEntity.stopUsingItem();
             return;
         }
-        HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
-        HealAttributes.HealthRecovery healthRecovery = attributes.health();
+        HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        HealthRecovery healthRecovery = attributes.health();
         if (healthRecovery == null)
             return;
         int usageTimeElapsed = attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION) - remainingUseDuration + 1;
@@ -84,7 +84,7 @@ public class HealingItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
         String targetLimb = this.getTargetLimb(stack);
-        HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         if (!this.canUseItem(stack, livingEntity) || (!attributes.applyGlobally() && TextHelper.isBlank(targetLimb))) {
             return stack;
         }
@@ -94,7 +94,7 @@ public class HealingItem extends Item {
         int consume = 0;
         // dead limb recovery
         if (attributes.canHealDeadLimbs()) {
-            HealAttributes.DeadLimbHealing deadLimbHealing = attributes.deadLimbHealing();
+            DeadLimbHealing deadLimbHealing = attributes.deadLimbHealing();
             consume++; // dead limb fix has hardcoded consumption value of 1
             if (part.isDead()) {
                 SkillSystem.trigger(MedSystemSkillEvents.LIMB_FIXED, livingEntity);
@@ -103,15 +103,15 @@ public class HealingItem extends Item {
             }
         }
         // effect recovery + consumption for recovery
-        List<HealAttributes.EffectRecovery> recoveries = attributes.recoveries();
-        for (HealAttributes.EffectRecovery recovery : recoveries) {
+        List<EffectRecovery> recoveries = attributes.recoveries();
+        for (EffectRecovery recovery : recoveries) {
             if (recovery.canRecover(container, part) && checkDurability(stack, consume + recovery.consumption())) {
                 recovery.recover(livingEntity, container, stack, part);
                 consume += recovery.consumption();
             }
         }
         // Side effect application
-        List<HealAttributes.SideEffect> sideEffects = attributes.sideEffects();
+        List<SideEffect> sideEffects = attributes.sideEffects();
         if (!sideEffects.isEmpty()) {
             sideEffects.forEach(sideEffect -> sideEffect.apply(livingEntity, container, part));
         }
@@ -137,7 +137,7 @@ public class HealingItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (this.canUseItem(stack, player)) {
             String selectedBodyPart = this.getSelectedBodyPart(stack);
-            HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+            HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
             if (attributes.applyGlobally() || (!player.isCrouching() && selectedBodyPart != null && player.getData(MedSystemDataAttachments.HEALTH_CONTAINER).hasBodyPart(selectedBodyPart))) {
                 player.startUsingItem(hand);
                 return InteractionResult.SUCCESS;
@@ -153,7 +153,7 @@ public class HealingItem extends Item {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         return attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION);
     }
 
@@ -191,7 +191,7 @@ public class HealingItem extends Item {
         if (!stack.has(MedSystemItemComponents.HEAL_ATTRIBUTES)) {
             return false;
         }
-        HealAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         return attributes.canUseOn(entity, stack, HealthSystem.getHealthData(entity));
     }
 
