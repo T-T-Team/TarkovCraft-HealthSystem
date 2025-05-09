@@ -13,7 +13,7 @@
       "id": "3ea0f284-68eb-43f6-9b2f-004c8d5e2103",
       "event": "medsystem:damage_taken",
       "tracker": {
-        "type": "tarkovcraft_core:unrestricted",
+        "type": "tarkovcraft_core:simple",
         "value": 0.025
       }
     }

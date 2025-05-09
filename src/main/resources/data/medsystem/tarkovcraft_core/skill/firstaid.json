@@ -13,7 +13,7 @@
       "id": "2fde38e4-2b0c-41b0-afc4-257fe2a22df1",
       "event": "medsystem:healing_used",
       "tracker": {
-        "type": "tarkovcraft_core:unrestricted",
+        "type": "tarkovcraft_core:simple",
         "value": 0.25
       }
     }

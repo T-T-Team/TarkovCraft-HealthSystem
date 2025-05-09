@@ -13,7 +13,7 @@
       "id": "a606bc3d-ada5-4e99-bd4b-d735864a883f",
       "event": "medsystem:armor_use",
       "tracker": {
-        "type": "tarkovcraft_core:unrestricted",
+        "type": "tarkovcraft_core:simple",
         "value": 0.05
       }
     }
