@@ -41,7 +41,7 @@ public final class MedicalSystem {
 
 
         modEventBus.addListener(this::createRegistries);
-        modEventBus.addListener(MedicalSystemNetwork::onRegistration);
+        modEventBus.register(new MedicalSystemNetwork());
 
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);

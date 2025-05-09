@@ -246,15 +246,18 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         DamageSource source = event.getSource();
         Entity killer = source.getEntity();
-        if (killer != null && HealthSystem.hasCustomHealth(entity)) {
-            HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-            boolean headshot = source.is(DamageTypeTags.IS_PROJECTILE) && container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
-            if (headshot) {
-                StatisticTracker.incrementOptional(killer, MedSystemStats.HEADSHOTS);
-                if (entity.getType() == EntityType.PLAYER) {
-                    StatisticTracker.increment(killer, MedSystemStats.PLAYER_HEADSHOTS);
+        if (HealthSystem.hasCustomHealth(entity)) {
+            if (killer != null) {
+                HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+                boolean headshot = source.is(DamageTypeTags.IS_PROJECTILE) && container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
+                if (headshot) {
+                    StatisticTracker.incrementOptional(killer, MedSystemStats.HEADSHOTS);
+                    if (entity.getType() == EntityType.PLAYER) {
+                        StatisticTracker.increment(killer, MedSystemStats.PLAYER_HEADSHOTS);
+                    }
                 }
             }
+            entity.removeData(MedSystemDataAttachments.HEALTH_CONTAINER);
         }
     }
 

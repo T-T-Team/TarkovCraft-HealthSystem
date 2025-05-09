@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,6 +32,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
+import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -144,6 +146,16 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
 
     public Optional<HealthContainerDefinition> getHealthContainer(LivingEntity entity) {
         return this.getHealthContainer(entity.getType());
+    }
+
+    public void importServerData(Map<EntityType<?>, HealthContainerDefinition> data) {
+        MedicalSystem.LOGGER.debug(MARKER, "Importing server data, total of {} entries", data.size());
+        this.healthContainers.clear();
+        this.healthContainers.putAll(data);
+    }
+
+    public CustomPacketPayload getConfigurationPayload() {
+        return new S2C_SendHealthDefinitions(this.healthContainers);
     }
 
     @Override

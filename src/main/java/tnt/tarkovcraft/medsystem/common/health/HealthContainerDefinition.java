@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -52,8 +53,6 @@ public final class HealthContainerDefinition {
     public void bind(LivingEntity entity) {
         // bind new container only to entities without existing health container or with invalid health data
         if (HealthSystem.hasCustomHealth(entity) && !entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).isInvalid()) {
-            HealthContainer container = HealthSystem.getHealthData(entity);
-            //container.clearBoundData(entity);
             return;
         }
 
