@@ -175,6 +175,7 @@ public final class MedicalSystemEventHandler {
         if (!HealthSystem.hasCustomHealth(entity))
             return;
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+        DamageSource source = event.getSource();
         DamageContext context = container.getDamageContext();
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
         Map<BodyPart, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
@@ -184,10 +185,12 @@ public final class MedicalSystemEventHandler {
         for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
             container.hurt(context, entry.getValue(), entry.getKey(), lostBodyParts::add);
             if (sideEffects != null) {
-                sideEffects.applyFromDamage(entity, event.getSource(), container, entry.getKey());
+                sideEffects.applyFromDamage(entity, source, container, entry.getKey());
             }
         }
-        SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+        if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+        }
         container.clearDamageContext();
         container.updateHealth(entity);
         float deathChance = lostBodyParts.isEmpty() ? 0.0F : MedicalSystem.getConfig().limbLossDeathCauseChance;

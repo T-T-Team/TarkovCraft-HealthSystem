@@ -168,6 +168,20 @@
               }
             ]
           }
+        },
+        "2fd5fe6b-b05f-4171-865d-bf49d583068f": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:fracture_causing",
+            "chance": 0.03
+          },
+          "events": {
+            "type": "medsystem:effect",
+            "effect": {
+              "type": "medsystem:fracture",
+              "duration": -1
+            }
+          }
         }
       }
     },
@@ -207,6 +221,20 @@
                 }
               }
             ]
+          }
+        },
+        "2fd5fe6b-b05f-4171-865d-bf49d583068f": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:fracture_causing",
+            "chance": 0.03
+          },
+          "events": {
+            "type": "medsystem:effect",
+            "effect": {
+              "type": "medsystem:fracture",
+              "duration": -1
+            }
           }
         }
       }
@@ -300,6 +328,20 @@
               }
             ]
           }
+        },
+        "2fd5fe6b-b05f-4171-865d-bf49d583068f": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:fracture_causing",
+            "chance": 0.03
+          },
+          "events": {
+            "type": "medsystem:effect",
+            "effect": {
+              "type": "medsystem:fracture",
+              "duration": -1
+            }
+          }
         }
       }
     },
@@ -391,6 +433,20 @@
                 }
               }
             ]
+          }
+        },
+        "2fd5fe6b-b05f-4171-865d-bf49d583068f": {
+          "source": {
+            "type": "medsystem:damage_source",
+            "source": "medsystem:fracture_causing",
+            "chance": 0.03
+          },
+          "events": {
+            "type": "medsystem:effect",
+            "effect": {
+              "type": "medsystem:fracture",
+              "duration": -1
+            }
           }
         }
       }
