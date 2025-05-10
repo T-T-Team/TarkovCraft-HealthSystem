@@ -24,12 +24,12 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public long getDamageInterval() {
-        return 50L;
+        return 60L;
     }
 
     @Override
     public float getDamageAmount() {
-        return 1.0F;
+        return 0.5F;
     }
 
     @Override

@@ -27,12 +27,12 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public long getDamageInterval() {
-        return 20L;
+        return 30L;
     }
 
     @Override
     public float getDamageAmount() {
-        return 1.0F;
+        return 0.75F;
     }
 
     @Override
