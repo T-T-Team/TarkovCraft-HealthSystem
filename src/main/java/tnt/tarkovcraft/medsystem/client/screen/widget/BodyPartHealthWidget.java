@@ -37,6 +37,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private int frameColor = ColorPalette.WHITE;
     private int backgroundColor = 0xFF << 24;
     private int textColor = ColorPalette.WHITE;
+    private float healthScale = 1.0F;
     private SimpleClickListener onClick;
     private List<StatusEffect> effects;
     private TooltipHelper tooltipHelper;
@@ -50,6 +51,10 @@ public class BodyPartHealthWidget extends AbstractWidget {
     public void setEffects(List<StatusEffect> effects, TooltipHelper helper) {
         this.effects = effects;
         this.tooltipHelper = helper;
+    }
+
+    public void setHealthScale(float healthScale) {
+        this.healthScale = healthScale;
     }
 
     public void setClickListener(SimpleClickListener onClick) {
@@ -93,7 +98,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
         int textColor = this.part.isDead() ? 0xFF0000 : this.textColor;
         int titleWidth = this.font.width(this.getMessage());
         graphics.drawString(this.font, this.getMessage(), this.getX() + (this.width - titleWidth) / 2, this.getY() + 5 + this.frameSize, textColor);
-        String status = Mth.ceil(this.part.getHealth()) + "/" + Mth.ceil(this.part.getMaxHealth());
+        String status = Mth.ceil(this.part.getHealth() * this.healthScale) + "/" + Mth.ceil(this.part.getMaxHealth() * this.healthScale);
         int statusWidth = this.font.width(status);
         graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getBottom() - 14 - this.frameSize, textColor);
         HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
