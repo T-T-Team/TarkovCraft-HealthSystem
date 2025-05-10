@@ -37,7 +37,7 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
     public static final Codec<SideEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(t -> t.chance),
             Codec.INT.optionalFieldOf("duration", 1200).forGetter(t -> t.duration),
-            Codec.INT.optionalFieldOf("delay", 1200).forGetter(t -> t.delay),
+            Codec.INT.optionalFieldOf("delay", 0).forGetter(t -> t.delay),
             MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(t -> t.effect)
     ).apply(instance, SideEffect::new));
 
