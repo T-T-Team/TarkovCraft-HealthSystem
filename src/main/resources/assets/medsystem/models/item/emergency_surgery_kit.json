@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "medsystem:item/emergency_surgery_kit"
+  }
+}
