@@ -29,7 +29,8 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     public static final Codec<HealthContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
             Codec.unboundedMap(Codec.STRING, BodyPart.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts),
-            StatusEffectMap.CODEC.fieldOf("effects").forGetter(t -> t.statusEffects)
+            StatusEffectMap.CODEC.fieldOf("effects").forGetter(t -> t.statusEffects),
+            Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
     ).apply(instance, HealthContainer::new));
 
     private final HealthContainerDefinition definition;
@@ -39,6 +40,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     private final String root;
     private final StatusEffectMap statusEffects;
     private DamageContext activeDamageContext;
+    private boolean invalidated;
 
     public HealthContainer(IAttachmentHolder holder) {
         if (!(holder instanceof LivingEntity livingEntity)) {
@@ -65,36 +67,36 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
     }
 
-    private HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts, StatusEffectMap statusEffects) {
+    private HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts, StatusEffectMap statusEffects, boolean invalidated) {
         this.definition = definition;
         this.bodyParts = bodyParts;
         this.bodyPartLinks = new IdentityHashMap<>();
         this.vitalParts = new ArrayList<>();
         this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
         this.statusEffects = statusEffects;
+        this.invalidated = invalidated;
     }
 
     public void tick(LivingEntity entity) {
-        if (entity.isDeadOrDying()) {
+        ContextImpl context = ContextImpl.of(
+                MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                ContextKeys.LIVING_ENTITY, entity
+        );
+        float previousHealth = this.getHealth();
+        this.statusEffects.tick(context);
+        for (BodyPart part : this.bodyParts.values()) {
+            part.tick(context);
+        }
+        float health = this.getHealth();
+        if (health != previousHealth) {
+            updateHealth(entity);
+        }
+        if (this.invalidated) {
             this.clearBoundData(entity);
-        } else {
-            ContextImpl context = ContextImpl.of(
-                    MedicalSystemContextKeys.HEALTH_CONTAINER, this,
-                    ContextKeys.LIVING_ENTITY, entity
-            );
-            float previousHealth = this.getHealth();
-            this.statusEffects.tick(context);
-            for (BodyPart part : this.bodyParts.values()) {
-                part.tick(context);
-            }
-            float health = this.getHealth();
-            if (health != previousHealth) {
-                updateHealth(entity);
-            }
         }
     }
 
-    private void clearBoundData(LivingEntity entity) {
+    public void clearBoundData(LivingEntity entity) {
         ContextImpl context = ContextImpl.of(
                 MedicalSystemContextKeys.HEALTH_CONTAINER, this,
                 ContextKeys.LIVING_ENTITY, entity
@@ -111,8 +113,12 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return this.statusEffects;
     }
 
+    public void invalidate() {
+        this.invalidated = true;
+    }
+
     public boolean isInvalid() {
-        return this.definition == null || this.bodyParts.isEmpty();
+        return this.definition == null || this.bodyParts.isEmpty() || this.invalidated;
     }
 
     public HealthContainerDefinition getDefinition() {
