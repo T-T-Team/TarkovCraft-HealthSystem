@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "#c:leathers",
+    "I": "#c:ingots/iron",
+    "S": "#c:rods/wooden",
+    "T": "minecraft:shears"
+  },
+  "pattern": [
+    " LL",
+    "LTS",
+    "LSI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:emergency_surgery_kit"
+  },
+  "show_notification": false
+}

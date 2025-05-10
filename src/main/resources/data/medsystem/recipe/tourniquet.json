@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "#c:leathers",
+    "I": "#c:nuggets/iron",
+    "S": "#c:rods/wooden"
+  },
+  "pattern": [
+    " S ",
+    "LIL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:tourniquet"
+  },
+  "show_notification": false
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": "#minecraft:wool",
+    "P": "minecraft:paper"
+  },
+  "pattern": [
+    "PWP",
+    " P "
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:bandage"
+  },
+  "show_notification": false
+}

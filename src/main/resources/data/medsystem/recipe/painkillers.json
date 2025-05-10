@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "#c:flowers/small",
+    "P": "minecraft:paper"
+  },
+  "pattern": [
+    "PFP",
+    "FPF"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:painkillers"
+  },
+  "show_notification": false
+}

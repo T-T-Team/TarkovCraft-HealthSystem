@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": "#c:leathers",
+    "B": "medsystem:bandage",
+    "F": "#c:flowers/small",
+    "P": "minecraft:paper"
+  },
+  "pattern": [
+    "FPF",
+    "BFB",
+    "LLL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:first_aid_kit"
+  },
+  "show_notification": false
+}
