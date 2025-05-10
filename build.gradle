@@ -102,7 +102,7 @@ configurations {
 
 dependencies {
     implementation "dev.toma.configuration:configuration-${project.minecraft_version}:${project.configuration}-neoforge"
-    implementation name: "tarkovcraft_core-${core}"
+    implementation name: "tarkovcraft_core-${minecraft_version}-${core}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

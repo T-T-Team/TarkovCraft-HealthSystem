@@ -204,10 +204,8 @@ public final class MedicalSystemEventHandler {
         } else {
             // disable sprinting
             MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
-            if (entity.isSprinting() && component.isAttached(entity)) {
-                if (!component.canSprint(entity)) {
-                    entity.setSprinting(false);
-                }
+            if (entity.isSprinting() && !component.canSprint(entity)) {
+                entity.setSprinting(false);
             }
         }
     }
@@ -228,7 +226,7 @@ public final class MedicalSystemEventHandler {
         if (gametime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
             DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
-            entity.hurt(source, 1.0F);
+            entity.hurt(source, 0.25F);
         }
     }
 
@@ -238,7 +236,7 @@ public final class MedicalSystemEventHandler {
         if (HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
             DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
-            entity.hurt(source, 2.5F);
+            entity.hurt(source, 0.50F);
         }
     }
 
