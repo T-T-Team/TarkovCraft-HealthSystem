@@ -11,6 +11,7 @@ import tnt.tarkovcraft.core.util.context.Context;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public abstract class StatusEffect {
@@ -104,5 +105,15 @@ public abstract class StatusEffect {
             a.setDuration(duration + b.getDuration());
         }
         return a;
+    }
+
+    public static <S extends StatusEffect> S replace(S a, S b, BiFunction<Integer, Integer, S> effect) {
+        if (a.isInfinite())
+            return a;
+        if (b.isInfinite())
+            return b;
+        int duration = Math.max(a.getDuration(), b.getDuration());
+        int delay = Math.min(a.getDelay(), b.getDelay());
+        return effect.apply(duration, delay);
     }
 }

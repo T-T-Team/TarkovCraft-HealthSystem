@@ -13,6 +13,7 @@ public final class MedSystemStatusEffects {
             .persist(PainReliefEffect.CODEC)
             .type(EffectType.POSITIVE)
             .setGlobal()
+            .combineEffects((a, b) -> StatusEffect.replace(a, b, PainReliefEffect::new))
             .build()
     );
     public static final Holder<StatusEffectType<?>> FRACTURE = REGISTRY.register("fracture", key -> StatusEffectType.builder(key, FractureStatusEffect::new)
