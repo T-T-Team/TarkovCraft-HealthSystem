@@ -93,7 +93,7 @@ public final class PositionedAABB {
     }
 
     public Vec2 size() {
-        return new Vec2((float) aabb.getXsize(), (float) aabb.getYsize());
+        return new Vec2((float) (aabb.getXsize() / 2.0), (float) (aabb.getYsize() / 2.0));
     }
 
     public double height() {

@@ -82,9 +82,10 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
         if (chance < 1.0F) {
             component.append(String.format(Locale.ROOT, "%.1f%%", chance * 100) + " ");
         }
-        component.append(type.getDisplayName())
-                .append(" / ")
-                .append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(duration, DurationFormats.SHORT_NAME)));
+        component.append(type.getDisplayName());
+        if (duration > 0) {
+            component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(duration, DurationFormats.SHORT_NAME)));
+        }
         if (delay > 0) {
             component.append(" / ")
                     .append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.delay", Duration.format(delay, DurationFormats.SHORT_NAME)));
