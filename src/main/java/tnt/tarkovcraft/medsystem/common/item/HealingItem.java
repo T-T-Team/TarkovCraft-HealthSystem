@@ -62,7 +62,11 @@ public class HealingItem extends Item implements SideEffectProcessor {
                 BodyPart part = TextHelper.isNotBlank(partId) && container.hasBodyPart(partId) ? container.getBodyPart(partId) : null;
                 if (livingEntity.level() instanceof ServerLevel serverLevel) {
                     SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, livingEntity);
-                    stack.hurtAndBreak(1, serverLevel, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+                    if (stack.isDamageableItem()) {
+                        stack.hurtAndBreak(1, serverLevel, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+                    } else {
+                        stack.consume(1, livingEntity);
+                    }
                 }
                 float leftover = container.heal(livingEntity, amount, part);
                 if (leftover == amount) {
@@ -119,7 +123,11 @@ public class HealingItem extends Item implements SideEffectProcessor {
         if (!level.isClientSide()) {
             int consumeAmount = Math.max(1, consume);
             SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, livingEntity, consumeAmount);
-            stack.hurtAndBreak(consumeAmount, (ServerLevel) level, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+            if (stack.isDamageableItem()) {
+                stack.hurtAndBreak(consumeAmount, (ServerLevel) level, livingEntity, item -> livingEntity.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
+            } else {
+                stack.consume(1, livingEntity);
+            }
         }
         // Remove saved body part and sync data
         stack.remove(MedSystemItemComponents.SELECTED_BODY_PART);
@@ -174,7 +182,7 @@ public class HealingItem extends Item implements SideEffectProcessor {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag flag) {
-        int max = stack.getMaxDamage();
+        int max = Math.max(stack.getMaxDamage(), 1);
         int damage = max - stack.getDamageValue();
         Component durability = Component.literal(damage + "/" + max).withStyle(ChatFormatting.RED);
         tooltipAdder.accept(Component.translatable("tooltip.medsystem.item.durability", durability).withStyle(ChatFormatting.GRAY));
@@ -200,7 +208,7 @@ public class HealingItem extends Item implements SideEffectProcessor {
     }
 
     public static boolean checkDurability(ItemStack stack, int durabilityUse) {
-        int maxDamage = stack.getMaxDamage() - stack.getDamageValue();
+        int maxDamage = Math.max(stack.getMaxDamage(), 1) - stack.getDamageValue();
         return durabilityUse <= maxDamage;
     }
 }

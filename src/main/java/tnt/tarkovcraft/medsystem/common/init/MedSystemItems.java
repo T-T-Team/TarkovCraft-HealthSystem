@@ -33,8 +33,7 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> BANDAGE = REGISTRY.registerItem(
             "bandage",
             properties -> new HealingItem(
-                    properties.durability(1)
-                            .component(DataComponents.BREAK_SOUND, null)
+                    properties.component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
                                     .removesEffect(1, MedSystemStatusEffects.LIGHT_BLEED)
@@ -45,8 +44,7 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> TOURNIQUET = REGISTRY.registerItem(
             "tourniquet",
             properties -> new HealingItem(
-                    properties.durability(1)
-                            .component(DataComponents.BREAK_SOUND, null)
+                    properties.component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
                                     .removesEffect(1, MedSystemStatusEffects.HEAVY_BLEED)
@@ -57,8 +55,7 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> SPLINT = REGISTRY.registerItem(
             "splint",
             properties -> new HealingItem(
-                    properties.durability(1)
-                            .component(DataComponents.BREAK_SOUND, null)
+                    properties.component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(5))
                                     .removesEffect(1, MedSystemStatusEffects.FRACTURE)
