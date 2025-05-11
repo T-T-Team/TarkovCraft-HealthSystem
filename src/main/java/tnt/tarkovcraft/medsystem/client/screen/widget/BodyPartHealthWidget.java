@@ -9,6 +9,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
+import tnt.tarkovcraft.core.client.screen.SharedScreenHoverState;
 import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
@@ -35,17 +36,24 @@ public class BodyPartHealthWidget extends AbstractWidget {
 
     private int frameSize = 1;
     private int frameColor = ColorPalette.WHITE;
+    private int frameHoverColor = ColorPalette.YELLOW;
     private int backgroundColor = 0xFF << 24;
     private int textColor = ColorPalette.WHITE;
+    private int textHoverColor = ColorPalette.YELLOW;
     private float healthScale = 1.0F;
     private SimpleClickListener onClick;
     private List<StatusEffect> effects;
     private TooltipHelper tooltipHelper;
+    private SharedScreenHoverState<BodyPart> hoverState;
 
     public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
         super(x, y, width, height, part.getDisplayName().copy().withStyle(ChatFormatting.BOLD));
         this.font = font;
         this.part = part;
+    }
+
+    public void setHoverState(SharedScreenHoverState<BodyPart> hoverState) {
+        this.hoverState = hoverState;
     }
 
     public void setEffects(List<StatusEffect> effects, TooltipHelper helper) {
@@ -69,12 +77,20 @@ public class BodyPartHealthWidget extends AbstractWidget {
         this.frameColor = frameColor;
     }
 
+    public void setFrameHoverColor(int frameHoverColor) {
+        this.frameHoverColor = frameHoverColor;
+    }
+
     public void setBackgroundColor(int backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
     public void setTextColor(int textColor) {
         this.textColor = textColor;
+    }
+
+    public void setTextHoverColor(int textHoverColor) {
+        this.textHoverColor = textHoverColor;
     }
 
     @Override
@@ -89,13 +105,23 @@ public class BodyPartHealthWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        boolean partHovered = false;
+        if (this.hoverState != null) {
+            if (this.isHovered) {
+                this.hoverState.setState(this, part);
+            } else {
+                this.hoverState.clearState(this);
+            }
+            partHovered = this.hoverState.getState() != null && this.hoverState.getState().getName().equals(this.part.getName());
+        }
         if (this.frameSize > 0 && RenderUtils.isVisibleColor(this.frameColor)) {
-            graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), this.frameColor);
+            int frameColor = partHovered || this.isHovered ? this.frameHoverColor : this.frameColor;
+            graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), frameColor);
         }
         if (RenderUtils.isVisibleColor(this.backgroundColor)) {
             graphics.fill(this.getX() + this.frameSize, this.getY() + this.frameSize, this.getRight() - this.frameSize, this.getBottom() - this.frameSize, this.backgroundColor);
         }
-        int textColor = this.part.isDead() ? 0xFF0000 : this.textColor;
+        int textColor = this.part.isDead() ? 0xFF0000 : partHovered ? this.textHoverColor : this.textColor;
         int titleWidth = this.font.width(this.getMessage());
         graphics.drawString(this.font, this.getMessage(), this.getX() + (this.width - titleWidth) / 2, this.getY() + 5 + this.frameSize, textColor);
         String status = Mth.ceil(this.part.getHealth() * this.healthScale) + "/" + Mth.ceil(this.part.getMaxHealth() * this.healthScale);

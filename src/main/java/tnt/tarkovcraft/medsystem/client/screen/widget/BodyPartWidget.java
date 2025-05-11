@@ -6,6 +6,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
+import tnt.tarkovcraft.core.client.screen.SharedScreenHoverState;
 import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -26,6 +27,7 @@ public class BodyPartWidget extends AbstractWidget {
     private SimpleClickListener onClick;
 
     private TooltipHelper tooltipHelper;
+    private SharedScreenHoverState<BodyPart> hoverState;
     private List<FormattedCharSequence> customTooltip = new ArrayList<>();
 
     public BodyPartWidget(int x, int y, int width, int height, BodyPart part) {
@@ -40,6 +42,17 @@ public class BodyPartWidget extends AbstractWidget {
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int color = this.colorProvider.applyAsInt(this.part);
+        if (this.hoverState != null) {
+            if (this.isHovered) {
+                this.hoverState.setState(this, this.part);
+            } else {
+                this.hoverState.clearState(this);
+            }
+            BodyPart statePart = this.hoverState.getState();
+            if (statePart != null && statePart.getName().equals(this.part.getName())) {
+                color = ARGB.lerp(0.5F, color, 0xFFFFFFFF);
+            }
+        }
         graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), ARGB.scaleRGB(color, 0.8F));
         graphics.fill(this.getX() + this.scale, this.getY() + this.scale, this.getRight() - this.scale, this.getBottom() - this.scale, color);
 
@@ -76,6 +89,10 @@ public class BodyPartWidget extends AbstractWidget {
 
     public void setTooltipHelper(TooltipHelper tooltipHelper) {
         this.tooltipHelper = tooltipHelper;
+    }
+
+    public void setHoverState(SharedScreenHoverState<BodyPart> hoverState) {
+        this.hoverState = hoverState;
     }
 
     public TooltipHelper getTooltipHelper() {

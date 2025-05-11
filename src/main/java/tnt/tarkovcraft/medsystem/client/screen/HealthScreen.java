@@ -5,6 +5,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
+import tnt.tarkovcraft.core.client.screen.SharedScreenHoverState;
 import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.client.screen.widget.ListWidget;
@@ -44,7 +45,8 @@ public class HealthScreen extends CharacterSubScreen {
         Vector2f center = new Vector2f(this.width / 6.0F, this.height / 2.0F);
 
         int left = this.width / 3 - 15;
-        ListWidget<BodyPartHealthWidget> list = this.addRenderableWidget(new ListWidget<>(left, 35, this.width - left, this.height - 35, displays, (display, index) -> this.createBodyPartWidget(display, container, index)));
+        SharedScreenHoverState<BodyPart> state = new SharedScreenHoverState<>();
+        ListWidget<BodyPartHealthWidget> list = this.addRenderableWidget(new ListWidget<>(left, 35, this.width - left, this.height - 35, displays, (display, index) -> this.createBodyPartWidget(display, container, index, state)));
         list.setAdditionalItemSpacing(4);
         list.setScroll(this.bodyPartScroll);
         list.setScrollListener((x, y) -> this.bodyPartScroll = y);
@@ -59,10 +61,11 @@ public class HealthScreen extends CharacterSubScreen {
             bodyPartWidget.setScale(3);
             bodyPartWidget.setTooltip(Tooltip.create(part.getDisplayName()));
             bodyPartWidget.setTooltipDelay(Duration.ofMillis(500));
+            bodyPartWidget.setHoverState(state);
         }
     }
 
-    private BodyPartHealthWidget createBodyPartWidget(BodyPartDisplay display, HealthContainer container, int index) {
+    private BodyPartHealthWidget createBodyPartWidget(BodyPartDisplay display, HealthContainer container, int index, SharedScreenHoverState<BodyPart> state) {
         int left = this.width / 3 - 15;
         BodyPart part = container.getBodyPart(display.source());
         Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
@@ -76,6 +79,7 @@ public class HealthScreen extends CharacterSubScreen {
         List<StatusEffect> effects = stream.filter(ef -> ef.isActive() && ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI)).toList();
         widget.setEffects(effects, TooltipHelper.screen(this));
         widget.setHealthScale(10);
+        widget.setHoverState(state);
         return widget;
     }
 }
