@@ -5,15 +5,15 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
-import tnt.tarkovcraft.core.client.screen.SharedScreenHoverState;
+import tnt.tarkovcraft.core.client.screen.SharedScreenState;
 import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.client.screen.widget.ListWidget;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
-import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
+import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -45,7 +45,7 @@ public class HealthScreen extends CharacterSubScreen {
         Vector2f center = new Vector2f(this.width / 6.0F, this.height / 2.0F);
 
         int left = this.width / 3 - 15;
-        SharedScreenHoverState<BodyPart> state = new SharedScreenHoverState<>();
+        SharedScreenState<BodyPart> state = new SharedScreenState<>();
         ListWidget<BodyPartHealthWidget> list = this.addRenderableWidget(new ListWidget<>(left, 35, this.width - left, this.height - 35, displays, (display, index) -> this.createBodyPartWidget(display, container, index, state)));
         list.setAdditionalItemSpacing(4);
         list.setScroll(this.bodyPartScroll);
@@ -65,7 +65,7 @@ public class HealthScreen extends CharacterSubScreen {
         }
     }
 
-    private BodyPartHealthWidget createBodyPartWidget(BodyPartDisplay display, HealthContainer container, int index, SharedScreenHoverState<BodyPart> state) {
+    private BodyPartHealthWidget createBodyPartWidget(BodyPartDisplay display, HealthContainer container, int index, SharedScreenState<BodyPart> state) {
         int left = this.width / 3 - 15;
         BodyPart part = container.getBodyPart(display.source());
         Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();

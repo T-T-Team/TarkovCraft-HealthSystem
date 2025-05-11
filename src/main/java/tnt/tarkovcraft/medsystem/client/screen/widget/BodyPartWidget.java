@@ -6,7 +6,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
-import tnt.tarkovcraft.core.client.screen.SharedScreenHoverState;
+import tnt.tarkovcraft.core.client.screen.SharedScreenState;
 import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -27,7 +27,7 @@ public class BodyPartWidget extends AbstractWidget {
     private SimpleClickListener onClick;
 
     private TooltipHelper tooltipHelper;
-    private SharedScreenHoverState<BodyPart> hoverState;
+    private SharedScreenState<BodyPart> hoverState;
     private List<FormattedCharSequence> customTooltip = new ArrayList<>();
 
     public BodyPartWidget(int x, int y, int width, int height, BodyPart part) {
@@ -91,7 +91,7 @@ public class BodyPartWidget extends AbstractWidget {
         this.tooltipHelper = tooltipHelper;
     }
 
-    public void setHoverState(SharedScreenHoverState<BodyPart> hoverState) {
+    public void setHoverState(SharedScreenState<BodyPart> hoverState) {
         this.hoverState = hoverState;
     }
 

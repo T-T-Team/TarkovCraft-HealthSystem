@@ -9,7 +9,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
-import tnt.tarkovcraft.core.client.screen.SharedScreenHoverState;
+import tnt.tarkovcraft.core.client.screen.SharedScreenState;
 import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
@@ -44,7 +44,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private SimpleClickListener onClick;
     private List<StatusEffect> effects;
     private TooltipHelper tooltipHelper;
-    private SharedScreenHoverState<BodyPart> hoverState;
+    private SharedScreenState<BodyPart> hoverState;
 
     public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
         super(x, y, width, height, part.getDisplayName().copy().withStyle(ChatFormatting.BOLD));
@@ -52,7 +52,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
         this.part = part;
     }
 
-    public void setHoverState(SharedScreenHoverState<BodyPart> hoverState) {
+    public void setHoverState(SharedScreenState<BodyPart> hoverState) {
         this.hoverState = hoverState;
     }
 
