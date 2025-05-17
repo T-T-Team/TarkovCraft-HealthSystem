@@ -25,8 +25,7 @@
           "translate": "skill.medsystem.resilience.bonus.limb_death"
         },
         "descriptionKey": "skill.medsystem.resilience.bonus.limb_death.description",
-        "color": "#FFFFFF",
-        "icon": "medsystem:textures/icons/skill/resilience.png"
+        "icon": "medsystem:textures/icons/skill/bonus/limb_loss_death_chance.png"
       },
       "conditions": [
         {

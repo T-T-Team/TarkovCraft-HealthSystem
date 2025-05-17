@@ -25,8 +25,7 @@
           "translate": "skill.medsystem.surgery.bonus.injury_duration"
         },
         "descriptionKey": "skill.medsystem.surgery.bonus.injury_duration.description",
-        "color": "#FFFFFF",
-        "icon": "medsystem:textures/icons/skill/surgery.png"
+        "icon": "medsystem:textures/icons/skill/bonus/injury_duration.png"
       },
       "conditions": [
         {
@@ -52,8 +51,7 @@
           "translate": "skill.medsystem.surgery.bonus.injury_scale"
         },
         "descriptionKey": "skill.medsystem.surgery.bonus.injury_scale.description",
-        "color": "#FFFFFF",
-        "icon": "medsystem:textures/icons/skill/surgery.png"
+        "icon": "medsystem:textures/icons/skill/bonus/injury_amount.png"
       },
       "conditions": [
         {

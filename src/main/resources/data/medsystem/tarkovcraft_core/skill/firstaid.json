@@ -25,8 +25,7 @@
           "translate": "skill.medsystem.firstaid.bonus.positive_effect_duration"
         },
         "descriptionKey": "skill.medsystem.firstaid.bonus.positive_effect_duration.description",
-        "color": "#FFFFFF",
-        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+        "icon": "medsystem:textures/icons/skill/bonus/positive_effect_duration.png"
       },
       "conditions": [
         {
@@ -52,8 +51,7 @@
           "translate": "skill.medsystem.firstaid.bonus.positive_effect_chance"
         },
         "descriptionKey": "skill.medsystem.firstaid.bonus.positive_effect_chance.description",
-        "color": "#FFFFFF",
-        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+        "icon": "medsystem:textures/icons/skill/bonus/positive_effect_chance.png"
       },
       "conditions": [
         {
@@ -79,8 +77,7 @@
           "translate": "skill.medsystem.firstaid.bonus.negative_effect_duration"
         },
         "descriptionKey": "skill.medsystem.firstaid.bonus.negative_effect_duration.description",
-        "color": "#FFFFFF",
-        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+        "icon": "medsystem:textures/icons/skill/bonus/negative_effect_duration.png"
       },
       "conditions": [
         {
@@ -106,8 +103,7 @@
           "translate": "skill.medsystem.firstaid.bonus.negative_effect_chance"
         },
         "descriptionKey": "skill.medsystem.firstaid.bonus.negative_effect_chance.description",
-        "color": "#FFFFFF",
-        "icon": "medsystem:textures/icons/skill/firstaidkit.png"
+        "icon": "medsystem:textures/icons/skill/bonus/negative_effect_chance.png"
       },
       "conditions": [
         {
