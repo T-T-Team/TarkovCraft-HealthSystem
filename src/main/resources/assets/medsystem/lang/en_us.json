@@ -120,5 +120,7 @@
   "config.medsystem-client.option.deadLimbColor.comment.0": "Overlay color for dead body parts",
   "config.medsystem-client.option.colorSchema": "Overlay color for dead body parts",
   "config.medsystem-client.option.colorSchema.entry": "Color input",
-  "config.medsystem-client.option.colorSchema.comment.0": "Color schema used for color blending of body part overlay based on the part health"
+  "config.medsystem-client.option.colorSchema.comment.0": "Color schema used for color blending of body part overlay based on the part health",
+  "config.medsystem-client.option.renderHealth": "Render health",
+  "config.medsystem-client.option.renderHealth.comment.0": "Allows you to toggle default health HUD overlay"
 }

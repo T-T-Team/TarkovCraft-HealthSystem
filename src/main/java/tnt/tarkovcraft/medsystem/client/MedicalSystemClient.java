@@ -8,6 +8,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
@@ -41,6 +44,8 @@ public final class MedicalSystemClient {
 
         modEventBus.addListener(this::registerGuiLayer);
 
+        NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
+
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
     }
 
@@ -50,5 +55,11 @@ public final class MedicalSystemClient {
 
     private void registerGuiLayer(RegisterGuiLayersEvent event) {
         event.registerAbove(StaminaLayer.LAYER_ID, HealthLayer.LAYER_ID, new HealthLayer());
+    }
+
+    private void prepareLayerRender(RenderGuiLayerEvent.Pre event) {
+        if (!config.renderHealth && event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)) {
+            event.setCanceled(true);
+        }
     }
 }
