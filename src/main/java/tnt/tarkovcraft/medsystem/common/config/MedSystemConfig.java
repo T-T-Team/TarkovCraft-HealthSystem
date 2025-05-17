@@ -35,4 +35,9 @@ public final class MedSystemConfig {
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Comment(localize = true, value = "Threshold for prioritized vital body part health recovery")
     public float vitalBodyPartHealthTrigger = 0.75F;
+
+    @Configurable
+    @Configurable.Comment(localize = true, value = "Enables hit effects such as bleeds, fractures and other effects")
+    @Configurable.Synchronized
+    public boolean enableHitEffects = true;
 }

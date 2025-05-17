@@ -27,6 +27,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectProcessor;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
@@ -213,7 +214,8 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void canSprint(StaminaEvent.CanSprint event) {
         LivingEntity entity = event.getEntity();
-        if (HealthSystem.isMovementRestricted(entity) && !HealthSystem.hasPainRelief(entity)) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (config.enableHitEffects && HealthSystem.isMovementRestricted(entity) && !HealthSystem.hasPainRelief(entity)) {
             event.setCanSprint(false);
         }
     }
@@ -222,8 +224,9 @@ public final class MedicalSystemEventHandler {
     private void onSprinted(StaminaEvent.AfterSprint event) {
         LivingEntity entity = event.getEntity();
         Level level = entity.level();
+        MedSystemConfig config = MedicalSystem.getConfig();
         long gametime = level.getGameTime();
-        if (gametime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
+        if (config.enableHitEffects && gametime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
             DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
             entity.hurt(source, 0.25F);
@@ -233,7 +236,8 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void afterJump(StaminaEvent.AfterJump event) {
         LivingEntity entity = event.getEntity();
-        if (HealthSystem.isMovementRestricted(entity)) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (config.enableHitEffects && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
             DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
             entity.hurt(source, 0.50F);

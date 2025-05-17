@@ -4,6 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.reaction.event.HealthSourceEvent;
 import tnt.tarkovcraft.medsystem.common.health.reaction.event.HealthSourceEventType;
 
@@ -17,7 +19,8 @@ public record ReactionDefinition(HealthEventSource reaction, List<HealthSourceEv
     ).apply(instance, ReactionDefinition::new));
 
     public void react(Context context) {
-        if (this.reaction.canReact(context)) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (config.enableHitEffects && this.reaction.canReact(context)) {
             this.responses.forEach(resp -> resp.onReactionPassed(reaction, context));
         }
     }

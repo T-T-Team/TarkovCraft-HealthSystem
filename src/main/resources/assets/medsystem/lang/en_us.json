@@ -107,6 +107,8 @@
   "config.medsystem.option.prioritizeVitalHealing.comment.0": "Health will be primarily recovered into vital parts",
   "config.medsystem.option.vitalBodyPartHealthTrigger": "Vital part heal priority threshold",
   "config.medsystem.option.vitalBodyPartHealthTrigger.comment.0": "Threshold for prioritized vital body part health recovery",
+  "config.medsystem.option.enableHitEffects": "Hit effects",
+  "config.medsystem.option.enableHitEffects.comment.0": "Enables hit effects such as bleeds, fractures and other effects",
 
   "config.screen.medsystem-client": "Medical System Client",
   "config.medsystem-client.option.healthOverlay": "Health overlay",
