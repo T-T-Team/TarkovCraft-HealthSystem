@@ -25,6 +25,7 @@ version="${mod_version}" #mandatory
 displayName="${mod_name}" #mandatory
 authors="${mod_authors}" #optional
 logoFile="assets/logo.png"
+updateJSONURL="https://raw.githubusercontent.com/T-T-Team/TarkovCraft-HealthSystem/refs/heads/development/version-tracker.json"
 description='''${mod_description}'''
 
 enumExtensions="META-INF/enumextensions.json"
