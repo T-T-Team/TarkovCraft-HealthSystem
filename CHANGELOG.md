@@ -1,0 +1,72 @@
+
+# Release 1.0
+- Hit effects config
+- Added icons
+- Added description
+- UI Improvements
+- Update to new version, rebalance damage from fractures
+- Fixed output jar filename
+- Update core library, error notification on healing failure
+- Bleed damage rebalance
+- Health display scale
+- Added fractures to player
+- Update library
+- More server fixes
+- Crafting recipes
+- Added item models
+- Made single use meds stackable
+- Side effects have default delay of 0
+- Painkiller merging fix
+- Fixed hitbox scale on server
+- Fixing server stuff
+- Fixed server load crashing
+- Localizations, status effect descriptions
+- Better status effect damage system
+- Health container ticking on all entities
+- Ability to hide side effects
+- Side effect refactor, can be now attached to projectiles and items
+- Heal attribute refactor
+- Health container data management
+- Headshot statistic is now counted only for projectiles
+- Updated to new version of core lib
+- Config localization
+- Added bleeding chance to player
+- Status effect system improvements
+- Improvements to damage context
+- Working debuffs
+- Status effect improvements
+- Remove build
+- Surgery skill
+- Fixed healing
+- First aid skills
+- Armors skill
+- Added healing items
+- Healing
+- Improvements to med items
+- Dead limb healing
+- Health screen improvements
+- Magic damage fix
+- Explosion damage adjustment
+- Fix natural regeneration
+- extension of damage context
+- Improvement
+- Decaying damage distribution for projectiles
+- fixed crouched player head hitbox position
+- Resilience skill
+- Health screen tab
+- Increase player body health
+- Configuration upgrade
+- Support for simple armor calculation, custom lava damage calculator
+- Improvements
+- Body part data saving
+- Sprinting disabled when having dead leg
+- Disable health regeneration for disabled body parts
+- BodyPartHealth -> BodyPart
+- Explosion damage detection
+- Working hitboxes
+- HUD health display, base skills
+- Natural healing imp
+- Entity health setting
+- Hitbox logic preparation
+- project setup
+- Initial commit

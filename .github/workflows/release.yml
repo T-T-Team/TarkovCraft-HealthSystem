@@ -1,0 +1,39 @@
+name: Publish
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'version/*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Prepare Gradle Wrapper
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x ./gradlew
+
+      - name: Gradle setup
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Release
+        run: ./gradlew publishMod -PCURSEFORGE_TOKEN=${{ secrets.CF_TOKEN }} -PMODRINTH_TOKEN=${{ secrets.MODRINTH_TOKEN }} --no-configuration-cache
+
+  notify:
+    runs-on: ubuntu-latest
+    needs:
+      release
+
+    steps:
+      - name: Notify
+        run: |
+          curl ${{ secrets.WEBHOOK_URL }} --json '{"username":"Release bot","avatar_url":"https://cdn.discordapp.com/avatars/1308464796831711244/e886df028da3a37ad84b05e3fb0c3b8b.webp?size=32","content":"<@&1373296070574080070>","embeds":[{"title":"Medical System","url":"https://github.com/T-T-Team/TarkovCraft-HealthSystem","description":"New version is now being published and should be available soon","color":695807,"author":{"name":"Mod updates","icon_url":"https://cdn.discordapp.com/avatars/1308464796831711244/e886df028da3a37ad84b05e3fb0c3b8b.webp?size=32"},"thumbnail":{"url":"https://media.forgecdn.net/avatars/1278/936/638831812718332860.png"},"fields":[{"name":"CurseForge","value":"[Download](<https://www.curseforge.com/minecraft/mc-mods/med-system>)","inline":true},{"name":"Modrinth","value":"[Download](<https://modrinth.com/mod/med-system>)","inline":true},{"name":"Sources","value":"[GitHub](<https://github.com/T-T-Team/TarkovCraft-HealthSystem>)","inline":true},{"name":"Support","value":"[Patreon](<https://www.patreon.com/c/tnt_team>)","inline":false},{"name":"Report issue","value":"[GitHub](<https://github.com/T-T-Team/TarkovCraft-HealthSystem/issues>)","inline":false}],"footer":{"text":"CurseForge file may take up to 1 hour to be published"}}]}'

@@ -1,8 +1,14 @@
+import net.darkhax.curseforgegradle.*
+import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
+
 plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.moddev' version '2.0.80'
     id 'idea'
+    id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
+    id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
+    id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version "3.0.6"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -140,10 +146,77 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
+tasks.register('generateChangeLog', GitChangelogTask) {
+    fromRepo.set(projectDir.absolutePath.toString())
+    file.set(file("CHANGELOG.md"))
+    untaggedName.set("# $version")
+    fromRevision.set(getReleaseCommit())
+    toRevision.set("HEAD~1")
+    templateContent.set("""
+# Release $version
+{{#commits}}
+- {{{messageTitle}}}
+{{/commits}}
+""")
+}
+
+tasks.register('publishToCurseForge', TaskPublishCurseForge) {
+    dependsOn(tasks.jar, tasks.generateChangeLog)
+    apiToken = project.hasProperty("CURSEFORGE_TOKEN") ? project.findProperty("CURSEFORGE_TOKEN").toString() : ""
+    debugMode = debug.toBoolean()
+
+    def uploadFile = upload(curseforge_project_id, tasks.jar.archiveFile)
+    uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
+    uploadFile.changelog = file("./CHANGELOG.md").exists() ? file('./CHANGELOG.md') : "-- No changelog provided --"
+    uploadFile.releaseType = Constants.RELEASE_TYPE_RELEASE
+    uploadFile.displayName = "${mod_id}-neoforge-${minecraft_version}-${version}"
+    uploadFile.addModLoader('NeoForge')
+    uploadFile.addEnvironment('Client', 'Server')
+    uploadFile.addJavaVersion("Java 21")
+    uploadFile.addRequirement("configuration")
+    compatible_mc_versions.split(",").each { gameVersion ->
+        uploadFile.addGameVersion(gameVersion)
+    }
+}
+
+List compatibleVersions = compatible_mc_versions.split(",")
+modrinth {
+    token.set(project.hasProperty("MODRINTH_TOKEN") ? project.findProperty("MODRINTH_TOKEN").toString() : "")
+    projectId.set(modrinth_project_id)
+    versionNumber.set("${version}")
+    versionName.set("${mod_id}-neoforge-${minecraft_version}-${version}")
+    versionType.set("release")
+    uploadFile.set(jar)
+    gameVersions.set(compatibleVersions)
+    debugMode.set(debug.toBoolean())
+    changelog.set(file("./CHANGELOG.md").exists() ? file("./CHANGELOG.md").text : "-- No changelog provided --")
+    loaders.set(["neoforge"])
+    dependencies {
+        required.project("configuration")
+    }
+}
+tasks.modrinth.dependsOn(tasks.jar, tasks.generateChangeLog)
+
+tasks.register('publishMod') {
+    group = "publishing"
+}
+tasks.publishMod.dependsOn(tasks.publishToCurseForge, tasks.modrinth)
+
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {
     module {
         downloadSources = true
         downloadJavadoc = true
     }
+}
+
+def getReleaseCommit() {
+    def out = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'log', '--grep=Version ', '-n', '2', '--pretty=format:%H'
+        standardOutput = out
+        errorOutput = System.err
+        ignoreExitValue = true
+    }
+    return out.toString().trim().split('\n')[1]
 }
