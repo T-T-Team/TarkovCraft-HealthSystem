@@ -218,5 +218,6 @@ def getReleaseCommit() {
         errorOutput = System.err
         ignoreExitValue = true
     }
-    return out.toString().trim().split('\n')[1]
+    String[] commits = out.toString().trim().split('\n')
+    return commits[Math.min(1, commits.length - 1)]
 }
