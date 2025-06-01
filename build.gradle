@@ -107,7 +107,10 @@ configurations {
 }
 
 dependencies {
+    // Configuration
     implementation "dev.toma.configuration:configuration-${project.minecraft_version}:${project.configuration}-neoforge"
+
+    // Core library
     implementation name: "tarkovcraft_core-${minecraft_version}-${core}"
 }
 
@@ -152,8 +155,7 @@ tasks.register('generateChangeLog', GitChangelogTask) {
     untaggedName.set("# $version")
     fromRevision.set(getReleaseCommit())
     toRevision.set("HEAD~1")
-    templateContent.set("""
-# Release $version
+    templateContent.set("""# Release $version
 {{#commits}}
 - {{{messageTitle}}}
 {{/commits}}
@@ -189,7 +191,12 @@ modrinth {
     uploadFile.set(jar)
     gameVersions.set(compatibleVersions)
     debugMode.set(debug.toBoolean())
-    changelog.set(file("./CHANGELOG.md").exists() ? file("./CHANGELOG.md").text : "-- No changelog provided --")
+    changelog.set(
+            providers.provider {
+                def changelogFile = file("./CHANGELOG.md")
+                changelogFile.exists() ? changelogFile.text : "-- No changelog provided --"
+            }
+    )
     loaders.set(["neoforge"])
     dependencies {
         required.project("configuration")
