@@ -12,6 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -65,6 +66,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
     public static boolean isMovementRestricted(LivingEntity entity) {
         if (!hasCustomHealth(entity))
             return false;
+        if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
+            return false;
+        }
         HealthContainer healthContainer = getHealthData(entity);
         Stream<BodyPart> parts = healthContainer.getBodyPartStream();
         return parts.anyMatch(HealthSystem::isMovementRestrictingPart);
