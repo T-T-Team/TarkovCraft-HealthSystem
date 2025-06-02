@@ -28,9 +28,13 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect) implements TooltipProvider {
+public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect, boolean extendedTooltip) implements TooltipProvider {
 
-    public static final Codec<EffectRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(ExtraCodecs.POSITIVE_INT.optionalFieldOf("consumption", 1).forGetter(EffectRecovery::consumption), MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(EffectRecovery::effect)).apply(instance, EffectRecovery::new));
+    public static final Codec<EffectRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ExtraCodecs.POSITIVE_INT.optionalFieldOf("consumption", 1).forGetter(EffectRecovery::consumption),
+            MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(EffectRecovery::effect),
+            Codec.BOOL.optionalFieldOf("extendedTooltip", true).forGetter(EffectRecovery::extendedTooltip)
+    ).apply(instance, EffectRecovery::new));
 
     public boolean canRecover(HealthContainer container, @Nullable BodyPart part) {
         StatusEffectType<?> type = this.effect.value();
@@ -62,7 +66,11 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         StatusEffectType<?> type = effect.value();
-        MutableComponent recoveryLabel = Component.literal(" - ").append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption))).append(" - ").append(type.getDisplayName()).withStyle(ChatFormatting.DARK_GRAY);
+        MutableComponent recoveryLabel = Component.literal("- ");
+        if (this.extendedTooltip) {
+            recoveryLabel.append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption))).append(" - ");
+        }
+        recoveryLabel.append(type.getDisplayName()).withStyle(ChatFormatting.DARK_GRAY);
         tooltipAdder.accept(recoveryLabel);
     }
 }

@@ -148,6 +148,9 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         }
 
         public Builder healing(int duration, int count, float health) {
+            if (duration < 20) {
+                throw new IllegalArgumentException("duration must be greater than or equal to 20");
+            }
             this.healthRecovery = new HealthRecovery(duration, health, count);
             return this;
         }
@@ -164,9 +167,17 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             return this.unrestrictedHealing(duration.tickValue(), health);
         }
 
-        public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect) {
-            this.recoveries.add(new EffectRecovery(cost, effect));
+        public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect, boolean extendedTooltip) {
+            this.recoveries.add(new EffectRecovery(cost, effect, extendedTooltip));
             return this;
+        }
+
+        public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect) {
+            return this.removesEffect(cost, effect, true);
+        }
+
+        public Builder removesEffect(Holder<StatusEffectType<?>> effect) {
+            return this.removesEffect(1, effect, false);
         }
 
         public HealItemAttributes build() {

@@ -72,7 +72,7 @@
   "tooltip.medsystem.heal_attributes.side_effects.duration": "Dur.: %s",
   "tooltip.medsystem.heal_attributes.side_effects.delay": "Del.: %s",
   "tooltip.medsystem.heal_attributes.recoveries.title": "Heals effects:",
-  "tooltip.medsystem.heal_attributes.recoveries.use_label": "%s HP",
+  "tooltip.medsystem.heal_attributes.recoveries.use_label": "%s uses",
 
   "medsystem.bodypart.head": "Head",
   "medsystem.bodypart.body": "Body",

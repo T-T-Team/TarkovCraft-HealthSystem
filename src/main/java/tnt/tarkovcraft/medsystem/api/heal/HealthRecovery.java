@@ -26,7 +26,7 @@ public record HealthRecovery(int cycleDuration, float healthPerCycle, int maxCyc
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         Component healthPoints = Component.literal(String.format(Locale.ROOT, "%.1f", healthPerCycle)).withStyle(ChatFormatting.GREEN);
-        Component duration = Duration.format(cycleDuration).copy().withStyle(ChatFormatting.YELLOW);
+        Component duration = Duration.format(cycleDuration).copy().withStyle(ChatFormatting.GREEN);
         if (maxCycles > 0) {
             Component healLimit = Component.literal(String.format("%.1f", healthPerCycle * maxCycles)).withStyle(ChatFormatting.YELLOW);
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.heal.limited", healthPoints, duration, healLimit).withStyle(ChatFormatting.GRAY));
