@@ -108,6 +108,10 @@ public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip
             return this.sideEffect(chance, duration.tickValue(), effect);
         }
 
+        public Builder infiniteSideEffect(float chance, Holder<StatusEffectType<?>> effect) {
+            return this.sideEffect(chance, -1, effect);
+        }
+
         public SideEffectHolder build() {
             Preconditions.checkState(!sideEffects.isEmpty(), "sideEffects cannot be empty");
             return new SideEffectHolder(sideEffects, hideTooltip);

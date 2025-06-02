@@ -9,6 +9,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.apache.logging.log4j.LogManager;
@@ -39,8 +40,8 @@ public final class MedicalSystem {
         this.addCustomConfigValidations(holder);
         config = holder.getConfigInstance();
 
-
         modEventBus.addListener(this::createRegistries);
+        modEventBus.addListener(this::modifyDefaultComponents);
         modEventBus.register(new MedicalSystemNetwork());
 
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
@@ -81,6 +82,10 @@ public final class MedicalSystem {
 
     private void registerCommands(RegisterCommandsEvent event) {
         TarkovCraftCommand.create(event.getDispatcher(), event.getBuildContext());
+    }
+
+    private void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+        VanillaItemComponentAssignments.adjustItemData((item, attr) -> event.modify(item, builder -> builder.set(MedSystemItemComponents.SIDE_EFFECTS.get(), attr)));
     }
 
     public static ResourceLocation resource(String path) {
