@@ -6,7 +6,6 @@ import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.SharedScreenState;
-import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.client.screen.widget.ListWidget;
 import tnt.tarkovcraft.core.util.context.Context;
@@ -57,7 +56,7 @@ public class HealthScreen extends CharacterSubScreen {
             if (part == null)
                 return;
             Vector4f pos = display.getGuiPosition(1.5F, center);
-            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget((int) pos.x, (int) pos.y, (int) pos.z, (int) pos.w, part));
+            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget((int) pos.x, (int) pos.y, (int) pos.z, (int) pos.w, part, this.font));
             bodyPartWidget.setScale(3);
             bodyPartWidget.setTooltip(Tooltip.create(part.getDisplayName()));
             bodyPartWidget.setTooltipDelay(Duration.ofMillis(500));
@@ -77,7 +76,7 @@ public class HealthScreen extends CharacterSubScreen {
         }
         BodyPartHealthWidget widget = new BodyPartHealthWidget(left, index * 40, 125, 36, this.font, part);
         List<StatusEffect> effects = stream.filter(ef -> ef.isActive() && ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI)).toList();
-        widget.setEffects(effects, TooltipHelper.screen(this));
+        widget.setEffects(effects);
         widget.setHealthScale(10);
         widget.setHoverState(state);
         return widget;

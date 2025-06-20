@@ -6,7 +6,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec2;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import org.joml.Vector4i;
 import tnt.tarkovcraft.core.util.ObjectCache;
 
 public record BodyPartDisplay(String source, Vec2 pos, Vec2 size) {

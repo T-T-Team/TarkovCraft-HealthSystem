@@ -15,11 +15,11 @@ public final class MedSystemDataAttachments {
     public static final DeferredRegister<AttachmentType<?>> REGISTRY = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MedicalSystem.MOD_ID);
 
     public static final Supplier<AttachmentType<HealthContainer>> HEALTH_CONTAINER = REGISTRY.register("health_container", () -> AttachmentType.builder(HealthContainer::new)
-            .serialize(HealthContainer.CODEC)
+            .serialize(HealthContainer.MAP_CODEC)
             .build()
     );
     public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Collections.emptyList(), false))
-            .serialize(SideEffectHolder.CODEC)
+            .serialize(SideEffectHolder.MAP_CODEC)
             .build()
     );
 }

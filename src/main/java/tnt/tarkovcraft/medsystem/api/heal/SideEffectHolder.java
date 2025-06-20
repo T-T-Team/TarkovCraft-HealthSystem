@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.api.heal;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -28,10 +29,11 @@ import java.util.function.Consumer;
 
 public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip) implements TooltipProvider {
 
-    public static final Codec<SideEffectHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SideEffectHolder> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             SideEffect.CODEC.listOf().fieldOf("effects").forGetter(t -> t.sideEffects),
             Codec.BOOL.optionalFieldOf("hideTooltip", false).forGetter(t -> t.hideTooltip)
     ).apply(instance, SideEffectHolder::new));
+    public static final Codec<SideEffectHolder> CODEC = MAP_CODEC.codec();
 
     public static Builder builder() {
         return new Builder();

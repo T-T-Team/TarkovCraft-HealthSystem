@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,12 +27,13 @@ import java.util.stream.Stream;
 
 public final class HealthContainer implements Synchronizable<HealthContainer> {
 
-    public static final Codec<HealthContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<HealthContainer> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
             Codec.unboundedMap(Codec.STRING, BodyPart.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts),
             StatusEffectMap.CODEC.fieldOf("effects").forGetter(t -> t.statusEffects),
             Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
     ).apply(instance, HealthContainer::new));
+    public static final Codec<HealthContainer> CODEC = MAP_CODEC.codec();
 
     private final HealthContainerDefinition definition;
     private final Map<String, BodyPart> bodyParts;

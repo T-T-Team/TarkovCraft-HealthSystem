@@ -5,12 +5,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.SharedScreenState;
-import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.DurationFormatSettings;
@@ -28,6 +27,7 @@ import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class BodyPartHealthWidget extends AbstractWidget {
 
@@ -43,7 +43,6 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private float healthScale = 1.0F;
     private SimpleClickListener onClick;
     private List<StatusEffect> effects;
-    private TooltipHelper tooltipHelper;
     private SharedScreenState<BodyPart> hoverState;
 
     public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
@@ -56,9 +55,8 @@ public class BodyPartHealthWidget extends AbstractWidget {
         this.hoverState = hoverState;
     }
 
-    public void setEffects(List<StatusEffect> effects, TooltipHelper helper) {
+    public void setEffects(List<StatusEffect> effects) {
         this.effects = effects;
-        this.tooltipHelper = helper;
     }
 
     public void setHealthScale(float healthScale) {
@@ -121,7 +119,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
         if (RenderUtils.isVisibleColor(this.backgroundColor)) {
             graphics.fill(this.getX() + this.frameSize, this.getY() + this.frameSize, this.getRight() - this.frameSize, this.getBottom() - this.frameSize, this.backgroundColor);
         }
-        int textColor = this.part.isDead() ? 0xFF0000 : partHovered ? this.textHoverColor : this.textColor;
+        int textColor = this.part.isDead() ? 0xFFFF0000 : partHovered ? this.textHoverColor : this.textColor;
         int titleWidth = this.font.width(this.getMessage());
         graphics.drawString(this.font, this.getMessage(), this.getX() + (this.width - titleWidth) / 2, this.getY() + 5 + this.frameSize, textColor);
         String status = Mth.ceil(this.part.getHealth() * this.healthScale) + "/" + Mth.ceil(this.part.getMaxHealth() * this.healthScale);
@@ -148,15 +146,16 @@ public class BodyPartHealthWidget extends AbstractWidget {
                 int ey = this.getY() + row * 12;
                 RenderUtils.blitFull(graphics, type.getIcon(), ex, ey, ex + 12, ey + 12, -1);
                 if (MathHelper.isWithinBounds(mouseX, mouseY, ex, ey, 12, 12)) {
-                    List<FormattedCharSequence> tooltip = new ArrayList<>(this.tooltipHelper.split(type.getDisplayName().copy().withStyle(type.getEffectType())));
-                    effect.addAdditionalInfo(line -> tooltip.addAll(this.tooltipHelper.split(line)));
+                    List<Component> tooltip = new ArrayList<>();
+                    tooltip.add(type.getDisplayName().copy().withStyle(type.getEffectType()));
+                    effect.addAdditionalInfo(tooltip::add);
                     if (!effect.isInfinite()) {
                         DurationFormatSettings settings = new DurationFormatSettings();
                         settings.setIncludeZeroValues(true);
                         settings.setUnits(Arrays.asList(DurationUnit.HOURS, DurationUnit.MINUTES, DurationUnit.SECONDS));
-                        tooltip.addAll(this.tooltipHelper.split(Duration.format(effect.getDuration(), settings, DurationFormats.TIME).copy().withStyle(ChatFormatting.DARK_GRAY)));
+                        tooltip.add(Duration.format(effect.getDuration(), settings, DurationFormats.TIME).copy().withStyle(ChatFormatting.DARK_GRAY));
                     }
-                    this.tooltipHelper.setForNextRenderPass(tooltip);
+                    graphics.setTooltipForNextFrame(this.font, tooltip, Optional.empty(), mouseX, mouseY);
                 }
             }
         }

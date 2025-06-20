@@ -8,7 +8,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
-import tnt.tarkovcraft.core.client.screen.TooltipHelper;
 import tnt.tarkovcraft.core.client.screen.renderable.AbstractTextRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
@@ -60,9 +59,8 @@ public class SelectBodyPartScreen extends Screen {
         for (BodyPartDisplay display : displays) {
             BodyPart part = container.getBodyPart(display.source());
             Vector4f rect = display.getGuiPosition(2.0F, center);
-            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget((int) rect.x, (int) rect.y, (int) rect.z, (int) rect.w, part));
+            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget((int) rect.x, (int) rect.y, (int) rect.z, (int) rect.w, part, this.font));
             boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container);
-            widget.setTooltipHelper(TooltipHelper.screen(this));
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
             List<Component> statusEffectLabels = part.getStatusEffects().getEffectsStream()
