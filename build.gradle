@@ -1,14 +1,12 @@
 import net.darkhax.curseforgegradle.*
-import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.80'
+    id 'net.neoforged.moddev' version '2.0.95'
     id 'idea'
     id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
     id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
-    id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version "3.0.6"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -149,21 +147,8 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-tasks.register('generateChangeLog', GitChangelogTask) {
-    fromRepo.set(projectDir.absolutePath.toString())
-    file.set(file("CHANGELOG.md"))
-    untaggedName.set("# $version")
-    fromRevision.set(getReleaseCommit())
-    toRevision.set("HEAD~1")
-    templateContent.set("""# Release $version
-{{#commits}}
-- {{{messageTitle}}}
-{{/commits}}
-""")
-}
-
 tasks.register('publishToCurseForge', TaskPublishCurseForge) {
-    dependsOn(tasks.jar, tasks.generateChangeLog)
+    dependsOn(tasks.jar)
     apiToken = project.hasProperty("CURSEFORGE_TOKEN") ? project.findProperty("CURSEFORGE_TOKEN").toString() : ""
     debugMode = debug.toBoolean()
 
@@ -202,7 +187,7 @@ modrinth {
         required.project("configuration")
     }
 }
-tasks.modrinth.dependsOn(tasks.jar, tasks.generateChangeLog)
+tasks.modrinth.dependsOn(tasks.jar)
 
 tasks.register('publishMod') {
     group = "publishing"
@@ -215,16 +200,4 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
-}
-
-def getReleaseCommit() {
-    def out = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'log', '--grep=Version ', '-n', '2', '--pretty=format:%H'
-        standardOutput = out
-        errorOutput = System.err
-        ignoreExitValue = true
-    }
-    String[] commits = out.toString().trim().split('\n')
-    return commits[Math.min(1, commits.length - 1)]
 }
