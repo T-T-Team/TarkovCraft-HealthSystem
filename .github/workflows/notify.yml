@@ -16,14 +16,16 @@ jobs:
 
       - name: Changelog
         id: changelog
-        uses: andstor/file-reader-action@v1
+        uses: Toma1O6/file-read-action@v1
         with:
-          path: "CHANGELOG.md"
+          file: "CHANGELOG.md"
+          max-lines: '31'
+          max-chars: '4096'
 
       - name: Webhook
         env:
           WEBHOOK: ${{ secrets.WEBHOOK_URL }}
-          CHANGELOG: ${{ steps.changelog.outputs.contents }}
+          CHANGELOG: ${{ steps.changelog.outputs.content }}
         run: |
           jq -n \
           --arg snippet "$CHANGELOG" \
