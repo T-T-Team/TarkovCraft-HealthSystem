@@ -66,7 +66,7 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         StatusEffectType<?> type = effect.value();
-        MutableComponent recoveryLabel = Component.literal("- ");
+        MutableComponent recoveryLabel = Component.literal("> ");
         if (this.extendedTooltip) {
             recoveryLabel.append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption))).append(" - ");
         }

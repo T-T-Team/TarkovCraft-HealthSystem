@@ -78,7 +78,7 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         StatusEffectType<?> type = effect.value();
         EffectType effectType = type.getEffectType();
-        MutableComponent component = Component.literal("- ");
+        MutableComponent component = Component.literal("> ");
         if (chance < 1.0F) {
             component.append(String.format(Locale.ROOT, "%.1f%%", chance * 100) + " ");
         }

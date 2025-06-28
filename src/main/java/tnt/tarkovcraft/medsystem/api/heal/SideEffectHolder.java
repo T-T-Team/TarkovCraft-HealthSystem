@@ -8,6 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,11 +26,15 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
-public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip) implements TooltipProvider {
+public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideEffects, boolean hideTooltip) implements TooltipProvider {
 
+    public static final Component DEFAULT_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title").withStyle(ChatFormatting.GRAY);
+    public static final Component ITEM_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title_item").withStyle(ChatFormatting.GRAY);
     public static final MapCodec<SideEffectHolder> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            ComponentSerialization.CODEC.optionalFieldOf("title").forGetter(t -> t.title),
             SideEffect.CODEC.listOf().fieldOf("effects").forGetter(t -> t.sideEffects),
             Codec.BOOL.optionalFieldOf("hideTooltip", false).forGetter(t -> t.hideTooltip)
     ).apply(instance, SideEffectHolder::new));
@@ -69,16 +74,23 @@ public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         if (this.hideTooltip)
             return;
-        tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title").withStyle(ChatFormatting.GRAY));
+        Component title = this.title.orElse(DEFAULT_TITLE);
+        tooltipAdder.accept(title);
         this.sideEffects.forEach(effect -> effect.addToTooltip(context, tooltipAdder, flag, componentGetter));
     }
 
     public static final class Builder {
 
+        private Component title;
         private final List<SideEffect> sideEffects = new ArrayList<>();
         private boolean hideTooltip = false;
 
         private Builder() {}
+
+        public Builder title(Component title) {
+            this.title = title;
+            return this;
+        }
 
         public Builder noTooltip() {
             this.hideTooltip = true;
@@ -116,7 +128,7 @@ public record SideEffectHolder(List<SideEffect> sideEffects, boolean hideTooltip
 
         public SideEffectHolder build() {
             Preconditions.checkState(!sideEffects.isEmpty(), "sideEffects cannot be empty");
-            return new SideEffectHolder(sideEffects, hideTooltip);
+            return new SideEffectHolder(Optional.ofNullable(this.title), sideEffects, hideTooltip);
         }
     }
 }

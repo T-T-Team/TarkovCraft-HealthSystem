@@ -8,6 +8,7 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class MedSystemDataAttachments {
@@ -18,7 +19,7 @@ public final class MedSystemDataAttachments {
             .serialize(HealthContainer.MAP_CODEC)
             .build()
     );
-    public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Collections.emptyList(), false))
+    public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Optional.empty(), Collections.emptyList(), false))
             .serialize(SideEffectHolder.MAP_CODEC)
             .build()
     );
