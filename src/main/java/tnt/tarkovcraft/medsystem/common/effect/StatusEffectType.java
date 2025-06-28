@@ -6,9 +6,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
+import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BinaryOperator;
 
 public final class StatusEffectType<S extends StatusEffect> {
@@ -21,6 +22,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final BinaryOperator<S> merger;
     private final EffectType effectType;
     private final EffectVisibility visibility;
+    private final Set<BodyPartGroup> ignoredBodyParts;
     private final boolean isGlobalEffect;
     private final ResourceLocation icon;
     private final Component displayName;
@@ -32,6 +34,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.merger = builder.merger;
         this.effectType = builder.effectType;
         this.visibility = builder.visibility;
+        this.ignoredBodyParts = builder.bodyPartGroups;
         this.isGlobalEffect = builder.globalEffect;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
@@ -93,6 +96,10 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.merger.apply(a, b);
     }
 
+    public boolean isIgnoredBodyPart(BodyPartGroup group) {
+        return this.ignoredBodyParts.contains(group);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof StatusEffectType<?> that)) return false;
@@ -108,6 +115,7 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         private final ResourceLocation identifier;
         private final Factory<S> factory;
+        private final Set<BodyPartGroup> bodyPartGroups = EnumSet.noneOf(BodyPartGroup.class);
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
         private EffectVisibility visibility = EffectVisibility.ALWAYS;
@@ -141,6 +149,11 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         public Builder<S> combineEffects(BinaryOperator<S> merger) {
             this.merger = merger;
+            return this;
+        }
+
+        public Builder<S> ignoresBodyParts(BodyPartGroup... groups) {
+            this.bodyPartGroups.addAll(Arrays.asList(groups));
             return this;
         }
 

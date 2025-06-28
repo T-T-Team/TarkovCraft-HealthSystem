@@ -4,6 +4,7 @@ import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.*;
+import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 
 public final class MedSystemStatusEffects {
 
@@ -20,6 +21,7 @@ public final class MedSystemStatusEffects {
             .persist(FractureStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .combineEffects((a, b) -> a)
+            .ignoresBodyParts(BodyPartGroup.HEAD, BodyPartGroup.TORSO, BodyPartGroup.STOMACH)
             .build()
     );
     public static final Holder<StatusEffectType<?>> INJURY_RECOVERY = REGISTRY.register("injury_recovery", key -> StatusEffectType.builder(key, InjuryRecoveryStatusEffect::new)

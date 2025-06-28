@@ -24,6 +24,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
@@ -46,8 +47,16 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
     }
 
     public void applyFromDamage(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable BodyPart part) {
-        RandomSource source = entity.getRandom();
+        // Skip ignored effect body parts
         StatusEffectType<?> type = this.effect.value();
+        if (part != null && !type.isGlobalEffect()) {
+            BodyPartGroup group = part.getGroup();
+            if (type.isIgnoredBodyPart(group)) {
+                return;
+            }
+        }
+
+        RandomSource source = entity.getRandom();
         Holder<Attribute> chanceAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_CHANCE, MedSystemAttributes.NEGATIVE_EFFECT_CHANCE, null);
         float effectChance = chanceAttribute != null ? this.chance * AttributeSystem.getFloatValue(entity, chanceAttribute, 1.0F) : this.chance;
         if (source.nextFloat() < effectChance) {
