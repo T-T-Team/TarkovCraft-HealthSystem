@@ -1,2 +1,11 @@
-# Release 1.21.6-1.1.0
-- Updated to MC 1.21.6
+# Release 1.21.6-1.2.0
+- Implemented health system for cave spiders
+- Tooltip improvements
+  - Added custom title support for side effects
+  - Improved tooltip readability
+  - Improved painkiller description
+- New config options
+  - injury recovery scaling - you can disable scaling for injury recovery status effects
+  - vanilla item hit effects - disables status effects for vanilla items
+- Rebalanced status effect chances from items
+- Fixed issue where fractures could be applied on all body parts
