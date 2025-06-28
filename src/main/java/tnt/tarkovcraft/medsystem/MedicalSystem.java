@@ -85,7 +85,8 @@ public final class MedicalSystem {
     }
 
     private void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
-        VanillaItemComponentAssignments.adjustItemData((item, attr) -> event.modify(item, builder -> builder.set(MedSystemItemComponents.SIDE_EFFECTS.get(), attr)));
+        if (config.addHitEffectsToVanillaItems)
+            VanillaItemComponentAssignments.adjustItemData((item, attr) -> event.modify(item, builder -> builder.set(MedSystemItemComponents.SIDE_EFFECTS.get(), attr)));
     }
 
     public static ResourceLocation resource(String path) {

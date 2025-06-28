@@ -113,6 +113,8 @@
   "config.medsystem.option.enableHitEffects.comment.0": "Enables hit effects such as bleeds, fractures and other effects",
   "config.medsystem.option.allowInjuryRecoveryScaling": "Injury recovery effect scaling",
   "config.medsystem.option.allowInjuryRecoveryScaling.comment.0": "Allows scaling of injury recovery status effects when getting the effect repeatedly",
+  "config.medsystem.option.addHitEffectsToVanillaItems": "Vanilla item hit effects",
+  "config.medsystem.option.addHitEffectsToVanillaItems.comment.0": "Vanilla tools will have chance to cause some negative effects such as bleeds or fractures",
 
   "config.screen.medsystem-client": "Medical System Client",
   "config.medsystem-client.option.healthOverlay": "Health overlay",

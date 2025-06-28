@@ -45,4 +45,9 @@ public final class MedSystemConfig {
     @Configurable
     @Configurable.Comment("Allows scaling of injury recovery status effects when getting the effect repeatedly")
     public boolean allowInjuryRecoveryScaling = true;
+
+    @Configurable
+    @Configurable.Comment("Vanilla tools will have chance to cause some negative effects such as bleeds or fractures")
+    @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
+    public boolean addHitEffectsToVanillaItems = true;
 }
