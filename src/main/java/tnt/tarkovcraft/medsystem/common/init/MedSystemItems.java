@@ -75,6 +75,7 @@ public final class MedSystemItems {
                                     .build()
                             )
                             .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.builder()
+                                    .title(SideEffectHolder.USAGE_TITLE)
                                     .sideEffect(1.0F, Duration.minutes(10), Duration.seconds(45), MedSystemStatusEffects.PAIN_RELIEF)
                                     .build()
                             )

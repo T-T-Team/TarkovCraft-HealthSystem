@@ -70,6 +70,7 @@
   "tooltip.medsystem.heal_attributes.dead_limb.max_health": "> Decreases max health by %s for %s",
   "tooltip.medsystem.heal_attributes.side_effects.title": "Side effects:",
   "tooltip.medsystem.heal_attributes.side_effects.title_item": "Hit effects:",
+  "tooltip.medsystem.heal_attributes.side_effects.title_usage": "Usage effects:",
   "tooltip.medsystem.heal_attributes.side_effects.duration": "Dur.: %s",
   "tooltip.medsystem.heal_attributes.side_effects.delay": "Del.: %s",
   "tooltip.medsystem.heal_attributes.recoveries.title": "Heals effects:",
