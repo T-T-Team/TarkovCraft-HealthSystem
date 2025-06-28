@@ -110,6 +110,8 @@
   "config.medsystem.option.vitalBodyPartHealthTrigger.comment.0": "Threshold for prioritized vital body part health recovery",
   "config.medsystem.option.enableHitEffects": "Hit effects",
   "config.medsystem.option.enableHitEffects.comment.0": "Enables hit effects such as bleeds, fractures and other effects",
+  "config.medsystem.option.allowInjuryRecoveryScaling": "Injury recovery effect scaling",
+  "config.medsystem.option.allowInjuryRecoveryScaling.comment.0": "Allows scaling of injury recovery status effects when getting the effect repeatedly",
 
   "config.screen.medsystem-client": "Medical System Client",
   "config.medsystem-client.option.healthOverlay": "Health overlay",

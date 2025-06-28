@@ -13,6 +13,6 @@ public final class MedSystemClientConfig {
     public HealthOverlayConfiguration healthOverlay = new HealthOverlayConfiguration(true, HorizontalAlignment.LEFT, VerticalAlignment.TOP, 0, 0);
 
     @Configurable
-    @Configurable.Comment(localize = true, value = "Allows you to toggle default health HUD overlay")
+    @Configurable.Comment("Allows you to toggle default health HUD overlay")
     public boolean renderHealth = true;
 }

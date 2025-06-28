@@ -106,10 +106,19 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     public static InjuryRecoveryStatusEffect merge(InjuryRecoveryStatusEffect initial, InjuryRecoveryStatusEffect additional) {
-        return new InjuryRecoveryStatusEffect(
-                initial.getDuration() + additional.getDuration(),
-                initial.getDelay() + additional.getDelay(),
-                initial.reduction + additional.reduction
-        );
+        boolean allowScaling = MedicalSystem.getConfig().allowInjuryRecoveryScaling;
+        if (allowScaling) {
+            return new InjuryRecoveryStatusEffect(
+                    initial.getDuration() + additional.getDuration(),
+                    initial.getDelay() + additional.getDelay(),
+                    initial.reduction + additional.reduction
+            );
+        } else {
+            return new InjuryRecoveryStatusEffect(
+                    Math.max(initial.getDuration(), additional.getDuration()),
+                    Math.min(initial.getDelay(), additional.getDelay()),
+                    initial.reduction // keep same reduction
+            );
+        }
     }
 }
