@@ -3,7 +3,7 @@ import net.darkhax.curseforgegradle.*
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.95'
+    id 'net.neoforged.moddev' version "${moddev_version}"
     id 'idea'
     id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
     id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
