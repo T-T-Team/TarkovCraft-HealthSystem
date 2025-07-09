@@ -4,7 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
@@ -81,7 +81,7 @@ public class SelectBodyPartScreen extends Screen {
     }
 
     private void bodyPartClicked(BodyPart part) {
-        PacketDistributor.sendToServer(new C2S_SelectBodyPart(part.getName()));
+        ClientPacketDistributor.sendToServer(new C2S_SelectBodyPart(part.getName()));
         this.minecraft.setScreen(null);
     }
 
