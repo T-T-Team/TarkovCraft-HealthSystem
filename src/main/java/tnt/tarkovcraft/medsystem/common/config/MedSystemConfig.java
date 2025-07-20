@@ -4,12 +4,14 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdateRestrictions;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.health.DefaultArmorComponent;
 
 @Config(id = MedicalSystem.MOD_ID, filename = "medicalsystem")
 public final class MedSystemConfig {
 
     @Configurable
     @Configurable.Comment("Includes all equipped armors for damage reduction calculation")
+    @Configurable.Validate(DefaultArmorComponent.ConfigValidator.class)
     public boolean simpleArmorCalculation = false;
 
     @Configurable

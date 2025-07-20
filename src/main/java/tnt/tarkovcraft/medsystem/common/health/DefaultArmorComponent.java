@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
-import dev.toma.configuration.config.validate.IValidationResult;
+import dev.toma.configuration.config.validate.ValidationResult;
+import dev.toma.configuration.config.validate.Validator;
 import dev.toma.configuration.config.value.IConfigValueReadable;
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import net.minecraft.network.chat.Component;
@@ -135,17 +136,21 @@ public class DefaultArmorComponent implements ArmorComponent {
         return (float) result;
     }
 
-    public static IValidationResult checkInUse(boolean simpleArmorCalculation, IConfigValueReadable<Boolean> value) {
-        if (simpleArmorCalculation && !HealthSystem.ARMOR.isVanilla()) {
-            return IValidationResult.warning(Component.translatable("label.medsystem.validation.config.simpleArmorOverride"));
-        }
-        return IValidationResult.success();
-    }
-
     protected record SetReductionFunction(float amount) implements IReductionFunction {
         @Override
         public float modify(DamageContainer container, float reductionIn) {
             return this.amount();
+        }
+    }
+
+    public static final class ConfigValidator implements Validator<Boolean> {
+
+        @Override
+        public ValidationResult validate(Boolean simpleArmorCalculation, IConfigValueReadable<Boolean> iConfigValueReadable) {
+            if (simpleArmorCalculation && !HealthSystem.ARMOR.isVanilla()) {
+                return ValidationResult.warning(Component.translatable("label.medsystem.validation.config.simpleArmorOverride"));
+            }
+            return ValidationResult.success();
         }
     }
 }

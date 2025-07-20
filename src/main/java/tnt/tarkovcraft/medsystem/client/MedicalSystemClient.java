@@ -1,7 +1,6 @@
 package tnt.tarkovcraft.medsystem.client;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.config.format.ConfigFormats;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -40,7 +39,7 @@ public final class MedicalSystemClient {
     );
 
     public MedicalSystemClient(IEventBus modEventBus, ModContainer container) {
-        config = Configuration.registerConfig(MedSystemClientConfig.class, ConfigFormats.YAML).getConfigInstance();
+        config = Configuration.registerSimpleYmlConfig(MedSystemClientConfig.class);
 
         modEventBus.addListener(this::registerGuiLayer);
 

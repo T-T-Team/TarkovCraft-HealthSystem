@@ -1,8 +1,6 @@
 package tnt.tarkovcraft.medsystem;
 
 import dev.toma.configuration.Configuration;
-import dev.toma.configuration.config.ConfigHolder;
-import dev.toma.configuration.config.format.ConfigFormats;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -19,7 +17,6 @@ import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.health.DefaultArmorComponent;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
@@ -36,9 +33,7 @@ public final class MedicalSystem {
     private static MedSystemConfig config;
 
     public MedicalSystem(IEventBus modEventBus, ModContainer container) {
-        ConfigHolder<MedSystemConfig> holder = Configuration.registerConfig(MedSystemConfig.class, ConfigFormats.YAML);
-        this.addCustomConfigValidations(holder);
-        config = holder.getConfigInstance();
+        config = Configuration.registerSimpleYmlConfig(MedSystemConfig.class);
 
         modEventBus.addListener(this::createRegistries);
         modEventBus.addListener(this::modifyDefaultComponents);
@@ -91,9 +86,5 @@ public final class MedicalSystem {
 
     public static ResourceLocation resource(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-    }
-
-    private void addCustomConfigValidations(ConfigHolder<MedSystemConfig> holder) {
-        holder.getConfigValue("simpleArmorCalculation", Boolean.class).ifPresent(value -> value.addValidator(DefaultArmorComponent::checkInUse));
     }
 }
