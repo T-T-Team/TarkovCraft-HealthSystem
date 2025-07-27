@@ -61,6 +61,7 @@ public class SelectBodyPartScreen extends Screen {
             Vector4f rect = display.getGuiPosition(2.0F, center);
             BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget((int) rect.x, (int) rect.y, (int) rect.z, (int) rect.w, part, this.font));
             boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container);
+            widget.setColorProvider(value -> isPartHealable ? 0xFF00FF00 : 0xFF444444);
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
             List<Component> statusEffectLabels = part.getStatusEffects().getEffectsStream()
