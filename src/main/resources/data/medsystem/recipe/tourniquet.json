@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
     "L": "#c:leathers",
     "I": "#c:nuggets/iron",
@@ -13,6 +13,5 @@
   "result": {
     "count": 1,
     "id": "medsystem:tourniquet"
-  },
-  "show_notification": false
+  }
 }

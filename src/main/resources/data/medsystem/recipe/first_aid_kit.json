@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
     "L": "#c:leathers",
     "B": "medsystem:bandage",
@@ -15,6 +15,5 @@
   "result": {
     "count": 1,
     "id": "medsystem:first_aid_kit"
-  },
-  "show_notification": false
+  }
 }

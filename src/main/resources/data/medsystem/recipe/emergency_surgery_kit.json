@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
     "L": "#c:leathers",
     "I": "#c:ingots/iron",
@@ -15,6 +15,5 @@
   "result": {
     "count": 1,
     "id": "medsystem:emergency_surgery_kit"
-  },
-  "show_notification": false
+  }
 }

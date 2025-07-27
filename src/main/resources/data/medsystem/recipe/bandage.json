@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
     "W": "#minecraft:wool",
     "P": "minecraft:paper"
@@ -12,6 +12,5 @@
   "result": {
     "count": 1,
     "id": "medsystem:bandage"
-  },
-  "show_notification": false
+  }
 }

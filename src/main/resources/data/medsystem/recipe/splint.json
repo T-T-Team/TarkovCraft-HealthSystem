@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
     "S": "#c:rods/wooden",
     "L": "#c:leathers",
@@ -13,6 +13,5 @@
   "result": {
     "count": 1,
     "id": "medsystem:splint"
-  },
-  "show_notification": false
+  }
 }

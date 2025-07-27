@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "take_damage": {
+      "trigger": "minecraft:entity_hurt_player"
+    }
+  },
+  "requirements": [
+    [
+      "take_damage"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "medsystem:first_aid_kit",
+      "medsystem:emergency_surgery_kit",
+      "medsystem:bandage",
+      "medsystem:painkillers",
+      "medsystem:splint",
+      "medsystem:tourniquet"
+    ]
+  }
+}
