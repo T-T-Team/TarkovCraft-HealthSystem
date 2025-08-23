@@ -89,12 +89,12 @@ public final class MedicalSystem {
 
         // weight integration
         BiConsumer<ItemLike, Integer> registration = (item, weight) -> event.modify(item, builder -> builder.set(CoreItemDataComponents.WEIGHT.get(), weight));
-        registration.accept(MedSystemItems.PAINKILLERS, 250);
-        registration.accept(MedSystemItems.BANDAGE, 300);
-        registration.accept(MedSystemItems.TOURNIQUET, 750);
-        registration.accept(MedSystemItems.SPLINT, 1250);
-        registration.accept(MedSystemItems.FIRST_AID_KIT, 2125);
-        registration.accept(MedSystemItems.EMERGENCY_SURGERY_KIT, 1750);
+        registration.accept(MedSystemItems.PAINKILLERS, 50);
+        registration.accept(MedSystemItems.BANDAGE, 150);
+        registration.accept(MedSystemItems.TOURNIQUET, 250);
+        registration.accept(MedSystemItems.SPLINT, 600);
+        registration.accept(MedSystemItems.FIRST_AID_KIT, 750);
+        registration.accept(MedSystemItems.EMERGENCY_SURGERY_KIT, 1000);
     }
 
     public static ResourceLocation resource(String path) {
