@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem;
 
 import dev.toma.configuration.Configuration;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -14,12 +15,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import tnt.tarkovcraft.core.common.init.CoreItemDataComponents;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
+
+import java.util.function.BiConsumer;
 
 @Mod(MedicalSystem.MOD_ID)
 public final class MedicalSystem {
@@ -82,6 +86,15 @@ public final class MedicalSystem {
     private void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
         if (config.addHitEffectsToVanillaItems)
             VanillaItemComponentAssignments.adjustItemData((item, attr) -> event.modify(item, builder -> builder.set(MedSystemItemComponents.SIDE_EFFECTS.get(), attr)));
+
+        // weight integration
+        BiConsumer<ItemLike, Integer> registration = (item, weight) -> event.modify(item, builder -> builder.set(CoreItemDataComponents.WEIGHT.get(), weight));
+        registration.accept(MedSystemItems.PAINKILLERS, 250);
+        registration.accept(MedSystemItems.BANDAGE, 300);
+        registration.accept(MedSystemItems.TOURNIQUET, 750);
+        registration.accept(MedSystemItems.SPLINT, 1250);
+        registration.accept(MedSystemItems.FIRST_AID_KIT, 2125);
+        registration.accept(MedSystemItems.EMERGENCY_SURGERY_KIT, 1750);
     }
 
     public static ResourceLocation resource(String path) {
