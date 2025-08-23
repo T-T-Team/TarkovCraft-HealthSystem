@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 public class FractureStatusEffect extends EntityCausedStatusEffect {
 
     public static final MapCodec<FractureStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, FractureStatusEffect::new));
+    private static final Component HINT = Component.translatable("status_effect.medsystem.fracture.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
 
     public FractureStatusEffect(int duration, int delay, Optional<UUID> owner) {
         super(duration, delay, owner);
@@ -39,7 +40,7 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(Component.translatable("status_effect.medsystem.fracture.heal_hint").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(HINT);
     }
 
     @Override

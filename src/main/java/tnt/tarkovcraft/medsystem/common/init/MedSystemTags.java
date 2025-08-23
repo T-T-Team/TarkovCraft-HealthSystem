@@ -4,6 +4,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 
 public final class MedSystemTags {
 
@@ -11,5 +12,11 @@ public final class MedSystemTags {
 
         public static final TagKey<DamageType> IS_GENERIC = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("is_generic"));
         public static final TagKey<DamageType> IS_MOVEMENT_RESTRICTED = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("movement_restricted"));
+    }
+
+    public static final class StatusEffects {
+
+        public static final TagKey<StatusEffectType<?>> OVERWEIGHT = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.resource("overweight"));
+        public static final TagKey<StatusEffectType<?>> MOVEMENT_RESTRICTING = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.resource("movement_restricting"));
     }
 }

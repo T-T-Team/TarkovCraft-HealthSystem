@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 public class LightBleedStatusEffect extends BleedStatusEffect {
 
     public static final MapCodec<LightBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, LightBleedStatusEffect::new));
+    private static final Component HINT = Component.translatable("status_effect.medsystem.light_bleed.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
 
     public LightBleedStatusEffect(int duration, int delay, Optional<UUID> owner) {
         super(duration, delay);
@@ -39,7 +40,7 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(Component.translatable("status_effect.medsystem.light_bleed.heal_hint").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(HINT);
     }
 
     @Override

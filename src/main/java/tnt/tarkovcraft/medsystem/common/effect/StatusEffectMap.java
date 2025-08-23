@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
+import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.NotNull;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
@@ -76,8 +77,16 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         return this.hasEffect(type.get());
     }
 
-    public <T extends StatusEffect> boolean hasEffect(Holder<StatusEffectType<?>> holder) {
+    public boolean hasEffect(Holder<StatusEffectType<?>> holder) {
         return this.hasEffect(holder.value());
+    }
+
+    public boolean hasEffect(TagKey<StatusEffectType<?>> tag) {
+        for (StatusEffectType<?> type : this.effects.keySet()) {
+            if (type.is(tag))
+                return true;
+        }
+        return false;
     }
 
     public <T extends StatusEffect> Optional<T> getEffect(StatusEffectType<T> type) {
@@ -105,6 +114,20 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
             return effect.onRemoved(context);
         }
         return null;
+    }
+
+    public StatusEffect remove(Holder<StatusEffectType<?>> holder, Context context) {
+        return this.remove(holder.value(), context);
+    }
+
+    public void removeMatching(TagKey<StatusEffectType<?>> tag, Context context) {
+        this.effects.entrySet().removeIf(entry -> {
+            if (entry.getKey().is(tag)) {
+                entry.getValue().onRemoved(context);
+                return true;
+            }
+            return false;
+        });
     }
 
     public Collection<StatusEffect> listEffects() {

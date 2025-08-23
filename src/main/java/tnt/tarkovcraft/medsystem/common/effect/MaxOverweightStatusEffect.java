@@ -1,0 +1,43 @@
+package tnt.tarkovcraft.medsystem.common.effect;
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
+
+import java.util.function.Consumer;
+
+public class MaxOverweightStatusEffect extends StatusEffect {
+
+    public static final MapCodec<MaxOverweightStatusEffect> CODEC = MapCodec.unit(MaxOverweightStatusEffect::new);
+    private static final Component HINT = Component.translatable("status_effect.medsystem.max_overweight.info").withStyle(ChatFormatting.DARK_GRAY);
+
+    public MaxOverweightStatusEffect() {
+        super(-1, 0);
+    }
+
+    @Override
+    public void apply(Context context) {
+    }
+
+    @Override
+    public StatusEffect onRemoved(Context context) {
+        return null;
+    }
+
+    @Override
+    public StatusEffect copy() {
+        return new MaxOverweightStatusEffect();
+    }
+
+    @Override
+    public StatusEffectType<?> getType() {
+        return MedSystemStatusEffects.MAX_OVERWEIGHT.value();
+    }
+
+    @Override
+    public void addAdditionalInfo(Consumer<Component> tooltip) {
+        tooltip.accept(HINT);
+    }
+}

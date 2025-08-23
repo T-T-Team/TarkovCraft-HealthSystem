@@ -46,4 +46,18 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .build()
     );
+    public static final Holder<StatusEffectType<?>> OVERWEIGHT = REGISTRY.register("overweight", key -> StatusEffectType.builder(key, (duration, delay) -> new OverweightStatusEffect())
+            .persist(OverweightStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .combineEffects((a, b) -> a)
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> MAX_OVERWEIGHT = REGISTRY.register("max_overweight", key -> StatusEffectType.builder(key, (duration, delay) -> new MaxOverweightStatusEffect())
+            .persist(MaxOverweightStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .combineEffects((a, b) -> a)
+            .build()
+    );
 }

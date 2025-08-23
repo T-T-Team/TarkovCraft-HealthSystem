@@ -2,8 +2,10 @@ package tnt.tarkovcraft.medsystem.common.effect;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
@@ -16,6 +18,7 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public static final Codec<StatusEffect> CODEC = MedSystemRegistries.STATUS_EFFECT.byNameCodec().dispatch(StatusEffect::getType, t -> t.codec);
 
+    private final Holder<StatusEffectType<?>> intrusiveHolder = MedSystemRegistries.STATUS_EFFECT.createIntrusiveHolder(this);
     private final ResourceLocation identifier;
     private final Factory<S> factory;
     private final MapCodec<S> codec;
@@ -42,6 +45,10 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public static <S extends StatusEffect> Builder<S> builder(ResourceLocation identifier, Factory<S> factory) {
         return new Builder<>(identifier, factory);
+    }
+
+    public boolean is(TagKey<StatusEffectType<?>> tag) {
+        return this.intrusiveHolder.is(tag);
     }
 
     public ResourceLocation getIcon() {

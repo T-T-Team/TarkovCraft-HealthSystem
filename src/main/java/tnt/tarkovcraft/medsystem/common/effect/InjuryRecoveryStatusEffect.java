@@ -28,6 +28,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     public static final MapCodec<InjuryRecoveryStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(
             Codec.INT.fieldOf("reduction").forGetter(t -> t.reduction)
     ).apply(instance, InjuryRecoveryStatusEffect::new));
+    private static final Component INFO = Component.translatable("status_effect.medsystem.injury_recovery.info").withStyle(ChatFormatting.DARK_GRAY);
 
     private int reduction;
 
@@ -93,7 +94,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(Component.translatable("status_effect.medsystem.injury_recovery.info").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(INFO);
     }
 
     @Override

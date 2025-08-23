@@ -31,7 +31,6 @@ import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
 
@@ -75,7 +74,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
     }
 
     public static boolean isMovementRestrictingPart(BodyPart part) {
-        return part.getGroup() == BodyPartGroup.LEG && (part.isDead() || part.getStatusEffects().hasEffect(MedSystemStatusEffects.FRACTURE));
+        return part.getGroup() == BodyPartGroup.LEG && (part.isDead() || part.getStatusEffects().hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING));
     }
 
     public static void synchronizeEntity(LivingEntity entity) {

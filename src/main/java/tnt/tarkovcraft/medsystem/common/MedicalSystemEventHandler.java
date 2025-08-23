@@ -18,16 +18,23 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
+import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
+import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.core.util.context.ContextImpl;
+import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectProcessor;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.effect.MaxOverweightStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
@@ -209,6 +216,27 @@ public final class MedicalSystemEventHandler {
                 entity.setSprinting(false);
             }
         }
+    }
+
+    @SubscribeEvent
+    private void onWeightUpdate(EntityWeightUpdateEvent event) {
+        LivingEntity entity = event.getEntity();
+        float factor = event.getOverweightFactor();
+        if (!HealthSystem.hasCustomHealth(entity))
+            return;
+        HealthContainer container = HealthSystem.getHealthData(entity);
+        StatusEffectMap effects = container.getGlobalStatusEffects();
+        Context context = ContextImpl.of(
+                ContextKeys.LIVING_ENTITY, entity,
+                MedicalSystemContextKeys.HEALTH_CONTAINER, container
+        );
+        effects.removeMatching(MedSystemTags.StatusEffects.OVERWEIGHT, context);
+        if (factor >= 1.5F) {
+            effects.addEffect(new MaxOverweightStatusEffect());
+        } else if (factor > 0.0F) {
+            effects.addEffect(new OverweightStatusEffect());
+        }
+        HealthSystem.synchronizeEntity(entity);
     }
 
     @SubscribeEvent

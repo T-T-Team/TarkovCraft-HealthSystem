@@ -18,6 +18,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
     public static final MapCodec<FreshWoundStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(
             Codec.FLOAT.optionalFieldOf("bleedChance", 0.0F).forGetter(t -> t.bleedChance)
     ).apply(instance, FreshWoundStatusEffect::new));
+    private static final Component INFO = Component.translatable("status_effect.medsystem.fresh_wound.info").withStyle(ChatFormatting.DARK_GRAY);
 
     private float bleedChance;
 
@@ -58,7 +59,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(Component.translatable("status_effect.medsystem.fresh_wound.info").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(INFO);
     }
 
     @Override

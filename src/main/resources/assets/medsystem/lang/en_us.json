@@ -61,6 +61,10 @@
   "status_effect.medsystem.heavy_bleed.heal_hint": "Can be healed using tourniquets",
   "status_effect.medsystem.fresh_wound": "Fresh Wound",
   "status_effect.medsystem.fresh_wound.info": "Sprinting increases risk of reopening the wound and causing bleed",
+  "status_effect.medsystem.overweight": "Overweight",
+  "status_effect.medsystem.overweight.info": "You are carrying too much weight. Your movement speed is slightly reduced.",
+  "status_effect.medsystem.max_overweight": "Overweight",
+  "status_effect.medsystem.max_overweight.info": "You are extremely overloaded. Your movement speed is heavily reduced.",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",

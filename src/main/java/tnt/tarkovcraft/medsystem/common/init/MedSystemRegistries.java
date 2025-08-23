@@ -15,7 +15,7 @@ public final class MedSystemRegistries {
 
     public static final Registry<TransformConditionType<?>> TRANSFORM_CONDITION = new RegistryBuilder<>(Keys.TRANSFORM_CONDITION).create();
     public static final Registry<EntityHitboxTransformType<?>> TRANSFORM = new RegistryBuilder<>(Keys.TRANSFORM).create();
-    public static final Registry<StatusEffectType<?>> STATUS_EFFECT = new RegistryBuilder<>(Keys.STATUS_EFFECT).create();
+    public static final Registry<StatusEffectType<?>> STATUS_EFFECT = new RegistryBuilder<>(Keys.STATUS_EFFECT).withIntrusiveHolders().create();
     public static final Registry<HealthEventSourceType<?>> HEALTH_REACTION = new RegistryBuilder<>(Keys.HEALTH_REACTION).create();
     public static final Registry<HealthSourceEventType<?>> HEALTH_REACTION_RESPONSE = new RegistryBuilder<>(Keys.HEALTH_REACTION_RESPONSE).create();
     public static final Registry<ChanceFunctionType<?>> CHANCE_FUNCTION = new RegistryBuilder<>(Keys.CHANCE_FUNCTION).create();

@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
     public static final MapCodec<HeavyBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, HeavyBleedStatusEffect::new));
+    private static final Component HINT = Component.translatable("status_effect.medsystem.heavy_bleed.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
 
     public HeavyBleedStatusEffect(int duration, int delay, Optional<UUID> owner) {
         super(duration, delay, owner);
@@ -50,7 +51,7 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(Component.translatable("status_effect.medsystem.heavy_bleed.heal_hint").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.accept(HINT);
     }
 
     @Override
