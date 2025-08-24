@@ -281,11 +281,11 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "minecraft:is_fall",
-            "chance": 0.05,
+            "chance": 0.035,
             "chanceModifiers": [
               {
                 "type": "medsystem:fall_distance",
-                "scale": 1.25
+                "scale": 0.75
               }
             ]
           },
@@ -387,11 +387,11 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "minecraft:is_fall",
-            "chance": 0.05,
+            "chance": 0.035,
             "chanceModifiers": [
               {
                 "type": "medsystem:fall_distance",
-                "scale": 1.25
+                "scale": 0.75
               }
             ]
           },
