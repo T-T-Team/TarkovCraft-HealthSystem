@@ -5,6 +5,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -41,25 +42,25 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private int textColor = ColorPalette.WHITE;
     private int textHoverColor = ColorPalette.YELLOW;
     private float healthScale = 1.0F;
+    private int effectScale = 12;
     private SimpleClickListener onClick;
     private List<StatusEffect> effects;
-    private SharedScreenState<BodyPart> hoverState;
 
     public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
-        super(x, y, width, height, part.getDisplayName().copy().withStyle(ChatFormatting.BOLD));
+        super(x, y, width, height, CommonComponents.EMPTY);
         this.font = font;
         this.part = part;
-    }
-
-    public void setHoverState(SharedScreenState<BodyPart> hoverState) {
-        this.hoverState = hoverState;
     }
 
     public void setEffects(List<StatusEffect> effects) {
         this.effects = effects;
     }
 
-    public void setHealthScale(float healthScale) {
+    public void setEffectIconSize(int effectIconSize) {
+        this.effectScale = effectIconSize;
+    }
+
+    public void setHealthUnitScale(float healthScale) {
         this.healthScale = healthScale;
     }
 
@@ -103,49 +104,46 @@ public class BodyPartHealthWidget extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        boolean partHovered = false;
-        if (this.hoverState != null) {
-            if (this.isHovered) {
-                this.hoverState.setState(this, part);
-            } else {
-                this.hoverState.clearState(this);
-            }
-            partHovered = this.hoverState.getState() != null && this.hoverState.getState().getName().equals(this.part.getName());
-        }
+        // Frame
         if (this.frameSize > 0 && RenderUtils.isVisibleColor(this.frameColor)) {
-            int frameColor = partHovered || this.isHovered ? this.frameHoverColor : this.frameColor;
+            int frameColor = this.isHovered ? this.frameHoverColor : this.frameColor;
             graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), frameColor);
         }
+        // Background fill
         if (RenderUtils.isVisibleColor(this.backgroundColor)) {
             graphics.fill(this.getX() + this.frameSize, this.getY() + this.frameSize, this.getRight() - this.frameSize, this.getBottom() - this.frameSize, this.backgroundColor);
         }
-        int textColor = this.part.isDead() ? 0xFFFF0000 : partHovered ? this.textHoverColor : this.textColor;
-        int titleWidth = this.font.width(this.getMessage());
-        graphics.drawString(this.font, this.getMessage(), this.getX() + (this.width - titleWidth) / 2, this.getY() + 5 + this.frameSize, textColor);
+        // Health status %{currHealth}/${maxHealth}
         String status = Mth.ceil(this.part.getHealth() * this.healthScale) + "/" + Mth.ceil(this.part.getMaxHealth() * this.healthScale);
         int statusWidth = this.font.width(status);
-        graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getBottom() - 14 - this.frameSize, textColor);
+        int textColor = this.part.isDead() ? 0xFFFF0000 : this.isHovered ? this.textHoverColor : this.textColor;
+        graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getY() + 3 + this.frameSize, textColor);
+        // Health bar setup
         HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
         int background = Integer.decode(overlay.deadLimbColor) | 0xFF << 24;
         int secondaryBackground = ARGB.scaleRGB(background, 0.8F);
         int color = HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, this.part) | 0xFF << 24;
         int secondaryColor = ARGB.scaleRGB(color, 0.8F);
         float f = this.part.getHealthPercent();
-        graphics.fillGradient(this.getX() + this.frameSize + 1, this.getBottom() - this.frameSize - 5, this.getRight() - this.frameSize - 1, this.getBottom() - this.frameSize - 1, background, secondaryBackground);
+        // Health bar background
+        graphics.fillGradient(this.getX() + this.frameSize + 1, this.getY() + this.frameSize + 13, this.getRight() - this.frameSize - 1, this.getY() + this.frameSize + 17, background, secondaryBackground);
+        // Health bar foreground - current health
         int left = this.getX() + this.frameSize + 2;
         int right = this.getRight() - this.frameSize - 2;
-        graphics.fillGradient(left, this.getBottom() - this.frameSize - 4, left + (int) ((right - left) * f), this.getBottom() - this.frameSize - 2, color, secondaryColor);
-
-        if (this.effects != null && !this.effects.isEmpty()) {
-            for (int i = 0; i < this.effects.size(); i++) {
-                int row = i % 3;
-                int col = i / 3;
+        graphics.fillGradient(left, this.getY() + this.frameSize + 14, left + (int) ((right - left) * f), this.getY() + this.frameSize + 16, color, secondaryColor);
+        // Status effects - we need 14px for render (12scale+2border) + 17 for health bar offset + 2xFrameSize
+        if (this.height >= (19 + this.effectScale + this.frameSize * 2) && this.effects != null && !this.effects.isEmpty()) {
+            int bounds = this.width - this.frameSize - 2;
+            int maxEffects = Math.min(this.effects.size(), bounds / this.effectScale);
+            for (int i = 0; i < maxEffects; i++) {
                 StatusEffect effect = this.effects.get(i);
                 StatusEffectType<?> type = effect.getType();
-                int ex = this.getRight() + col * 12;
-                int ey = this.getY() + row * 12;
-                RenderUtils.blitFull(graphics, type.getIcon(), ex, ey, ex + 12, ey + 12, -1);
-                if (MathHelper.isWithinBounds(mouseX, mouseY, ex, ey, 12, 12)) {
+                int effectX = this.getX() + this.frameSize + 1 + i * this.effectScale;
+                int effectY = this.getBottom() - this.frameSize - 1 - this.effectScale;
+                // effect icon
+                RenderUtils.blitFull(graphics, type.getIcon(), effectX, effectY, effectX + this.effectScale, effectY + this.effectScale);
+                // hover effects
+                if (MathHelper.isWithinBounds(mouseX, mouseY, effectX, effectY, this.effectScale, this.effectScale)) {
                     List<Component> tooltip = new ArrayList<>();
                     tooltip.add(type.getDisplayName().copy().withStyle(type.getEffectType()));
                     effect.addAdditionalInfo(tooltip::add);

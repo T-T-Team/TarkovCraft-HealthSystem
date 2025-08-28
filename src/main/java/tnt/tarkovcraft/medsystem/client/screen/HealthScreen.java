@@ -5,9 +5,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
-import tnt.tarkovcraft.core.client.screen.SharedScreenState;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
-import tnt.tarkovcraft.core.client.screen.widget.ListWidget;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -22,12 +20,11 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class HealthScreen extends CharacterSubScreen {
-
-    private double bodyPartScroll;
 
     public HealthScreen(Context context) {
         super(context.getOrThrow(ContextKeys.UUID), MedicalSystemClient.HEALTH);
@@ -41,44 +38,58 @@ public class HealthScreen extends CharacterSubScreen {
         HealthContainer container = this.minecraft.player.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         HealthContainerDefinition definition = container.getDefinition();
         List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
-        Vector2f center = new Vector2f(this.width / 6.0F, this.height / 2.0F);
+        Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
 
-        int left = this.width / 3 - 15;
-        SharedScreenState<BodyPart> state = new SharedScreenState<>();
-        ListWidget<BodyPartHealthWidget> list = this.addRenderableWidget(new ListWidget<>(left, 35, this.width - left, this.height - 35, displays, (display, index) -> this.createBodyPartWidget(display, container, index, state)));
-        list.setAdditionalItemSpacing(4);
-        list.setScroll(this.bodyPartScroll);
-        list.setScrollListener((x, y) -> this.bodyPartScroll = y);
-
+        List<BodyPartHealthWidget> healthWidgets = new ArrayList<>();
+        float scale = (this.width / 256.0F);
         for (BodyPartDisplay display : displays) {
             String name = display.source();
             BodyPart part = container.getBodyPart(name);
             if (part == null)
                 return;
-            Vector4f pos = display.getGuiPosition(1.5F, center);
-            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget((int) pos.x, (int) pos.y, (int) pos.z, (int) pos.w, part, this.font));
+            Vector4f pos = display.getGuiPosition(scale, center);
+            int x = (int) pos.x;
+            int y = (int) pos.y;
+            int width = (int) pos.z;
+            int height = (int) pos.w;
+            int xOffset = (int) ((pos.x + width / 2f) - center.x);
+            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, part, this.font));
             bodyPartWidget.setScale(3);
             bodyPartWidget.setTooltip(Tooltip.create(part.getDisplayName()));
             bodyPartWidget.setTooltipDelay(Duration.ofMillis(500));
-            bodyPartWidget.setHoverState(state);
+            // status effects
+            Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
+            // add global effects to root body part
+            if (container.getRootBodyPart().getName().equals(part.getName())) {
+                stream = Stream.concat(
+                        container.getGlobalStatusEffects().getEffectsStream(),
+                        stream
+                );
+            }
+            List<StatusEffect> effects = stream.filter(ef -> ef.isActive() && ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI))
+                    .toList();
+            int healthWidth = 80;
+            int healthHeight = effects.isEmpty() ? 20 : 33;
+            int healthX = this.getHealthLabelWidgetX(xOffset, x, healthWidth, width);
+            int healthY = y + (height - healthHeight) / 2;
+            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part);
+            healthWidget.setHealthUnitScale(10F);
+            healthWidget.setEffects(effects);
+
+            healthWidgets.add(healthWidget); // add to list for later addition so it can be rendered on top
         }
+
+        healthWidgets.forEach(this::addRenderableOnly);
     }
 
-    private BodyPartHealthWidget createBodyPartWidget(BodyPartDisplay display, HealthContainer container, int index, SharedScreenState<BodyPart> state) {
-        int left = this.width / 3 - 15;
-        BodyPart part = container.getBodyPart(display.source());
-        Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
-        if (container.getRootBodyPart().getName().equals(part.getName())) {
-            stream = Stream.concat(
-                    container.getGlobalStatusEffects().getEffectsStream(),
-                    stream
-            );
+    private int getHealthLabelWidgetX(int xOffset, int posX, int labelWidth, int limbWidth) {
+        if (xOffset == 0) {
+            return posX + (limbWidth - labelWidth) / 2;
+        } else if (xOffset > 0) {
+            return posX + limbWidth;
+        } else {
+            return posX - labelWidth;
         }
-        BodyPartHealthWidget widget = new BodyPartHealthWidget(left, index * 40, 125, 36, this.font, part);
-        List<StatusEffect> effects = stream.filter(ef -> ef.isActive() && ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI)).toList();
-        widget.setEffects(effects);
-        widget.setHealthScale(10);
-        widget.setHoverState(state);
-        return widget;
+
     }
 }
