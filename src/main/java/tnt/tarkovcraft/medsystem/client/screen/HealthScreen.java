@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.client.screen;
 
 import net.minecraft.client.gui.components.Tooltip;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
+import org.joml.Vector4i;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
@@ -47,11 +47,11 @@ public class HealthScreen extends CharacterSubScreen {
             BodyPart part = container.getBodyPart(name);
             if (part == null)
                 return;
-            Vector4f pos = display.getGuiPosition(scale, center);
-            int x = (int) pos.x;
-            int y = (int) pos.y;
-            int width = (int) pos.z;
-            int height = (int) pos.w;
+            Vector4i pos = display.getPositionForGui(scale, center);
+            int x = pos.x;
+            int y = pos.y;
+            int width = pos.z;
+            int height = pos.w;
             int xOffset = (int) ((pos.x + width / 2f) - center.x);
             BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, part, this.font));
             bodyPartWidget.setScale(3);

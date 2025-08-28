@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
+import org.joml.Vector4i;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.renderable.AbstractTextRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
@@ -58,8 +58,8 @@ public class SelectBodyPartScreen extends Screen {
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
         for (BodyPartDisplay display : displays) {
             BodyPart part = container.getBodyPart(display.source());
-            Vector4f rect = display.getGuiPosition(2.0F, center);
-            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget((int) rect.x, (int) rect.y, (int) rect.z, (int) rect.w, part, this.font));
+            Vector4i rect = display.getPositionForGui(2.0F, center);
+            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, part, this.font));
             boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container);
             widget.setColorProvider(value -> isPartHealable ? 0xFF00FF00 : 0xFF444444);
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));

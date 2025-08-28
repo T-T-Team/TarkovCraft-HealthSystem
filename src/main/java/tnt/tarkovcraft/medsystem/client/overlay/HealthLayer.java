@@ -65,7 +65,7 @@ public class HealthLayer implements GuiLayer {
             BodyPart health = container.getBodyPart(display.source());
             if (health == null)
                 return;
-            Vector4f pos = display.getGuiPosition(scale, center);
+            Vector4f pos = display.getPosition(scale, center);
             int color = overlay.transparency << 24 | getColor(overlay.deadLimbColor, overlay.colorSchema, health);
             RenderUtils.fill(graphics, pos.x, pos.y, pos.x + pos.z, pos.y + pos.w, ARGB.scaleRGB(color, 0.8F));
             RenderUtils.fill(graphics, pos.x + 2, pos.y + 2, pos.x + pos.z - 2, pos.y + pos.w - 2, color);
