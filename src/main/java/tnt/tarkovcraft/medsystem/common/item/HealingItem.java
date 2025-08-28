@@ -15,7 +15,6 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import tnt.tarkovcraft.core.common.Notification;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.heal.*;
@@ -93,10 +92,6 @@ public class HealingItem extends Item implements SideEffectProcessor {
         String targetLimb = this.getTargetLimb(stack);
         HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         if (!this.canUseItem(stack, livingEntity) || (!attributes.applyGlobally() && TextHelper.isBlank(targetLimb))) {
-            if (livingEntity instanceof ServerPlayer player) {
-                Notification notification = Notification.error(Component.literal("Unable to use item, target limb not found"));
-                notification.send(player);
-            }
             return stack;
         }
 

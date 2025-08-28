@@ -86,9 +86,9 @@ public class HealthScreen extends CharacterSubScreen {
         if (xOffset == 0) {
             return posX + (limbWidth - labelWidth) / 2;
         } else if (xOffset > 0) {
-            return posX + limbWidth;
+            return posX + limbWidth + 2;
         } else {
-            return posX - labelWidth;
+            return posX - labelWidth - 2;
         }
 
     }
