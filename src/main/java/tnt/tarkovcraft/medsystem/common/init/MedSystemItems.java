@@ -67,6 +67,7 @@ public final class MedSystemItems {
             "painkillers",
             properties -> new HealingItem(
                     properties.durability(4)
+                            .setNoCombineRepair()
                             .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setNoBodyPartSelection()
