@@ -55,8 +55,6 @@ public class HealthScreen extends CharacterSubScreen {
             int xOffset = (int) ((pos.x + width / 2f) - center.x);
             BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, part, this.font));
             bodyPartWidget.setScale(3);
-            bodyPartWidget.setTooltip(Tooltip.create(part.getDisplayName()));
-            bodyPartWidget.setTooltipDelay(Duration.ofMillis(500));
             // status effects
             Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
             // add global effects to root body part
