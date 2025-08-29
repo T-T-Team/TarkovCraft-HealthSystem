@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
-import tnt.tarkovcraft.core.client.screen.SharedScreenState;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.DurationFormatSettings;
@@ -113,10 +112,10 @@ public class BodyPartHealthWidget extends AbstractWidget {
         if (RenderUtils.isVisibleColor(this.backgroundColor)) {
             graphics.fill(this.getX() + this.frameSize, this.getY() + this.frameSize, this.getRight() - this.frameSize, this.getBottom() - this.frameSize, this.backgroundColor);
         }
-        // Health status %{currHealth}/${maxHealth}
-        String status = Mth.ceil(this.part.getHealth() * this.healthScale) + "/" + Mth.ceil(this.part.getMaxHealth() * this.healthScale);
+        // Health status %{currHealth}/${maxHealth} or hovered shows part name
+        Component status = this.getStatusTitle();
         int statusWidth = this.font.width(status);
-        int textColor = this.part.isDead() ? 0xFFFF0000 : this.isHovered ? this.textHoverColor : this.textColor;
+        int textColor = this.part.isDead() ? 0xFFFF0000 : this.textColor;
         graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getY() + 3 + this.frameSize, textColor);
         // Health bar setup
         HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
@@ -161,5 +160,11 @@ public class BodyPartHealthWidget extends AbstractWidget {
 
     @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    }
+
+    private Component getStatusTitle() {
+        return this.isHovered
+                ? this.part.getDisplayName()
+                : Component.literal(Mth.ceil(this.part.getHealth() * this.healthScale) + "/" + Mth.ceil(this.part.getMaxHealth() * this.healthScale));
     }
 }

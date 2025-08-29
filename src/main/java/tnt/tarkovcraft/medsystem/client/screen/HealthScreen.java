@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.client.screen;
 
-import net.minecraft.client.gui.components.Tooltip;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
@@ -19,7 +18,6 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
