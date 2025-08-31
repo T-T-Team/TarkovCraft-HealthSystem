@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -120,6 +121,11 @@ public class HealingItem extends Item implements SideEffectProcessor {
         if (stack.has(MedSystemItemComponents.SIDE_EFFECTS)) {
             SideEffectHolder holder = stack.get(MedSystemItemComponents.SIDE_EFFECTS);
             holder.apply(livingEntity, container, part);
+        }
+        // Consume effect application
+        List<ConsumeEffect> consumeEffects = attributes.effects();
+        for (ConsumeEffect effect : consumeEffects) {
+            effect.apply(level, stack, livingEntity);
         }
         // Apply durability reduction
         if (!level.isClientSide()) {
