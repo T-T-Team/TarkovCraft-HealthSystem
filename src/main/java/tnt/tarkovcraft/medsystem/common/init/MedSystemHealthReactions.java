@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public final class MedSystemHealthReactions {
 
-    public static final DeferredRegister<HealthEventSourceType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.HEALTH_REACTION, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<HealthEventSourceType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.HEALTH_REACTION, MedicalSystem.MOD_ID);
 
     public static final Supplier<HealthEventSourceType<NoHealthEventSource>> NONE = REGISTRY.register("none", key -> new HealthEventSourceType<>(key, NoHealthEventSource.CODEC));
     public static final Supplier<HealthEventSourceType<ChanceHealthEventSource>> CHANCE = REGISTRY.register("chance", key -> new HealthEventSourceType<>(key, ChanceHealthEventSource.CODEC));

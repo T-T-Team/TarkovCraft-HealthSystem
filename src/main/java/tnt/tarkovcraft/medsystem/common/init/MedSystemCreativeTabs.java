@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -9,7 +9,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 
 public final class MedSystemCreativeTabs {
 
-    public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(BuiltInRegistries.CREATIVE_MODE_TAB, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MedicalSystem.MOD_ID);
 
     public static final Holder<CreativeModeTab> MEDICAL_TAB = REGISTRY.register("medical", key -> CreativeModeTab.builder()
             .title(Component.translatable(key.toLanguageKey("itemGroup")))

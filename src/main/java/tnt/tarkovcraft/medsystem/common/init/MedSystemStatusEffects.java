@@ -8,7 +8,7 @@ import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 
 public final class MedSystemStatusEffects {
 
-    public static final DeferredRegister<StatusEffectType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.STATUS_EFFECT, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<StatusEffectType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.MOD_ID);
 
     public static final Holder<StatusEffectType<?>> PAIN_RELIEF = REGISTRY.register("pain_relief", key -> StatusEffectType.builder(key, PainReliefEffect::new)
             .persist(PainReliefEffect.CODEC)

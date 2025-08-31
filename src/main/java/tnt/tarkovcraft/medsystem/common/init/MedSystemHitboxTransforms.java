@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public final class MedSystemHitboxTransforms {
 
-    public static final DeferredRegister<EntityHitboxTransformType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.TRANSFORM, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<EntityHitboxTransformType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.TRANSFORM, MedicalSystem.MOD_ID);
 
     public static final Supplier<EntityHitboxTransformType<MoveTransform>> MOVE = REGISTRY.register("move", key -> new EntityHitboxTransformType<>(key, MoveTransform.CODEC));
     public static final Supplier<EntityHitboxTransformType<ScaleHitboxTransform>> SCALE = REGISTRY.register("scale", key -> new EntityHitboxTransformType<>(key, ScaleHitboxTransform.CODEC));

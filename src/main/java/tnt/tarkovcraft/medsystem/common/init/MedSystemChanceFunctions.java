@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public final class MedSystemChanceFunctions {
 
-    public static final DeferredRegister<ChanceFunctionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.CHANCE_FUNCTION, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<ChanceFunctionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.CHANCE_FUNCTION, MedicalSystem.MOD_ID);
 
     public static final Supplier<ChanceFunctionType<FallDistanceScaleFunction>> FALL_DISTANCE = REGISTRY.register("fall_distance", key -> new ChanceFunctionType<>(key, FallDistanceScaleFunction.CODEC));
 }

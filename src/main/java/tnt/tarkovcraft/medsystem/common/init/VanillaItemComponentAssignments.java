@@ -9,7 +9,7 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 
 import java.util.function.BiConsumer;
 
-public class VanillaItemComponentAssignments {
+public final class VanillaItemComponentAssignments {
 
     public static void adjustItemData(BiConsumer<ItemLike, SideEffectHolder> registration) {
         MedicalSystem.LOGGER.debug(MedicalSystem.MARKER, "Applying hit effects to vanilla items");

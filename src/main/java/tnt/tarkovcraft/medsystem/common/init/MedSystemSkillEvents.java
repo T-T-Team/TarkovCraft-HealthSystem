@@ -8,7 +8,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 
 public final class MedSystemSkillEvents {
 
-    public static final DeferredRegister<SkillTriggerEvent> REGISTRY = DeferredRegister.create(CoreRegistries.SKILL_TRIGGER_EVENT, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<SkillTriggerEvent> REGISTRY = DeferredRegister.create(CoreRegistries.Keys.SKILL_TRIGGER_EVENT, MedicalSystem.MOD_ID);
 
     public static final Holder<SkillTriggerEvent> ARMOR_USE = REGISTRY.register("armor_use", SkillTriggerEvent::new);
     public static final Holder<SkillTriggerEvent> DAMAGE_TAKEN = REGISTRY.register("damage_taken", SkillTriggerEvent::new);

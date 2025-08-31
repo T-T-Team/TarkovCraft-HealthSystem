@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public final class MedSystemTransformConditions {
 
-    public static final DeferredRegister<TransformConditionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.TRANSFORM_CONDITION, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<TransformConditionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.TRANSFORM_CONDITION, MedicalSystem.MOD_ID);
 
     public static final Supplier<TransformConditionType<NotTransformCondition>> NOT = REGISTRY.register("not", key -> new TransformConditionType<>(key, NotTransformCondition.CODEC));
     public static final Supplier<TransformConditionType<EntityPoseTransformCondition>> ENTITY_POSE = REGISTRY.register("pose", key -> new TransformConditionType<>(key, EntityPoseTransformCondition.CODEC));

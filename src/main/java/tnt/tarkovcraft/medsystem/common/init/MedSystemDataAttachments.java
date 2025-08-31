@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public final class MedSystemDataAttachments {
 
-    public static final DeferredRegister<AttachmentType<?>> REGISTRY = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<AttachmentType<?>> REGISTRY = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MedicalSystem.MOD_ID);
 
     public static final Supplier<AttachmentType<HealthContainer>> HEALTH_CONTAINER = REGISTRY.register("health_container", () -> AttachmentType.builder(HealthContainer::new)
             .serialize(HealthContainer.MAP_CODEC)
