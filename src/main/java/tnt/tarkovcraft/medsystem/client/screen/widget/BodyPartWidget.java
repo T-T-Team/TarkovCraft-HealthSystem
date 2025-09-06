@@ -6,7 +6,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
-import tnt.tarkovcraft.core.client.screen.SharedScreenState;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
@@ -27,7 +26,6 @@ public class BodyPartWidget extends AbstractWidget {
     private ToIntFunction<BodyPart> colorProvider;
     private SimpleClickListener onClick;
 
-    private SharedScreenState<BodyPart> hoverState;
     private List<Component> customTooltip = new ArrayList<>();
 
     public BodyPartWidget(int x, int y, int width, int height, BodyPart part, Font font) {
@@ -43,17 +41,6 @@ public class BodyPartWidget extends AbstractWidget {
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int color = this.colorProvider.applyAsInt(this.part);
-        if (this.hoverState != null) {
-            if (this.isHovered) {
-                this.hoverState.setState(this, this.part);
-            } else {
-                this.hoverState.clearState(this);
-            }
-            BodyPart statePart = this.hoverState.getState();
-            if (statePart != null && statePart.getName().equals(this.part.getName())) {
-                color = ARGB.lerp(0.5F, color, 0xFFFFFFFF);
-            }
-        }
         graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), ARGB.scaleRGB(color, 0.8F));
         graphics.fill(this.getX() + this.scale, this.getY() + this.scale, this.getRight() - this.scale, this.getBottom() - this.scale, color);
 
@@ -86,10 +73,6 @@ public class BodyPartWidget extends AbstractWidget {
 
     public void setOnClick(SimpleClickListener onClick) {
         this.onClick = onClick;
-    }
-
-    public void setHoverState(SharedScreenState<BodyPart> hoverState) {
-        this.hoverState = hoverState;
     }
 
     public void addTooltip(Component line) {

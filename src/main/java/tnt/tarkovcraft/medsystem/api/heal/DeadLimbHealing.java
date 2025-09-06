@@ -16,6 +16,7 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.effect.InjuryRecoveryStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
@@ -43,7 +44,7 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
                 int reduction = Mth.ceil(part.getMaxHealth() * (1.0F - this.maxHealthMultiplier) * reductionScale);
                 int duration = Mth.ceil(Duration.minutes(10).tickValue() * reduction);
                 InjuryRecoveryStatusEffect effect = new InjuryRecoveryStatusEffect(duration, reduction);
-                part.getStatusEffects().addEffect(effect);
+                StatusEffectHelper.addEffect(part.getStatusEffects(), entity, part, effect);
             }
         }
     }

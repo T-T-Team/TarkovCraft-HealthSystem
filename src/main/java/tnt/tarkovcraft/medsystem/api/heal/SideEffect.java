@@ -71,7 +71,7 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
                     statusEffect.setCausingEntity(cause.getUUID());
                 }
             }
-            effects.addEffect(statusEffect);
+            StatusEffectHelper.addEffect(effects, entity, part, statusEffect);
         }
     }
 

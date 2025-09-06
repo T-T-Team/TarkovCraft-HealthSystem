@@ -19,6 +19,7 @@ import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -57,9 +58,9 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
         StatusEffectType<?> type = this.effect.value();
         StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
         Context context = ContextImpl.of(ContextKeys.LIVING_ENTITY, entity, MedicalSystemContextKeys.HEALTH_CONTAINER, container, LootContextParams.TOOL, stack);
-        StatusEffect statusEffect = effects.remove(this.effect.value(), context);
+        StatusEffect statusEffect = StatusEffectHelper.removeEffect(effects, entity, part, context, type);
         if (statusEffect != null) {
-            effects.addEffect(statusEffect);
+            StatusEffectHelper.addEffect(effects, entity, part, statusEffect);
         }
     }
 

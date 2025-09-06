@@ -18,6 +18,7 @@ import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -25,6 +26,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 @SuppressWarnings("unchecked")
@@ -119,7 +121,7 @@ public final class TarkovCraftCommand {
             }
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
             StatusEffectMap map = container.getGlobalStatusEffects();
-            addEffect(map, reference, duration, delay);
+            addEffect(map, livingEntity, null, reference, duration, delay);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
@@ -139,16 +141,17 @@ public final class TarkovCraftCommand {
             }
             BodyPart bodyPart = container.getBodyPart(bodyPartId);
             StatusEffectMap map = bodyPart.getStatusEffects();
-            addEffect(map, reference, duration, delay);
+            addEffect(map, livingEntity, bodyPart, reference, duration, delay);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
     }
 
-    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, Holder<StatusEffectType<?>> holder, int duration, int delay) {
+    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable BodyPart bodyPart, Holder<StatusEffectType<?>> holder, int duration, int delay) {
         StatusEffectType<T> type = (StatusEffectType<T>) holder.value();
         T effect = delay > 0 ? type.createDelayedEffect(duration, delay) : type.createImmediateEffect(duration);
-        map.replace(effect);
+        T existing = map.getEffect(type).orElse(null);
+        StatusEffectHelper.replaceEffect(map, entity, bodyPart, effect, existing);
     }
 
     private static int removeGlobalStatusEffect(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
@@ -164,7 +167,7 @@ public final class TarkovCraftCommand {
                     ContextKeys.LIVING_ENTITY, livingEntity,
                     MedicalSystemContextKeys.HEALTH_CONTAINER, container
             );
-            map.remove(reference.value(), context);
+            StatusEffectHelper.removeEffect(map, livingEntity, null, context, reference.value());
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
@@ -189,7 +192,7 @@ public final class TarkovCraftCommand {
                     MedicalSystemContextKeys.BODY_PART, bodyPart
             );
             StatusEffectMap map = bodyPart.getStatusEffects();
-            map.remove(reference.value(), context);
+            StatusEffectHelper.removeEffect(map, livingEntity, bodyPart, context, reference.value());
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;

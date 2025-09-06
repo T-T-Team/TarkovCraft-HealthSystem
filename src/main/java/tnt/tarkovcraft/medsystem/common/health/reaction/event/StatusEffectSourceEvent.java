@@ -2,9 +2,12 @@ package tnt.tarkovcraft.medsystem.common.health.reaction.event;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -30,7 +33,8 @@ public class StatusEffectSourceEvent implements HealthSourceEvent {
         HealthContainer definition = context.getOrThrow(MedicalSystemContextKeys.HEALTH_CONTAINER);
         BodyPart part = context.getOrThrow(MedicalSystemContextKeys.BODY_PART);
         StatusEffectMap map = type.isGlobalEffect() ? definition.getGlobalStatusEffects() : part.getStatusEffects();
-        map.addEffect(this.template.copy());
+        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+        StatusEffectHelper.addEffect(map, entity, part, this.template.copy());
     }
 
     @Override

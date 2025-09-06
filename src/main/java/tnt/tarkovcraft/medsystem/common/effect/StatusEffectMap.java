@@ -3,8 +3,14 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
+import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
@@ -55,7 +61,9 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
                 }
             }
         }
-        newEffects.forEach(this::addEffect);
+        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+        BodyPart bodyPart = context.getNullable(MedicalSystemContextKeys.BODY_PART);
+        newEffects.forEach(effect -> StatusEffectHelper.addEffect(this, entity, bodyPart, effect));
     }
 
     public <T extends StatusEffect> void addEffect(T effect) {
@@ -121,9 +129,12 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     }
 
     public void removeMatching(TagKey<StatusEffectType<?>> tag, Context context) {
+        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+        BodyPart bodyPart = context.getNullable(MedicalSystemContextKeys.BODY_PART);
         this.effects.entrySet().removeIf(entry -> {
             if (entry.getKey().is(tag)) {
                 entry.getValue().onRemoved(context);
+                NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, entry.getValue(), bodyPart));
                 return true;
             }
             return false;
