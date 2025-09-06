@@ -19,10 +19,7 @@ import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.effect.EffectType;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -75,11 +72,6 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
                 }
             }
             effects.addEffect(statusEffect);
-            if (this.delay > 0) {
-                effects.addEffect(type.createDelayedEffect(duration, this.delay));
-            } else {
-                effects.addEffect(type.createImmediateEffect(duration));
-            }
         }
     }
 
