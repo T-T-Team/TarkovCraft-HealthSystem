@@ -102,9 +102,8 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
             return this.recovery(duration.tickValue(), maxHealthMultiplier);
         }
 
-        public HealItemAttributes.Builder buildSurgeryAttributes() {
-            this.parent.deadLimbHealing = new DeadLimbHealing(this.healthAfterHeal, this.maxHealthMultiplier, this.minLimbHealth, this.recoveryTime, this.useTime);
-            return this.parent;
+        DeadLimbHealing buildSurgeryAttributes() {
+            return new DeadLimbHealing(this.healthAfterHeal, this.maxHealthMultiplier, this.minLimbHealth, this.recoveryTime, this.useTime);
         }
     }
 }

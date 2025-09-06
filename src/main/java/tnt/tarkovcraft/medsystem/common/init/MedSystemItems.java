@@ -16,16 +16,16 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> EMERGENCY_SURGERY_KIT = REGISTRY.registerItem(
             "emergency_surgery_kit",
             properties -> new HealingItem(
-                    properties.durability(5)
+                    properties.durability(10)
                             .setNoCombineRepair()
                             .component(DataComponents.BREAK_SOUND, null)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
-                                    .surgeryItem()
-                                        .useTime(Duration.seconds(15))
-                                        .recoverHealth(1.0F)
-                                        .minLimbHealth(1.0F)
-                                        .recovery(Duration.minutes(5), 0.7F)
-                                        .buildSurgeryAttributes()
+                                    .surgeryItem(builder -> builder
+                                            .useTime(Duration.seconds(15))
+                                            .recoverHealth(1.0F)
+                                            .minLimbHealth(1.0F)
+                                            .recovery(Duration.minutes(15), 0.7F)
+                                    )
                                     .build()
                             )
             )

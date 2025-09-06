@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, DeadLimbHealing deadLimbHealing,
                                  HealthRecovery health, List<EffectRecovery> recoveries, List<ConsumeEffect> effects) implements TooltipProvider {
@@ -146,8 +147,11 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             return this.setMinUseTime(minUseTime.tickValue());
         }
 
-        public DeadLimbHealing.SurgeryBuilder surgeryItem() {
-            return new DeadLimbHealing.SurgeryBuilder(this);
+        public Builder surgeryItem(UnaryOperator<DeadLimbHealing.SurgeryBuilder> builder) {
+            DeadLimbHealing.SurgeryBuilder surgeryBuilder = new DeadLimbHealing.SurgeryBuilder(this);
+            builder.apply(surgeryBuilder);
+            this.deadLimbHealing = surgeryBuilder.buildSurgeryAttributes();
+            return this;
         }
 
         public Builder healing(int duration, int count, float health) {
