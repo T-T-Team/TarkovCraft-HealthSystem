@@ -1,10 +1,13 @@
 package tnt.tarkovcraft.medsystem.common.health.reaction;
 
 import com.mojang.datafixers.Products;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.RandomSource;
+import tnt.tarkovcraft.core.common.data.number.NumberProvider;
+import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunction;
@@ -18,16 +21,16 @@ public class ChanceHealthEventSource implements HealthEventSource {
 
     public static final MapCodec<ChanceHealthEventSource> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, ChanceHealthEventSource::new));
 
-    private final float baseChance;
+    private final NumberProvider baseChance;
     private final List<ChanceFunction> functions;
 
-    public ChanceHealthEventSource(float baseChance, List<ChanceFunction> functions) {
-        this.baseChance = baseChance;
+    public ChanceHealthEventSource(Either<NumberProvider, Float> baseChance, List<ChanceFunction> functions) {
+        this.baseChance = NumberProviderType.resolveNoDuration(baseChance);
         this.functions = functions;
     }
 
     public float getChance(Context context) {
-        float result = this.baseChance;
+        float result = this.baseChance.floatValue(context);
         for (ChanceFunction function : this.functions) {
             result = function.apply(result, context);
         }
@@ -42,7 +45,7 @@ public class ChanceHealthEventSource implements HealthEventSource {
         }).orElse(false);
     }
 
-    public float getBaseChance() {
+    public NumberProvider getBaseChance() {
         return baseChance;
     }
 
@@ -55,9 +58,9 @@ public class ChanceHealthEventSource implements HealthEventSource {
         return MedSystemHealthReactions.CHANCE.get();
     }
 
-    public static <T extends ChanceHealthEventSource> Products.P2<RecordCodecBuilder.Mu<T>, Float, List<ChanceFunction>> common(RecordCodecBuilder.Instance<T> instance) {
+    public static <T extends ChanceHealthEventSource> Products.P2<RecordCodecBuilder.Mu<T>, Either<NumberProvider, Float>, List<ChanceFunction>> common(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(
-                Codec.FLOAT.fieldOf("chance").forGetter(ChanceHealthEventSource::getBaseChance),
+                NumberProviderType.complexCodecNoDuration(Codec.FLOAT).fieldOf("chance").forGetter(t -> Either.left(t.getBaseChance())),
                 ChanceFunctionType.CODEC.listOf().optionalFieldOf("chanceModifiers", Collections.emptyList()).forGetter(ChanceHealthEventSource::getFunctions)
         );
     }

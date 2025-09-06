@@ -25,7 +25,7 @@ public record ReactionDefinition(HealthEventSource reaction, List<HealthSourceEv
         MedSystemConfig config = MedicalSystem.getConfig();
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         boolean noEffects = entity instanceof Player player && (player.isCreative() || player.isSpectator());
-        if (config.enableHitEffects && this.reaction.canReact(context) && !noEffects) {
+        if (config.statusEffects.enableStatusEffects && this.reaction.canReact(context) && !noEffects) {
             this.responses.forEach(resp -> resp.onReactionPassed(reaction, context));
         }
     }

@@ -1,10 +1,12 @@
 package tnt.tarkovcraft.medsystem.common.health.reaction;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
+import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
@@ -22,7 +24,7 @@ public class DamageSourceHealthEventSource extends ChanceHealthEventSource {
 
     private final TagKey<DamageType> damageType;
 
-    public DamageSourceHealthEventSource(float baseChance, List<ChanceFunction> functions, TagKey<DamageType> damageType) {
+    public DamageSourceHealthEventSource(Either<NumberProvider, Float> baseChance, List<ChanceFunction> functions, TagKey<DamageType> damageType) {
         super(baseChance, functions);
         this.damageType = damageType;
     }

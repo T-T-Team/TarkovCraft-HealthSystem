@@ -12,7 +12,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:bleed_causing",
-            "chance": 0.025
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerBleedChance"
+            }
           },
           "events": {
             "type": "medsystem:weighted",
@@ -51,7 +54,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:bleed_causing",
-            "chance": 0.025
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerBleedChance"
+            }
           },
           "events": {
             "type": "medsystem:weighted",
@@ -101,7 +107,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:bleed_causing",
-            "chance": 0.025
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerBleedChance"
+            }
           },
           "events": {
             "type": "medsystem:weighted",
@@ -141,7 +150,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:bleed_causing",
-            "chance": 0.025
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerBleedChance"
+            }
           },
           "events": {
             "type": "medsystem:weighted",
@@ -173,7 +185,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:fracture_causing",
-            "chance": 0.03
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerFractureChance"
+            }
           },
           "events": {
             "type": "medsystem:effect",
@@ -195,7 +210,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:bleed_causing",
-            "chance": 0.025
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerBleedChance"
+            }
           },
           "events": {
             "type": "medsystem:weighted",
@@ -227,7 +245,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:fracture_causing",
-            "chance": 0.03
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerFractureChance"
+            }
           },
           "events": {
             "type": "medsystem:effect",
@@ -281,7 +302,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "minecraft:is_fall",
-            "chance": 0.035,
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerFractureFallChance"
+            },
             "chanceModifiers": [
               {
                 "type": "medsystem:fall_distance",
@@ -301,7 +325,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:bleed_causing",
-            "chance": 0.025
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerBleedChance"
+            }
           },
           "events": {
             "type": "medsystem:weighted",
@@ -333,7 +360,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:fracture_causing",
-            "chance": 0.03
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerFractureChance"
+            }
           },
           "events": {
             "type": "medsystem:effect",
@@ -387,7 +417,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "minecraft:is_fall",
-            "chance": 0.035,
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerFractureFallChance"
+            },
             "chanceModifiers": [
               {
                 "type": "medsystem:fall_distance",
@@ -407,7 +440,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:bleed_causing",
-            "chance": 0.025
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerBleedChance"
+            }
           },
           "events": {
             "type": "medsystem:weighted",
@@ -439,7 +475,10 @@
           "source": {
             "type": "medsystem:damage_source",
             "source": "medsystem:fracture_causing",
-            "chance": 0.03
+            "chance": {
+              "type": "tarkovcraft_core:config",
+              "location": "medsystem:statusEffects/playerFractureChance"
+            }
           },
           "events": {
             "type": "medsystem:effect",

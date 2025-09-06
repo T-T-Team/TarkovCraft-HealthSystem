@@ -2,10 +2,9 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
-import tnt.tarkovcraft.core.common.data.duration.Duration;
-import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
 
 import java.util.function.BiConsumer;
 
@@ -13,11 +12,10 @@ public final class VanillaItemComponentAssignments {
 
     public static void adjustItemData(BiConsumer<ItemLike, SideEffectHolder> registration) {
         MedicalSystem.LOGGER.debug(MedicalSystem.MARKER, "Applying hit effects to vanilla items");
-        TickValue effectDuration = Duration.minutes(2);
-        SideEffectHolder swords = SideEffectHolder.builder()
+        StatusEffectConfig config = MedicalSystem.getConfig().statusEffects;
+        int effectDuration = config.itemStatusEffectDuration;
+        SideEffectHolder swords = config.swordStatusEffects.apply(SideEffectHolder.builder(), effectDuration)
                 .title(SideEffectHolder.ITEM_TITLE)
-                .sideEffect(0.10F, effectDuration, MedSystemStatusEffects.LIGHT_BLEED)
-                .sideEffect(0.04F, effectDuration, MedSystemStatusEffects.HEAVY_BLEED)
                 .build();
         registration.accept(Items.WOODEN_SWORD, swords);
         registration.accept(Items.STONE_SWORD, swords);
@@ -26,11 +24,8 @@ public final class VanillaItemComponentAssignments {
         registration.accept(Items.DIAMOND_SWORD, swords);
         registration.accept(Items.NETHERITE_SWORD, swords);
 
-        SideEffectHolder axes = SideEffectHolder.builder()
+        SideEffectHolder axes = config.axeStatusEffects.apply(SideEffectHolder.builder(), effectDuration)
                 .title(SideEffectHolder.ITEM_TITLE)
-                .sideEffect(0.10F, effectDuration, MedSystemStatusEffects.LIGHT_BLEED)
-                .sideEffect(0.02F, effectDuration, MedSystemStatusEffects.HEAVY_BLEED)
-                .sideEffect(0.10F, effectDuration, MedSystemStatusEffects.FRACTURE)
                 .build();
         registration.accept(Items.WOODEN_AXE, axes);
         registration.accept(Items.STONE_AXE, axes);
@@ -39,10 +34,8 @@ public final class VanillaItemComponentAssignments {
         registration.accept(Items.DIAMOND_AXE, axes);
         registration.accept(Items.NETHERITE_AXE, axes);
 
-        SideEffectHolder blunt = SideEffectHolder.builder()
+        SideEffectHolder blunt = config.bluntStatusEffects.apply(SideEffectHolder.builder(), effectDuration)
                 .title(SideEffectHolder.ITEM_TITLE)
-                .infiniteSideEffect(0.10F, MedSystemStatusEffects.FRACTURE)
-                .sideEffect(0.05F, effectDuration, MedSystemStatusEffects.LIGHT_BLEED)
                 .build();
         registration.accept(Items.WOODEN_SHOVEL, blunt);
         registration.accept(Items.STONE_SHOVEL, blunt);

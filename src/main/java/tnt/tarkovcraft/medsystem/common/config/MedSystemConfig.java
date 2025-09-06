@@ -40,11 +40,6 @@ public final class MedSystemConfig {
     public float vitalBodyPartHealthTrigger = 0.75F;
 
     @Configurable
-    @Configurable.Comment("Enables hit effects such as bleeds, fractures and other effects")
-    @Configurable.Synchronized
-    public boolean enableHitEffects = true;
-
-    @Configurable
     @Configurable.Comment("Allows scaling of injury recovery status effects when getting the effect repeatedly")
     public boolean allowInjuryRecoveryScaling = true;
 
@@ -52,4 +47,7 @@ public final class MedSystemConfig {
     @Configurable.Comment("Vanilla tools will have chance to cause some negative effects such as bleeds or fractures")
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     public boolean addHitEffectsToVanillaItems = true;
+
+    @Configurable
+    public StatusEffectConfig statusEffects = new StatusEffectConfig();
 }

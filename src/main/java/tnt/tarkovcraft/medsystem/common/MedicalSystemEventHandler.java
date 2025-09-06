@@ -244,7 +244,7 @@ public final class MedicalSystemEventHandler {
     private void canSprint(StaminaEvent.CanSprint event) {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
-        if (config.enableHitEffects && HealthSystem.isMovementRestricted(entity) && !HealthSystem.hasPainRelief(entity)) {
+        if (config.statusEffects.enableStatusEffects && HealthSystem.isMovementRestricted(entity) && !HealthSystem.hasPainRelief(entity)) {
             event.setCanSprint(false);
         }
     }
@@ -255,7 +255,7 @@ public final class MedicalSystemEventHandler {
         Level level = entity.level();
         MedSystemConfig config = MedicalSystem.getConfig();
         long gametime = level.getGameTime();
-        if (config.enableHitEffects && gametime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
+        if (config.statusEffects.enableStatusEffects && gametime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
             DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
             entity.hurt(source, 0.25F);
@@ -266,7 +266,7 @@ public final class MedicalSystemEventHandler {
     private void afterJump(StaminaEvent.AfterJump event) {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
-        if (config.enableHitEffects && HealthSystem.isMovementRestricted(entity)) {
+        if (config.statusEffects.enableStatusEffects && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
             DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
             entity.hurt(source, 0.50F);
