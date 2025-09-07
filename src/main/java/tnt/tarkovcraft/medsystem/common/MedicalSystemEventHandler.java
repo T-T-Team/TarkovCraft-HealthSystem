@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -232,7 +233,7 @@ public final class MedicalSystemEventHandler {
                 MedicalSystemContextKeys.HEALTH_CONTAINER, container
         );
         effects.removeMatching(MedSystemTags.StatusEffects.OVERWEIGHT, context);
-        if (factor >= 1.5F) {
+        if (factor >= 1.0F) {
             StatusEffectHelper.addEffect(effects, entity, null, new MaxOverweightStatusEffect());
         } else if (factor > 0.0F) {
             StatusEffectHelper.addEffect(effects, entity, null, new OverweightStatusEffect());
@@ -295,7 +296,7 @@ public final class MedicalSystemEventHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     private void addItemstackTooltips(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
         Item.TooltipContext context = event.getContext();
