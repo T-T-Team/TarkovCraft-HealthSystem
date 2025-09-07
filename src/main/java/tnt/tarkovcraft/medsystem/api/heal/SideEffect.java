@@ -24,19 +24,17 @@ import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-public record SideEffect(float chance, int duration, int delay, Holder<StatusEffectType<?>> effect) implements TooltipProvider {
+public record SideEffect(float chance, int delay, StatusEffect template) implements TooltipProvider {
 
     public static final Codec<SideEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(t -> t.chance),
-            Codec.INT.optionalFieldOf("duration", 1200).forGetter(t -> t.duration),
             Codec.INT.optionalFieldOf("delay", 0).forGetter(t -> t.delay),
-            MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(t -> t.effect)
+            StatusEffectType.CODEC.fieldOf("template").forGetter(t -> t.template)
     ).apply(instance, SideEffect::new));
 
     public void apply(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
@@ -45,7 +43,8 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
 
     public void applyFromDamage(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable BodyPart part) {
         // Skip ignored effect body parts
-        StatusEffectType<?> type = this.effect.value();
+        StatusEffect statusEffect = this.template.copy();
+        StatusEffectType<?> type = statusEffect.getType();
         if (part != null && !type.isGlobalEffect()) {
             BodyPartGroup group = part.getGroup();
             if (type.isIgnoredBodyPart(group)) {
@@ -58,34 +57,37 @@ public record SideEffect(float chance, int duration, int delay, Holder<StatusEff
         float effectChance = chanceAttribute != null ? this.chance * AttributeSystem.getFloatValue(entity, chanceAttribute, 1.0F) : this.chance;
         if (source.nextFloat() < effectChance) {
             if (!type.isGlobalEffect() && part == null) {
-                MedicalSystem.LOGGER.error(MedicalSystem.MARKER, "Failed to apply side effect {} as effect is not set as global, but target body part was not provided", effect);
+                MedicalSystem.LOGGER.error(MedicalSystem.MARKER, "Failed to apply side effect {} as effect is not set as global, but target body part was not provided", type);
                 return;
             }
             Holder<Attribute> durationAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_DURATION, MedSystemAttributes.NEGATIVE_EFFECT_DURATION, null);
-            int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.duration) : this.duration;
+            int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.template.getDuration()) : this.template.getDuration();
             StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-            StatusEffect statusEffect = this.delay > 0 ? type.createDelayedEffect(duration, delay) : type.createImmediateEffect(duration);
-            if (damageSource != null) {
-                Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
-                if (cause != null) {
-                    statusEffect.setCausingEntity(cause.getUUID());
+            if (duration != 0) {
+                statusEffect.setDuration(duration);
+                statusEffect.setDelay(this.delay);
+                if (damageSource != null) {
+                    Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
+                    if (cause != null) {
+                        statusEffect.setCausingEntity(cause.getUUID());
+                    }
                 }
+                StatusEffectHelper.addEffect(effects, entity, part, statusEffect);
             }
-            StatusEffectHelper.addEffect(effects, entity, part, statusEffect);
         }
     }
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
-        StatusEffectType<?> type = effect.value();
+        StatusEffectType<?> type = this.template.getType();
         EffectType effectType = type.getEffectType();
         MutableComponent component = Component.literal("> ");
         if (chance < 1.0F) {
             component.append(String.format(Locale.ROOT, "%.1f%%", chance * 100) + " ");
         }
         component.append(type.getDisplayName());
-        if (duration > 0) {
-            component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(duration, DurationFormats.SHORT_NAME)));
+        if (template.getDuration() > 0) {
+            component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(template.getDuration(), DurationFormats.SHORT_NAME)));
         }
         if (delay > 0) {
             component.append(" / ")

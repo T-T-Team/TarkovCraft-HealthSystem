@@ -3,7 +3,9 @@ package tnt.tarkovcraft.medsystem.common.config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdateRestrictions;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
+import tnt.tarkovcraft.medsystem.common.effect.FractureStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.HeavyBleedStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.LightBleedStatusEffect;
 
 public class ItemStatusEffectConfig {
 
@@ -39,13 +41,13 @@ public class ItemStatusEffectConfig {
 
     public SideEffectHolder.Builder apply(SideEffectHolder.Builder builder, int duration) {
         if (this.lightBleedChance > 0.0F) {
-            builder.sideEffect(this.lightBleedChance, duration, MedSystemStatusEffects.LIGHT_BLEED);
+            builder.immediate(this.lightBleedChance, duration, LightBleedStatusEffect.createTemplate());
         }
         if (this.heavyBleedChance > 0.0F) {
-            builder.sideEffect(this.heavyBleedChance, duration, MedSystemStatusEffects.HEAVY_BLEED);
+            builder.immediate(this.heavyBleedChance, duration, HeavyBleedStatusEffect.createTemplate());
         }
         if (this.fractureChance > 0.0F) {
-            builder.infiniteSideEffect(this.fractureChance, MedSystemStatusEffects.FRACTURE);
+            builder.infinite(this.fractureChance, FractureStatusEffect.createTemplate());
         }
         return builder;
     }

@@ -41,6 +41,10 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         this.reduction = reduction;
     }
 
+    public static InjuryRecoveryStatusEffect createTemplate(int reduction) {
+        return new InjuryRecoveryStatusEffect(-1, 0, reduction);
+    }
+
     @Override
     public void apply(Context context) {
         if (this.reduction < 1)

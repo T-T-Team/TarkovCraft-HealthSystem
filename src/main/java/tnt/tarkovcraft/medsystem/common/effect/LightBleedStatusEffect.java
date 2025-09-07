@@ -23,6 +23,10 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
         super(duration, delay);
     }
 
+    public static LightBleedStatusEffect createTemplate() {
+        return new LightBleedStatusEffect(-1, 0);
+    }
+
     @Override
     public long getDamageInterval() {
         return 60L;

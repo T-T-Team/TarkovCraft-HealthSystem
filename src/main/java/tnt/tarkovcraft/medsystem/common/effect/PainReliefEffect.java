@@ -23,6 +23,10 @@ public class PainReliefEffect extends AttributeModifyingStatusEffect {
         super(duration, delay);
     }
 
+    public static PainReliefEffect createTemplate() {
+        return new PainReliefEffect(-1, 0);
+    }
+
     @Override
     public UUID getUniqueModifierUUID() {
         return PAIN_RELIEF_MODIFIER_ID;

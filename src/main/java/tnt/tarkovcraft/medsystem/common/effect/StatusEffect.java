@@ -60,6 +60,11 @@ public abstract class StatusEffect {
         this.duration = duration;
     }
 
+    public final StatusEffect infinite() {
+        this.setDuration(-1);
+        return this;
+    }
+
     public final int getDelay() {
         return this.delay;
     }

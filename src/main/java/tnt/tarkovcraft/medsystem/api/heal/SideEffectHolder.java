@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -19,7 +18,7 @@ import net.minecraft.world.item.component.TooltipProvider;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
@@ -103,33 +102,76 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
             return this;
         }
 
-        public Builder sideEffect(float chance, int duration, int delay, Holder<StatusEffectType<?>> effect) {
-            this.sideEffects.add(new SideEffect(chance, duration, delay, effect));
+        public Builder delayed(float chance, int duration, int delay, StatusEffect effect) {
+            StatusEffect statusEffect = effect.copy();
+            statusEffect.setDuration(duration);
+            statusEffect.setDelay(delay);
+            this.sideEffects.add(new SideEffect(chance, delay, statusEffect));
             return this;
         }
 
-        public Builder sideEffect(float chance, TickValue duration, int delay, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration.tickValue(), delay, effect);
+        public Builder delayed(float chance, TickValue duration, int delay, StatusEffect effect) {
+            return this.delayed(chance, duration.tickValue(), delay, effect);
         }
 
-        public Builder sideEffect(float chance, int duration, TickValue delay, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration, delay.tickValue(), effect);
+        public Builder delayed(float chance, int duration, TickValue delay, StatusEffect effect) {
+            return this.delayed(chance, duration, delay.tickValue(), effect);
         }
 
-        public Builder sideEffect(float chance, TickValue duration, TickValue delay, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration.tickValue(), delay.tickValue(), effect);
+        public Builder delayed(float chance, TickValue duration, TickValue delay, StatusEffect effect) {
+            return this.delayed(chance, duration.tickValue(), delay.tickValue(), effect);
         }
 
-        public Builder sideEffect(float chance, int duration, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration, 0, effect);
+        public Builder immediate(float chance, int duration, StatusEffect effect) {
+            return this.delayed(chance, duration, 0, effect);
         }
 
-        public Builder sideEffect(float chance, TickValue duration, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, duration.tickValue(), effect);
+        public Builder immediate(float chance, TickValue duration, StatusEffect effect) {
+            return this.immediate(chance, duration.tickValue(), effect);
         }
 
-        public Builder infiniteSideEffect(float chance, Holder<StatusEffectType<?>> effect) {
-            return this.sideEffect(chance, -1, effect);
+        public Builder delayed(TickValue duration, TickValue delay, StatusEffect effect) {
+            return this.delayed(1.0F, duration.tickValue(), delay.tickValue(), effect);
+        }
+
+        public Builder delayed(int duration, TickValue delay, StatusEffect effect) {
+            return this.delayed(1.0F, duration, delay.tickValue(), effect);
+        }
+
+        public Builder delayed(TickValue duration, int delay, StatusEffect effect) {
+            return this.delayed(1.0F, duration.tickValue(), delay, effect);
+        }
+
+        public Builder delayed(int duration, int delay, StatusEffect effect) {
+            return this.delayed(1.0F, duration, delay, effect);
+        }
+
+        public Builder immediate(TickValue duration, StatusEffect effect) {
+            return this.immediate(1.0F, duration.tickValue(), effect);
+        }
+
+        public Builder infinite(float chance, StatusEffect effect) {
+            return this.immediate(chance, -1, effect);
+        }
+
+        public Builder infinite(StatusEffect effect) {
+            return this.immediate(1.0F, -1, effect);
+        }
+
+        public Builder infiniteDelayed(float chance, int delay, StatusEffect effect) {
+            return this.delayed(chance, -1, delay, effect);
+        }
+
+        public Builder infiniteDelayed(float chance, TickValue delay, StatusEffect effect) {
+            return this.infiniteDelayed(chance, delay.tickValue(), effect);
+        }
+
+        public Builder infiniteDelayed(TickValue delay, StatusEffect effect) {
+            return this.infiniteDelayed(delay.tickValue(), effect);
+        }
+
+        public Builder infiniteDelayed(int delay, StatusEffect effect) {
+            return this.delayed(1.0F, -1, delay, effect);
         }
 
         public SideEffectHolder build() {

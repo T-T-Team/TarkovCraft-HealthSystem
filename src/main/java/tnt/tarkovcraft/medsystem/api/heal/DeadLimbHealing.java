@@ -43,7 +43,7 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
             if (durationScale > 0.0F && reductionScale > 0.0F) {
                 int reduction = Mth.ceil(part.getMaxHealth() * (1.0F - this.maxHealthMultiplier) * reductionScale);
                 int duration = Mth.ceil(Duration.minutes(10).tickValue() * reduction);
-                InjuryRecoveryStatusEffect effect = new InjuryRecoveryStatusEffect(duration, reduction);
+                InjuryRecoveryStatusEffect effect = new InjuryRecoveryStatusEffect(duration, reduction); // TODO check
                 StatusEffectHelper.addEffect(part.getStatusEffects(), entity, part, effect);
             }
         }

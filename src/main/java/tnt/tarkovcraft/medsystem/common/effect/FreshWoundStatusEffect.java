@@ -31,6 +31,10 @@ public class FreshWoundStatusEffect extends StatusEffect {
         this.bleedChance = bleedChance;
     }
 
+    public static FreshWoundStatusEffect createTemplate() {
+        return new FreshWoundStatusEffect(-1, 0);
+    }
+
     @Override
     public void apply(Context context) {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);

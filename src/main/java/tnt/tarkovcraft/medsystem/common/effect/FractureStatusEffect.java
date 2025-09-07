@@ -24,6 +24,10 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
         super(duration, delay);
     }
 
+    public static FractureStatusEffect createTemplate() {
+        return new FractureStatusEffect(-1, 0);
+    }
+
     @Override
     public StatusEffect copy() {
         return new FractureStatusEffect(this.getDuration(), this.getDelay());

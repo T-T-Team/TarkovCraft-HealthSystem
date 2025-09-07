@@ -17,6 +17,10 @@ public class OverweightStatusEffect extends StatusEffect {
         super(-1, 0);
     }
 
+    public static OverweightStatusEffect createTemplate() {
+        return new OverweightStatusEffect();
+    }
+
     @Override
     public void apply(Context context) {
     }
