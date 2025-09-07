@@ -3,11 +3,15 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +43,26 @@ public abstract class StatusEffect {
     }
 
     public void addAdditionalInfo(Consumer<Component> tooltip) {}
+
+    /**
+     * Allows to override SideEffect tooltips
+     * @return whether custom tooltip should be used
+     * @see StatusEffect#addCustomTooltip(Item.TooltipContext, Consumer, TooltipFlag, DataComponentGetter)
+     */
+    public boolean hasCustomTooltip() {
+        return false;
+    }
+
+    /**
+     * Adds custom tooltip for SideEffect descriptions
+     * @param context Tooltip context
+     * @param tooltip Tooltip registration
+     * @param flag Tooltip mode
+     * @param components DataComponent holder
+     */
+    public void addCustomTooltip(SideEffect effect, Item.TooltipContext context, Consumer<Component> tooltip, TooltipFlag flag, DataComponentGetter components) {
+
+    }
 
     public final Optional<Entity> getCausingEntity(ServerLevel level) {
         UUID owner = this.getCausingEntity();

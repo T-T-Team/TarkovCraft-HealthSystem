@@ -43,8 +43,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
 
     public void applyFromDamage(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable BodyPart part) {
         // Skip ignored effect body parts
-        StatusEffect statusEffect = this.template.copy();
-        StatusEffectType<?> type = statusEffect.getType();
+        StatusEffectType<?> type = this.template.getType();
         if (part != null && !type.isGlobalEffect()) {
             BodyPartGroup group = part.getGroup();
             if (type.isIgnoredBodyPart(group)) {
@@ -64,6 +63,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
             int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.template.getDuration()) : this.template.getDuration();
             StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
             if (duration != 0) {
+                StatusEffect statusEffect = this.template.copy();
                 statusEffect.setDuration(duration);
                 statusEffect.setDelay(this.delay);
                 if (damageSource != null) {
@@ -79,20 +79,28 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
-        StatusEffectType<?> type = this.template.getType();
-        EffectType effectType = type.getEffectType();
+        if (this.template.hasCustomTooltip()) {
+            this.template.addCustomTooltip(this, context, tooltipAdder, flag, componentGetter);
+        } else {
+            StatusEffectType<?> type = this.template.getType();
+            EffectType effectType = type.getEffectType();
+            tooltipAdder.accept(this.createDescriptionComponent(effectType, type.getDisplayName(), this.chance, this.template.getDuration(), this.delay));
+        }
+    }
+
+    public Component createDescriptionComponent(EffectType type, Component name, float chance, int duration, int delay) {
         MutableComponent component = Component.literal("> ");
         if (chance < 1.0F) {
             component.append(String.format(Locale.ROOT, "%.1f%%", chance * 100) + " ");
         }
-        component.append(type.getDisplayName());
-        if (template.getDuration() > 0) {
+        component.append(name);
+        if (duration > 0) {
             component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(template.getDuration(), DurationFormats.SHORT_NAME)));
         }
         if (delay > 0) {
             component.append(" / ")
                     .append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.delay", Duration.format(delay, DurationFormats.SHORT_NAME)));
         }
-        tooltipAdder.accept(component.withStyle(effectType));
+        return component.withStyle(type);
     }
 }
