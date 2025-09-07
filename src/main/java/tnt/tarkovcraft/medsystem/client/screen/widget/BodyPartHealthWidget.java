@@ -146,7 +146,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
                     List<Component> tooltip = new ArrayList<>();
                     tooltip.add(type.getDisplayName().copy().withStyle(type.getEffectType()));
                     effect.addAdditionalInfo(tooltip::add);
-                    if (!effect.isInfinite()) {
+                    if (effect.hasVisibleDuration() && !effect.isInfinite()) {
                         DurationFormatSettings settings = new DurationFormatSettings();
                         settings.setIncludeZeroValues(true);
                         settings.setUnits(Arrays.asList(DurationUnit.HOURS, DurationUnit.MINUTES, DurationUnit.SECONDS));

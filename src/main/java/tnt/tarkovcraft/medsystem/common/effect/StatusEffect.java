@@ -47,10 +47,14 @@ public abstract class StatusEffect {
     /**
      * Allows to override SideEffect tooltips
      * @return whether custom tooltip should be used
-     * @see StatusEffect#addCustomTooltip(Item.TooltipContext, Consumer, TooltipFlag, DataComponentGetter)
+     * @see StatusEffect#addCustomTooltip(SideEffect, Item.TooltipContext, Consumer, TooltipFlag, DataComponentGetter)
      */
     public boolean hasCustomTooltip() {
         return false;
+    }
+
+    public boolean hasVisibleDuration() {
+        return true;
     }
 
     /**

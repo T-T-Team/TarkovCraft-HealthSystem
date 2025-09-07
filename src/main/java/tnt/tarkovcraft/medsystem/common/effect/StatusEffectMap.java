@@ -15,7 +15,9 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unchecked")
@@ -29,11 +31,11 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     private final Map<StatusEffectType<?>, StatusEffect> effects;
 
     public StatusEffectMap() {
-        this.effects = new HashMap<>();
+        this.effects = new LinkedHashMap<>();
     }
 
     private StatusEffectMap(Map<StatusEffectType<?>, StatusEffect> effects) {
-        this.effects = new HashMap<>(effects);
+        this.effects = new LinkedHashMap<>(effects);
     }
 
     public void tick(Context context) {
@@ -147,6 +149,28 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
 
     public Stream<StatusEffect> getEffectsStream() {
         return this.listEffects().stream();
+    }
+
+    public StatusEffectMap copy() {
+        Map<StatusEffectType<?>, StatusEffect> instances = this.getEffectsStream()
+                .map(StatusEffect::copy).collect(Collectors.toMap(
+                        StatusEffect::getType,
+                        Function.identity(),
+                        (e1, e2) -> ((StatusEffectType<StatusEffect>) e1.getType()).merge(e1, e2)
+                ));
+        return new StatusEffectMap(instances);
+    }
+
+    public void importAndMerge(StatusEffectMap other) {
+        Map<StatusEffectType<?>, StatusEffect> merged = Stream.concat(this.getEffectsStream(), other.getEffectsStream())
+                .collect(Collectors.toMap(
+                        StatusEffect::getType,
+                        Function.identity(),
+                        (e1, e2) -> ((StatusEffectType<StatusEffect>) e1.getType()).merge(e1, e2),
+                        LinkedHashMap::new
+                ));
+        this.effects.clear();
+        this.effects.putAll(merged);
     }
 
     @Override
