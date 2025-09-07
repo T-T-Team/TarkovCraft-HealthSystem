@@ -28,7 +28,7 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
 
     public static final Codec<DeadLimbHealing> CODEC = RecordCodecBuilder.create(instance -> instance.group(ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("healthAfterHeal", 1.0F).forGetter(DeadLimbHealing::healthAfterHeal), ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("maxHealthMultiplier", 1.0F).forGetter(DeadLimbHealing::maxHealthMultiplier), Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("minLimbHealth", 0.0F).forGetter(DeadLimbHealing::minLimbHealth), Codecs.NON_NEGATIVE_INT.optionalFieldOf("recoveryTime", 0).forGetter(DeadLimbHealing::recoveryTime), Codecs.NON_NEGATIVE_INT.fieldOf("useTime").forGetter(DeadLimbHealing::useTime)).apply(instance, DeadLimbHealing::new));
 
-    public boolean canHeal(LivingEntity entity, HealthContainer container) {
+    public boolean canHeal(HealthContainer container) {
         return container.getBodyPartStream().anyMatch(part -> part.isDead() && part.getMaxHealth() >= this.minLimbHealth);
     }
 
@@ -43,7 +43,8 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
             if (durationScale > 0.0F && reductionScale > 0.0F) {
                 int reduction = Mth.ceil(part.getMaxHealth() * (1.0F - this.maxHealthMultiplier) * reductionScale);
                 int duration = Mth.ceil(Duration.minutes(10).tickValue() * reduction);
-                InjuryRecoveryStatusEffect effect = new InjuryRecoveryStatusEffect(duration, reduction); // TODO check
+                InjuryRecoveryStatusEffect effect = InjuryRecoveryStatusEffect.createTemplate(reduction);
+                effect.setDuration(duration);
                 StatusEffectHelper.addEffect(part.getStatusEffects(), entity, part, effect);
             }
         }
@@ -62,16 +63,11 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
 
     public static class SurgeryBuilder {
 
-        private final HealItemAttributes.Builder parent;
         private float healthAfterHeal = 1.0F;
         private float maxHealthMultiplier = 1.0F;
         private float minLimbHealth = 0.0F;
         private int recoveryTime = 0;
         private int useTime = 100;
-
-        SurgeryBuilder(HealItemAttributes.Builder parent) {
-            this.parent = parent;
-        }
 
         public SurgeryBuilder useTime(int useTime) {
             this.useTime = useTime;

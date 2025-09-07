@@ -71,7 +71,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
                 return true;
             }
         }
-        if (this.canHealDeadLimbs() && this.deadLimbHealing.canHeal(entity, container)) {
+        if (this.canHealDeadLimbs() && this.deadLimbHealing.canHeal(container)) {
             return true;
         }
         return this.health != null && entity.getHealth() < entity.getMaxHealth();
@@ -148,7 +148,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         }
 
         public Builder surgeryItem(UnaryOperator<DeadLimbHealing.SurgeryBuilder> builder) {
-            DeadLimbHealing.SurgeryBuilder surgeryBuilder = new DeadLimbHealing.SurgeryBuilder(this);
+            DeadLimbHealing.SurgeryBuilder surgeryBuilder = new DeadLimbHealing.SurgeryBuilder();
             builder.apply(surgeryBuilder);
             this.deadLimbHealing = surgeryBuilder.buildSurgeryAttributes();
             return this;
