@@ -6,6 +6,8 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 
+import java.util.Collections;
+
 public final class MedSystemStatusEffects {
 
     public static final DeferredRegister<StatusEffectType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.MOD_ID);
@@ -58,6 +60,27 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .setGlobal()
             .combineEffects((a, b) -> a)
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> POSITIVE_EFFECTS_GROUP = REGISTRY.register("positive_effects_group", key -> StatusEffectType.builder(key, (duration, delay) -> new PositiveEffectsGroup(Collections.emptyList()))
+            .persist(PositiveEffectsGroup.CODEC)
+            .type(EffectType.POSITIVE)
+            .setGlobal()
+            .combineEffects(GroupStatusEffect::merge)
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> NEUTRAL_EFFECTS_GROUP = REGISTRY.register("neutral_effects_group", key -> StatusEffectType.builder(key, (duration, delay) -> new NeutralEffectsGroup(Collections.emptyList()))
+            .persist(NeutralEffectsGroup.CODEC)
+            .type(EffectType.NEUTRAL)
+            .setGlobal()
+            .combineEffects(GroupStatusEffect::merge)
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> NEGATIVE_EFFECTS_GROUP = REGISTRY.register("negative_effects_group", key -> StatusEffectType.builder(key, (duration, delay) -> new NegativeEffectsGroup(Collections.emptyList()))
+            .persist(NegativeEffectsGroup.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .combineEffects(GroupStatusEffect::merge)
             .build()
     );
 }

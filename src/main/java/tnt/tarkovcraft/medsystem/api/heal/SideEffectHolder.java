@@ -18,7 +18,11 @@ import net.minecraft.world.item.component.TooltipProvider;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.effect.NegativeEffectsGroup;
+import tnt.tarkovcraft.medsystem.common.effect.NeutralEffectsGroup;
+import tnt.tarkovcraft.medsystem.common.effect.PositiveEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupHolder;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
@@ -172,6 +176,18 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
 
         public Builder infiniteDelayed(int delay, StatusEffect effect) {
             return this.delayed(1.0F, -1, delay, effect);
+        }
+
+        public Builder positiveGroup(Consumer<EffectGroupHolder.Factory> builder) {
+            return this.infinite(PositiveEffectsGroup.createTemplate(builder));
+        }
+
+        public Builder neutralGroup(Consumer<EffectGroupHolder.Factory> builder) {
+            return this.infinite(NeutralEffectsGroup.createTemplate(builder));
+        }
+
+        public Builder negativeGroup(Consumer<EffectGroupHolder.Factory> builder) {
+            return this.infinite(NegativeEffectsGroup.createTemplate(builder));
         }
 
         public SideEffectHolder build() {

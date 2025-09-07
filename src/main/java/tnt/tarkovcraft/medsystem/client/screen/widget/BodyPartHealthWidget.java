@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.client.screen.widget;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -11,21 +10,17 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
-import tnt.tarkovcraft.core.common.data.duration.Duration;
-import tnt.tarkovcraft.core.common.data.duration.DurationFormatSettings;
-import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
-import tnt.tarkovcraft.core.common.data.duration.DurationUnit;
 import tnt.tarkovcraft.core.util.helper.MathHelper;
 import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
+import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -132,10 +127,13 @@ public class BodyPartHealthWidget extends AbstractWidget {
         graphics.fillGradient(left, this.getY() + this.frameSize + 14, left + (int) ((right - left) * f), this.getY() + this.frameSize + 16, color, secondaryColor);
         // Status effects - we need 14px for render (12scale+2border) + 17 for health bar offset + 2xFrameSize
         if (this.height >= (19 + this.effectScale + this.frameSize * 2) && this.effects != null && !this.effects.isEmpty()) {
+            List<StatusEffect> visibleEffects = this.effects.stream().filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.UI)).toList();
+            if (visibleEffects.isEmpty())
+                return;
             int bounds = this.width - this.frameSize - 2;
-            int maxEffects = Math.min(this.effects.size(), bounds / this.effectScale);
+            int maxEffects = Math.min(visibleEffects.size(), bounds / this.effectScale);
             for (int i = 0; i < maxEffects; i++) {
-                StatusEffect effect = this.effects.get(i);
+                StatusEffect effect = visibleEffects.get(i);
                 StatusEffectType<?> type = effect.getType();
                 int effectX = this.getX() + this.frameSize + 1 + i * this.effectScale;
                 int effectY = this.getBottom() - this.frameSize - 1 - this.effectScale;
@@ -147,10 +145,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
                     tooltip.add(type.getDisplayName().copy().withStyle(type.getEffectType()));
                     effect.addAdditionalInfo(tooltip::add);
                     if (effect.hasVisibleDuration() && !effect.isInfinite()) {
-                        DurationFormatSettings settings = new DurationFormatSettings();
-                        settings.setIncludeZeroValues(true);
-                        settings.setUnits(Arrays.asList(DurationUnit.HOURS, DurationUnit.MINUTES, DurationUnit.SECONDS));
-                        tooltip.add(Duration.format(effect.getDuration(), settings, DurationFormats.TIME).copy().withStyle(ChatFormatting.DARK_GRAY));
+                        tooltip.add(StatusEffect.getDurationLabel(effect.getDuration()));
                     }
                     graphics.setTooltipForNextFrame(this.font, tooltip, Optional.empty(), mouseX, mouseY);
                 }

@@ -3,22 +3,22 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.component.DataComponentGetter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.TooltipFlag;
-import tnt.tarkovcraft.core.common.data.duration.TickValue;
+import tnt.tarkovcraft.core.common.data.duration.*;
 import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public abstract class StatusEffect {
+
+    public static final DurationFormatSettings DURATION_SETTINGS = new DurationFormatSettings();
 
     private int duration;
     private int delay;
@@ -47,7 +47,7 @@ public abstract class StatusEffect {
     /**
      * Allows to override SideEffect tooltips
      * @return whether custom tooltip should be used
-     * @see StatusEffect#addCustomTooltip(SideEffect, Item.TooltipContext, Consumer, TooltipFlag, DataComponentGetter)
+     * @see StatusEffect#addCustomTooltip(Consumer)
      */
     public boolean hasCustomTooltip() {
         return false;
@@ -59,13 +59,15 @@ public abstract class StatusEffect {
 
     /**
      * Adds custom tooltip for SideEffect descriptions
-     * @param context Tooltip context
+     *
      * @param tooltip Tooltip registration
-     * @param flag Tooltip mode
-     * @param components DataComponent holder
      */
-    public void addCustomTooltip(SideEffect effect, Item.TooltipContext context, Consumer<Component> tooltip, TooltipFlag flag, DataComponentGetter components) {
+    public void addCustomTooltip(Consumer<Component> tooltip) {
 
+    }
+
+    public boolean isVisible() {
+        return true;
     }
 
     public final Optional<Entity> getCausingEntity(ServerLevel level) {
@@ -148,5 +150,18 @@ public abstract class StatusEffect {
         int duration = Math.max(a.getDuration(), b.getDuration());
         int delay = Math.min(a.getDelay(), b.getDelay());
         return effect.apply(duration, delay);
+    }
+
+    public static Component getDurationLabel(int duration) {
+        return getDurationLabel(duration, ChatFormatting.DARK_GRAY);
+    }
+
+    public static Component getDurationLabel(int duration, ChatFormatting color) {
+        return Duration.format(duration, DURATION_SETTINGS, DurationFormats.TIME).copy().withStyle(color);
+    }
+
+    static {
+        DURATION_SETTINGS.setUnits(Arrays.asList(DurationUnit.HOURS, DurationUnit.MINUTES, DurationUnit.SECONDS));
+        DURATION_SETTINGS.setIncludeZeroValues(true);
     }
 }

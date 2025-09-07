@@ -107,6 +107,10 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.ignoredBodyParts.contains(group);
     }
 
+    public static boolean isVisible(StatusEffect effect, EffectVisibility ctx) {
+        return effect.isActive() && effect.isVisible() && effect.getType().getVisibility().isVisibleInMode(ctx);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof StatusEffectType<?> that)) return false;

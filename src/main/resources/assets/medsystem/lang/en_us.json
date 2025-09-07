@@ -65,6 +65,9 @@
   "status_effect.medsystem.overweight.info": "You are carrying too much weight. Your movement speed is slightly reduced.",
   "status_effect.medsystem.max_overweight": "Overweight",
   "status_effect.medsystem.max_overweight.info": "You are extremely overloaded. Your movement speed is heavily reduced.",
+  "status_effect.medsystem.positive_effects_group": "Positive effects",
+  "status_effect.medsystem.neutral_effects_group": "Neutral effects",
+  "status_effect.medsystem.negative_effects_group": "Negative effects",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",
@@ -96,6 +99,8 @@
   "screen.medsystem.select_body_part.text.status_effects": "Status effects:",
 
   "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation",
+  "label.medsystem.health_recovery": "Health recovery (%s/s)",
+  "label.medsystem.health_loss": "Health loss (%s/s)",
 
   "death.attack.medsystem.bleed": "%s has bled out",
   "death.attack.medsystem.bleed.player": "%s has bled out while fighting %s",

@@ -12,6 +12,7 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -62,7 +63,7 @@ public class HealthScreen extends CharacterSubScreen {
                         stream
                 );
             }
-            List<StatusEffect> effects = stream.filter(ef -> ef.isActive() && ef.getType().getVisibility().isVisibleInMode(EffectVisibility.UI))
+            List<StatusEffect> effects = stream.filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
                     .toList();
             int healthWidth = 80;
             int healthHeight = effects.isEmpty() ? 20 : 33;

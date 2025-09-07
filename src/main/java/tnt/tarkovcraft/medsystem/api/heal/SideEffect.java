@@ -51,6 +51,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
             }
         }
 
+        // TODO Negative effect chance reduction applies to even 100% chance negative effects, maybe it should be updated
         RandomSource source = entity.getRandom();
         Holder<Attribute> chanceAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_CHANCE, MedSystemAttributes.NEGATIVE_EFFECT_CHANCE, null);
         float effectChance = chanceAttribute != null ? this.chance * AttributeSystem.getFloatValue(entity, chanceAttribute, 1.0F) : this.chance;
@@ -59,43 +60,44 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
                 MedicalSystem.LOGGER.error(MedicalSystem.MARKER, "Failed to apply side effect {} as effect is not set as global, but target body part was not provided", type);
                 return;
             }
-            Holder<Attribute> durationAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_DURATION, MedSystemAttributes.NEGATIVE_EFFECT_DURATION, null);
-            int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.template.getDuration()) : this.template.getDuration();
             StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-            if (duration != 0) {
-                StatusEffect statusEffect = this.template.copy();
+            StatusEffect statusEffect = this.template.copy();
+            if (!this.template.isInfinite()) {
+                Holder<Attribute> durationAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_DURATION, MedSystemAttributes.NEGATIVE_EFFECT_DURATION, null);
+                int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.template.getDuration()) : this.template.getDuration();
                 statusEffect.setDuration(duration);
-                statusEffect.setDelay(this.delay);
-                if (damageSource != null) {
-                    Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
-                    if (cause != null) {
-                        statusEffect.setCausingEntity(cause.getUUID());
-                    }
-                }
-                StatusEffectHelper.addEffect(effects, entity, part, statusEffect);
             }
+
+            statusEffect.setDelay(this.delay);
+            if (damageSource != null) {
+                Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
+                if (cause != null) {
+                    statusEffect.setCausingEntity(cause.getUUID());
+                }
+            }
+            StatusEffectHelper.addEffect(effects, entity, part, statusEffect);
         }
     }
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         if (this.template.hasCustomTooltip()) {
-            this.template.addCustomTooltip(this, context, tooltipAdder, flag, componentGetter);
+            this.template.addCustomTooltip(tooltipAdder);
         } else {
             StatusEffectType<?> type = this.template.getType();
             EffectType effectType = type.getEffectType();
-            tooltipAdder.accept(this.createDescriptionComponent(effectType, type.getDisplayName(), this.chance, this.template.getDuration(), this.delay));
+            tooltipAdder.accept(createDescriptionComponent(effectType, type.getDisplayName(), this.chance, this.template.getDuration(), this.delay));
         }
     }
 
-    public Component createDescriptionComponent(EffectType type, Component name, float chance, int duration, int delay) {
+    public static Component createDescriptionComponent(EffectType type, Component name, float chance, int duration, int delay) {
         MutableComponent component = Component.literal("> ");
         if (chance < 1.0F) {
             component.append(String.format(Locale.ROOT, "%.1f%%", chance * 100) + " ");
         }
         component.append(name);
         if (duration > 0) {
-            component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(template.getDuration(), DurationFormats.SHORT_NAME)));
+            component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(duration, DurationFormats.SHORT_NAME)));
         }
         if (delay > 0) {
             component.append(" / ")

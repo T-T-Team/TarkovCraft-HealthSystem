@@ -47,6 +47,7 @@ public final class MedicalSystem {
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
 
+        MedSystemAttributes.REGISTRY.register(modEventBus);
         MedSystemItems.REGISTRY.register(modEventBus);
         MedSystemDataAttachments.REGISTRY.register(modEventBus);
         MedSystemTransformConditions.REGISTRY.register(modEventBus);
@@ -54,12 +55,12 @@ public final class MedicalSystem {
         MedSystemItemComponents.REGISTRY.register(modEventBus);
         MedSystemStats.REGISTRY.register(modEventBus);
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
-        MedSystemAttributes.REGISTRY.register(modEventBus);
         MedSystemStatusEffects.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
         MedSystemChanceFunctions.REGISTRY.register(modEventBus);
         MedSystemHealthReactionResponses.REGISTRY.register(modEventBus);
         MedSystemHealthReactions.REGISTRY.register(modEventBus);
+        MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -73,6 +74,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.HEALTH_REACTION);
         event.register(MedSystemRegistries.HEALTH_REACTION_RESPONSE);
         event.register(MedSystemRegistries.CHANCE_FUNCTION);
+        event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
     }
 
     private void addReloadListeners(AddServerReloadListenersEvent event) {

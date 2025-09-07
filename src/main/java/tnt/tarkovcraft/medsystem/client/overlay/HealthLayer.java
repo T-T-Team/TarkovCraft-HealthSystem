@@ -71,7 +71,7 @@ public class HealthLayer implements GuiLayer {
             RenderUtils.fill(graphics, pos.x + 2, pos.y + 2, pos.x + pos.z - 2, pos.y + pos.w - 2, color);
         }
 
-        Stream<StatusEffect> effectStream = container.getStatusEffectStream().filter(effect -> effect.isActive() && effect.getType().getVisibility().isVisibleInMode(EffectVisibility.ALWAYS));
+        Stream<StatusEffect> effectStream = container.getStatusEffectStream().filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.ALWAYS));
         Map<StatusEffectType<?>, List<StatusEffect>> effects = effectStream.collect(Collectors.groupingBy(StatusEffect::getType, LinkedHashMap::new, Collectors.toList()));
         int index = 0;
         for (Map.Entry<StatusEffectType<?>, List<StatusEffect>> entry : effects.entrySet()) {
