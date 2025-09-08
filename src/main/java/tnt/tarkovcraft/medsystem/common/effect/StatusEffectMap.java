@@ -45,20 +45,15 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         List<StatusEffect> newEffects = new ArrayList<>();
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
-            if (!effect.isActive()) {
-                int delay = effect.getDelay();
-                effect.setDelay(--delay);
-            } else {
-                effect.apply(context);
-                if (!effect.isInfinite()) {
-                    int newDuration = effect.getDuration() - 1;
-                    effect.setDuration(newDuration);
-                    if (newDuration <= 0) {
-                        it.remove();
-                        StatusEffect statusEffect = effect.onRemoved(context);
-                        if (statusEffect != null) {
-                            newEffects.add(statusEffect);
-                        }
+            effect.apply(context);
+            if (!effect.isInfinite()) {
+                int newDuration = effect.getDuration() - 1;
+                effect.setDuration(newDuration);
+                if (newDuration <= 0) {
+                    it.remove();
+                    StatusEffect statusEffect = effect.onRemoved(context);
+                    if (statusEffect != null) {
+                        newEffects.add(statusEffect);
                     }
                 }
             }
@@ -79,8 +74,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     }
 
     public <T extends StatusEffect> boolean hasEffect(StatusEffectType<T> type) {
-        StatusEffect effect = this.effects.get(type);
-        return effect != null && effect.isActive();
+        return this.effects.containsKey(type);
     }
 
     public <T extends StatusEffect> boolean hasEffect(Supplier<StatusEffectType<T>> type) {

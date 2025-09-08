@@ -13,19 +13,17 @@ import tnt.tarkovcraft.core.util.context.Context;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 
 public abstract class StatusEffect {
 
     public static final DurationFormatSettings DURATION_SETTINGS = new DurationFormatSettings();
 
     private int duration;
-    private int delay;
 
-    public StatusEffect(int duration, int delay) {
+    public StatusEffect(int duration) {
         this.duration = duration;
-        this.delay = delay;
     }
 
     public abstract StatusEffectType<?> getType();
@@ -95,14 +93,6 @@ public abstract class StatusEffect {
         return this;
     }
 
-    public final int getDelay() {
-        return this.delay;
-    }
-
-    public final void setDelay(int delay) {
-        this.delay = delay;
-    }
-
     public final void addDuration(int duration) {
         this.setDuration(this.getDuration() + duration);
     }
@@ -111,28 +101,17 @@ public abstract class StatusEffect {
         this.setDuration(this.getDuration() + duration.tickValue());
     }
 
-    public final boolean isActive() {
-        return this.getDelay() <= 0;
-    }
-
     public final boolean isInfinite() {
         return this.getDuration() < 0;
     }
 
-    public static <T extends StatusEffect> Products.P2<RecordCodecBuilder.Mu<T>, Integer, Integer> common(RecordCodecBuilder.Instance<T> instance) {
+    public static <T extends StatusEffect> Products.P1<RecordCodecBuilder.Mu<T>, Integer> common(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(
-                Codec.INT.optionalFieldOf("duration", 600).forGetter(StatusEffect::getDuration),
-                Codec.INT.optionalFieldOf("delay", 0).forGetter(StatusEffect::getDelay)
+                Codec.INT.optionalFieldOf("duration", 600).forGetter(StatusEffect::getDuration)
         );
     }
 
     public static <S extends StatusEffect> S merge(S a, S b) {
-        if (a.getDelay() > b.getDelay()) {
-            return a;
-        }
-        if (b.getDelay() > a.getDelay()) {
-            return b;
-        }
         if (a.isInfinite() || b.isInfinite()) {
             a.setDuration(-1);
         } else {
@@ -142,14 +121,13 @@ public abstract class StatusEffect {
         return a;
     }
 
-    public static <S extends StatusEffect> S replace(S a, S b, BiFunction<Integer, Integer, S> effect) {
+    public static <S extends StatusEffect> S replace(S a, S b, IntFunction<S> effect) {
         if (a.isInfinite())
             return a;
         if (b.isInfinite())
             return b;
         int duration = Math.max(a.getDuration(), b.getDuration());
-        int delay = Math.min(a.getDelay(), b.getDelay());
-        return effect.apply(duration, delay);
+        return effect.apply(duration);
     }
 
     public static Component getDurationLabel(int duration) {

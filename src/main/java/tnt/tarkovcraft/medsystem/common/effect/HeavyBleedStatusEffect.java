@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.context.Context;
@@ -18,16 +17,16 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
     public static final MapCodec<HeavyBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, HeavyBleedStatusEffect::new));
     private static final Component HINT = Component.translatable("status_effect.medsystem.heavy_bleed.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
 
-    public HeavyBleedStatusEffect(int duration, int delay, Optional<UUID> owner) {
-        super(duration, delay, owner);
+    public HeavyBleedStatusEffect(int duration, Optional<UUID> owner) {
+        super(duration, owner);
     }
 
-    public HeavyBleedStatusEffect(int duration, int delay) {
-        super(duration, delay);
+    public HeavyBleedStatusEffect(int duration) {
+        super(duration);
     }
 
     public static HeavyBleedStatusEffect createTemplate() {
-        return new HeavyBleedStatusEffect(-1, 0);
+        return new HeavyBleedStatusEffect(-1);
     }
 
     @Override
@@ -42,7 +41,7 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public StatusEffect copy() {
-        return new HeavyBleedStatusEffect(this.getDuration(), this.getDelay());
+        return new HeavyBleedStatusEffect(this.getDuration());
     }
 
     @Override

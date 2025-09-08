@@ -32,17 +32,17 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
 
     private int reduction;
 
-    public InjuryRecoveryStatusEffect(int duration, int delay) {
-        this(duration, delay, 1);
+    public InjuryRecoveryStatusEffect(int duration) {
+        this(duration, 1);
     }
 
-    public InjuryRecoveryStatusEffect(int duration, int delay, int reduction) {
-        super(duration, delay);
+    public InjuryRecoveryStatusEffect(int duration, int reduction) {
+        super(duration);
         this.reduction = reduction;
     }
 
     public static InjuryRecoveryStatusEffect createTemplate(int reduction) {
-        return new InjuryRecoveryStatusEffect(-1, 0, reduction);
+        return new InjuryRecoveryStatusEffect(-1, reduction);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
 
     @Override
     public StatusEffect copy() {
-        return new InjuryRecoveryStatusEffect(this.getDuration(), this.getDelay(), this.reduction);
+        return new InjuryRecoveryStatusEffect(this.getDuration(), this.reduction);
     }
 
     @Override
@@ -115,13 +115,11 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         if (allowScaling) {
             return new InjuryRecoveryStatusEffect(
                     initial.getDuration() + additional.getDuration(),
-                    initial.getDelay() + additional.getDelay(),
                     initial.reduction + additional.reduction
             );
         } else {
             return new InjuryRecoveryStatusEffect(
                     Math.max(initial.getDuration(), additional.getDuration()),
-                    Math.min(initial.getDelay(), additional.getDelay()),
                     initial.reduction // keep same reduction
             );
         }

@@ -16,12 +16,12 @@ import java.util.UUID;
 
 public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
 
-    public BleedStatusEffect(int duration, int delay, Optional<UUID> owner) {
-        super(duration, delay, owner);
+    public BleedStatusEffect(int duration, Optional<UUID> owner) {
+        super(duration, owner);
     }
 
-    public BleedStatusEffect(int duration, int delay) {
-        super(duration, delay);
+    public BleedStatusEffect(int duration) {
+        super(duration);
     }
 
     public abstract long getDamageInterval();
@@ -40,7 +40,7 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
                         .map(cause -> new BodyPartDamageSource(type, null, cause, part.getName()))
                         .orElseGet(() -> new BodyPartDamageSource(type, part.getName()));
                 source.setAllowDeadBodyPartDamage(false);
-                entity.hurt(source, this.getDamageAmount());
+                entity.hurtServer(serverLevel, source, this.getDamageAmount());
             });
         }
     }

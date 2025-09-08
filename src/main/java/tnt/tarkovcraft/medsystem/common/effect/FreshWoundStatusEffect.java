@@ -22,17 +22,17 @@ public class FreshWoundStatusEffect extends StatusEffect {
 
     private float bleedChance;
 
-    public FreshWoundStatusEffect(int duration, int delay) {
-        this(duration, delay, 0.0F);
+    public FreshWoundStatusEffect(int duration) {
+        this(duration, 0.0F);
     }
 
-    public FreshWoundStatusEffect(int duration, int delay, float bleedChance) {
-        super(duration, delay);
+    public FreshWoundStatusEffect(int duration, float bleedChance) {
+        super(duration);
         this.bleedChance = bleedChance;
     }
 
     public static FreshWoundStatusEffect createTemplate() {
-        return new FreshWoundStatusEffect(-1, 0);
+        return new FreshWoundStatusEffect(-1);
     }
 
     @Override
@@ -51,14 +51,14 @@ public class FreshWoundStatusEffect extends StatusEffect {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         RandomSource source = entity.getRandom();
         if (source.nextFloat() < this.bleedChance) {
-            return new LightBleedStatusEffect(-1, 0);
+            return new LightBleedStatusEffect(-1);
         }
         return null;
     }
 
     @Override
     public StatusEffect copy() {
-        return new FreshWoundStatusEffect(this.getDuration(), this.getDelay(), this.bleedChance);
+        return new FreshWoundStatusEffect(this.getDuration(), this.bleedChance);
     }
 
     @Override

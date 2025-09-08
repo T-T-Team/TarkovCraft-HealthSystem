@@ -17,8 +17,8 @@ public final class PositiveEffectsGroup extends GroupStatusEffect {
         super(items);
     }
 
-    public PositiveEffectsGroup(int duration, int delay, List<EffectGroupHolder> items) {
-        super(duration, delay, items);
+    public PositiveEffectsGroup(int duration, List<EffectGroupHolder> items) {
+        super(duration, items);
     }
 
     public static PositiveEffectsGroup createTemplate(Consumer<EffectGroupHolder.Factory> tplBuilder) {

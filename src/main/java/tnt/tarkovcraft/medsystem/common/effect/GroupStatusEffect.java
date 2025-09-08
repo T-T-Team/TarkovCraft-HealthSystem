@@ -17,7 +17,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
     private final List<EffectGroupHolder> items = new ArrayList<>();
 
     public GroupStatusEffect(List<EffectGroupHolder> items) {
-        super(-1, 0);
+        super(-1);
         this.items.addAll(items);
         int duration = 0;
         for (EffectGroupHolder item : this.items) {
@@ -26,8 +26,8 @@ public abstract class GroupStatusEffect extends StatusEffect {
         this.setDuration(duration);
     }
 
-    protected GroupStatusEffect(int duration, int delay, List<EffectGroupHolder> items) {
-        super(duration, delay);
+    protected GroupStatusEffect(int duration, List<EffectGroupHolder> items) {
+        super(duration);
         this.items.addAll(items);
     }
 
@@ -119,7 +119,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
         return (T) first.newInstance(result);
     }
 
-    public static <T extends GroupStatusEffect> Products.P3<RecordCodecBuilder.Mu<T>, Integer, Integer, List<EffectGroupHolder>> commonGroup(RecordCodecBuilder.Instance<T> instance) {
+    public static <T extends GroupStatusEffect> Products.P2<RecordCodecBuilder.Mu<T>, Integer, List<EffectGroupHolder>> commonGroup(RecordCodecBuilder.Instance<T> instance) {
         return common(instance).and(
                 EffectGroupHolder.CODEC.listOf().optionalFieldOf("items", Collections.emptyList()).forGetter(GroupStatusEffect::getItems)
         );

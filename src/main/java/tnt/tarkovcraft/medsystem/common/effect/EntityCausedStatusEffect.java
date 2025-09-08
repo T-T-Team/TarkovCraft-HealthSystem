@@ -11,13 +11,13 @@ public abstract class EntityCausedStatusEffect extends StatusEffect {
 
     private UUID owner;
 
-    public EntityCausedStatusEffect(int duration, int delay, Optional<UUID> owner) {
-        super(duration, delay);
+    public EntityCausedStatusEffect(int duration, Optional<UUID> owner) {
+        super(duration);
         this.owner = owner.orElse(null);
     }
 
-    public EntityCausedStatusEffect(int duration, int delay) {
-        super(duration, delay);
+    public EntityCausedStatusEffect(int duration) {
+        super(duration);
     }
 
     @Override
@@ -30,7 +30,7 @@ public abstract class EntityCausedStatusEffect extends StatusEffect {
         return this.owner;
     }
 
-    public static <T extends StatusEffect> Products.P3<RecordCodecBuilder.Mu<T>, Integer, Integer, Optional<UUID>> commonEntity(RecordCodecBuilder.Instance<T> instance) {
+    public static <T extends StatusEffect> Products.P2<RecordCodecBuilder.Mu<T>, Integer, Optional<UUID>> commonEntity(RecordCodecBuilder.Instance<T> instance) {
         return common(instance).and(UUIDUtil.CODEC.optionalFieldOf("cause").forGetter(t -> Optional.ofNullable(t.getCausingEntity())));
     }
 }

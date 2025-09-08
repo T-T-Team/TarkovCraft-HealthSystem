@@ -15,16 +15,16 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
     public static final MapCodec<LightBleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, LightBleedStatusEffect::new));
     private static final Component HINT = Component.translatable("status_effect.medsystem.light_bleed.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
 
-    public LightBleedStatusEffect(int duration, int delay, Optional<UUID> owner) {
-        super(duration, delay);
+    public LightBleedStatusEffect(int duration, Optional<UUID> owner) {
+        super(duration);
     }
 
-    public LightBleedStatusEffect(int duration, int delay) {
-        super(duration, delay);
+    public LightBleedStatusEffect(int duration) {
+        super(duration);
     }
 
     public static LightBleedStatusEffect createTemplate() {
-        return new LightBleedStatusEffect(-1, 0);
+        return new LightBleedStatusEffect(-1);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public StatusEffect copy() {
-        return new LightBleedStatusEffect(this.getDuration(), this.getDelay());
+        return new LightBleedStatusEffect(this.getDuration());
     }
 
     @Override

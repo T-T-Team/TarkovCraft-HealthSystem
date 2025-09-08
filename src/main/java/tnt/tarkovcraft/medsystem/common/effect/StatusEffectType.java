@@ -11,7 +11,10 @@ import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 
 public final class StatusEffectType<S extends StatusEffect> {
@@ -67,32 +70,16 @@ public final class StatusEffectType<S extends StatusEffect> {
         return displayName;
     }
 
-    public S createDelayedEffect(int duration, int delay) {
-        return this.factory.createNew(duration, delay);
+    public S createEffect(int duration) {
+        return this.factory.createNew(duration);
     }
 
-    public S createDelayedEffect(TickValue duration, int delay) {
-        return this.createDelayedEffect(duration.tickValue(), delay);
+    public S createEffect(TickValue duration) {
+        return this.createEffect(duration.tickValue());
     }
 
-    public S createDelayedEffect(int duration, TickValue delay) {
-        return this.createDelayedEffect(duration, delay.tickValue());
-    }
-
-    public S createDelayedEffect(TickValue duration, TickValue delay) {
-        return this.createDelayedEffect(duration.tickValue(), delay.tickValue());
-    }
-
-    public S createImmediateEffect(int duration) {
-        return this.createDelayedEffect(duration, 0);
-    }
-
-    public S createImmediateEffect(TickValue duration) {
-        return this.createImmediateEffect(duration.tickValue());
-    }
-
-    public S createImmediateEffect() {
-        return this.createImmediateEffect(Duration.minutes(1));
+    public S createEffect() {
+        return this.createEffect(Duration.minutes(1));
     }
 
     public boolean isGlobalEffect() {
@@ -108,7 +95,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     }
 
     public static boolean isVisible(StatusEffect effect, EffectVisibility ctx) {
-        return effect.isActive() && effect.isVisible() && effect.getType().getVisibility().isVisibleInMode(ctx);
+        return effect.isVisible() && effect.getType().getVisibility().isVisibleInMode(ctx);
     }
 
     @Override
@@ -182,6 +169,6 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     @FunctionalInterface
     public interface Factory<S extends StatusEffect> {
-        S createNew(int duration, int delay);
+        S createNew(int duration);
     }
 }

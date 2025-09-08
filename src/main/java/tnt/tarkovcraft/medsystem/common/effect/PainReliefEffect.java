@@ -19,12 +19,12 @@ public class PainReliefEffect extends AttributeModifyingStatusEffect {
     public static final MapCodec<PainReliefEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, PainReliefEffect::new));
     public static final UUID PAIN_RELIEF_MODIFIER_ID = UUID.fromString("03d3708f-37bf-42a9-8599-b8af97cc7b4f");
 
-    public PainReliefEffect(int duration, int delay) {
-        super(duration, delay);
+    public PainReliefEffect(int duration) {
+        super(duration);
     }
 
     public static PainReliefEffect createTemplate() {
-        return new PainReliefEffect(-1, 0);
+        return new PainReliefEffect(-1);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PainReliefEffect extends AttributeModifyingStatusEffect {
 
     @Override
     public StatusEffect copy() {
-        return new PainReliefEffect(this.getDuration(), this.getDelay());
+        return new PainReliefEffect(this.getDuration());
     }
 
     @Override

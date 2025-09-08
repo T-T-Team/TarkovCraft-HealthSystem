@@ -67,15 +67,13 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
                 int duration = durationAttribute != null ? Mth.ceil(AttributeSystem.getFloatValue(entity, durationAttribute, 1.0F) * this.template.getDuration()) : this.template.getDuration();
                 statusEffect.setDuration(duration);
             }
-
-            statusEffect.setDelay(this.delay);
             if (damageSource != null) {
                 Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
                 if (cause != null) {
                     statusEffect.setCausingEntity(cause.getUUID());
                 }
             }
-            StatusEffectHelper.addEffect(effects, entity, part, statusEffect);
+            StatusEffectHelper.addEffect(effects, entity, part, this.delay, statusEffect);
         }
     }
 

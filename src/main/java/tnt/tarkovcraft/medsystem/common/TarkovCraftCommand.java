@@ -17,6 +17,7 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.core.util.context.WritableContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
@@ -149,9 +150,15 @@ public final class TarkovCraftCommand {
 
     private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable BodyPart bodyPart, Holder<StatusEffectType<?>> holder, int duration, int delay) {
         StatusEffectType<T> type = (StatusEffectType<T>) holder.value();
-        T effect = delay > 0 ? type.createDelayedEffect(duration, delay) : type.createImmediateEffect(duration);
-        T existing = map.getEffect(type).orElse(null);
-        StatusEffectHelper.replaceEffect(map, entity, bodyPart, effect, existing);
+        WritableContext context = ContextImpl.of(
+                ContextKeys.LIVING_ENTITY, entity,
+                MedicalSystemContextKeys.HEALTH_CONTAINER, HealthSystem.getHealthData(entity)
+        );
+        if (bodyPart != null) {
+            context.set(MedicalSystemContextKeys.BODY_PART, bodyPart);
+        }
+        StatusEffectHelper.removeEffect(map, entity, bodyPart, context, holder.value());
+        StatusEffectHelper.addEffect(map, entity, bodyPart, delay, type.createEffect(duration));
     }
 
     private static int removeGlobalStatusEffect(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

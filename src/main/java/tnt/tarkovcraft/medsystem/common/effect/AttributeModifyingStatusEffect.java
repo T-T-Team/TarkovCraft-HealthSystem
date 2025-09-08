@@ -14,8 +14,8 @@ import java.util.UUID;
 
 public abstract class AttributeModifyingStatusEffect extends StatusEffect {
 
-    public AttributeModifyingStatusEffect(int duration, int delay) {
-        super(duration, delay);
+    public AttributeModifyingStatusEffect(int duration) {
+        super(duration);
     }
 
     public abstract UUID getUniqueModifierUUID();

@@ -109,7 +109,6 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         public Builder delayed(float chance, int duration, int delay, StatusEffect effect) {
             StatusEffect statusEffect = effect.copy();
             statusEffect.setDuration(duration);
-            statusEffect.setDelay(delay);
             this.sideEffects.add(new SideEffect(chance, delay, statusEffect));
             return this;
         }

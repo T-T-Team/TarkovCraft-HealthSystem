@@ -17,8 +17,8 @@ public final class NeutralEffectsGroup extends GroupStatusEffect {
         super(items);
     }
 
-    public NeutralEffectsGroup(int duration, int delay, List<EffectGroupHolder> items) {
-        super(duration, delay, items);
+    public NeutralEffectsGroup(int duration, List<EffectGroupHolder> items) {
+        super(duration, items);
     }
 
     public static NeutralEffectsGroup createTemplate(Consumer<EffectGroupHolder.Factory> tplBuilder) {

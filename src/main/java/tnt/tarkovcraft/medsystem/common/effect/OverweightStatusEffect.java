@@ -14,7 +14,7 @@ public class OverweightStatusEffect extends StatusEffect {
     private static final Component HINT = Component.translatable("status_effect.medsystem.overweight.info").withStyle(ChatFormatting.DARK_GRAY);
 
     public OverweightStatusEffect() {
-        super(-1, 0);
+        super(-1);
     }
 
     public static OverweightStatusEffect createTemplate() {

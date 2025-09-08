@@ -17,8 +17,8 @@ public final class NegativeEffectsGroup extends GroupStatusEffect {
         super(items);
     }
 
-    public NegativeEffectsGroup(int duration, int delay, List<EffectGroupHolder> items) {
-        super(duration, delay, items);
+    public NegativeEffectsGroup(int duration, List<EffectGroupHolder> items) {
+        super(duration, items);
     }
 
     public static NegativeEffectsGroup createTemplate(Consumer<EffectGroupHolder.Factory> tplBuilder) {

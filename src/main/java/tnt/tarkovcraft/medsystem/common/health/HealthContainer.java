@@ -6,15 +6,19 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.Synchronizable;
+import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.effect.QueuedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 
@@ -31,6 +35,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
             Codec.unboundedMap(Codec.STRING, BodyPart.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts),
             StatusEffectMap.CODEC.fieldOf("effects").forGetter(t -> t.statusEffects),
+            Codecs.collection(QueuedStatusEffect.CODEC, list -> (Queue<QueuedStatusEffect>) new PriorityQueue<>(list), ArrayList::new).optionalFieldOf("effectQueue", new PriorityQueue<>()).forGetter(t -> t.effectQueue),
             Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
     ).apply(instance, HealthContainer::new));
     public static final Codec<HealthContainer> CODEC = MAP_CODEC.codec();
@@ -41,6 +46,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     private final List<BodyPart> vitalParts;
     private final String root;
     private final StatusEffectMap statusEffects;
+    private final Queue<QueuedStatusEffect> effectQueue;
     private DamageContext activeDamageContext;
     private boolean invalidated;
 
@@ -50,6 +56,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
         this.definition = MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).orElse(null);
         this.statusEffects = new StatusEffectMap();
+        this.effectQueue = new PriorityQueue<>();
         ImmutableMap.Builder<String, BodyPart> builder = ImmutableMap.builder();
         if (this.definition != null) {
             for (Map.Entry<String, BodyPartDefinition> entry : this.definition.getBodyParts().entrySet()) {
@@ -69,13 +76,14 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
     }
 
-    private HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts, StatusEffectMap statusEffects, boolean invalidated) {
+    private HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts, StatusEffectMap statusEffects, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
         this.definition = definition;
         this.bodyParts = bodyParts;
         this.bodyPartLinks = new IdentityHashMap<>();
         this.vitalParts = new ArrayList<>();
         this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
         this.statusEffects = statusEffects;
+        this.effectQueue = new PriorityQueue<>(effectQueue);
         this.invalidated = invalidated;
     }
 
@@ -85,6 +93,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
                 ContextKeys.LIVING_ENTITY, entity
         );
         float previousHealth = this.getHealth();
+        this.tickEffectQueue(entity);
         this.statusEffects.tick(context);
         for (BodyPart part : this.bodyParts.values()) {
             part.tick(context);
@@ -109,6 +118,15 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             StatusEffectMap map = part.getStatusEffects();
             map.removeAll(context);
         }
+        this.effectQueue.clear();
+    }
+
+    public void scheduleStatusEffect(LivingEntity entity, int delay, @Nullable BodyPart part, StatusEffect effect) {
+        String partId = part != null ? part.getName() : "";
+        Level level = entity.level();
+        long target = level.getGameTime() + delay;
+        QueuedStatusEffect queuedStatusEffect = new QueuedStatusEffect(target, partId, effect);
+        this.effectQueue.offer(queuedStatusEffect);
     }
 
     public StatusEffectMap getGlobalStatusEffects() {
@@ -336,5 +354,30 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             bodyPart.setDefinition(healthDef);
         }
         return root;
+    }
+
+    private void tickEffectQueue(LivingEntity entity) {
+        QueuedStatusEffect effect;
+        long gameTime = entity.level().getGameTime();
+        boolean modified = false;
+        while ((effect = this.effectQueue.peek()) != null && effect.isReady(gameTime)) {
+            this.effectQueue.poll();
+            String limbCode = effect.limb();
+
+            StatusEffectMap map = this.statusEffects;
+            BodyPart part = null;
+            if (!limbCode.isBlank()) {
+                part = this.bodyParts.get(limbCode);
+                if (part == null)
+                    continue;
+                map = part.getStatusEffects();
+            }
+
+            StatusEffectHelper.addEffect(map, entity, part, effect.data().copy());
+            modified = true;
+        }
+        if (modified) {
+            HealthSystem.synchronizeEntity(entity);
+        }
     }
 }

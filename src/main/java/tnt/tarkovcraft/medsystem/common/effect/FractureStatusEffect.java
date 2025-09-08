@@ -16,21 +16,21 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
     public static final MapCodec<FractureStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, FractureStatusEffect::new));
     private static final Component HINT = Component.translatable("status_effect.medsystem.fracture.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
 
-    public FractureStatusEffect(int duration, int delay, Optional<UUID> owner) {
-        super(duration, delay, owner);
+    public FractureStatusEffect(int duration, Optional<UUID> owner) {
+        super(duration, owner);
     }
 
-    public FractureStatusEffect(int duration, int delay) {
-        super(duration, delay);
+    public FractureStatusEffect(int duration) {
+        super(duration);
     }
 
     public static FractureStatusEffect createTemplate() {
-        return new FractureStatusEffect(-1, 0);
+        return new FractureStatusEffect(-1);
     }
 
     @Override
     public StatusEffect copy() {
-        return new FractureStatusEffect(this.getDuration(), this.getDelay());
+        return new FractureStatusEffect(this.getDuration());
     }
 
     @Override
