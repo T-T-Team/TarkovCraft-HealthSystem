@@ -12,7 +12,7 @@ import tnt.tarkovcraft.core.util.context.ContextKeys;
 
 import java.util.UUID;
 
-public abstract class AttributeModifyingStatusEffect extends StatusEffect {
+public abstract class AttributeModifyingStatusEffect extends IntervalAppliedStatusEffect {
 
     public AttributeModifyingStatusEffect(int duration) {
         super(duration);
@@ -25,8 +25,7 @@ public abstract class AttributeModifyingStatusEffect extends StatusEffect {
     public abstract AttributeModifier createModifier(UUID uuid, LivingEntity entity, EntityAttributeData attributeData, Context context);
 
     @Override
-    public void apply(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public void applyEffect(LivingEntity entity, Context context) {
         if (AttributeSystem.isEnabledForEntity(entity)) {
             EntityAttributeData data = AttributeSystem.getAttributes(entity);
             AttributeInstance instance = data.getAttribute(this.getAttribute());

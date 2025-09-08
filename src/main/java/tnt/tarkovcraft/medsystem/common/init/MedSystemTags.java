@@ -18,5 +18,6 @@ public final class MedSystemTags {
 
         public static final TagKey<StatusEffectType<?>> OVERWEIGHT = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.resource("overweight"));
         public static final TagKey<StatusEffectType<?>> MOVEMENT_RESTRICTING = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.resource("movement_restricting"));
+        public static final TagKey<StatusEffectType<?>> IS_PAIN_CAUSING = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.resource("is_pain_causing"));
     }
 }

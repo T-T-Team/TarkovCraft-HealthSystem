@@ -7,9 +7,7 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.common.effect.NegativeEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
-import tnt.tarkovcraft.medsystem.common.effect.group.HealthEffectGroupItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 
 public final class MedSystemItems {
@@ -81,9 +79,6 @@ public final class MedSystemItems {
                             .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.builder()
                                     .title(SideEffectHolder.USAGE_TITLE)
                                     .delayed(Duration.minutes(10), Duration.seconds(45), PainReliefEffect.createTemplate())
-                                    .infinite(NegativeEffectsGroup.createTemplate(factory -> {
-                                        factory.create(Duration.seconds(60), Duration.seconds(10), new HealthEffectGroupItem(40, -1.5F));
-                                    }))
                                     .build()
                             )
             )

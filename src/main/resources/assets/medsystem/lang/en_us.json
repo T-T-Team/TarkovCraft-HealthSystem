@@ -51,6 +51,7 @@
   "stat.medsystem.player_headshot_percentage": "Headshot rate (PvP)",
 
   "status_effect.medsystem.pain_relief": "Pain Relief",
+  "status_effect.medsystem.pain": "Pain",
   "status_effect.medsystem.fracture": "Fracture",
   "status_effect.medsystem.fracture.heal_hint": "Can be healed using splints",
   "status_effect.medsystem.injury_recovery": "Injury Recovery",

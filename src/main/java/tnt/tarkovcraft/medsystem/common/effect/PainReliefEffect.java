@@ -28,6 +28,11 @@ public class PainReliefEffect extends AttributeModifyingStatusEffect {
     }
 
     @Override
+    public int getUpdateInterval() {
+        return 20;
+    }
+
+    @Override
     public UUID getUniqueModifierUUID() {
         return PAIN_RELIEF_MODIFIER_ID;
     }

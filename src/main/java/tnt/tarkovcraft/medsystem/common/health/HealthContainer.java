@@ -16,11 +16,9 @@ import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.effect.QueuedStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -94,6 +92,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         );
         float previousHealth = this.getHealth();
         this.tickEffectQueue(entity);
+        this.tickStatusEffectCheck(entity, false);
         this.statusEffects.tick(context);
         for (BodyPart part : this.bodyParts.values()) {
             part.tick(context);
@@ -336,6 +335,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return target;
     }
 
+    public void markStatusEffectAdded(LivingEntity entity) {
+        this.tickStatusEffectCheck(entity, true);
+    }
+
     private String resolveBodyParts(HealthContainerDefinition definition, Map<BodyPart, BodyPart> links, List<BodyPart> vitalParts) {
         String root = null;
         for (Map.Entry<String, BodyPartDefinition> health : definition.getBodyParts().entrySet()) {
@@ -378,6 +381,14 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
         if (modified) {
             HealthSystem.synchronizeEntity(entity);
+        }
+    }
+
+    private void tickStatusEffectCheck(LivingEntity entity, boolean forcedTick) {
+        long time = entity.level().getGameTime();
+        if ((forcedTick || time % 20 == 0) && !this.statusEffects.hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
+            // delay cannot be bigger than 20 as otherwise it will schedule multiple pain effects
+            StatusEffectHelper.addEffect(this.statusEffects, entity, null, 20, new PainStatusEffect(-1));
         }
     }
 }

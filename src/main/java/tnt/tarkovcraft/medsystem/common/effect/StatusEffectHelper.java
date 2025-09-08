@@ -36,6 +36,8 @@ public final class StatusEffectHelper {
         if (event.isCancelled())
             return;
         effects.addEffect(effect);
+        HealthContainer container = HealthSystem.getHealthData(entity);
+        container.markStatusEffectAdded(entity);
     }
 
     public static StatusEffect removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, StatusEffectType<?> type) {

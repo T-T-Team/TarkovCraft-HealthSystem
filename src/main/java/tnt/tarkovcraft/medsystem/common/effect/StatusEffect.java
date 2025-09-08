@@ -121,7 +121,22 @@ public abstract class StatusEffect {
         return a;
     }
 
-    public static <S extends StatusEffect> S replace(S a, S b, IntFunction<S> effect) {
+    public static <S extends StatusEffect> S keep(S a, S b) {
+        return a;
+    }
+
+    public static <S extends StatusEffect> S replace(S a, S b) {
+        return b;
+    }
+
+    public static <S extends StatusEffect> S maxDuration(S a, S b) {
+        return maxDuration(a, b, duration -> {
+            a.setDuration(duration);
+            return a;
+        });
+    }
+
+    public static <S extends StatusEffect> S maxDuration(S a, S b, IntFunction<S> effect) {
         if (a.isInfinite())
             return a;
         if (b.isInfinite())

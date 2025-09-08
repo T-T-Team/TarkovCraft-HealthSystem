@@ -62,6 +62,11 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         return AttributeSystem.getIntValue(entity, MedSystemAttributes.PAIN_RELIEF, 0) > 0;
     }
 
+    public static boolean isInPain(LivingEntity entity) {
+        return !hasPainRelief(entity) && hasCustomHealth(entity) && getHealthData(entity).getStatusEffectStream()
+                .anyMatch(effect -> effect.getType().is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING));
+    }
+
     public static boolean isMovementRestricted(LivingEntity entity) {
         if (!hasCustomHealth(entity))
             return false;
