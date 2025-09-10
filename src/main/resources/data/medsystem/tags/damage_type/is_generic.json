@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#neoforge:is_magic"
+    "#neoforge:is_magic",
+    "medsystem:toxic_side_effect"
   ]
 }

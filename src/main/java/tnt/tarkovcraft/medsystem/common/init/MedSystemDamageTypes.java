@@ -12,6 +12,7 @@ public interface MedSystemDamageTypes {
 
     ResourceKey<DamageType> BROKEN_LEG = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("broken_leg"));
     ResourceKey<DamageType> BLEED = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("bleed"));
+    ResourceKey<DamageType> TOXIC_SIDE_EFFECT = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("toxic_side_effect"));
 
     static Holder<DamageType> of(RegistryAccess access, ResourceKey<DamageType> type) {
         Registry<DamageType> registry = access.lookupOrThrow(Registries.DAMAGE_TYPE);

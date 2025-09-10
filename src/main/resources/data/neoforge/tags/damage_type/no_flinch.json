@@ -1,6 +1,7 @@
 {
   "values": [
     "medsystem:broken_leg",
-    "medsystem:bleed"
+    "medsystem:bleed",
+    "medsystem:toxic_side_effect"
   ]
 }

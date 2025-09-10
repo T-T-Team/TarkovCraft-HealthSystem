@@ -4,12 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.core.util.context.Context;
@@ -17,6 +18,7 @@ import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.Locale;
@@ -25,15 +27,13 @@ import java.util.function.Consumer;
 public class HealthEffectGroupItem implements EffectGroupItem {
 
     public static final MapCodec<HealthEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ExtraCodecs.POSITIVE_INT.optionalFieldOf("interval", 20).forGetter(t -> t.interval),
             Codec.FLOAT.fieldOf("amount").forGetter(t -> t.amount)
     ).apply(instance, HealthEffectGroupItem::new));
+    public static final int UPDATE_INTERVAL = 20;
 
-    private final int interval;
     private final float amount;
 
-    public HealthEffectGroupItem(int interval, float amount) {
-        this.interval = interval;
+    public HealthEffectGroupItem(float amount) {
         this.amount = amount;
     }
 
@@ -48,14 +48,14 @@ public class HealthEffectGroupItem implements EffectGroupItem {
         if (level.isClientSide())
             return;
         long time = level.getGameTime();
-        if (time % this.interval != 0)
+        if (time % UPDATE_INTERVAL != 0)
             return;
         if (this.amount >= 0.0F) {
             entity.heal(this.amount);
         } else {
-            DamageSources sources = entity.damageSources();
-            // TODO custom damage type
-            entity.hurtServer((ServerLevel) level, sources.dryOut(), Mth.abs(this.amount));
+            Holder<DamageType> toxinHolder = MedSystemDamageTypes.of(level.registryAccess(), MedSystemDamageTypes.TOXIC_SIDE_EFFECT);
+            DamageSource damageSource = new DamageSource(toxinHolder);
+            entity.hurtServer((ServerLevel) level, damageSource, Mth.abs(this.amount));
         }
     }
 
@@ -65,7 +65,7 @@ public class HealthEffectGroupItem implements EffectGroupItem {
 
     @Override
     public void addInformation(EffectGroupHolder holder, Consumer<Component> tooltip, boolean isItemTooltip) {
-        float perSecond = 20.0F / this.interval;
+        float perSecond = 20.0F / UPDATE_INTERVAL;
         MutableComponent value = Component.translatable((this.amount >= 0 ? "label.medsystem.health_recovery" : "label.medsystem.health_loss"), Component.literal(String.format(Locale.ROOT, "%.1f", this.amount * perSecond)));
         if (isItemTooltip) {
             // > [health recovery/loss per second] / Dur.: <duration> / Del.: <delay>
@@ -78,12 +78,23 @@ public class HealthEffectGroupItem implements EffectGroupItem {
 
     @Override
     public EffectGroupHolder tryToMergeWith(EffectGroupHolder current, EffectGroupHolder other) {
+        EffectGroupItem otherItem = other.getItem();
+        if (otherItem instanceof HealthEffectGroupItem healthGroupItem) {
+            float amount = healthGroupItem.amount;
+            if ((this.amount > 0.0F && amount > 0.0F) || (this.amount < 0.0F && amount < 0.0F)) {
+                int delay = Math.min(current.getDelay(), other.getDelay());
+                int durationDiff = Mth.abs(current.getDuration() - other.getDuration());
+                int newDuration = current.getDuration() + durationDiff / 2;
+                float newAmount = Math.max(this.amount, amount);
+                return new EffectGroupHolder(new HealthEffectGroupItem(newAmount), newDuration, delay);
+            }
+        }
         return null;
     }
 
     @Override
     public EffectGroupItem copy() {
-        return new HealthEffectGroupItem(this.interval, this.amount);
+        return new HealthEffectGroupItem(this.amount);
     }
 
     @Override

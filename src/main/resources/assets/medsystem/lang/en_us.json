@@ -107,6 +107,8 @@
   "death.attack.medsystem.bleed.player": "%s has bled out while fighting %s",
   "death.attack.medsystem.broken_leg": "%s has died due to fracture",
   "death.attack.medsystem.broken_leg.player": "%s has died due to fracture while fighting %s",
+  "death.attack.medsystem.toxic_side_effect": "%s succumbed to toxic side effects",
+  "death.attack.medsystem.toxic_side_effect.player": "%s succumbed to toxic side effects while fighting %s",
 
   "config.screen.medsystem": "Medical System",
   "config.medsystem.option.simpleArmorCalculation": "Simple armor calculation",

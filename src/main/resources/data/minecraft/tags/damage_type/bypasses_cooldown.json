@@ -1,5 +1,6 @@
 {
   "values": [
-    "medsystem:bleed"
+    "medsystem:bleed",
+    "medsystem:toxic_side_effect"
   ]
 }
