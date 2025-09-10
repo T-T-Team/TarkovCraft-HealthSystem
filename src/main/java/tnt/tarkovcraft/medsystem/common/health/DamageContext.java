@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.ApiStatus;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.WritableContext;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
@@ -30,6 +31,7 @@ public final class DamageContext {
         this.id = entity.level().getGameTime();
     }
 
+    @ApiStatus.Internal
     public void setSideEffects(SideEffectHolder sideEffects) {
         this.sideEffects = sideEffects;
     }

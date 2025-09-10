@@ -90,4 +90,11 @@ public final class MedSystemStatusEffects {
             .combineEffects(GroupStatusEffect::merge)
             .build()
     );
+    public static final Holder<StatusEffectType<?>> WOUND = REGISTRY.register("wound", key -> StatusEffectType.builder(key, WoundStatusEffect::new)
+            .persist(WoundStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .visibility(EffectVisibility.NEVER)
+            .setGlobal()
+            .build()
+    );
 }

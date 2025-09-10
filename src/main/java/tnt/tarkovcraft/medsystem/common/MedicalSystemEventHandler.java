@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
@@ -30,13 +32,11 @@ import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
+import tnt.tarkovcraft.medsystem.api.event.WoundStatusEffectApplyEvent;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectProcessor;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.effect.MaxOverweightStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
@@ -200,6 +200,10 @@ public final class MedicalSystemEventHandler {
         }
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+        }
+        WoundStatusEffectApplyEvent applyEvent = NeoForge.EVENT_BUS.post(new WoundStatusEffectApplyEvent(entity, context, totalDamage, Mth.floor(totalDamage / 4.0F)));
+        if (applyEvent.shouldApplyEffect()) {
+            StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, 1, new WoundStatusEffect(applyEvent.getDurationSeconds() * 20));
         }
         container.clearDamageContext();
         container.updateHealth(entity);
