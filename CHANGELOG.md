@@ -1,4 +1,4 @@
-# Release 1.21.8-1.5.0
+# Release 1.21.8-1.5.1
 - Added Pain status effect - appears when player is hurt or has any status effect causing pain, such as fractures
 - Added Wound status effect - not displayed anywhere, is based on received damage amount and causes pain
 - Added group status effects (Positive,Neutral,Negative) - allows to add multiple additional effects into one
