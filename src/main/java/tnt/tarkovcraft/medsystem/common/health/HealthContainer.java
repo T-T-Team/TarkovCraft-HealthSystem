@@ -92,7 +92,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         );
         float previousHealth = this.getHealth();
         this.tickEffectQueue(entity);
-        this.tickStatusEffectCheck(entity, false);
+        this.tickStatusEffectCheck(entity, 20, false);
         this.statusEffects.tick(context);
         for (BodyPart part : this.bodyParts.values()) {
             part.tick(context);
@@ -336,7 +336,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     }
 
     public void markStatusEffectAdded(LivingEntity entity) {
-        this.tickStatusEffectCheck(entity, true);
+        this.tickStatusEffectCheck(entity, 0, true);
     }
 
     private String resolveBodyParts(HealthContainerDefinition definition, Map<BodyPart, BodyPart> links, List<BodyPart> vitalParts) {
@@ -384,11 +384,11 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
     }
 
-    private void tickStatusEffectCheck(LivingEntity entity, boolean forcedTick) {
+    private void tickStatusEffectCheck(LivingEntity entity, int painDelay, boolean forcedTick) {
         long time = entity.level().getGameTime();
         if ((forcedTick || time % 20 == 0) && !this.statusEffects.hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
             // delay cannot be bigger than 20 as otherwise it will schedule multiple pain effects
-            StatusEffectHelper.addEffect(this.statusEffects, entity, null, 20, new PainStatusEffect(-1));
+            StatusEffectHelper.addEffect(this.statusEffects, entity, null, painDelay, new PainStatusEffect(-1));
         }
     }
 }
