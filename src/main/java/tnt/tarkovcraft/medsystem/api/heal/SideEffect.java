@@ -51,11 +51,10 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
             }
         }
 
-        // TODO Negative effect chance reduction applies to even 100% chance negative effects, maybe it should be updated
         RandomSource source = entity.getRandom();
-        Holder<Attribute> chanceAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_CHANCE, MedSystemAttributes.NEGATIVE_EFFECT_CHANCE, null);
+        Holder<Attribute> chanceAttribute = this.chance < 1.0F ? type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_CHANCE, MedSystemAttributes.NEGATIVE_EFFECT_CHANCE, null) : null;
         float effectChance = chanceAttribute != null ? this.chance * AttributeSystem.getFloatValue(entity, chanceAttribute, 1.0F) : this.chance;
-        if (source.nextFloat() < effectChance) {
+        if (effectChance >= 1.0F || source.nextFloat() < effectChance) {
             if (!type.isGlobalEffect() && part == null) {
                 MedicalSystem.LOGGER.error(MedicalSystem.MARKER, "Failed to apply side effect {} as effect is not set as global, but target body part was not provided", type);
                 return;
