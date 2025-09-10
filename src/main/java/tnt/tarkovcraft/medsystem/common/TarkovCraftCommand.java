@@ -123,6 +123,7 @@ public final class TarkovCraftCommand {
                         )
                         .then(
                                 Commands.literal("hurt")
+                                        .requires(src -> src.hasPermission(2))
                                         .then(
                                                 Commands.argument("targets", EntityArgument.entities())
                                                         .then(
