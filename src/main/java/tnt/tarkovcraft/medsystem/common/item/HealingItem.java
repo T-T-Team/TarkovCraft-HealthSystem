@@ -100,13 +100,13 @@ public class HealingItem extends Item implements SideEffectProcessor {
         BodyPart part = TextHelper.isNotBlank(targetLimb) && container.hasBodyPart(targetLimb) ? container.getBodyPart(targetLimb) : null;
         int consume = 0;
         // dead limb recovery
-        if (attributes.canHealDeadLimbs()) {
-            DeadLimbHealing deadLimbHealing = attributes.deadLimbHealing();
+        if (attributes.isSurgeryItem()) {
+            Surgery surgery = attributes.surgery();
             consume++; // dead limb fix has hardcoded consumption value of 1
             if (part.isDead()) {
                 SkillSystem.trigger(MedSystemSkillEvents.LIMB_FIXED, livingEntity);
-                part.setHealth(deadLimbHealing.healthAfterHeal());
-                deadLimbHealing.addRecoveryAttributes(livingEntity, part);
+                part.setHealth(surgery.healthAfterHeal());
+                surgery.addRecoveryAttributes(livingEntity, part);
             }
         }
         // effect recovery + consumption for recovery

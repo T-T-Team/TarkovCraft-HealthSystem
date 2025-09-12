@@ -23,10 +23,17 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
 import java.util.function.Consumer;
 
-public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, float minLimbHealth,
-                              int recoveryTime, int useTime) implements TooltipProvider {
+public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float minLimbHealth,
+                      int recoveryTime, int useTime) implements TooltipProvider {
 
-    public static final Codec<DeadLimbHealing> CODEC = RecordCodecBuilder.create(instance -> instance.group(ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("healthAfterHeal", 1.0F).forGetter(DeadLimbHealing::healthAfterHeal), ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("maxHealthMultiplier", 1.0F).forGetter(DeadLimbHealing::maxHealthMultiplier), Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("minLimbHealth", 0.0F).forGetter(DeadLimbHealing::minLimbHealth), Codecs.NON_NEGATIVE_INT.optionalFieldOf("recoveryTime", 0).forGetter(DeadLimbHealing::recoveryTime), Codecs.NON_NEGATIVE_INT.fieldOf("useTime").forGetter(DeadLimbHealing::useTime)).apply(instance, DeadLimbHealing::new));
+    public static final Codec<Surgery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                    ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("healthAfterHeal", 1.0F).forGetter(Surgery::healthAfterHeal),
+                    ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("maxHealthMultiplier", 1.0F).forGetter(Surgery::maxHealthMultiplier),
+                    Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("minLimbHealth", 0.0F).forGetter(Surgery::minLimbHealth),
+                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("recoveryTime", Duration.minutes(10).tickValue()).forGetter(Surgery::recoveryTime),
+                    Codecs.NON_NEGATIVE_INT.fieldOf("useTime").forGetter(Surgery::useTime)
+            ).apply(instance, Surgery::new)
+    );
 
     public boolean canHeal(HealthContainer container) {
         return container.getBodyPartStream().anyMatch(part -> part.isDead() && part.getMaxHealth() >= this.minLimbHealth);
@@ -42,7 +49,7 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
             float durationScale = AttributeSystem.getFloatValue(entity, MedSystemAttributes.INJURY_RECOVERY_DURATION, 1.0F);
             if (durationScale > 0.0F && reductionScale > 0.0F) {
                 int reduction = Mth.ceil(part.getMaxHealth() * (1.0F - this.maxHealthMultiplier) * reductionScale);
-                int duration = Mth.ceil(Duration.minutes(10).tickValue() * reduction);
+                int duration = Mth.ceil(this.recoveryTime * durationScale);
                 InjuryRecoveryStatusEffect effect = InjuryRecoveryStatusEffect.createTemplate(reduction);
                 effect.setDuration(duration);
                 StatusEffectHelper.addEffect(part.getStatusEffects(), entity, part, effect);
@@ -98,8 +105,8 @@ public record DeadLimbHealing(float healthAfterHeal, float maxHealthMultiplier, 
             return this.recovery(duration.tickValue(), maxHealthMultiplier);
         }
 
-        DeadLimbHealing buildSurgeryAttributes() {
-            return new DeadLimbHealing(this.healthAfterHeal, this.maxHealthMultiplier, this.minLimbHealth, this.recoveryTime, this.useTime);
+        Surgery buildSurgeryAttributes() {
+            return new Surgery(this.healthAfterHeal, this.maxHealthMultiplier, this.minLimbHealth, this.recoveryTime, this.useTime);
         }
     }
 }

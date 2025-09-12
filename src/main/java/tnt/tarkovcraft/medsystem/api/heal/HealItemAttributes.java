@@ -26,24 +26,24 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
-public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, DeadLimbHealing deadLimbHealing,
+public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Surgery surgery,
                                  HealthRecovery health, List<EffectRecovery> recoveries, List<ConsumeEffect> effects) implements TooltipProvider {
 
     public static final Codec<HealItemAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealItemAttributes::applyGlobally),
             Codec.BOOL.optionalFieldOf("alwaysConsumable", false).forGetter(HealItemAttributes::alwaysConsumable),
             Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealItemAttributes::minUseTime),
-            DeadLimbHealing.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.deadLimbHealing)),
+            Surgery.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.surgery)),
             HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)),
             EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealItemAttributes::recoveries),
             ConsumeEffect.CODEC.listOf().optionalFieldOf("consumeEffects", Collections.emptyList()).forGetter(HealItemAttributes::effects)
     ).apply(instance, HealItemAttributes::new));
 
     private HealItemAttributes(Builder builder) {
-        this(!builder.requiresSpecificBodyPart, builder.alwaysConsumable, builder.minUseTime, builder.deadLimbHealing, builder.healthRecovery, builder.recoveries, builder.effects);
+        this(!builder.requiresSpecificBodyPart, builder.alwaysConsumable, builder.minUseTime, builder.surgery, builder.healthRecovery, builder.recoveries, builder.effects);
     }
 
-    private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<DeadLimbHealing> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<ConsumeEffect> effects) {
+    private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<Surgery> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<ConsumeEffect> effects) {
         this(applyGlobally, alwaysConsumable, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries, effects);
     }
 
@@ -53,8 +53,8 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
 
     public int getUseDuration(int max) {
         int duration = 0;
-        if (this.deadLimbHealing != null) {
-            duration += deadLimbHealing.useTime();
+        if (this.surgery != null) {
+            duration += surgery.useTime();
         }
         if (this.health != null) {
             duration = this.health.getMaxUseDuration(max);
@@ -71,7 +71,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
                 return true;
             }
         }
-        if (this.canHealDeadLimbs() && this.deadLimbHealing.canHeal(container)) {
+        if (this.isSurgeryItem() && this.surgery.canHeal(container)) {
             return true;
         }
         return this.health != null && entity.getHealth() < entity.getMaxHealth();
@@ -90,14 +90,14 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
                 }
             }
         }
-        if (this.canHealDeadLimbs() && part.isDead()) {
+        if (this.isSurgeryItem() && part.isDead()) {
             return true;
         }
         return this.health != null && part.getHealth() < part.getMaxHealth() && !part.isDead();
     }
 
-    public boolean canHealDeadLimbs() {
-        return this.deadLimbHealing != null;
+    public boolean isSurgeryItem() {
+        return this.surgery != null;
     }
 
     @Override
@@ -105,9 +105,9 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         if (this.health != null) {
             this.health.addToTooltip(context, tooltipAdder, flag, componentGetter);
         }
-        if (this.canHealDeadLimbs()) {
+        if (this.isSurgeryItem()) {
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.title").withStyle(ChatFormatting.GRAY));
-            this.deadLimbHealing.addToTooltip(context, tooltipAdder, flag, componentGetter);
+            this.surgery.addToTooltip(context, tooltipAdder, flag, componentGetter);
         }
         if (!this.recoveries.isEmpty()) {
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.title").withStyle(ChatFormatting.GRAY));
@@ -120,7 +120,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         private boolean requiresSpecificBodyPart = true;
         private boolean alwaysConsumable = false;
         private int minUseTime = 20;
-        DeadLimbHealing deadLimbHealing;
+        Surgery surgery;
         private HealthRecovery healthRecovery;
         private final List<EffectRecovery> recoveries = new ArrayList<>();
         private final List<ConsumeEffect> effects = new ArrayList<>();
@@ -147,10 +147,10 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             return this.setMinUseTime(minUseTime.tickValue());
         }
 
-        public Builder surgeryItem(UnaryOperator<DeadLimbHealing.SurgeryBuilder> builder) {
-            DeadLimbHealing.SurgeryBuilder surgeryBuilder = new DeadLimbHealing.SurgeryBuilder();
+        public Builder surgeryItem(UnaryOperator<Surgery.SurgeryBuilder> builder) {
+            Surgery.SurgeryBuilder surgeryBuilder = new Surgery.SurgeryBuilder();
             builder.apply(surgeryBuilder);
-            this.deadLimbHealing = surgeryBuilder.buildSurgeryAttributes();
+            this.surgery = surgeryBuilder.buildSurgeryAttributes();
             return this;
         }
 
