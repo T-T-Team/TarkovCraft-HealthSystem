@@ -75,7 +75,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
     @Override
     public final void addAdditionalInfo(Consumer<Component> tooltip) {
         this.items.forEach(item -> {
-            if (item.isActive() && !item.isExpired())
+            if (item.isActiveAndVisible() && !item.isExpired())
                 item.addInformation(tooltip, false);
         });
     }
@@ -91,7 +91,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
 
     @Override
     public boolean isVisible() {
-        return this.items.stream().anyMatch(EffectGroupHolder::isActive);
+        return this.items.stream().anyMatch(EffectGroupHolder::isActiveAndVisible);
     }
 
     @SuppressWarnings("unchecked")

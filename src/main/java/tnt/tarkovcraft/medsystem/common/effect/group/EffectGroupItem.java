@@ -15,6 +15,10 @@ public interface EffectGroupItem {
 
     void addInformation(EffectGroupHolder holder, Consumer<Component> tooltip, boolean isItemTooltip);
 
+    default boolean isVisible() {
+        return true;
+    }
+
     EffectGroupItem copy();
 
     EffectGroupHolder tryToMergeWith(EffectGroupHolder current, EffectGroupHolder other);

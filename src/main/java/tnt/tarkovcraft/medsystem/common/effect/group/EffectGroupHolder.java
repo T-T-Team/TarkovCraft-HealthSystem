@@ -64,6 +64,10 @@ public final class EffectGroupHolder {
         return this.active;
     }
 
+    public boolean isActiveAndVisible() {
+        return this.isActive() && this.item.isVisible();
+    }
+
     public boolean isExpired() {
         return this.duration <= 0;
     }
