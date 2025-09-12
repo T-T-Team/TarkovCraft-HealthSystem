@@ -102,6 +102,8 @@
   "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation",
   "label.medsystem.health_recovery": "Health recovery (%s/s)",
   "label.medsystem.health_loss": "Health loss (%s/s)",
+  "label.medsystem.healing.self": "Healing yourself, remaining %s",
+  "label.medsystem.healing.self.infinite": "Healing yourself...",
 
   "death.attack.medsystem.bleed": "%s has bled out",
   "death.attack.medsystem.bleed.player": "%s has bled out while fighting %s",

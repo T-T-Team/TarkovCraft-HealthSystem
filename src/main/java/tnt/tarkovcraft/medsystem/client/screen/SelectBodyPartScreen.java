@@ -22,6 +22,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
+import tnt.tarkovcraft.medsystem.common.item.HealTarget;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SelectBodyPart;
 
 import java.util.List;
@@ -35,13 +36,19 @@ public class SelectBodyPartScreen extends Screen {
     public static final Component LABEL_CLICK_TO_SELECT = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "text.click_to_select").withStyle(ChatFormatting.GREEN);
     public static final Component LABEL_STATUS_EFFECTS = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "text.status_effects").withStyle(ChatFormatting.GRAY);
 
-    public SelectBodyPartScreen() {
+    private final boolean selfHealing;
+    private final int entityId;
+
+    public SelectBodyPartScreen(boolean selfHealing, int entityID) {
         super(TITLE);
+        this.selfHealing = selfHealing;
+        this.entityId = entityID;
     }
 
     @Override
     protected void init() {
         ItemStack itemStack = this.minecraft.player.getMainHandItem();
+        // TODO display custom entity overlay
         this.addRenderableOnly(new ShapeRenderable(0, 0, this.width, this.height, ColorPalette.BG_TRANSPARENT_DARK));
         this.addRenderableOnly(new AbstractTextRenderable.CenteredComponent(0, 0, this.width, 30, ColorPalette.WHITE, true, this.font, TITLE));
         if (itemStack.isEmpty()) {
@@ -83,7 +90,8 @@ public class SelectBodyPartScreen extends Screen {
     }
 
     private void bodyPartClicked(BodyPart part) {
-        ClientPacketDistributor.sendToServer(new C2S_SelectBodyPart(part.getName()));
+        HealTarget target = new HealTarget(this.selfHealing, this.entityId, part.getName());
+        ClientPacketDistributor.sendToServer(new C2S_SelectBodyPart(target));
         this.minecraft.setScreen(null);
     }
 

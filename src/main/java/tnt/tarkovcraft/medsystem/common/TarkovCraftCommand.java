@@ -171,7 +171,7 @@ public final class TarkovCraftCommand {
 
     private static int addLocalStatusEffect(CommandContext<CommandSourceStack> ctx, int duration, int delay) throws CommandSyntaxException {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
-        String bodyPartId = StringArgumentType.getString(ctx, "bodypart");
+        String bodyPartId = StringArgumentType.getString(ctx, "limb");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
@@ -223,7 +223,7 @@ public final class TarkovCraftCommand {
 
     private static int removeLocalStatusEffect(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
-        String bodyPartId = StringArgumentType.getString(ctx, "bodypart");
+        String bodyPartId = StringArgumentType.getString(ctx, "limb");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {

@@ -27,13 +27,12 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
                       int recoveryTime, int useTime) implements TooltipProvider {
 
     public static final Codec<Surgery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("healthAfterHeal", 1.0F).forGetter(Surgery::healthAfterHeal),
-                    ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("maxHealthMultiplier", 1.0F).forGetter(Surgery::maxHealthMultiplier),
-                    Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("minLimbHealth", 0.0F).forGetter(Surgery::minLimbHealth),
-                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("recoveryTime", Duration.minutes(10).tickValue()).forGetter(Surgery::recoveryTime),
-                    Codecs.NON_NEGATIVE_INT.fieldOf("useTime").forGetter(Surgery::useTime)
-            ).apply(instance, Surgery::new)
-    );
+            ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("healthAfterHeal", 1.0F).forGetter(Surgery::healthAfterHeal),
+            ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("maxHealthMultiplier", 1.0F).forGetter(Surgery::maxHealthMultiplier),
+            Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("minLimbHealth", 0.0F).forGetter(Surgery::minLimbHealth),
+            Codecs.NON_NEGATIVE_INT.optionalFieldOf("recoveryTime", Duration.minutes(10).tickValue()).forGetter(Surgery::recoveryTime),
+            Codecs.NON_NEGATIVE_INT.fieldOf("useTime").forGetter(Surgery::useTime)
+    ).apply(instance, Surgery::new));
 
     public boolean canHeal(HealthContainer container) {
         return container.getBodyPartStream().anyMatch(part -> part.isDead() && part.getMaxHealth() >= this.minLimbHealth);

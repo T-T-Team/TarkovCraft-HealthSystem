@@ -5,8 +5,8 @@ import tnt.tarkovcraft.medsystem.client.screen.SelectBodyPartScreen;
 
 public final class ClientNetworkHandler {
 
-    public static void openBodyPartSelectionScreen() {
+    public static void openBodyPartSelectionScreen(boolean selfHealing, int entityID) {
         Minecraft client = Minecraft.getInstance();
-        client.setScreen(new SelectBodyPartScreen());
+        client.setScreen(new SelectBodyPartScreen(selfHealing, entityID));
     }
 }

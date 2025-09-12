@@ -1,26 +1,30 @@
 package tnt.tarkovcraft.medsystem.network.message;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
+import tnt.tarkovcraft.medsystem.common.item.HealTarget;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
-public record C2S_SelectBodyPart(String bodyPart) implements CustomPacketPayload {
+public record C2S_SelectBodyPart(HealTarget target) implements CustomPacketPayload {
 
     public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(C2S_SelectBodyPart.class);
     public static final Type<C2S_SelectBodyPart> TYPE = new Type<>(PACKET_ID);
     public static final StreamCodec<ByteBuf, C2S_SelectBodyPart> CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, C2S_SelectBodyPart::bodyPart,
+            HealTarget.STREAM_CODEC, C2S_SelectBodyPart::target,
             C2S_SelectBodyPart::new
     );
 
@@ -32,11 +36,33 @@ public record C2S_SelectBodyPart(String bodyPart) implements CustomPacketPayload
     public void handleMessage(IPayloadContext context) {
         Player player = context.player();
         ItemStack stack = player.getMainHandItem();
-        HealthContainer container = HealthSystem.getHealthData(player);
         HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
-        BodyPart part = container.getBodyPart(this.bodyPart);
-        if (attributes != null && attributes.canUseOnPart(part, stack, container)) {
-            stack.set(MedSystemItemComponents.SELECTED_BODY_PART, this.bodyPart);
+        LivingEntity targetEntity = this.getTargetEntity(player.level(), player);
+        if (targetEntity == null) {
+            MedicalSystem.LOGGER.warn(MedicalSystem.MARKER, "Could not find target entity for healing by entity ID");
+            return;
         }
+        if (!HealthSystem.hasCustomHealth(targetEntity)) {
+            MedicalSystem.LOGGER.warn(MedicalSystem.MARKER, "Target entity \"{}\" does not have custom health container", targetEntity);
+            return;
+        }
+        HealthContainer container = HealthSystem.getHealthData(targetEntity);
+        BodyPart part = container.getBodyPart(this.target.limbCode());
+        if (attributes != null && attributes.canUseOnPart(part, stack, container)) {
+            stack.set(MedSystemItemComponents.HEAL_TARGET, this.target);
+        }
+    }
+
+    private LivingEntity getTargetEntity(Level level, LivingEntity healer) {
+        if (target.self()) {
+            return healer;
+        } else {
+            int entityId = target.entityId();
+            Entity entity = level.getEntity(entityId);
+            if (entity instanceof LivingEntity targetEntity) {
+                return targetEntity;
+            }
+        }
+        return null;
     }
 }
