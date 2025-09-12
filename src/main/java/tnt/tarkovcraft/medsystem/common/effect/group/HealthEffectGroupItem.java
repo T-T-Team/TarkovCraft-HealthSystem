@@ -85,7 +85,7 @@ public class HealthEffectGroupItem implements EffectGroupItem {
                 int delay = Math.min(current.getDelay(), other.getDelay());
                 int durationDiff = Mth.abs(current.getDuration() - other.getDuration());
                 int newDuration = current.getDuration() + durationDiff / 2;
-                float newAmount = Math.max(this.amount, amount);
+                float newAmount = this.amount < 0.0F ? Math.min(this.amount, amount) : Math.max(this.amount, amount);
                 return new EffectGroupHolder(new HealthEffectGroupItem(newAmount), newDuration, delay);
             }
         }
