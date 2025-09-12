@@ -172,7 +172,11 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         this.healthContainers.clear();
         for (HealthContainerDefinition definition : map.values()) {
             List<EntityType<?>> targets = definition.getTargets();
-            targets.forEach(type -> this.healthContainers.merge(type, definition, (d0, d1) -> HealthContainerHelper.merge(type, d0, d1)));
+            targets.forEach(type -> {
+                if (this.healthContainers.put(type, definition) != null) {
+                    MedicalSystem.LOGGER.warn(MARKER, "Detected health container override for entity {}", EntityType.getKey(type));
+                }
+            });
         }
         MedicalSystem.LOGGER.debug(MARKER, "Loaded {} custom entity health containers", this.healthContainers.size());
     }

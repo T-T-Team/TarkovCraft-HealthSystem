@@ -1,13 +1,10 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.EntityType;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.health.reaction.ReactionDefinition;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class HealthContainerHelper {
@@ -82,84 +79,5 @@ public final class HealthContainerHelper {
             }
         }
         return root != null ? DataResult.success(root) : DataResult.error(() -> "Missing root body part");
-    }
-
-    public static HealthContainerDefinition merge(EntityType<?> type, HealthContainerDefinition self, HealthContainerDefinition other) {
-        MedicalSystem.LOGGER.warn(HealthSystem.MARKER, "Merging multiple health container definitions for entity '{}'", BuiltInRegistries.ENTITY_TYPE.getKey(type));
-        if (other.canReplace()) {
-            return other;
-        }
-        List<EntityType<?>> targets = mergeTargets(self, other);
-        var bodyPartMerge = mergeAndRemoveBodyParts(self, other);
-        Map<String, BodyPartDefinition> newBodyParts = bodyPartMerge.getFirst();
-        Set<String> deletedParts = bodyPartMerge.getSecond();
-        List<BodyPartHitbox> hitboxes = mergeHitboxes(self, other, deletedParts);
-        List<BodyPartDisplay> displays = mergeDisplays(self, other, deletedParts);
-        return validate(new HealthContainerDefinition(
-                self.canReplace(),
-                targets,
-                newBodyParts,
-                hitboxes,
-                displays
-        )).getOrThrow();
-    }
-
-    private static List<EntityType<?>> mergeTargets(HealthContainerDefinition self, HealthContainerDefinition other) {
-        List<EntityType<?>> targets = new ArrayList<>(self.getTargets());
-        targets.addAll(other.getTargets());
-        return targets;
-    }
-
-    private static Pair<Map<String, BodyPartDefinition>, Set<String>> mergeAndRemoveBodyParts(HealthContainerDefinition self, HealthContainerDefinition other) {
-        Set<String> deletedParts = new HashSet<>();
-        Map<String, BodyPartDefinition> newBodyParts = new HashMap<>(self.getBodyParts());
-        for (Map.Entry<String, BodyPartDefinition> entry : other.getBodyParts().entrySet()) {
-            BodyPartGroup group = entry.getValue().getBodyPartGroup();
-            if (group.isInactive()) {
-                newBodyParts.remove(entry.getKey());
-                deletedParts.add(entry.getKey());
-            } else {
-                BodyPartDefinition def1 = newBodyParts.get(entry.getKey());
-                BodyPartDefinition def2 = entry.getValue();
-                if (def1 == null) {
-                    newBodyParts.put(entry.getKey(), def2);
-                } else {
-                    newBodyParts.put(entry.getKey(), mergeBodyPart(def1, def2));
-                }
-            }
-        }
-
-        return Pair.of(newBodyParts, deletedParts);
-    }
-
-    public static BodyPartDefinition mergeBodyPart(BodyPartDefinition self, BodyPartDefinition other) {
-        boolean vital = other.isVital();
-        String parent = other.getParent();
-        float parentDamageScale = other.getParentDamageScale();
-        float damageScale = other.getDamageScale();
-        float health = other.getMaxHealth();
-        BodyPartGroup group = other.getBodyPartGroup();
-        Map<UUID, ReactionDefinition> reactions = mergeReactions(self, other);
-        return new BodyPartDefinition(vital, Optional.ofNullable(parent), parentDamageScale, damageScale, health, group, reactions);
-    }
-
-    private static Map<UUID, ReactionDefinition> mergeReactions(BodyPartDefinition self, BodyPartDefinition other) {
-        Map<UUID, ReactionDefinition> map = new HashMap<>(self.getReactionMap());
-        map.putAll(other.getReactionMap());
-        return map;
-    }
-
-    private static List<BodyPartHitbox> mergeHitboxes(HealthContainerDefinition self, HealthContainerDefinition other, Set<String> deletedParts) {
-        List<BodyPartHitbox> hitboxes = new ArrayList<>(self.getHitboxes());
-        hitboxes.addAll(other.getHitboxes());
-        hitboxes.removeIf(t -> deletedParts.contains(t.getOwner()));
-        return hitboxes;
-    }
-
-    private static List<BodyPartDisplay> mergeDisplays(HealthContainerDefinition self, HealthContainerDefinition other, Set<String> deletedParts) {
-        List<BodyPartDisplay> display = new ArrayList<>(self.getDisplayConfiguration());
-        display.addAll(other.getDisplayConfiguration());
-        display.removeIf(t -> deletedParts.contains(t.source()));
-        return display;
     }
 }
