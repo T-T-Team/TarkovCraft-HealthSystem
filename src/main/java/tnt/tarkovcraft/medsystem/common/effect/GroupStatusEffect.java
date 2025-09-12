@@ -21,7 +21,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
         this.items.addAll(items);
         int duration = 0;
         for (EffectGroupHolder item : this.items) {
-            duration = Math.max(duration, item.getDuration());
+            duration = Math.max(duration, item.getRequiredGroupLifetime());
         }
         this.setDuration(duration);
     }

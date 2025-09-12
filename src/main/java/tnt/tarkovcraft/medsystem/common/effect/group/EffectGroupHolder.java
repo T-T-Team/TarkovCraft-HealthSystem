@@ -80,6 +80,10 @@ public final class EffectGroupHolder {
         return delay;
     }
 
+    public int getRequiredGroupLifetime() {
+        return this.delay + this.duration;
+    }
+
     public EffectGroupHolder tryMerge(EffectGroupHolder other) {
         return this.item.tryToMergeWith(this, other);
     }
