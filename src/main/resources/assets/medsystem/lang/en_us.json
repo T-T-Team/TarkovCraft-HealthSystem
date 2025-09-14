@@ -90,6 +90,7 @@
   "medsystem.bodypart.leftArm": "Left Arm",
   "medsystem.bodypart.rightLeg": "Right Leg",
   "medsystem.bodypart.leftLeg": "Left Leg",
+  "medsystem.bodypart.legs": "Legs",
 
   "screen.medsystem.health.title": "Health",
   "screen.medsystem.select_body_part.title": "Select body part to heal",
