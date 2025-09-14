@@ -86,6 +86,7 @@ public final class MedSystemStatusEffects {
     public static final Holder<StatusEffectType<?>> WOUND = REGISTRY.register("wound", key -> StatusEffectType.builder(key, WoundStatusEffect::new)
             .persist(WoundStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
+            .combineEffects(StatusEffect::maxDuration)
             .visibility(EffectVisibility.NEVER)
             .setGlobal()
             .build()

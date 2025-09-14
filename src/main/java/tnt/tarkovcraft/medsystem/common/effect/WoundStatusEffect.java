@@ -13,6 +13,10 @@ public class WoundStatusEffect extends StatusEffect {
         super(duration);
     }
 
+    public static WoundStatusEffect createTemplate() {
+        return new WoundStatusEffect(20);
+    }
+
     @Override
     public void apply(Context context) {
     }

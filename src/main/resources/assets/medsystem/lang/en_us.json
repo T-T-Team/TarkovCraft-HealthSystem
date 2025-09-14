@@ -68,6 +68,7 @@
   "status_effect.medsystem.positive_effects_group": "Positive effects",
   "status_effect.medsystem.neutral_effects_group": "Neutral effects",
   "status_effect.medsystem.negative_effects_group": "Negative effects",
+  "status_effect.medsystem.wound": "Pain",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",
@@ -101,6 +102,7 @@
   "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation",
   "label.medsystem.health_recovery": "Health recovery (%s/s)",
   "label.medsystem.health_loss": "Health loss (%s/s)",
+  "label.medsystem.limb_recovery": "Dead limb recovery",
   "label.medsystem.healing.self": "Healing yourself, remaining %s",
   "label.medsystem.healing.self.infinite": "Healing yourself...",
   "label.medsystem.healing.self.target": "Healing yourself",
