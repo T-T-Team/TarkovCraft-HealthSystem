@@ -13,6 +13,9 @@ import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
+import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
+import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
@@ -69,7 +72,13 @@ public class SelectBodyPartScreen extends Screen {
             Vector4i rect = display.getPositionForGui(2.0F, center);
             BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, part, this.font));
             boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container);
-            widget.setColorProvider(value -> isPartHealable ? 0xFF00FF00 : 0xFF444444);
+            widget.setColorProvider(value -> {
+                HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
+                if (isPartHealable) {
+                    return HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, value) | 0xFF << 24;
+                }
+                return Integer.decode(overlay.deadLimbColor) | 0xFF << 24;
+            });
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
             List<Component> statusEffectLabels = part.getStatusEffects().getEffectsStream()
@@ -87,6 +96,11 @@ public class SelectBodyPartScreen extends Screen {
                 widget.addTooltip(LABEL_NOT_HEALABLE);
             }
         }
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     private void bodyPartClicked(BodyPart part) {
