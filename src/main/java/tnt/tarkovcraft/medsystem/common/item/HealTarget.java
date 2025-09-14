@@ -5,6 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 public record HealTarget(boolean self, int entityId, String limbCode) {
 
@@ -19,4 +22,16 @@ public record HealTarget(boolean self, int entityId, String limbCode) {
             ByteBufCodecs.STRING_UTF8, HealTarget::limbCode,
             HealTarget::new
     );
+
+    public LivingEntity getTargetLivingEntity(LivingEntity healer) {
+        if (!this.self) {
+            Level level = healer.level();
+            Entity entity = level.getEntity(this.entityId);
+            if (entity instanceof LivingEntity livingEntity) {
+                return livingEntity;
+            }
+        }
+
+        return healer;
+    }
 }

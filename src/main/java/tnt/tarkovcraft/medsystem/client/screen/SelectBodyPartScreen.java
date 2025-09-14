@@ -3,6 +3,8 @@ package tnt.tarkovcraft.medsystem.client.screen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Vector2f;
@@ -53,9 +55,24 @@ public class SelectBodyPartScreen extends Screen {
     @Override
     protected void init() {
         ItemStack itemStack = this.minecraft.player.getMainHandItem();
-        // TODO display custom entity overlay
+        Component subtitle;
+        LivingEntity target;
+        if (this.selfHealing) {
+            subtitle = Component.translatable("label.medsystem.healing.self.target");
+            target = this.minecraft.player;
+        } else {
+            Entity entity = this.minecraft.level.getEntity(this.entityId);
+            if (!(entity instanceof LivingEntity livingEntity)) {
+                this.minecraft.setScreen(null);
+                return;
+            }
+            subtitle = Component.translatable("label.medsystem.healing.other.target", entity.getDisplayName()).withStyle(ChatFormatting.YELLOW);
+            target = livingEntity;
+        }
+
         this.addRenderableOnly(new ShapeRenderable(0, 0, this.width, this.height, ColorPalette.BG_TRANSPARENT_DARK));
-        this.addRenderableOnly(new AbstractTextRenderable.CenteredComponent(0, 0, this.width, 30, ColorPalette.WHITE, true, this.font, TITLE));
+        this.addRenderableOnly(new AbstractTextRenderable.CenteredComponent(0, 0, this.width, 20, ColorPalette.WHITE, true, this.font, TITLE));
+        this.addRenderableOnly(new AbstractTextRenderable.CenteredComponent(0, 20, this.width, 10, ColorPalette.WHITE, true, this.font, subtitle));
         if (itemStack.isEmpty()) {
             this.addError();
             return;
@@ -65,7 +82,7 @@ public class SelectBodyPartScreen extends Screen {
             this.addError();
             return;
         }
-        HealthContainer container = this.minecraft.player.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+        HealthContainer container = target.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         HealthContainerDefinition definition = container.getDefinition();
         List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);

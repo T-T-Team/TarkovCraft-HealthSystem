@@ -1,20 +1,26 @@
 package tnt.tarkovcraft.medsystem.common.item;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
@@ -47,12 +53,23 @@ public class HealingItem extends Item implements SideEffectProcessor {
     @Override
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int remainingUseDuration) {
         HealTarget healTarget = this.getSelectedHealingTarget(stack);
-        if (healTarget.self()) {
-            this.tickHealingOn(healTarget, livingEntity, livingEntity, level, stack, remainingUseDuration);
-        } else {
-            // TODO implement later
-            livingEntity.stopUsingItem();
+        if (healTarget != null) {
+            if (healTarget.self()) {
+                this.tickHealingOn(healTarget, livingEntity, livingEntity, level, stack, remainingUseDuration);
+            } else {
+                Entity entity = level.getEntity(healTarget.entityId());
+                if (!(entity instanceof LivingEntity targetEntity)) {
+                    livingEntity.stopUsingItem();
+                } else {
+                    this.tickHealingOn(healTarget, targetEntity, livingEntity, level, stack, remainingUseDuration);
+                }
+            }
         }
+    }
+
+    @Override
+    public void onStopUsing(ItemStack stack, LivingEntity entity, int count) {
+        stack.remove(MedSystemItemComponents.HEAL_TARGET);
     }
 
     @Override
@@ -60,32 +77,84 @@ public class HealingItem extends Item implements SideEffectProcessor {
         HealTarget target = this.getSelectedHealingTarget(stack);
         if (target.self()) {
             return this.finishUsingItemOn(target, livingEntity, livingEntity, level, stack);
+        } else {
+            Entity entity = level.getEntity(target.entityId());
+            if (entity instanceof LivingEntity targetEntity) {
+                return this.finishUsingItemOn(target, targetEntity, livingEntity, level, stack);
+            }
         }
-        // TODO implement other entity healing
         return stack;
     }
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        // TODO proper healing target select
-        if (this.canUseItem(stack, player)) {
-            HealTarget target = this.getSelectedHealingTarget(stack);
-            HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
-            if (attributes.applyGlobally()) {
-                stack.set(MedSystemItemComponents.HEAL_TARGET, new HealTarget(true, 0, ""));
-                player.startUsingItem(hand);
-            } else if (!player.isCrouching() && target != null && player.getData(MedSystemDataAttachments.HEALTH_CONTAINER).hasBodyPart(target.limbCode())) {
-                player.startUsingItem(hand);
-                return InteractionResult.SUCCESS;
-            } else {
-                if (!level.isClientSide()) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) player, new S2C_OpenBodyPartSelectScreen(true, 0));
+        HealTarget healTarget = this.getSelectedHealingTarget(stack);
+        if (healTarget != null) {
+            LivingEntity target = healTarget.getTargetLivingEntity(player);
+            HealthContainer existingTargetHealth = HealthSystem.getHealthData(target);
+            if (this.canUseItem(stack, target, player)) {
+                HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+                if (attributes.applyGlobally() || existingTargetHealth.hasBodyPart(healTarget.limbCode())) {
+                    player.startUsingItem(hand);
+                    return InteractionResult.SUCCESS;
                 }
-                return InteractionResult.CONSUME;
+
             }
         }
-        return InteractionResult.PASS;
+        LivingEntity livingEntity = this.identifyPossibleHealingTarget(stack, player, level);
+        if (livingEntity == null) {
+            stack.remove(MedSystemItemComponents.HEAL_TARGET);
+            return InteractionResult.FAIL;
+        }
+        boolean selfHealing = player == livingEntity;
+        HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+        // TODO auto-identify most critically damaged limb
+        HealTarget target = new HealTarget(selfHealing, selfHealing ? 0 : livingEntity.getId(), "");
+        if (player.isCrouching() || !attributes.applyGlobally()) {
+            if (!level.isClientSide()) {
+                PacketDistributor.sendToPlayer((ServerPlayer) player, new S2C_OpenBodyPartSelectScreen(target.self(), target.entityId()));
+            }
+            return InteractionResult.CONSUME;
+        } else {
+            stack.set(MedSystemItemComponents.HEAL_TARGET, target);
+            player.startUsingItem(hand);
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    private LivingEntity identifyPossibleHealingTarget(ItemStack stack, LivingEntity healer, Level level) {
+        double range = 3.0;
+        Vec3 eye = healer.getEyePosition();
+        Vec3 look = healer.getViewVector(1.0F);
+        Vec3 end = eye.add(look.x * range, look.y * range, look.z * range);
+        AABB aabb = healer.getBoundingBox().expandTowards(look.scale(range)).inflate(1.0, 1.0, 1.0);
+        HitResult result = ProjectileUtil.getEntityHitResult(healer, eye, end, aabb, EntitySelector.LIVING_ENTITY_STILL_ALIVE, range * range);
+        LivingEntity entity = null;
+        if (result != null) {
+            result = filterHitResult(result, eye, range);
+        }
+        if (result != null && result.getType() == HitResult.Type.ENTITY) {
+            entity = (LivingEntity) ((EntityHitResult) result).getEntity();
+        }
+        if (entity != null && HealthSystem.hasCustomHealth(entity) && this.canUseItem(stack, entity, healer)) {
+            return entity;
+        }
+        if (this.canUseItem(stack, healer, healer)) {
+            return healer;
+        }
+        return null;
+    }
+
+    private static HitResult filterHitResult(HitResult hitResult, Vec3 pos, double blockInteractionRange) {
+        Vec3 vec3 = hitResult.getLocation();
+        if (!vec3.closerThan(pos, blockInteractionRange)) {
+            Vec3 vec31 = hitResult.getLocation();
+            Direction direction = Direction.getApproximateNearest(vec31.x - pos.x, vec31.y - pos.y, vec31.z - pos.z);
+            return BlockHitResult.miss(vec31, direction, BlockPos.containing(vec31));
+        } else {
+            return hitResult;
+        }
     }
 
     @Override
@@ -121,11 +190,17 @@ public class HealingItem extends Item implements SideEffectProcessor {
         return stack.get(MedSystemItemComponents.HEAL_TARGET);
     }
 
-    public boolean canUseItem(ItemStack stack, LivingEntity entity) {
+    public boolean canUseItem(ItemStack stack, LivingEntity entity, LivingEntity healer) {
         if (!HealthSystem.hasCustomHealth(entity)) {
             return false;
         }
         if (!stack.has(MedSystemItemComponents.HEAL_ATTRIBUTES)) {
+            return false;
+        }
+        if (healer != entity && healer.distanceToSqr(entity) > 10) {
+            return false;
+        }
+        if (entity instanceof Player player && player.getCooldowns().isOnCooldown(stack)) {
             return false;
         }
         HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
@@ -138,9 +213,13 @@ public class HealingItem extends Item implements SideEffectProcessor {
     }
 
     private void tickHealingOn(HealTarget targetAttributes, LivingEntity targetEntity, LivingEntity healer, Level level, ItemStack itemStack, int duration) {
-        if (!this.canUseItem(itemStack, targetEntity)) {
+        if (!this.canUseItem(itemStack, targetEntity, healer)) {
             itemStack.remove(MedSystemItemComponents.HEAL_TARGET);
             healer.stopUsingItem();
+            if (healer instanceof Player player) {
+                ItemCooldowns cooldowns = player.getCooldowns();
+                cooldowns.addCooldown(itemStack, 10);
+            }
             return;
         }
 
@@ -151,15 +230,18 @@ public class HealingItem extends Item implements SideEffectProcessor {
         }
         int useDuration = attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION);
         boolean finite = useDuration < APPROXIMATELY_INFINITE_USE_DURATION;
-        if (targetAttributes.self()) {
+        if (targetAttributes == null || targetAttributes.self()) { // TODO should not be null!
             Component message = finite
                     ? Component.translatable("label.medsystem.healing.self", String.format(Locale.ROOT, "%.2f", duration / 20.0F))
                     : Component.translatable("label.medsystem.healing.self.infinite");
             if (!level.isClientSide() && healer instanceof Player player)
                 player.displayClientMessage(message, true);
         } else {
-            // TODO range check
-            // TODO message
+            Component message = finite
+                    ? Component.translatable("label.medsystem.healing.other", targetEntity.getDisplayName(), String.format(Locale.ROOT, "%.2f", duration / 20.0F))
+                    : Component.translatable("label.medsystem.healing.other.infinite", targetEntity.getDisplayName());
+            if (!level.isClientSide() && healer instanceof Player player)
+                player.displayClientMessage(message, true);
         }
 
         HealthRecovery healthRecovery = attributes.health();
@@ -202,7 +284,7 @@ public class HealingItem extends Item implements SideEffectProcessor {
     private ItemStack finishUsingItemOn(HealTarget targetAttributes, LivingEntity targetEntity, LivingEntity healer, Level level, ItemStack stack) {
         HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         String targetLimb = targetAttributes.limbCode();
-        if (!this.canUseItem(stack, targetEntity) || (!attributes.applyGlobally() && TextHelper.isBlank(targetLimb))) {
+        if (!this.canUseItem(stack, targetEntity, healer) || (!attributes.applyGlobally() && TextHelper.isBlank(targetLimb))) {
             return stack;
         }
 

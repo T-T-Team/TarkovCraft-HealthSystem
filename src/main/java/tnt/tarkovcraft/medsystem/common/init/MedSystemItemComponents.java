@@ -23,6 +23,7 @@ public final class MedSystemItemComponents {
     );
     public static final Supplier<DataComponentType<HealTarget>> HEAL_TARGET = REGISTRY.registerComponentType("heal_target", builder -> builder
             .persistent(HealTarget.CODEC)
+            .networkSynchronized(HealTarget.STREAM_CODEC)
     );
     public static final Supplier<DataComponentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.registerComponentType("side_effects", builder -> builder
             .persistent(SideEffectHolder.CODEC)
