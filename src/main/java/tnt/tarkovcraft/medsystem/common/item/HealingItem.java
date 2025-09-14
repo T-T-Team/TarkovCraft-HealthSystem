@@ -27,8 +27,8 @@ import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.heal.*;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
@@ -111,7 +111,7 @@ public class HealingItem extends Item implements SideEffectProcessor {
         HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         // TODO auto-identify most critically damaged limb
         HealTarget target = new HealTarget(selfHealing, selfHealing ? 0 : livingEntity.getId(), "");
-        if (player.isCrouching() || !attributes.applyGlobally()) {
+        if ((player.isCrouching() && !attributes.applyGlobally()) || !attributes.applyGlobally()) {
             if (!level.isClientSide()) {
                 PacketDistributor.sendToPlayer((ServerPlayer) player, new S2C_OpenBodyPartSelectScreen(target.self(), target.entityId()));
             }
@@ -138,7 +138,11 @@ public class HealingItem extends Item implements SideEffectProcessor {
             entity = (LivingEntity) ((EntityHitResult) result).getEntity();
         }
         if (entity != null && HealthSystem.hasCustomHealth(entity) && this.canUseItem(stack, entity, healer)) {
-            return entity;
+            HealthContainer container = HealthSystem.getHealthData(entity);
+            HealthContainerDefinition definition = container.getDefinition();
+            if (!definition.getDisplayConfiguration().isEmpty()) {
+                return entity;
+            }
         }
         if (this.canUseItem(stack, healer, healer)) {
             return healer;
@@ -230,7 +234,7 @@ public class HealingItem extends Item implements SideEffectProcessor {
         }
         int useDuration = attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION);
         boolean finite = useDuration < APPROXIMATELY_INFINITE_USE_DURATION;
-        if (targetAttributes == null || targetAttributes.self()) { // TODO should not be null!
+        if (targetAttributes.self()) {
             Component message = finite
                     ? Component.translatable("label.medsystem.healing.self", String.format(Locale.ROOT, "%.2f", duration / 20.0F))
                     : Component.translatable("label.medsystem.healing.self.infinite");
