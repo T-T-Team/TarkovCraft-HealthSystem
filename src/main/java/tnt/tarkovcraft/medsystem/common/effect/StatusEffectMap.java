@@ -43,9 +43,12 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
             return;
         Iterator<Map.Entry<StatusEffectType<?>, StatusEffect>> it = effects.entrySet().iterator();
         List<StatusEffect> newEffects = new ArrayList<>();
+        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
             effect.apply(context);
+            if (!entity.isAlive())
+                break;
             if (!effect.isInfinite()) {
                 int newDuration = effect.getDuration() - 1;
                 effect.setDuration(newDuration);
@@ -58,9 +61,10 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
                 }
             }
         }
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
-        BodyPart bodyPart = context.getNullable(MedicalSystemContextKeys.BODY_PART);
-        newEffects.forEach(effect -> StatusEffectHelper.addEffect(this, entity, bodyPart, effect));
+        if (entity.isAlive()) {
+            BodyPart bodyPart = context.getNullable(MedicalSystemContextKeys.BODY_PART);
+            newEffects.forEach(effect -> StatusEffectHelper.addEffect(this, entity, bodyPart, effect));
+        }
     }
 
     public <T extends StatusEffect> void addEffect(T effect) {
@@ -143,6 +147,10 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
 
     public Stream<StatusEffect> getEffectsStream() {
         return this.listEffects().stream();
+    }
+
+    public boolean isEmpty() {
+        return this.effects.isEmpty();
     }
 
     public StatusEffectMap copy() {

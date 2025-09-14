@@ -89,23 +89,24 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     }
 
     public void tick(LivingEntity entity) {
-        ContextImpl context = ContextImpl.of(
-                MedicalSystemContextKeys.HEALTH_CONTAINER, this,
-                ContextKeys.LIVING_ENTITY, entity
-        );
-        float previousHealth = this.getHealth();
-        this.tickEffectQueue(entity);
-        this.tickStatusEffectCheck(entity, 20, false);
-        this.statusEffects.tick(context);
-        for (BodyPart part : this.bodyParts.values()) {
-            part.tick(context);
-        }
-        float health = this.getHealth();
-        if (health != previousHealth) {
-            updateHealth(entity);
-        }
         if (this.invalidated) {
             this.clearBoundData(entity);
+        } else {
+            ContextImpl context = ContextImpl.of(
+                    MedicalSystemContextKeys.HEALTH_CONTAINER, this,
+                    ContextKeys.LIVING_ENTITY, entity
+            );
+            float previousHealth = this.getHealth();
+            this.tickEffectQueue(entity);
+            this.tickStatusEffectCheck(entity, 20, false);
+            this.statusEffects.tick(context);
+            for (BodyPart part : this.bodyParts.values()) {
+                part.tick(context);
+            }
+            float health = this.getHealth();
+            if (health != previousHealth) {
+                updateHealth(entity);
+            }
         }
     }
 
@@ -114,11 +115,15 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
                 MedicalSystemContextKeys.HEALTH_CONTAINER, this,
                 ContextKeys.LIVING_ENTITY, entity
         );
-        this.statusEffects.removeAll(context);
+        if (!this.statusEffects.isEmpty()) {
+            this.statusEffects.removeAll(context);
+        }
+
         for (BodyPart part : this.bodyParts.values()) {
             context.set(MedicalSystemContextKeys.BODY_PART, part);
             StatusEffectMap map = part.getStatusEffects();
-            map.removeAll(context);
+            if (!map.isEmpty())
+                map.removeAll(context);
         }
         this.effectQueue.clear();
     }
