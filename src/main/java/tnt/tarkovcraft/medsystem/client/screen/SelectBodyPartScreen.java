@@ -16,8 +16,10 @@ import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
+import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
@@ -28,8 +30,9 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.item.HealTarget;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SelectBodyPart;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SelectBodyPartScreen extends Screen {
 
@@ -37,7 +40,6 @@ public class SelectBodyPartScreen extends Screen {
     public static final Component LABEL_ERROR = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.invalid_item");
     public static final Component LABEL_NOT_HEALABLE = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.not_healable").withStyle(ChatFormatting.RED);
     public static final Component LABEL_CLICK_TO_SELECT = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "text.click_to_select").withStyle(ChatFormatting.GREEN);
-    public static final Component LABEL_STATUS_EFFECTS = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "text.status_effects").withStyle(ChatFormatting.GRAY);
 
     private final boolean selfHealing;
     private final int entityId;
@@ -67,11 +69,16 @@ public class SelectBodyPartScreen extends Screen {
         HealthContainerDefinition definition = container.getDefinition();
         List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
+        float scale = (this.width / 256.0F);
+        List<BodyPartHealthWidget> healthWidgets = new ArrayList<>();
         for (BodyPartDisplay display : displays) {
             BodyPart part = container.getBodyPart(display.source());
-            Vector4i rect = display.getPositionForGui(2.0F, center);
-            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, part, this.font));
+            if (part == null)
+                continue;
+            Vector4i rect = display.getPositionForGui(scale, center);
             boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container);
+            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, part, this.font));
+            widget.setScale(3);
             widget.setColorProvider(value -> {
                 HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
                 if (isPartHealable) {
@@ -81,14 +88,30 @@ public class SelectBodyPartScreen extends Screen {
             });
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
-            List<Component> statusEffectLabels = part.getStatusEffects().getEffectsStream()
-                    .filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.UI))
-                    .map(effect -> Component.literal("- ").append(effect.getType().getDisplayName().copy()).withStyle(ChatFormatting.DARK_GRAY))
-                    .collect(Collectors.toList());
-            if (!statusEffectLabels.isEmpty()) {
-                widget.addTooltip(LABEL_STATUS_EFFECTS);
-                statusEffectLabels.forEach(widget::addTooltip);
+            Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
+            if (container.getRootBodyPart().getName().equals(part.getName())) {
+                stream = Stream.concat(
+                        container.getGlobalStatusEffects().getEffectsStream(),
+                        stream
+                );
             }
+            List<StatusEffect> effects = stream.filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
+                    .toList();
+            int healthWidth = 80;
+            int healthHeight = effects.isEmpty() ? 20 : 33;
+            int xOffset = (int) ((rect.x + rect.z / 2f) - center.x);
+            int healthX = HealthScreen.getHealthLabelWidgetX(xOffset, rect.x, healthWidth, rect.z);
+            int healthY = rect.y + (rect.w - healthHeight) / 2;
+            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part);
+            healthWidget.setHealthUnitScale(HealthScreen.UNIT_SCALE);
+            healthWidget.setEffects(effects);
+            healthWidget.setFrameColor(isPartHealable ? widget.getColor() : 0xFF << 24);
+            healthWidget.setFrameHoverColor(isPartHealable ? ColorPalette.YELLOW : 0xFF << 24);
+            healthWidget.setTextColor(isPartHealable ? widget.getColor() : 0xFF444444);
+            healthWidget.setEffectDetail(false);
+            healthWidget.setTextHoverColor(isPartHealable ? ColorPalette.YELLOW : 0xFF999999);
+            healthWidgets.add(healthWidget);
+
             if (isPartHealable) {
                 widget.setOnClick(() -> this.bodyPartClicked(part));
                 widget.addTooltip(LABEL_CLICK_TO_SELECT);
@@ -96,6 +119,7 @@ public class SelectBodyPartScreen extends Screen {
                 widget.addTooltip(LABEL_NOT_HEALABLE);
             }
         }
+        healthWidgets.forEach(this::addRenderableOnly);
     }
 
     @Override

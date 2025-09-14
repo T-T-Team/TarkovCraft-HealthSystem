@@ -96,7 +96,6 @@
   "screen.medsystem.select_body_part.error.invalid_item": "Invalid item for healing",
   "screen.medsystem.select_body_part.error.not_healable": "Cannot be healed using this item",
   "screen.medsystem.select_body_part.text.click_to_select": "Click to select",
-  "screen.medsystem.select_body_part.text.status_effects": "Status effects:",
 
   "label.medsystem.validation.config.simpleArmorOverride": "Custom armor calculation component detected, this option may have no effect on actual armor calculation",
   "label.medsystem.health_recovery": "Health recovery (%s/s)",

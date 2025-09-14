@@ -76,7 +76,7 @@ public class HealthScreen extends CharacterSubScreen {
             String name = display.source();
             BodyPart part = this.healthContainer.getBodyPart(name);
             if (part == null)
-                return;
+                continue;
             Vector4i pos = display.getPositionForGui(scale, center);
             int x = pos.x;
             int y = pos.y;
@@ -98,11 +98,12 @@ public class HealthScreen extends CharacterSubScreen {
                     .toList();
             int healthWidth = 80;
             int healthHeight = effects.isEmpty() ? 20 : 33;
-            int healthX = this.getHealthLabelWidgetX(xOffset, x, healthWidth, width);
+            int healthX = getHealthLabelWidgetX(xOffset, x, healthWidth, width);
             int healthY = y + (height - healthHeight) / 2;
             BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part);
             healthWidget.setHealthUnitScale(UNIT_SCALE);
             healthWidget.setEffects(effects);
+            healthWidget.setTextHoverColor(ColorPalette.WHITE);
 
             healthWidgets.add(healthWidget); // add to list for later addition so it can be rendered on top
         }
@@ -110,7 +111,7 @@ public class HealthScreen extends CharacterSubScreen {
         healthWidgets.forEach(this::addRenderableOnly);
     }
 
-    private int getHealthLabelWidgetX(int xOffset, int posX, int labelWidth, int limbWidth) {
+    static int getHealthLabelWidgetX(int xOffset, int posX, int labelWidth, int limbWidth) {
         if (xOffset == 0) {
             return posX + (limbWidth - labelWidth) / 2;
         } else if (xOffset > 0) {
@@ -118,6 +119,5 @@ public class HealthScreen extends CharacterSubScreen {
         } else {
             return posX - labelWidth - 2;
         }
-
     }
 }

@@ -39,6 +39,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private int effectScale = 12;
     private SimpleClickListener onClick;
     private List<StatusEffect> effects;
+    private boolean effectDetail = true;
 
     public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
         super(x, y, width, height, CommonComponents.EMPTY);
@@ -86,6 +87,10 @@ public class BodyPartHealthWidget extends AbstractWidget {
         this.textHoverColor = textHoverColor;
     }
 
+    public void setEffectDetail(boolean effectDetail) {
+        this.effectDetail = effectDetail;
+    }
+
     @Override
     protected boolean isValidClickButton(int button) {
         return this.onClick != null;
@@ -110,7 +115,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
         // Health status %{currHealth}/${maxHealth} or hovered shows part name
         Component status = this.getStatusTitle();
         int statusWidth = this.font.width(status);
-        int textColor = this.part.isDead() ? 0xFFFF0000 : this.textColor;
+        int textColor = this.part.isDead() ? 0xFFFF0000 : this.isHovered ? this.textHoverColor : this.textColor;
         graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getY() + 3 + this.frameSize, textColor);
         // Health bar setup
         HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
@@ -140,7 +145,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
                 // effect icon
                 RenderUtils.blitFull(graphics, type.getIcon(effect), effectX, effectY, effectX + this.effectScale, effectY + this.effectScale);
                 // hover effects
-                if (MathHelper.isWithinBounds(mouseX, mouseY, effectX, effectY, this.effectScale, this.effectScale)) {
+                if (this.effectDetail && MathHelper.isWithinBounds(mouseX, mouseY, effectX, effectY, this.effectScale, this.effectScale)) {
                     List<Component> tooltip = new ArrayList<>();
                     tooltip.add(type.getDisplayName().copy().withStyle(type.getEffectType()));
                     effect.addAdditionalInfo(tooltip::add);

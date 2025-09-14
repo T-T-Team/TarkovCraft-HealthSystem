@@ -40,13 +40,17 @@ public class BodyPartWidget extends AbstractWidget {
 
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        int color = this.colorProvider.applyAsInt(this.part);
+        int color = this.getColor();
         graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), ARGB.scaleRGB(color, 0.8F));
         graphics.fill(this.getX() + this.scale, this.getY() + this.scale, this.getRight() - this.scale, this.getBottom() - this.scale, color);
 
         if (!this.customTooltip.isEmpty() && this.isHovered()) {
             graphics.setTooltipForNextFrame(this.font, this.customTooltip, Optional.empty(), mouseX, mouseY);
         }
+    }
+
+    public int getColor() {
+        return this.colorProvider.applyAsInt(this.part);
     }
 
     @Override

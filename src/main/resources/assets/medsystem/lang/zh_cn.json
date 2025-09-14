@@ -78,7 +78,6 @@
     "screen.medsystem.select_body_part.error.invalid_item": "无效治疗项目",
     "screen.medsystem.select_body_part.error.not_healable": "不能使用此物品治疗",
     "screen.medsystem.select_body_part.text.click_to_select": "点击选择",
-    "screen.medsystem.select_body_part.text.status_effects": "已受到的伤:",
     "label.medsystem.validation.config.simpleArmorOverride": "检测到自定义护甲计算部件，此选项可能对实际护甲计算没有影响",
     "death.attack.medsystem.bleed": "%s因失血过多而死",
     "death.attack.medsystem.bleed.player": "%s在与%s的战斗中失血过多死亡",
