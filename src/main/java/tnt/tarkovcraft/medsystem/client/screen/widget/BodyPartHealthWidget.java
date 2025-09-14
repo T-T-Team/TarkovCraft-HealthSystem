@@ -138,7 +138,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
                 int effectX = this.getX() + this.frameSize + 1 + i * this.effectScale;
                 int effectY = this.getBottom() - this.frameSize - 1 - this.effectScale;
                 // effect icon
-                RenderUtils.blitFull(graphics, type.getIcon(), effectX, effectY, effectX + this.effectScale, effectY + this.effectScale);
+                RenderUtils.blitFull(graphics, type.getIcon(effect), effectX, effectY, effectX + this.effectScale, effectY + this.effectScale);
                 // hover effects
                 if (MathHelper.isWithinBounds(mouseX, mouseY, effectX, effectY, this.effectScale, this.effectScale)) {
                     List<Component> tooltip = new ArrayList<>();

@@ -77,7 +77,7 @@ public class HealthLayer implements GuiLayer {
         for (Map.Entry<StatusEffectType<?>, List<StatusEffect>> entry : effects.entrySet()) {
             StatusEffectType<?> type = entry.getKey();
             List<StatusEffect> effectList = entry.getValue();
-            ResourceLocation icon = type.getIcon();
+            ResourceLocation icon = type.getIcon(effectList.getFirst());
             int x = (int) (overlayPos.x() + overlayWidth);
             int y = (int) (overlayPos.y() + index++ * 12);
 

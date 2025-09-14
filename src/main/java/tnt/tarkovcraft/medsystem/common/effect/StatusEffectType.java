@@ -11,6 +11,7 @@ import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -54,8 +55,12 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.intrusiveHolder.is(tag);
     }
 
+    public ResourceLocation getIcon(@Nullable StatusEffect instance) {
+        return instance != null && instance.getCustomIcon() != null ? instance.getCustomIcon() : this.icon;
+    }
+
     public ResourceLocation getIcon() {
-        return icon;
+        return this.getIcon(null);
     }
 
     public EffectType getEffectType() {

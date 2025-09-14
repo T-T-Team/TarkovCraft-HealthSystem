@@ -234,15 +234,10 @@ public final class MedicalSystemEventHandler {
             return;
         HealthContainer container = HealthSystem.getHealthData(entity);
         StatusEffectMap effects = container.getGlobalStatusEffects();
-        Context context = ContextImpl.of(
-                ContextKeys.LIVING_ENTITY, entity,
-                MedicalSystemContextKeys.HEALTH_CONTAINER, container
-        );
-        effects.removeMatching(MedSystemTags.StatusEffects.OVERWEIGHT, context);
-        if (factor >= 1.0F) {
-            StatusEffectHelper.addEffect(effects, entity, null, new MaxOverweightStatusEffect());
-        } else if (factor > 0.0F) {
-            StatusEffectHelper.addEffect(effects, entity, null, new OverweightStatusEffect());
+        if (factor > 0.0F) {
+            effects.replace(new OverweightStatusEffect(factor >= 1.0F));
+        } else {
+            effects.remove(MedSystemStatusEffects.OVERWEIGHT, Context.NONE);
         }
         HealthSystem.synchronizeEntity(entity);
     }
@@ -261,8 +256,8 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         Level level = entity.level();
         MedSystemConfig config = MedicalSystem.getConfig();
-        long gametime = level.getGameTime();
-        if (config.statusEffects.enableStatusEffects && gametime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
+        long gameTime = level.getGameTime();
+        if (config.statusEffects.enableStatusEffects && gameTime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
             DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
             entity.hurt(source, 0.25F);

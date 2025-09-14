@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import tnt.tarkovcraft.core.common.data.duration.*;
@@ -88,7 +89,7 @@ public abstract class StatusEffect {
         this.duration = duration;
     }
 
-    public final StatusEffect infinite() {
+    public final StatusEffect setInfinite() {
         this.setDuration(-1);
         return this;
     }
@@ -103,6 +104,10 @@ public abstract class StatusEffect {
 
     public final boolean isInfinite() {
         return this.getDuration() < 0;
+    }
+
+    public ResourceLocation getCustomIcon() {
+        return null;
     }
 
     public static <T extends StatusEffect> Products.P1<RecordCodecBuilder.Mu<T>, Integer> common(RecordCodecBuilder.Instance<T> instance) {

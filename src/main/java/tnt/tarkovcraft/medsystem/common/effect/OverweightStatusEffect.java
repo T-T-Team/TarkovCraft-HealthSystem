@@ -1,38 +1,39 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import tnt.tarkovcraft.core.util.context.Context;
+import net.minecraft.resources.ResourceLocation;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.function.Consumer;
 
-public class OverweightStatusEffect extends StatusEffect {
+public class OverweightStatusEffect extends SimpleStatusEffect {
 
-    public static final MapCodec<OverweightStatusEffect> CODEC = MapCodec.unit(OverweightStatusEffect::new);
+    public static final MapCodec<OverweightStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.optionalFieldOf("limitExceeded", false).forGetter(t -> t.limitExceeded)
+    ).apply(instance, OverweightStatusEffect::new));
     private static final Component HINT = Component.translatable("status_effect.medsystem.overweight.info").withStyle(ChatFormatting.DARK_GRAY);
+    private static final Component HINT_MAX = Component.translatable("status_effect.medsystem.max_overweight.info").withStyle(ChatFormatting.DARK_GRAY);
+    private static final ResourceLocation MAX_OVERWEIGHT_ICON = MedicalSystem.resource("textures/icons/status_effect/max_overweight.png");
 
-    public OverweightStatusEffect() {
+    private final boolean limitExceeded;
+
+    public OverweightStatusEffect(boolean limitExceeded) {
         super(-1);
+        this.limitExceeded = limitExceeded;
     }
 
-    public static OverweightStatusEffect createTemplate() {
-        return new OverweightStatusEffect();
-    }
-
-    @Override
-    public void apply(Context context) {
-    }
-
-    @Override
-    public StatusEffect onRemoved(Context context) {
-        return null;
+    public static OverweightStatusEffect createTemplate(boolean limitExceeded) {
+        return new OverweightStatusEffect(limitExceeded);
     }
 
     @Override
     public StatusEffect copy() {
-        return new OverweightStatusEffect();
+        return new OverweightStatusEffect(this.limitExceeded);
     }
 
     @Override
@@ -42,6 +43,11 @@ public class OverweightStatusEffect extends StatusEffect {
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(HINT);
+        tooltip.accept(this.limitExceeded ? HINT_MAX : HINT);
+    }
+
+    @Override
+    public ResourceLocation getCustomIcon() {
+        return this.limitExceeded ? MAX_OVERWEIGHT_ICON : null;
     }
 }
