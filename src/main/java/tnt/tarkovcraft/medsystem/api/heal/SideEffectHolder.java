@@ -50,6 +50,10 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         return new Builder();
     }
 
+    public static Builder withItemUsage() {
+        return builder().title(USAGE_TITLE);
+    }
+
     public void apply(LivingEntity target, HealthContainer container, @Nullable BodyPart part) {
         this.applyFromDamage(target, null, container, part);
     }

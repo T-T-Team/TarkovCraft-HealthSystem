@@ -1,0 +1,92 @@
+package tnt.tarkovcraft.medsystem.common.effect.group;
+
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
+import tnt.tarkovcraft.medsystem.common.effect.EffectType;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
+
+import java.util.function.Consumer;
+
+public class StatusEffectRemovingEffectGroupItem implements EffectGroupItem {
+
+    public static final MapCodec<StatusEffectRemovingEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            TagKey.codec(MedSystemRegistries.Keys.STATUS_EFFECT).fieldOf("tag").forGetter(t -> t.tag),
+            Codecs.simpleEnumCodec(EffectType.class).fieldOf("classification").forGetter(t -> t.classification),
+            ComponentSerialization.CODEC.fieldOf("label").forGetter(t -> t.label)
+    ).apply(instance, StatusEffectRemovingEffectGroupItem::new));
+
+    private final TagKey<StatusEffectType<?>> tag;
+    private final EffectType classification;
+    private final Component label;
+
+    public StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> tag, EffectType classification, Component label) {
+        this.tag = tag;
+        this.classification = classification;
+        this.label = label;
+    }
+
+    @Override
+    public void init(Context context) {
+    }
+
+    @Override
+    public void apply(Context context) {
+        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+        Level level = entity.level();
+        long time = level.getGameTime();
+        if (time % 20L != 0L) {
+            return;
+        }
+        HealthContainer container = HealthSystem.getHealthData(entity);
+        if (container.removeMatchingStatusEffects(this.tag, context)) {
+            HealthSystem.synchronizeEntity(entity);
+        }
+    }
+
+    @Override
+    public void cleanup(Context context) {
+    }
+
+    @Override
+    public void addInformation(EffectGroupHolder holder, Consumer<Component> tooltip, boolean isItemTooltip) {
+        Component component;
+        if (isItemTooltip) {
+            component = SideEffect.createDescriptionComponent(this.classification, this.label, 1.0F, holder.getDuration(), holder.getDelay());
+        } else {
+            component = this.label.copy()
+                    .append(" ").append(StatusEffect.getDurationLabel(holder.getDuration()))
+                    .withStyle(ChatFormatting.DARK_GRAY);
+        }
+        tooltip.accept(component);
+    }
+
+    @Override
+    public EffectGroupItem copy() {
+        return new StatusEffectRemovingEffectGroupItem(this.tag, this.classification, this.label);
+    }
+
+    @Override
+    public EffectGroupHolder tryToMergeWith(EffectGroupHolder current, EffectGroupHolder other) {
+        return null;
+    }
+
+    @Override
+    public EffectGroupItemType<?> getType() {
+        return MedSystemStatusEffectGroupItems.STATUS_EFFECT_REMOVING.value();
+    }
+}

@@ -124,10 +124,10 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         return this.remove(holder.value(), context);
     }
 
-    public void removeMatching(TagKey<StatusEffectType<?>> tag, Context context) {
+    public boolean removeMatching(TagKey<StatusEffectType<?>> tag, Context context) {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         BodyPart bodyPart = context.getNullable(MedicalSystemContextKeys.BODY_PART);
-        this.effects.entrySet().removeIf(entry -> {
+        return this.effects.entrySet().removeIf(entry -> {
             if (entry.getKey().is(tag)) {
                 entry.getValue().onRemoved(context);
                 NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, entry.getValue(), bodyPart));

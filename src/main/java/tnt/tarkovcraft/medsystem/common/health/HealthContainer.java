@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -11,8 +12,10 @@ import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.Synchronizable;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.core.util.context.WritableContext;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -165,6 +168,17 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
                 this.statusEffects.getEffectsStream(),
                 this.bodyParts.values().stream().flatMap(part -> part.getStatusEffects().getEffectsStream())
         );
+    }
+
+    public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, Context context) {
+        ContextImpl ctx = ContextImpl.builder().build();
+        ctx.copyMissing(context);
+        boolean modified = this.statusEffects.removeMatching(tag, ctx);
+        for (BodyPart part : this.bodyParts.values()) {
+            ctx.set(MedicalSystemContextKeys.BODY_PART, part);
+            modified |= part.getStatusEffects().removeMatching(tag, ctx);
+        }
+        return modified;
     }
 
     public float getHealth() {
