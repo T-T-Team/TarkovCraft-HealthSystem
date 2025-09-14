@@ -285,8 +285,7 @@
               {
                 "type": "medsystem:not",
                 "value": {
-                  "type": "medsystem:has_effect",
-                  "effect": "medsystem:pain_relief"
+                  "type": "medsystem:has_painkiller"
                 }
               }
             ]
@@ -400,8 +399,7 @@
               {
                 "type": "medsystem:not",
                 "value": {
-                  "type": "medsystem:has_effect",
-                  "effect": "medsystem:pain_relief"
+                  "type": "medsystem:has_painkiller"
                 }
               }
             ]

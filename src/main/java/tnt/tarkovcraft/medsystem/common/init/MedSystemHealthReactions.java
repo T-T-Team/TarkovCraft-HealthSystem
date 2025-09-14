@@ -15,6 +15,7 @@ public final class MedSystemHealthReactions {
     public static final Supplier<HealthEventSourceType<DamageSourceHealthEventSource>> DAMAGE_SOURCE = REGISTRY.register("damage_source", key -> new HealthEventSourceType<>(key, DamageSourceHealthEventSource.CODEC));
     public static final Supplier<HealthEventSourceType<DeadBodyPartHealthEventSource>> DEAD_BODY_PART = REGISTRY.register("dead_body_part", key -> new HealthEventSourceType<>(key, DeadBodyPartHealthEventSource.CODEC));
     public static final Supplier<HealthEventSourceType<HasStatusEffectHealthEventSource>> HAS_EFFECT = REGISTRY.register("has_effect", key -> new HealthEventSourceType<>(key, HasStatusEffectHealthEventSource.CODEC));
+    public static final Supplier<HealthEventSourceType<HasPainkillerHealthEventSource>> HAS_PAINKILLER = REGISTRY.register("has_painkiller", key -> new HealthEventSourceType<>(key, HasPainkillerHealthEventSource.CODEC));
 
     public static final Supplier<HealthEventSourceType<NotHealthEventSource>> NOT = REGISTRY.register("not", key -> new HealthEventSourceType<>(key, NotHealthEventSource.CODEC));
     public static final Supplier<HealthEventSourceType<OrHealthEventSource>> OR = REGISTRY.register("or", key -> new HealthEventSourceType<>(key, OrHealthEventSource.CODEC));
