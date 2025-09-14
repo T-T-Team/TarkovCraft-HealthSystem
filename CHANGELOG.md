@@ -1,8 +1,13 @@
-# Release 1.21.8-1.5.1
-- Added Pain status effect - appears when player is hurt or has any status effect causing pain, such as fractures
-- Added Wound status effect - not displayed anywhere, is based on received damage amount and causes pain
-- Added group status effects (Positive,Neutral,Negative) - allows to add multiple additional effects into one
-- Reworked status effect format and implemented new delayed effect scheduler
-- Added command to allow damaging specific body parts - `/tarkovcraft hurt <targets> <limb> <damage_type> <amount> [causing_entity] [direct_entity]`
-- Overweight status effects now show correctly when carry weight exceeds weight limit
-- Fixed issue where 100% side effects could be ignored if player had high enough skill level
+# Release 1.21.8-1.6.0
+- Implemented third-party healing - you can now heal friends, other entities and so on
+- Medical items now show remaining usage time while using it
+- Improved body part selection screen to be more aligned with health screen itself
+- Extended StatusEffect API to allow support for custom descriptions, icons
+- Health loss/recovery group status effects are no longer merged into single effect
+- Reworked status effects to rely on tag system (bleeds, pain relief)
+- Integration of Core v1.5 for new label API
+- Fixed crashing/freezing when player was healing on death
+- Fixed issue with duplicate damage being applied after injury recovery effect expired
+- Fixed issue with ignored post-surgery recovery duration attribute
+- Fixed pain effect not being applied immediately after taking damage
+- Fixed issue with incorrectly calculated durations for delayed group status effects
