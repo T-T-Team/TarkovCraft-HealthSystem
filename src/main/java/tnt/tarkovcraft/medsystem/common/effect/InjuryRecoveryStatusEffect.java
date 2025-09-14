@@ -77,12 +77,12 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
             part.setMaxHealth(Math.min(part.getMaxHealth() + this.reduction, part.getOriginalMaxHealth()));
-            HealthContainer container = context.getOrThrow(MedicalSystemContextKeys.HEALTH_CONTAINER);
-            container.updateHealth(entity);
-            HealthSystem.synchronizeEntity(entity);
             AttributeMap map = entity.getAttributes();
+            HealthContainer container = context.getOrThrow(MedicalSystemContextKeys.HEALTH_CONTAINER);
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
             instance.removeModifier(this.getUniqueModifierId(part));
+            container.updateHealth(entity);
+            HealthSystem.synchronizeEntity(entity);
         });
         return null;
     }
