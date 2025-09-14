@@ -1,18 +1,20 @@
 package tnt.tarkovcraft.medsystem.client.screen;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
+import tnt.tarkovcraft.core.client.IconWithLabel;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
+import tnt.tarkovcraft.core.client.screen.renderable.IconWithLabelRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
+import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.client.RegisterHealthScreenLabelsEvent;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
@@ -32,9 +34,9 @@ import java.util.stream.Stream;
 
 public class HealthScreen extends CharacterSubScreen {
 
+    public static final ResourceLocation HEALTH_ICON = MedicalSystem.resource("textures/icons/health.png");
     public static final float UNIT_SCALE = 10.0F;
 
-    private final List<LabelProvider> labelProviders = new ArrayList<>();
     private HealthContainer healthContainer;
 
     public HealthScreen(Context context) {
@@ -44,17 +46,26 @@ public class HealthScreen extends CharacterSubScreen {
     @Override
     protected void init() {
         super.init();
-        this.labelProviders.clear();
         this.addRenderableOnly(new ShapeRenderable(0, 25, this.width, this.height - 25, ColorPalette.BG_TRANSPARENT_WEAK));
 
         this.healthContainer = this.minecraft.player.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         HealthContainerDefinition definition = this.healthContainer.getDefinition();
 
         // label registration
-        List<LabelProvider> list = new ArrayList<>();
-        list.add((player, container) -> Component.literal("❤ " + Mth.ceil(container.getHealth() * UNIT_SCALE) + "/" + Mth.ceil(container.getMaxHealth() * UNIT_SCALE)).withStyle(ChatFormatting.GREEN));
+        List<IconWithLabel> list = new ArrayList<>();
+        list.add(new IconWithLabel(
+                        HEALTH_ICON,
+                        () -> Component.literal(Mth.ceil(healthContainer.getHealth() * UNIT_SCALE) + "/" + Mth.ceil(healthContainer.getMaxHealth() * UNIT_SCALE)),
+                        0xFF55FF55, 0xFF55FF55
+                )
+        );
         NeoForge.EVENT_BUS.post(new RegisterHealthScreenLabelsEvent(list));
-        this.labelProviders.addAll(list);
+        for (int i = 0; i < list.size(); i++) {
+            IconWithLabel icon = list.get(i);
+            IconWithLabelRenderable renderable = this.addRenderableOnly(new IconWithLabelRenderable(this.font, 5, this.height - 5 - this.font.lineHeight - i * 11, this.width / 3, 10, HorizontalAlignment.LEFT, icon));
+            renderable.setIconSize(10);
+            renderable.setHorizontalTextOffset(5);
+        }
 
         List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
@@ -99,16 +110,6 @@ public class HealthScreen extends CharacterSubScreen {
         healthWidgets.forEach(this::addRenderableOnly);
     }
 
-    @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
-        for (int i = 0; i < this.labelProviders.size(); i++) {
-            LabelProvider labelProvider = this.labelProviders.get(i);
-            Component label = labelProvider.getLabel(this.minecraft.player, this.healthContainer);
-            guiGraphics.drawString(this.font, label, 5, this.height - 5 - this.font.lineHeight - i * 10, 0xFFFFFFFF, true);
-        }
-    }
-
     private int getHealthLabelWidgetX(int xOffset, int posX, int labelWidth, int limbWidth) {
         if (xOffset == 0) {
             return posX + (limbWidth - labelWidth) / 2;
@@ -118,10 +119,5 @@ public class HealthScreen extends CharacterSubScreen {
             return posX - labelWidth - 2;
         }
 
-    }
-
-    @FunctionalInterface
-    public interface LabelProvider {
-        Component getLabel(Player player, HealthContainer container);
     }
 }

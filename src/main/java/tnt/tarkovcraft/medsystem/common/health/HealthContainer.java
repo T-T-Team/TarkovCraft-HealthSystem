@@ -171,8 +171,8 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     }
 
     public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, Context context) {
-        ContextImpl ctx = ContextImpl.builder().build();
-        ctx.copyMissing(context);
+        ContextImpl ctx = ContextImpl.emptyMutable();
+        ctx.copy(context);
         boolean modified = this.statusEffects.removeMatching(tag, ctx);
         for (BodyPart part : this.bodyParts.values()) {
             ctx.set(MedicalSystemContextKeys.BODY_PART, part);
