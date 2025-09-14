@@ -27,14 +27,20 @@ import java.util.function.Consumer;
 public class HealthEffectGroupItem implements EffectGroupItem {
 
     public static final MapCodec<HealthEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.FLOAT.fieldOf("amount").forGetter(t -> t.amount)
+            Codec.FLOAT.fieldOf("amount").forGetter(t -> t.amount),
+            Codec.INT.fieldOf("interval").forGetter(t -> t.interval)
     ).apply(instance, HealthEffectGroupItem::new));
-    public static final int UPDATE_INTERVAL = 20;
 
     private final float amount;
+    private final int interval;
 
     public HealthEffectGroupItem(float amount) {
+        this(amount, 20);
+    }
+
+    public HealthEffectGroupItem(float amount, int interval) {
         this.amount = amount;
+        this.interval = interval;
     }
 
     @Override
@@ -48,7 +54,9 @@ public class HealthEffectGroupItem implements EffectGroupItem {
         if (level.isClientSide())
             return;
         long time = level.getGameTime();
-        if (time % UPDATE_INTERVAL != 0)
+        if (time % this.interval != 0)
+            return;
+        if (!entity.isAlive())
             return;
         if (this.amount >= 0.0F) {
             entity.heal(this.amount);
@@ -65,7 +73,7 @@ public class HealthEffectGroupItem implements EffectGroupItem {
 
     @Override
     public void addInformation(EffectGroupHolder holder, Consumer<Component> tooltip, boolean isItemTooltip) {
-        float perSecond = 20.0F / UPDATE_INTERVAL;
+        float perSecond = 20.0F / this.interval;
         MutableComponent value = Component.translatable((this.amount >= 0 ? "label.medsystem.health_recovery" : "label.medsystem.health_loss"), Component.literal(String.format(Locale.ROOT, "%.1f", this.amount * perSecond)));
         if (isItemTooltip) {
             // > [health recovery/loss per second] / Dur.: <duration> / Del.: <delay>
@@ -78,23 +86,12 @@ public class HealthEffectGroupItem implements EffectGroupItem {
 
     @Override
     public EffectGroupHolder tryToMergeWith(EffectGroupHolder current, EffectGroupHolder other) {
-        EffectGroupItem otherItem = other.getItem();
-        if (otherItem instanceof HealthEffectGroupItem healthGroupItem) {
-            float amount = healthGroupItem.amount;
-            if ((this.amount > 0.0F && amount > 0.0F) || (this.amount < 0.0F && amount < 0.0F)) {
-                int delay = Math.min(current.getDelay(), other.getDelay());
-                int durationDiff = Mth.abs(current.getDuration() - other.getDuration());
-                int newDuration = current.getDuration() + durationDiff / 2;
-                float newAmount = this.amount < 0.0F ? Math.min(this.amount, amount) : Math.max(this.amount, amount);
-                return new EffectGroupHolder(new HealthEffectGroupItem(newAmount), newDuration, delay);
-            }
-        }
         return null;
     }
 
     @Override
     public EffectGroupItem copy() {
-        return new HealthEffectGroupItem(this.amount);
+        return new HealthEffectGroupItem(this.amount, this.interval);
     }
 
     @Override

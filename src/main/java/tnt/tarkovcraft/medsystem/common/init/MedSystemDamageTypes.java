@@ -10,7 +10,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 
 public interface MedSystemDamageTypes {
 
-    ResourceKey<DamageType> BROKEN_LEG = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("broken_leg"));
+    ResourceKey<DamageType> FRACTURE = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("fracture"));
     ResourceKey<DamageType> BLEED = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("bleed"));
     ResourceKey<DamageType> TOXIC_SIDE_EFFECT = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("toxic_side_effect"));
 

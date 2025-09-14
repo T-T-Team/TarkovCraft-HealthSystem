@@ -105,8 +105,8 @@
 
   "death.attack.medsystem.bleed": "%s has bled out",
   "death.attack.medsystem.bleed.player": "%s has bled out while fighting %s",
-  "death.attack.medsystem.broken_leg": "%s has died due to fracture",
-  "death.attack.medsystem.broken_leg.player": "%s has died due to fracture while fighting %s",
+  "death.attack.medsystem.fracture": "%s has died due to fracture",
+  "death.attack.medsystem.fracture.player": "%s has died due to fracture while fighting %s",
   "death.attack.medsystem.toxic_side_effect": "%s succumbed to toxic side effects",
   "death.attack.medsystem.toxic_side_effect.player": "%s succumbed to toxic side effects while fighting %s",
 

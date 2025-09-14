@@ -259,7 +259,7 @@ public final class MedicalSystemEventHandler {
         long gameTime = level.getGameTime();
         if (config.statusEffects.enableStatusEffects && gameTime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
-            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
+            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.FRACTURE));
             entity.hurt(source, 0.25F);
         }
     }
@@ -270,7 +270,7 @@ public final class MedicalSystemEventHandler {
         MedSystemConfig config = MedicalSystem.getConfig();
         if (config.statusEffects.enableStatusEffects && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
-            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BROKEN_LEG));
+            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.FRACTURE));
             entity.hurt(source, 0.50F);
         }
     }
