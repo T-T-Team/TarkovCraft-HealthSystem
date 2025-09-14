@@ -35,7 +35,6 @@
   "skill.trigger.medsystem.limb_fixed.info": "On limb fixed",
 
   "attribute.medsystem.limb_death_chance": "Dead limb death cause chance",
-  "attribute.medsystem.pain_relief": "Pain relief",
   "attribute.medsystem.armor_durability": "Armor durability",
   "attribute.medsystem.positive_effect_duration": "Positive status effect duration",
   "attribute.medsystem.negative_effect_duration": "Negative status effect duration",

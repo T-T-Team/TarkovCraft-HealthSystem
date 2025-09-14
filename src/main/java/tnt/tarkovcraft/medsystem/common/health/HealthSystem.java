@@ -20,7 +20,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.compatibility.Component;
 import tnt.tarkovcraft.core.network.message.S2C_SendDataAttachments;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -29,7 +28,6 @@ import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
 import tnt.tarkovcraft.medsystem.api.event.HitCalculatorResolveEvent;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
@@ -59,11 +57,14 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
     }
 
     public static boolean hasPainRelief(LivingEntity entity) {
-        return AttributeSystem.getIntValue(entity, MedSystemAttributes.PAIN_RELIEF, 0) > 0;
+        if (!hasCustomHealth(entity))
+            return false;
+        HealthContainer container = getHealthData(entity);
+        return container.getGlobalStatusEffects().hasEffect(MedSystemTags.StatusEffects.IS_PAIN_RELIEF);
     }
 
     public static boolean isInPain(LivingEntity entity) {
-        return !hasPainRelief(entity) && hasCustomHealth(entity) && getHealthData(entity).getStatusEffectStream()
+        return hasCustomHealth(entity) && !hasPainRelief(entity) && getHealthData(entity).getStatusEffectStream()
                 .anyMatch(effect -> effect.getType().is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING));
     }
 
