@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -22,23 +23,35 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.Locale;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class HealthEffectGroupItem implements EffectGroupItem {
 
     public static final MapCodec<HealthEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            UUIDUtil.CODEC.fieldOf("effectId").forGetter(t -> t.effectId),
             Codec.FLOAT.fieldOf("amount").forGetter(t -> t.amount),
             Codec.INT.fieldOf("interval").forGetter(t -> t.interval)
     ).apply(instance, HealthEffectGroupItem::new));
 
+    private final UUID effectId;
     private final float amount;
     private final int interval;
 
-    public HealthEffectGroupItem(float amount) {
-        this(amount, 20);
+    public HealthEffectGroupItem(String uuid, float amount) {
+        this(UUID.fromString(uuid), amount);
     }
 
-    public HealthEffectGroupItem(float amount, int interval) {
+    public HealthEffectGroupItem(UUID effectId, float amount) {
+        this(effectId, amount, 20);
+    }
+
+    public HealthEffectGroupItem(String uuid, float amount, int interval) {
+        this(UUID.fromString(uuid), amount, interval);
+    }
+
+    public HealthEffectGroupItem(UUID effectId, float amount, int interval) {
+        this.effectId = effectId;
         this.amount = amount;
         this.interval = interval;
     }
@@ -86,12 +99,21 @@ public class HealthEffectGroupItem implements EffectGroupItem {
 
     @Override
     public EffectGroupHolder tryToMergeWith(EffectGroupHolder current, EffectGroupHolder other) {
+        EffectGroupItem item = other.getItem();
+        if (item instanceof HealthEffectGroupItem healthItem && this.effectId.equals(healthItem.effectId)) {
+            // replace
+            return new EffectGroupHolder(
+                    item,
+                    Math.max(current.getDelay(), other.getDelay()),
+                    Math.min(current.getDelay(), other.getDelay())
+            );
+        }
         return null;
     }
 
     @Override
     public EffectGroupItem copy() {
-        return new HealthEffectGroupItem(this.amount, this.interval);
+        return new HealthEffectGroupItem(this.effectId, this.amount, this.interval);
     }
 
     @Override
