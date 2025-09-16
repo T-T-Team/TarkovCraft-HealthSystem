@@ -127,6 +127,7 @@ public class SelectBodyPartScreen extends Screen {
             healthWidget.setTextColor(isPartHealable ? widget.getColor() : 0xFF444444);
             healthWidget.setEffectDetail(false);
             healthWidget.setTextHoverColor(isPartHealable ? ColorPalette.YELLOW : 0xFF999999);
+            healthWidget.setClickListener(() -> this.bodyPartClicked(part));
             healthWidgets.add(healthWidget);
 
             if (isPartHealable) {
@@ -136,7 +137,7 @@ public class SelectBodyPartScreen extends Screen {
                 widget.addTooltip(LABEL_NOT_HEALABLE);
             }
         }
-        healthWidgets.forEach(this::addRenderableOnly);
+        healthWidgets.forEach(this::addRenderableWidget);
     }
 
     @Override
