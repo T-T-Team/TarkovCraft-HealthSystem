@@ -2,12 +2,16 @@ package tnt.tarkovcraft.medsystem.client;
 
 import dev.toma.configuration.Configuration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
@@ -19,7 +23,9 @@ import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
+import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.UUID;
 
@@ -44,6 +50,7 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerGuiLayer);
 
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
+        NeoForge.EVENT_BUS.addListener(this::onScreenOpen);
 
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
     }
@@ -54,10 +61,19 @@ public final class MedicalSystemClient {
 
     private void registerGuiLayer(RegisterGuiLayersEvent event) {
         event.registerAbove(StaminaLayer.LAYER_ID, HealthLayer.LAYER_ID, new HealthLayer());
+        event.registerAbove(HealthLayer.LAYER_ID, UnconsciousLayer.LAYER_ID, new UnconsciousLayer());
     }
 
     private void prepareLayerRender(RenderGuiLayerEvent.Pre event) {
         if (!config.renderHealth && event.getName().equals(VanillaGuiLayers.PLAYER_HEALTH)) {
+            event.setCanceled(true);
+        }
+    }
+
+    private void onScreenOpen(ScreenEvent.Opening event) {
+        Player player = Minecraft.getInstance().player;
+        Screen screen = event.getNewScreen();
+        if (player != null && BloodSystem.isEntityUnconscious(player) && !(screen instanceof PauseScreen)) {
             event.setCanceled(true);
         }
     }

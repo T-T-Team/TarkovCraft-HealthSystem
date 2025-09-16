@@ -31,6 +31,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final EffectVisibility visibility;
     private final Set<BodyPartGroup> ignoredBodyParts;
     private final boolean isGlobalEffect;
+    private final boolean isSpecial;
     private final ResourceLocation icon;
     private final Component displayName;
 
@@ -43,6 +44,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.visibility = builder.visibility;
         this.ignoredBodyParts = builder.bodyPartGroups;
         this.isGlobalEffect = builder.globalEffect;
+        this.isSpecial = builder.special;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
     }
@@ -72,7 +74,12 @@ public final class StatusEffectType<S extends StatusEffect> {
     }
 
     public Component getDisplayName() {
-        return displayName;
+        return this.getDisplayName(null);
+    }
+
+    public Component getDisplayName(@Nullable StatusEffect instance) {
+        Component customDisplayName = instance != null ? instance.getCustomDisplayName() : null;
+        return customDisplayName != null ? customDisplayName : this.displayName;
     }
 
     public S createEffect(int duration) {
@@ -97,6 +104,10 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public boolean isIgnoredBodyPart(BodyPartGroup group) {
         return this.ignoredBodyParts.contains(group);
+    }
+
+    public boolean isSpecialStatusEffect() {
+        return this.isSpecial;
     }
 
     public static boolean isVisible(StatusEffect effect, EffectVisibility ctx) {
@@ -124,6 +135,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         private EffectVisibility visibility = EffectVisibility.ALWAYS;
         private BinaryOperator<S> merger = StatusEffect::merge;
         private boolean globalEffect;
+        private boolean special;
 
         private Builder(ResourceLocation identifier, Factory<S> factory) {
             this.identifier = identifier;
@@ -157,6 +169,11 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         public Builder<S> ignoresBodyParts(BodyPartGroup... groups) {
             this.bodyPartGroups.addAll(Arrays.asList(groups));
+            return this;
+        }
+
+        public Builder<S> special() {
+            this.special = true;
             return this;
         }
 

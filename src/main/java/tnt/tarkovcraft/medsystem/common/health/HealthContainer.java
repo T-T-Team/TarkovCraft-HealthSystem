@@ -175,6 +175,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         );
     }
 
+    public boolean hasMatchingStatusEffect(TagKey<StatusEffectType<?>> tag) {
+        return this.getStatusEffectStream().anyMatch(effect -> effect.getType().is(tag));
+    }
+
     public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, Context context) {
         ContextImpl ctx = ContextImpl.emptyMutable();
         ctx.copy(context);

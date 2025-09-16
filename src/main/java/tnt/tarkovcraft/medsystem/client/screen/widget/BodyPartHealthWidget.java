@@ -147,7 +147,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
                 // hover effects
                 if (this.effectDetail && MathHelper.isWithinBounds(mouseX, mouseY, effectX, effectY, this.effectScale, this.effectScale)) {
                     List<Component> tooltip = new ArrayList<>();
-                    tooltip.add(type.getDisplayName().copy().withStyle(type.getEffectType()));
+                    tooltip.add(type.getDisplayName(effect).copy().withStyle(type.getEffectType()));
                     effect.addAdditionalInfo(tooltip::add);
                     if (effect.hasVisibleDuration() && !effect.isInfinite()) {
                         tooltip.add(StatusEffect.getDurationLabel(effect.getDuration()));

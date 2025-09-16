@@ -21,6 +21,7 @@ import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystemEventHandler;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 import java.util.function.BiConsumer;
@@ -44,6 +45,7 @@ public final class MedicalSystem {
         modEventBus.register(new MedicalSystemNetwork());
 
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
+        NeoForge.EVENT_BUS.register(new BloodSystemEventHandler());
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
 

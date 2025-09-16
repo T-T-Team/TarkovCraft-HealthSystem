@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Optional;
@@ -35,6 +36,11 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
     @Override
     public float getDamageAmount() {
         return 0.5F;
+    }
+
+    @Override
+    public float getBloodLossAmount(LivingEntity entity) {
+        return 0.0025F; // 0.1L/min
     }
 
     @Override

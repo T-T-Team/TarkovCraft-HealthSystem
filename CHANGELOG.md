@@ -1,13 +1,2 @@
-# Release 1.21.8-1.6.0
-- Implemented third-party healing - you can now heal friends, other entities and so on
-- Medical items now show remaining usage time while using it
-- Improved body part selection screen to be more aligned with health screen itself
-- Extended StatusEffect API to allow support for custom descriptions, icons
-- Health loss/recovery group status effects are no longer merged into single effect
-- Reworked status effects to rely on tag system (bleeds, pain relief)
-- Integration of Core v1.5 for new label API
-- Fixed crashing/freezing when player was healing on death
-- Fixed issue with duplicate damage being applied after injury recovery effect expired
-- Fixed issue with ignored post-surgery recovery duration attribute
-- Fixed pain effect not being applied immediately after taking damage
-- Fixed issue with incorrectly calculated durations for delayed group status effects
+# Release 1.21.8-1.7.0
+- Special status effects can no longer be added via commands

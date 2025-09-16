@@ -106,6 +106,10 @@ public abstract class StatusEffect {
         return this.getDuration() < 0;
     }
 
+    public Component getCustomDisplayName() {
+        return null;
+    }
+
     public ResourceLocation getCustomIcon() {
         return null;
     }

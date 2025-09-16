@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -34,15 +35,20 @@ import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
+import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings("unchecked")
 public final class TarkovCraftCommand {
 
-    private static final SimpleCommandExceptionType NO_VALID_TARGET_FOUND = new SimpleCommandExceptionType(Component.literal("No health container found for given entity selector"));
+    private static final SimpleCommandExceptionType NO_VALID_TARGET_FOUND = new SimpleCommandExceptionType(Component.literal("No health containers found for given entity selector"));
+    private static final SimpleCommandExceptionType NO_BLOOD_DATA_FOUND = new SimpleCommandExceptionType(Component.literal("No blood data found for given entity"));
+    private static final DynamicCommandExceptionType INVALID_STATUS_EFFECT = new DynamicCommandExceptionType(arg -> Component.literal("Status effect " + arg + " is not assignable"));
 
     public static void create(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
         dispatcher.register(
@@ -151,6 +157,29 @@ public final class TarkovCraftCommand {
                                         )
 
                         )
+                        .then(
+                                Commands.literal("blood")
+                                        .requires(src -> src.hasPermission(2))
+                                        .then(
+                                                Commands.argument("target", EntityArgument.entity())
+                                                        .executes(TarkovCraftCommand::getBloodInfo)
+                                                        .then(
+                                                                Commands.argument("volume", FloatArgumentType.floatArg(0.0F))
+                                                                        .executes(TarkovCraftCommand::setBloodVolume)
+                                                        )
+                                        )
+                        )
+                        .then(
+                                Commands.literal("unconscious")
+                                        .requires(src -> src.hasPermission(2))
+                                        .then(
+                                                Commands.argument("target", EntityArgument.entity())
+                                                        .then(
+                                                                Commands.argument("time", IntegerArgumentType.integer(0))
+                                                                        .executes(TarkovCraftCommand::setUnconsciousState)
+                                                        )
+                                        )
+                        )
         );
     }
 
@@ -189,8 +218,11 @@ public final class TarkovCraftCommand {
         return 0;
     }
 
-    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable BodyPart bodyPart, Holder<StatusEffectType<?>> holder, int duration, int delay) {
+    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable BodyPart bodyPart, Holder<StatusEffectType<?>> holder, int duration, int delay) throws CommandSyntaxException {
         StatusEffectType<T> type = (StatusEffectType<T>) holder.value();
+        if (type.isSpecialStatusEffect()) {
+            throw INVALID_STATUS_EFFECT.create(holder.getKey().location());
+        }
         WritableContext context = ContextImpl.of(
                 ContextKeys.LIVING_ENTITY, entity,
                 MedicalSystemContextKeys.HEALTH_CONTAINER, HealthSystem.getHealthData(entity)
@@ -204,6 +236,10 @@ public final class TarkovCraftCommand {
 
     private static int removeGlobalStatusEffect(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
+        StatusEffectType<?> type = reference.value();
+        if (type.isSpecialStatusEffect()) {
+            throw INVALID_STATUS_EFFECT.create(reference.getKey().location());
+        }
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
@@ -215,7 +251,7 @@ public final class TarkovCraftCommand {
                     ContextKeys.LIVING_ENTITY, livingEntity,
                     MedicalSystemContextKeys.HEALTH_CONTAINER, container
             );
-            StatusEffectHelper.removeEffect(map, livingEntity, null, context, reference.value());
+            StatusEffectHelper.removeEffect(map, livingEntity, null, context, type);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
@@ -223,6 +259,10 @@ public final class TarkovCraftCommand {
 
     private static int removeLocalStatusEffect(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
+        StatusEffectType<?> type = reference.value();
+        if (type.isSpecialStatusEffect()) {
+            throw INVALID_STATUS_EFFECT.create(reference.getKey().location());
+        }
         String bodyPartId = StringArgumentType.getString(ctx, "limb");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
@@ -240,7 +280,7 @@ public final class TarkovCraftCommand {
                     MedicalSystemContextKeys.BODY_PART, bodyPart
             );
             StatusEffectMap map = bodyPart.getStatusEffects();
-            StatusEffectHelper.removeEffect(map, livingEntity, bodyPart, context, reference.value());
+            StatusEffectHelper.removeEffect(map, livingEntity, bodyPart, context, type);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
@@ -261,6 +301,41 @@ public final class TarkovCraftCommand {
         for (LivingEntity entity : entities) {
             entity.hurtServer((ServerLevel) entity.level(), damageSource, amount);
         }
+        return 0;
+    }
+
+    private static int getBloodInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Entity entity = EntityArgument.getEntity(ctx, "target");
+        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystem.hasBloodDataIntegration(livingEntity)) {
+            throw NO_BLOOD_DATA_FOUND.create();
+        }
+        BloodData data = BloodSystem.getBloodData(livingEntity);
+        CommandSourceStack source = ctx.getSource();
+        source.sendSystemMessage(Component.literal(entity.getDisplayName().getString() + " blood: " + String.format(Locale.ROOT, "%.2f/%.2fL", data.getBloodVolume(), data.getMaxBloodVolume())));
+        return 0;
+    }
+
+    private static int setBloodVolume(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Entity entity = EntityArgument.getEntity(ctx, "target");
+        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystem.hasBloodDataIntegration(livingEntity)) {
+            throw NO_BLOOD_DATA_FOUND.create();
+        }
+        BloodData data = BloodSystem.getBloodData(livingEntity);
+        float volume = FloatArgumentType.getFloat(ctx, "volume");
+        data.setBloodVolume(volume);
+        data.sync(livingEntity);
+        return 0;
+    }
+
+    private static int setUnconsciousState(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Entity entity = EntityArgument.getEntity(ctx, "target");
+        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystem.hasBloodDataIntegration(livingEntity)) {
+            throw NO_BLOOD_DATA_FOUND.create();
+        }
+        BloodData data = BloodSystem.getBloodData(livingEntity);
+        int time = IntegerArgumentType.getInteger(ctx, "time");
+        data.setUnconsciousTime(time);
+        data.sync(livingEntity);
         return 0;
     }
 }

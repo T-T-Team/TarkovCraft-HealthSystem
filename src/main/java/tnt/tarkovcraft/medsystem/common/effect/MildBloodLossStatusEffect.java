@@ -1,0 +1,60 @@
+package tnt.tarkovcraft.medsystem.common.effect;
+
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
+import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+
+public class MildBloodLossStatusEffect extends IntervalAppliedStatusEffect {
+
+    public static final MapCodec<MildBloodLossStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, MildBloodLossStatusEffect::new));
+
+    public MildBloodLossStatusEffect() {
+        super(-1);
+    }
+
+    private MildBloodLossStatusEffect(int duration) {
+        super(duration);
+    }
+
+    @Override
+    public int getUpdateInterval() {
+        return 20;
+    }
+
+    @Override
+    public void applyEffect(LivingEntity entity, Context context) {
+        if (!BloodSystem.hasBloodDataIntegration(entity)) {
+            this.markForRemoval();
+            return;
+        }
+        BloodData data = BloodSystem.getBloodData(entity);
+        float percentage = data.getBloodVolumePercentage();
+        if (percentage < BloodData.MODERATE_BLOOD_LOSS || percentage >= BloodData.MILD_BLOOD_LOSS) {
+            this.markForRemoval();
+        }
+    }
+
+    @Override
+    public StatusEffect onRemoved(Context context) {
+        return null;
+    }
+
+    @Override
+    public StatusEffect copy() {
+        return new MildBloodLossStatusEffect(this.getDuration());
+    }
+
+    @Override
+    public boolean hasVisibleDuration() {
+        return false;
+    }
+
+    @Override
+    public StatusEffectType<?> getType() {
+        return MedSystemStatusEffects.MILD_BLOODLOSS.value();
+    }
+}

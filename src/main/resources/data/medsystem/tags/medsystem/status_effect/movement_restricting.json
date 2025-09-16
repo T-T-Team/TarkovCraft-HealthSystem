@@ -1,5 +1,6 @@
 {
   "values": [
-    "medsystem:fracture"
+    "medsystem:fracture",
+    "medsystem:moderate_bloodloss"
   ]
 }

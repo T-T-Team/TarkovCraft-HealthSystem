@@ -4,14 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.core.util.context.Context;
@@ -74,8 +72,7 @@ public class HealthEffectGroupItem implements EffectGroupItem {
         if (this.amount >= 0.0F) {
             entity.heal(this.amount);
         } else {
-            Holder<DamageType> toxinHolder = MedSystemDamageTypes.of(level.registryAccess(), MedSystemDamageTypes.TOXIC_SIDE_EFFECT);
-            DamageSource damageSource = new DamageSource(toxinHolder);
+            DamageSource damageSource = MedSystemDamageTypes.causeToxinDamage(level.registryAccess());
             entity.hurtServer((ServerLevel) level, damageSource, Mth.abs(this.amount));
         }
     }

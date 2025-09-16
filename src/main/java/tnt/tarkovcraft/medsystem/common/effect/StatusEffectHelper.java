@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.util.context.Context;
@@ -38,6 +39,10 @@ public final class StatusEffectHelper {
         effects.addEffect(effect);
         HealthContainer container = HealthSystem.getHealthData(entity);
         container.markStatusEffectAdded(entity);
+    }
+
+    public static StatusEffect removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, Holder<StatusEffectType<?>> holder) {
+        return removeEffect(effects, entity, bodyPart, context, holder.value());
     }
 
     public static StatusEffect removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, StatusEffectType<?> type) {

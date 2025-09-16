@@ -27,6 +27,7 @@ import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
 import tnt.tarkovcraft.medsystem.api.event.HitCalculatorResolveEvent;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
@@ -75,6 +76,10 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
             return false;
         }
         HealthContainer healthContainer = getHealthData(entity);
+        StatusEffectMap map = healthContainer.getGlobalStatusEffects();
+        if (map.hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING)) {
+            return true;
+        }
         Stream<BodyPart> parts = healthContainer.getBodyPartStream();
         return parts.anyMatch(HealthSystem::isMovementRestrictingPart);
     }

@@ -11,6 +11,9 @@
     "FoodDataMixin"
   ],
   "client": [
-    "client.LivingEntityRendererMixin"
+    "client.LivingEntityRendererMixin",
+    "client.CameraMixin",
+    "client.LocalPlayerMixin",
+    "client.MouseHandlerMixin"
   ]
 }

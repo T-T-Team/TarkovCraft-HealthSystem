@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -42,6 +43,19 @@ public abstract class LivingEntityMixin extends Entity {
         if (HealthSystem.hasCustomHealth(livingEntity)) {
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
             container.tick(livingEntity);
+        }
+    }
+
+    @Inject(
+            method = "swing(Lnet/minecraft/world/InteractionHand;Z)V",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void medsystem$swing(CallbackInfo ci) {
+        LivingEntity livingEntity = (LivingEntity) (Object) this;
+        livingEntity.isCrouching();
+        if (livingEntity.getType() == EntityType.PLAYER && BloodSystem.isEntityUnconscious(livingEntity)) {
+            ci.cancel();
         }
     }
 }

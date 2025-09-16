@@ -1,15 +1,15 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
-import tnt.tarkovcraft.medsystem.api.BodyPartDamageSource;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -24,6 +24,8 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
         super(duration);
     }
 
+    public abstract float getBloodLossAmount(LivingEntity entity);
+
     public abstract long getDamageInterval();
 
     public abstract float getDamageAmount();
@@ -35,12 +37,13 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
         long time = level.getGameTime();
         if (time % this.getDamageInterval() == 0L && level instanceof ServerLevel serverLevel) {
             context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
-                Holder<DamageType> type = MedSystemDamageTypes.of(entity.registryAccess(), MedSystemDamageTypes.BLEED);
-                BodyPartDamageSource source = this.getCausingEntity(serverLevel)
-                        .map(cause -> new BodyPartDamageSource(type, null, cause, part.getName()))
-                        .orElseGet(() -> new BodyPartDamageSource(type, part.getName()));
-                source.setAllowDeadBodyPartDamage(false);
-                entity.hurtServer(serverLevel, source, this.getDamageAmount());
+                if (BloodSystem.hasBloodDataIntegration(entity)) {
+                    BloodSystem.causeBloodLoss(entity, this.getBloodLossAmount(entity));
+                } else {
+                    RegistryAccess access = serverLevel.registryAccess();
+                    DamageSource damageSource = MedSystemDamageTypes.causeBleedDamage(access, this.getCausingEntity(serverLevel));
+                    entity.hurtServer(serverLevel, damageSource, this.getDamageAmount());
+                }
             });
         }
     }

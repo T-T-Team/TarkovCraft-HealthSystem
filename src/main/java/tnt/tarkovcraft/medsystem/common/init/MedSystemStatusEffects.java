@@ -24,6 +24,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .setGlobal()
             .combineEffects(StatusEffect::replace)
+            .special()
             .build()
     );
     public static final Holder<StatusEffectType<?>> FRACTURE = REGISTRY.register("fracture", key -> StatusEffectType.builder(key, FractureStatusEffect::new)
@@ -60,6 +61,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .setGlobal()
             .combineEffects(StatusEffect::keep)
+            .special()
             .build()
     );
     public static final Holder<StatusEffectType<?>> POSITIVE_EFFECTS_GROUP = REGISTRY.register("positive_effects_group", key -> StatusEffectType.builder(key, (duration) -> new PositiveEffectsGroup(Collections.emptyList()))
@@ -67,6 +69,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.POSITIVE)
             .setGlobal()
             .combineEffects(GroupStatusEffect::merge)
+            .special()
             .build()
     );
     public static final Holder<StatusEffectType<?>> NEUTRAL_EFFECTS_GROUP = REGISTRY.register("neutral_effects_group", key -> StatusEffectType.builder(key, (duration) -> new NeutralEffectsGroup(Collections.emptyList()))
@@ -74,6 +77,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEUTRAL)
             .setGlobal()
             .combineEffects(GroupStatusEffect::merge)
+            .special()
             .build()
     );
     public static final Holder<StatusEffectType<?>> NEGATIVE_EFFECTS_GROUP = REGISTRY.register("negative_effects_group", key -> StatusEffectType.builder(key, (duration) -> new NegativeEffectsGroup(Collections.emptyList()))
@@ -81,6 +85,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .setGlobal()
             .combineEffects(GroupStatusEffect::merge)
+            .special()
             .build()
     );
     public static final Holder<StatusEffectType<?>> WOUND = REGISTRY.register("wound", key -> StatusEffectType.builder(key, WoundStatusEffect::new)
@@ -89,6 +94,22 @@ public final class MedSystemStatusEffects {
             .combineEffects(StatusEffect::maxDuration)
             .visibility(EffectVisibility.NEVER)
             .setGlobal()
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> MILD_BLOODLOSS = REGISTRY.register("mild_bloodloss", key -> StatusEffectType.builder(key, duration -> new MildBloodLossStatusEffect())
+            .persist(MildBloodLossStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .combineEffects(StatusEffect::replace)
+            .special()
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> MODERATE_BLOODLOSS = REGISTRY.register("moderate_bloodloss", key -> StatusEffectType.builder(key, duration -> new ModerateBloodLossStatusEffect())
+            .persist(ModerateBloodLossStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .combineEffects(StatusEffect::replace)
+            .special()
             .build()
     );
 }

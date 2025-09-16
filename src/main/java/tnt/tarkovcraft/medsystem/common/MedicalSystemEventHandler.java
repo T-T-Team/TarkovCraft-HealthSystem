@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -43,6 +44,8 @@ import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.item.HealTarget;
+import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -60,6 +63,9 @@ public final class MedicalSystemEventHandler {
                 container.bind(livingEntity);
                 HealthSystem.synchronizeEntity(livingEntity);
             });
+            if (livingEntity.getType() == EntityType.PLAYER && !BloodSystem.hasBloodDataIntegration(livingEntity)) {
+                livingEntity.setData(MedSystemDataAttachments.BLOOD_DATA, new BloodData(5.0F));
+            }
         }
     }
 
@@ -257,10 +263,11 @@ public final class MedicalSystemEventHandler {
         Level level = entity.level();
         MedSystemConfig config = MedicalSystem.getConfig();
         long gameTime = level.getGameTime();
+        if (level.isClientSide())
+            return;
         if (config.statusEffects.enableStatusEffects && gameTime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
-            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.FRACTURE));
-            entity.hurt(source, 0.25F);
+            entity.hurtServer((ServerLevel) level, MedSystemDamageTypes.causeFractureDamage(access), 0.25F);
         }
     }
 
@@ -268,10 +275,12 @@ public final class MedicalSystemEventHandler {
     private void afterJump(StaminaEvent.AfterJump event) {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
+        Level level = entity.level();
+        if (level.isClientSide())
+            return;
         if (config.statusEffects.enableStatusEffects && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
-            DamageSource source = new DamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.FRACTURE));
-            entity.hurt(source, 0.50F);
+            entity.hurtServer((ServerLevel) level, MedSystemDamageTypes.causeFractureDamage(access), 0.50F);
         }
     }
 

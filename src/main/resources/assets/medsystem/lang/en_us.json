@@ -69,6 +69,9 @@
   "status_effect.medsystem.neutral_effects_group": "Neutral effects",
   "status_effect.medsystem.negative_effects_group": "Negative effects",
   "status_effect.medsystem.wound": "Pain",
+  "status_effect.medsystem.mild_bloodloss": "Mild Blood Loss",
+  "status_effect.medsystem.moderate_bloodloss": "Moderate Blood Loss",
+  "status_effect.medsystem.critical_bloodloss": "Critical Blood Loss",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",

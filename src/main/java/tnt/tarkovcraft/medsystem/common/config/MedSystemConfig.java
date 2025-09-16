@@ -49,5 +49,9 @@ public final class MedSystemConfig {
     public boolean addHitEffectsToVanillaItems = true;
 
     @Configurable
+    @Configurable.Synchronized
+    public boolean useBloodSystem = true; // TODO localization
+
+    @Configurable
     public StatusEffectConfig statusEffects = new StatusEffectConfig();
 }

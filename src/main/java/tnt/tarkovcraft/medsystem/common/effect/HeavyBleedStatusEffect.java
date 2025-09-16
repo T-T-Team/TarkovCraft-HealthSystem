@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
@@ -40,13 +41,18 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
     }
 
     @Override
+    public float getBloodLossAmount(LivingEntity entity) {
+        return 0.025F; // 1L/min
+    }
+
+    @Override
     public StatusEffect copy() {
         return new HeavyBleedStatusEffect(this.getDuration());
     }
 
     @Override
     public StatusEffect onRemoved(Context context) {
-        return new FreshWoundStatusEffect(
+        return new FreshWoundStatusEffect( // TODO broken attributes
                 Duration.minutes(5).tickValue(),
                 Duration.seconds(5).tickValue()
         );
