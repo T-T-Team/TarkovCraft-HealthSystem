@@ -24,7 +24,7 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
         super(duration);
     }
 
-    public abstract float getBloodLossAmount(LivingEntity entity);
+    public abstract float getPerMinuteBloodLossAmount(LivingEntity entity);
 
     public abstract long getDamageInterval();
 
@@ -38,7 +38,7 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
         if (time % this.getDamageInterval() == 0L && level instanceof ServerLevel serverLevel) {
             context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
                 if (BloodSystem.hasBloodDataIntegration(entity)) {
-                    float perMinuteBloodLoss = this.getBloodLossAmount(entity);
+                    float perMinuteBloodLoss = this.getPerMinuteBloodLossAmount(entity);
                     float bloodLoss = (perMinuteBloodLoss * this.getDamageInterval()) / 1200;
                     BloodSystem.causeBloodLoss(entity, bloodLoss);
                 } else {

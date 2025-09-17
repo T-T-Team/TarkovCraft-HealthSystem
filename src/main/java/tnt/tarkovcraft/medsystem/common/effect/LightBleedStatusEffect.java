@@ -40,7 +40,7 @@ public class LightBleedStatusEffect extends BleedStatusEffect {
     }
 
     @Override
-    public float getBloodLossAmount(LivingEntity entity) {
+    public float getPerMinuteBloodLossAmount(LivingEntity entity) {
         return MedicalSystem.getConfig().statusEffects.lightBleedAmount;
     }
 

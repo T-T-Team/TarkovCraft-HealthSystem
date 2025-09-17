@@ -42,7 +42,7 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
     }
 
     @Override
-    public float getBloodLossAmount(LivingEntity entity) {
+    public float getPerMinuteBloodLossAmount(LivingEntity entity) {
         return MedicalSystem.getConfig().statusEffects.heavyBleedAmount;
     }
 
@@ -53,9 +53,8 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public StatusEffect onRemoved(Context context) {
-        return new FreshWoundStatusEffect( // TODO broken attributes
-                Duration.minutes(5).tickValue(),
-                Duration.seconds(5).tickValue()
+        return new FreshWoundStatusEffect(
+                Duration.minutes(5).tickValue()
         );
     }
 
