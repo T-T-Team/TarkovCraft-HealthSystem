@@ -32,6 +32,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final Set<BodyPartGroup> ignoredBodyParts;
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
+    private final boolean isShaderEffect;
     private final ResourceLocation icon;
     private final Component displayName;
 
@@ -45,6 +46,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.ignoredBodyParts = builder.bodyPartGroups;
         this.isGlobalEffect = builder.globalEffect;
         this.isSpecial = builder.special;
+        this.isShaderEffect = builder.isShaderEffect;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
     }
@@ -110,6 +112,14 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.isSpecial;
     }
 
+    public boolean hasPostShader() {
+        return this.isShaderEffect;
+    }
+
+    public ResourceLocation getIdentifier() {
+        return identifier;
+    }
+
     public static boolean isVisible(StatusEffect effect, EffectVisibility ctx) {
         return effect.isVisible() && effect.getType().getVisibility().isVisibleInMode(ctx);
     }
@@ -136,6 +146,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         private BinaryOperator<S> merger = StatusEffect::merge;
         private boolean globalEffect;
         private boolean special;
+        private boolean isShaderEffect;
 
         private Builder(ResourceLocation identifier, Factory<S> factory) {
             this.identifier = identifier;
@@ -172,8 +183,13 @@ public final class StatusEffectType<S extends StatusEffect> {
             return this;
         }
 
-        public Builder<S> special() {
+        public Builder<S> setSpecial() {
             this.special = true;
+            return this;
+        }
+
+        public Builder<S> setPostEffects() {
+            this.isShaderEffect = true;
             return this;
         }
 
@@ -184,6 +200,9 @@ public final class StatusEffectType<S extends StatusEffect> {
             Objects.requireNonNull(this.merger, "Merge function is required");
             Objects.requireNonNull(this.effectType, "Effect type is required");
             Objects.requireNonNull(this.visibility, "Effect visibility is required");
+            if (!this.globalEffect && this.isShaderEffect) {
+                throw new IllegalArgumentException("Shader effects are only supported for global status effects");
+            }
 
             return new StatusEffectType<>(this);
         }

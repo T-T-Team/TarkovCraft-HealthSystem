@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,19 +9,10 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 public class PainStatusEffect extends IntervalAppliedStatusEffect {
 
-    public static final MapCodec<PainStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(
-            Codec.INT.optionalFieldOf("timeActive", 0).forGetter(t -> t.timeActive)
-    ).apply(instance, PainStatusEffect::new));
-
-    private int timeActive;
+    public static final MapCodec<PainStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, PainStatusEffect::new));
 
     public PainStatusEffect(int duration) {
         super(duration);
-    }
-
-    private PainStatusEffect(int duration, int timeActive) {
-        super(duration);
-        this.timeActive = timeActive;
     }
 
     @Override
@@ -32,15 +22,14 @@ public class PainStatusEffect extends IntervalAppliedStatusEffect {
 
     @Override
     public void applyEffect(LivingEntity entity, Context context) {
-        if (!HealthSystem.isInPain(entity)) {
-            this.markForRemoval();
+        if (!HealthSystem.isInPain(entity) && this.isInfinite()) {
+            this.setDuration(30);
         }
-        this.timeActive += 20;
     }
 
     @Override
     public StatusEffect copy() {
-        return new PainStatusEffect(this.getDuration(), this.timeActive);
+        return new PainStatusEffect(this.getDuration());
     }
 
     @Override
@@ -56,9 +45,5 @@ public class PainStatusEffect extends IntervalAppliedStatusEffect {
     @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.PAIN.value();
-    }
-
-    public int getTimeActive() {
-        return timeActive;
     }
 }

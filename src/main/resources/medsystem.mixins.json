@@ -14,6 +14,7 @@
     "client.LivingEntityRendererMixin",
     "client.CameraMixin",
     "client.LocalPlayerMixin",
-    "client.MouseHandlerMixin"
+    "client.MouseHandlerMixin",
+    "client.GameRendererMixin"
   ]
 }
