@@ -13,4 +13,5 @@ public final class MedSystemStatusEffectGroupItems {
     public static final Holder<EffectGroupItemType<?>> HEALTH = REGISTRY.register("health", key -> new EffectGroupItemType<>(key, HealthEffectGroupItem.CODEC));
     public static final Holder<EffectGroupItemType<?>> STATUS_EFFECT_REMOVING = REGISTRY.register("status_effect_removing", key -> new EffectGroupItemType<>(key, StatusEffectRemovingEffectGroupItem.CODEC));
     public static final Holder<EffectGroupItemType<?>> DEAD_LIMB_RECOVERY = REGISTRY.register("dead_limb_recovery", key -> new EffectGroupItemType<>(key, DeadLimbRecoveryEffectGroupItem.CODEC));
+    public static final Holder<EffectGroupItemType<?>> BLOOD_RECOVERY = REGISTRY.register("blood_recovery", key  -> new EffectGroupItemType<>(key, BloodRecoveryEffectGroupItem.CODEC));
 }

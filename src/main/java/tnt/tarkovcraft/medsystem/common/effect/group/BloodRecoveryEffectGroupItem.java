@@ -1,0 +1,88 @@
+package tnt.tarkovcraft.medsystem.common.effect.group;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
+import tnt.tarkovcraft.medsystem.common.effect.EffectType;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
+import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+
+import java.util.Locale;
+import java.util.function.Consumer;
+
+public class BloodRecoveryEffectGroupItem implements EffectGroupItem {
+
+    public static final MapCodec<BloodRecoveryEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.FLOAT.fieldOf("amount").forGetter(t -> t.amount)
+    ).apply(instance, BloodRecoveryEffectGroupItem::new));
+
+    private final float amount;
+
+    public BloodRecoveryEffectGroupItem(float amount) {
+        this.amount = amount;
+    }
+
+    @Override
+    public void init(Context context) {
+    }
+
+    @Override
+    public void cleanup(Context context) {
+    }
+
+    @Override
+    public void apply(Context context) {
+        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+        Level level = entity.level();
+        long time = level.getGameTime();
+        if (time % 20L != 0L) {
+            return;
+        }
+        if (BloodSystem.hasBloodDataIntegration(entity)) {
+            BloodData data = BloodSystem.getBloodData(entity);
+            data.setBloodVolume(data.getBloodVolume() + this.amount);
+            data.sync(entity);
+        }
+    }
+
+    @Override
+    public void addInformation(EffectGroupHolder holder, Consumer<Component> tooltip, boolean isItemTooltip) {
+        EffectType type = this.amount > 0 ? EffectType.POSITIVE : EffectType.NEGATIVE;
+        MutableComponent label = Component.translatable("label.medsystem." + (this.amount > 0 ? "blood_recovery" : "blood_loss"), Component.literal(String.format(Locale.ROOT, "%.1f", this.amount * 1000.0F)));
+        if (isItemTooltip) {
+            tooltip.accept(SideEffect.createDescriptionComponent(type, label, 1.0F, holder.getDuration(), holder.getDelay()));
+        } else {
+            tooltip.accept(label.append(" ").append(StatusEffect.getDurationLabel(holder.getDuration())).withStyle(ChatFormatting.DARK_GRAY));
+        }
+    }
+
+    @Override
+    public boolean isVisible() {
+        return this.amount != 0.0F;
+    }
+
+    @Override
+    public EffectGroupItem copy() {
+        return new BloodRecoveryEffectGroupItem(this.amount);
+    }
+
+    @Override
+    public EffectGroupHolder tryToMergeWith(EffectGroupHolder current, EffectGroupHolder other) {
+        return null;
+    }
+
+    @Override
+    public EffectGroupItemType<?> getType() {
+        return MedSystemStatusEffectGroupItems.BLOOD_RECOVERY.value();
+    }
+}
