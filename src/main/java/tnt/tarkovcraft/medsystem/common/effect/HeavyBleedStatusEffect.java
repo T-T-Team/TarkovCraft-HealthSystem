@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
 
     @Override
     public float getBloodLossAmount(LivingEntity entity) {
-        return 0.025F; // 1L/min
+        return MedicalSystem.getConfig().statusEffects.heavyBleedAmount;
     }
 
     @Override
