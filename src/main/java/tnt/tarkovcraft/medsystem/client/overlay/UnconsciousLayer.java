@@ -5,42 +5,32 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.gui.GuiLayer;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
-
-import java.util.Locale;
 
 public class UnconsciousLayer implements GuiLayer {
 
     public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/unconscious");
+    public static final Component TEXT = Component.translatable("label.medsystem.unconscious.info");
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
-        Entity camera = client.cameraEntity;
         Font font = client.font;
-        if (camera == null || client.options.hideGui)
+        if (client.options.hideGui)
             return;
-        if (player.isSpectator() && player == camera)
+        if (player.isSpectator() || player.isCreative())
             return;
-        if (player.isCreative()) {
-            return;
-        }
         Window window = client.getWindow();
 
-        BloodData bloodData = BloodSystem.getBloodData(player); // TODO camera entity support
-        float volume = bloodData.getBloodVolume();
-        float maxVolume = bloodData.getMaxBloodVolume();
-
-        guiGraphics.drawString(font, String.format(Locale.ROOT, "%.2f/%.2f", volume, maxVolume), 10, 10, 0xFFFFFFFF, true);
-        if (bloodData.isUnconscious()) {
-            guiGraphics.drawString(font, "Unconscious", 10, 20, 0xFFFFFFFF, true);
+        if (BloodSystem.isEntityUnconscious(player)) {
+            int textWidth = font.width(TEXT);
+            guiGraphics.drawString(font, TEXT, (window.getGuiScaledWidth() - textWidth) / 2, 30, 0xFFFFFFFF, true);
         }
     }
 }

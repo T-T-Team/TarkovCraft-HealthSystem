@@ -38,7 +38,7 @@ public final class BloodSystem {
     }
 
     public static boolean isEntityUnconscious(LivingEntity entity) {
-        return getBloodData(entity).isUnconscious();
+        return entity.isAlive() && getBloodData(entity).isUnconscious();
     }
 
     public static float getBloodVolume(LivingEntity entity) {
@@ -58,6 +58,7 @@ public final class BloodSystem {
     }
 
     public static void sync(LivingEntity entity) {
-        entity.syncData(MedSystemDataAttachments.BLOOD_DATA);
+        if (entity.isAlive())
+            entity.syncData(MedSystemDataAttachments.BLOOD_DATA);
     }
 }

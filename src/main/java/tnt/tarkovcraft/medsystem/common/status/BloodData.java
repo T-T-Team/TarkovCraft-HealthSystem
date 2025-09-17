@@ -97,13 +97,6 @@ public final class BloodData {
     }
 
     public boolean isUnconscious() {
-        // Should block:
-        // item, block, entity interaction
-        // entity dismounting
-        // inventory/gui opening
-        // chat
-        // sneak/sprint toggle
-        // dropping items
         return this.unconsciousTime > 0;
     }
 
@@ -130,10 +123,12 @@ public final class BloodData {
                     .findAny().orElse(null);
             RegistryAccess access = level.registryAccess();
             if (effect != null) {
-                entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, effect.getCausingEntity(level)), entity.getMaxHealth());
+                entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, effect.getCausingEntity(level)), 4.0F);
             } else {
-                entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), entity.getMaxHealth());
+                entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), 4.0F);
             }
+            this.addBloodLossStatusEffect(container, entity, false);
+            this.setUnconsciousTime(Math.max(this.unconsciousTime, 300));
             status = BloodStatus.DEATH;
         } else if (value < UNCONSCIOUS_LIMIT) {
             this.addBloodLossStatusEffect(container, entity, false);
@@ -150,7 +145,8 @@ public final class BloodData {
     }
 
     public void sync(LivingEntity entity) {
-        entity.syncData(MedSystemDataAttachments.BLOOD_DATA);
+        if (entity.isAlive())
+            entity.syncData(MedSystemDataAttachments.BLOOD_DATA);
     }
 
     private void bloodLevelTick(LivingEntity entity) {
@@ -178,6 +174,8 @@ public final class BloodData {
     }
 
     private void updateConsciousStatus(LivingEntity entity, boolean wakeUp) {
+        if (!entity.isAlive())
+            return;
         boolean unconscious = this.isUnconscious();
         if (entity instanceof Player player) {
             if (wakeUp) {
@@ -191,12 +189,12 @@ public final class BloodData {
         StatusEffectMap effects = container.getGlobalStatusEffects();
         AttributeMap attributeMap = entity.getAttributes();
         if (unconscious) {
-            this.addModifier(attributeMap, Attributes.MOVEMENT_SPEED, 0.0);
-            this.addModifier(attributeMap, Attributes.JUMP_STRENGTH, 0.0);
-            this.addModifier(attributeMap, Attributes.STEP_HEIGHT, 0.0);
-            this.addModifier(attributeMap, Attributes.ATTACK_SPEED, 0.0);
-            this.addModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED, 0.0);
-            this.addModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE, 0.0);
+            this.addModifier(attributeMap, Attributes.MOVEMENT_SPEED);
+            this.addModifier(attributeMap, Attributes.JUMP_STRENGTH);
+            this.addModifier(attributeMap, Attributes.STEP_HEIGHT);
+            this.addModifier(attributeMap, Attributes.ATTACK_SPEED);
+            this.addModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
+            this.addModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
             if (!effects.hasEffect(MedSystemStatusEffects.UNCONSCIOUS)) {
                 StatusEffectHelper.addEffect(effects, entity, null, new UnconsciousStatusEffect());
             }
@@ -211,7 +209,7 @@ public final class BloodData {
         }
     }
 
-    private void addModifier(AttributeMap map, Holder<Attribute> attribute, double amount) {
+    private void addModifier(AttributeMap map, Holder<Attribute> attribute) {
         AttributeInstance instance = map.getInstance(attribute);
         if (!instance.hasModifier(VANILLA_ATTRIBUTE)) {
             instance.addPermanentModifier(new AttributeModifier(VANILLA_ATTRIBUTE, -1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));

@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.client;
 
 import dev.toma.configuration.Configuration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.entity.player.Player;
@@ -74,7 +75,7 @@ public final class MedicalSystemClient {
     private void onScreenOpen(ScreenEvent.Opening event) {
         Player player = Minecraft.getInstance().player;
         Screen screen = event.getNewScreen();
-        if (player != null && BloodSystem.isEntityUnconscious(player) && !(screen instanceof PauseScreen)) {
+        if (player != null && BloodSystem.isEntityUnconscious(player) && !(screen instanceof PauseScreen || screen instanceof ChatScreen)) {
             event.setCanceled(true);
         }
     }
