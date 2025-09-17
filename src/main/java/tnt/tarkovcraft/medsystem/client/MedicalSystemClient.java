@@ -51,6 +51,7 @@ public final class MedicalSystemClient {
 
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
         NeoForge.EVENT_BUS.addListener(this::onScreenOpen);
+        NeoForge.EVENT_BUS.addListener(ShaderHelper::updateActiveEffects);
 
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
     }

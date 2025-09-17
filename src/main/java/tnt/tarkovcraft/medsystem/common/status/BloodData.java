@@ -18,18 +18,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
+import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
-import tnt.tarkovcraft.medsystem.common.effect.MildBloodLossStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.ModerateBloodLossStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
+import tnt.tarkovcraft.medsystem.common.init.*;
 
 import java.util.Optional;
 
@@ -192,6 +187,8 @@ public final class BloodData {
                 player.setForcedPose(Pose.SLEEPING);
             }
         }
+        HealthContainer container = HealthSystem.getHealthData(entity);
+        StatusEffectMap effects = container.getGlobalStatusEffects();
         AttributeMap attributeMap = entity.getAttributes();
         if (unconscious) {
             this.addModifier(attributeMap, Attributes.MOVEMENT_SPEED, 0.0);
@@ -200,6 +197,9 @@ public final class BloodData {
             this.addModifier(attributeMap, Attributes.ATTACK_SPEED, 0.0);
             this.addModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED, 0.0);
             this.addModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE, 0.0);
+            if (!effects.hasEffect(MedSystemStatusEffects.UNCONSCIOUS)) {
+                StatusEffectHelper.addEffect(effects, entity, null, new UnconsciousStatusEffect());
+            }
         } else {
             this.removeModifier(attributeMap, Attributes.MOVEMENT_SPEED);
             this.removeModifier(attributeMap, Attributes.JUMP_STRENGTH);
@@ -207,6 +207,7 @@ public final class BloodData {
             this.removeModifier(attributeMap, Attributes.ATTACK_SPEED);
             this.removeModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
             this.removeModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
+            StatusEffectHelper.removeEffect(effects, entity, null, ContextImpl.empty(), MedSystemStatusEffects.UNCONSCIOUS);
         }
     }
 

@@ -12,10 +12,7 @@ import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BinaryOperator;
 
 public final class StatusEffectType<S extends StatusEffect> {
@@ -32,7 +29,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final Set<BodyPartGroup> ignoredBodyParts;
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
-    private final boolean isShaderEffect;
+    private final Collection<ResourceLocation> blockedPostEffects;
     private final ResourceLocation icon;
     private final Component displayName;
 
@@ -46,7 +43,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.ignoredBodyParts = builder.bodyPartGroups;
         this.isGlobalEffect = builder.globalEffect;
         this.isSpecial = builder.special;
-        this.isShaderEffect = builder.isShaderEffect;
+        this.blockedPostEffects = builder.blockedPostEffects != null ? Arrays.asList(builder.blockedPostEffects) : null;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
     }
@@ -113,7 +110,11 @@ public final class StatusEffectType<S extends StatusEffect> {
     }
 
     public boolean hasPostShader() {
-        return this.isShaderEffect;
+        return this.blockedPostEffects != null;
+    }
+
+    public Collection<ResourceLocation> getBlockedPostEffects() {
+        return this.blockedPostEffects;
     }
 
     public ResourceLocation getIdentifier() {
@@ -140,13 +141,13 @@ public final class StatusEffectType<S extends StatusEffect> {
         private final ResourceLocation identifier;
         private final Factory<S> factory;
         private final Set<BodyPartGroup> bodyPartGroups = EnumSet.noneOf(BodyPartGroup.class);
+        private ResourceLocation[] blockedPostEffects;
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
         private EffectVisibility visibility = EffectVisibility.ALWAYS;
         private BinaryOperator<S> merger = StatusEffect::merge;
         private boolean globalEffect;
         private boolean special;
-        private boolean isShaderEffect;
 
         private Builder(ResourceLocation identifier, Factory<S> factory) {
             this.identifier = identifier;
@@ -189,7 +190,11 @@ public final class StatusEffectType<S extends StatusEffect> {
         }
 
         public Builder<S> setPostEffects() {
-            this.isShaderEffect = true;
+            return this.setPostEffectsWithBlocking();
+        }
+
+        public Builder<S> setPostEffectsWithBlocking(ResourceLocation... blocking) {
+            this.blockedPostEffects = blocking;
             return this;
         }
 
@@ -200,7 +205,7 @@ public final class StatusEffectType<S extends StatusEffect> {
             Objects.requireNonNull(this.merger, "Merge function is required");
             Objects.requireNonNull(this.effectType, "Effect type is required");
             Objects.requireNonNull(this.visibility, "Effect visibility is required");
-            if (!this.globalEffect && this.isShaderEffect) {
+            if (!this.globalEffect && this.blockedPostEffects != null) {
                 throw new IllegalArgumentException("Shader effects are only supported for global status effects");
             }
 

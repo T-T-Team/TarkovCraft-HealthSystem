@@ -311,7 +311,7 @@ public final class TarkovCraftCommand {
         }
         BloodData data = BloodSystem.getBloodData(livingEntity);
         CommandSourceStack source = ctx.getSource();
-        source.sendSystemMessage(Component.literal(entity.getDisplayName().getString() + " blood: " + String.format(Locale.ROOT, "%.2f/%.2fL", data.getBloodVolume(), data.getMaxBloodVolume())));
+        source.sendSystemMessage(Component.literal(entity.getDisplayName().getString() + " blood: " + String.format(Locale.ROOT, "%.4f/%.2fL", data.getBloodVolume(), data.getMaxBloodVolume())));
         return 0;
     }
 

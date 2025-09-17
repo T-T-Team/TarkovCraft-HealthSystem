@@ -5,7 +5,7 @@
   "passes": [
     {
       "vertex_shader": "minecraft:post/blit",
-      "fragment_shader": "medsystem:post/saturate",
+      "fragment_shader": "medsystem:post/brightness",
       "inputs": [
         {
           "sampler_name": "In",
@@ -13,11 +13,36 @@
         }
       ],
       "uniforms": {
-        "SaturateConfig": [
+        "BrightnessConfig": [
+          {
+            "name": "Brightness",
+            "type": "float",
+            "value": 0.4
+          }
+        ]
+      },
+      "output": "swap"
+    },
+    {
+      "vertex_shader": "minecraft:post/blit",
+      "fragment_shader": "medsystem:post/vignette",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "uniforms": {
+        "VignetteConfig": [
+          {
+            "name": "Speed",
+            "type": "float",
+            "value": 0.08
+          },
           {
             "name": "Strength",
             "type": "float",
-            "value": 0.7
+            "value": 0.4
           }
         ]
       },
