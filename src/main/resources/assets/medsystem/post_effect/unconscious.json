@@ -37,7 +37,7 @@
           {
             "name": "Speed",
             "type": "float",
-            "value": 0.08
+            "value": 0.05
           },
           {
             "name": "Strength",

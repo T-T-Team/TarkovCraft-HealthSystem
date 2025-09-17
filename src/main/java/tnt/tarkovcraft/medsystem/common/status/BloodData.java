@@ -111,7 +111,7 @@ public final class BloodData {
     }
 
     public void updateEffects(LivingEntity entity) {
-        if (entity.level().isClientSide())
+        if (entity.level().isClientSide() || !entity.isAlive())
             return;
         HealthContainer container = HealthSystem.getHealthData(entity);
         ServerLevel level = (ServerLevel) entity.level();
