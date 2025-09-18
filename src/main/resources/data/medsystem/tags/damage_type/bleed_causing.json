@@ -5,5 +5,10 @@
     "#neoforge:is_physical",
 
     "minecraft:fall"
+  ],
+  "remove": [
+    "minecraft:sweet_berry_bush",
+    "minecraft:cactus",
+    "minecraft:sting"
   ]
 }

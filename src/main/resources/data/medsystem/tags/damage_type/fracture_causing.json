@@ -2,5 +2,10 @@
   "values": [
     "#minecraft:is_explosion",
     "#neoforge:is_physical"
+  ],
+  "remove": [
+    "minecraft:sweet_berry_bush",
+    "minecraft:cactus",
+    "minecraft:sting"
   ]
 }
