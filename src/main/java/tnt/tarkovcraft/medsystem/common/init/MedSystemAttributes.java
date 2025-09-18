@@ -18,5 +18,5 @@ public final class MedSystemAttributes {
     public static final Holder<Attribute> NEGATIVE_EFFECT_CHANCE = REGISTRY.register("negative_effect_chance", key -> Attribute.create(key, 1.0));
     public static final Holder<Attribute> INJURY_RECOVERY_DURATION = REGISTRY.register("injury_recovery_duration", key -> Attribute.create(key, 1.0));
     public static final Holder<Attribute> INJURY_RECOVERY_AMOUNT = REGISTRY.register("injury_amount", key -> Attribute.create(key, 1.0));
-    public static final Holder<Attribute> BLOOD_REGENERATION_AMOUNT = REGISTRY.register("blood_regeneration_amount", key -> Attribute.create(key, 0.0001));
+    public static final Holder<Attribute> BLOOD_REGENERATION_AMOUNT = REGISTRY.register("blood_regeneration_amount", key -> Attribute.create(key, 0.0005)); // 0.0005 * 1200 = 0.6L / mc day
 }
