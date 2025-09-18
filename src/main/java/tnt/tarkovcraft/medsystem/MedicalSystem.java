@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.core.common.init.CoreItemDataComponents;
+import tnt.tarkovcraft.medsystem.common.GiveUpCommand;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -85,6 +86,7 @@ public final class MedicalSystem {
 
     private void registerCommands(RegisterCommandsEvent event) {
         TarkovCraftCommand.create(event.getDispatcher(), event.getBuildContext());
+        GiveUpCommand.create(event.getDispatcher());
     }
 
     private void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
