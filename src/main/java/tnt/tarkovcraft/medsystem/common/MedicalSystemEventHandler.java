@@ -6,10 +6,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -17,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
@@ -331,6 +330,17 @@ public final class MedicalSystemEventHandler {
             String targetLimb = target != null ? target.limbCode() : null;
             BodyPart part = container.getBodyPart(targetLimb);
             holder.apply(entity, container, part);
+        }
+    }
+
+    @SubscribeEvent
+    private void adjustHitboxSize(EntityEvent.Size event) {
+        Entity entity = event.getEntity();
+        if (entity.getType() == EntityType.PLAYER && event.getPose() == BloodData.UNCONSCIOUS_POSE) {
+            Player player = (Player) entity;
+            if (BloodSystem.isEntityUnconscious(player)) {
+                event.setNewSize(EntityDimensions.scalable(1.4F, 0.4F));
+            }
         }
     }
 }

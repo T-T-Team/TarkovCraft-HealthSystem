@@ -43,6 +43,7 @@ public final class BloodData {
     );
 
     public static final ResourceLocation VANILLA_ATTRIBUTE = MedicalSystem.resource("unconscious");
+    public static final Pose UNCONSCIOUS_POSE = Pose.SWIMMING;
     public static final float DEATH_LIMIT = 0.50F; // 2.5L
     public static final float UNCONSCIOUS_LIMIT = 0.65F; // 3.25L
     public static final float MODERATE_BLOOD_LOSS = 0.80F; // 4.0L
@@ -182,7 +183,7 @@ public final class BloodData {
                 player.setForcedPose(null);
             }
             if (unconscious && !entity.isPassenger()) {
-                player.setForcedPose(Pose.SLEEPING);
+                player.setForcedPose(UNCONSCIOUS_POSE);
             }
         }
         HealthContainer container = HealthSystem.getHealthData(entity);
