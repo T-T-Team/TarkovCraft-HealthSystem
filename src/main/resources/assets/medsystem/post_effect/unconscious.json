@@ -5,7 +5,7 @@
   "passes": [
     {
       "vertex_shader": "minecraft:post/blit",
-      "fragment_shader": "medsystem:post/brightness",
+      "fragment_shader": "tarkovcraft_core:post/brightness",
       "inputs": [
         {
           "sampler_name": "In",
@@ -25,7 +25,7 @@
     },
     {
       "vertex_shader": "minecraft:post/blit",
-      "fragment_shader": "medsystem:post/vignette",
+      "fragment_shader": "tarkovcraft_core:post/vignette",
       "inputs": [
         {
           "sampler_name": "In",

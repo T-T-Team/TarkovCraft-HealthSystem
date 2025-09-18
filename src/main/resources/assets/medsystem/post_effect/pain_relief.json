@@ -5,7 +5,7 @@
   "passes": [
     {
       "vertex_shader": "minecraft:post/blit",
-      "fragment_shader": "medsystem:post/saturate",
+      "fragment_shader": "tarkovcraft_core:post/saturate",
       "inputs": [
         {
           "sampler_name": "In",
