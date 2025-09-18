@@ -7,6 +7,8 @@ import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.Collection;
+
 public class PainStatusEffect extends IntervalAppliedStatusEffect {
 
     public static final MapCodec<PainStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, PainStatusEffect::new));
@@ -33,7 +35,7 @@ public class PainStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public StatusEffect onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(Context context) {
         return null;
     }
 

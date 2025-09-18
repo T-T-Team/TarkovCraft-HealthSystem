@@ -12,6 +12,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 public final class StatusEffectHelper {
 
@@ -19,6 +20,10 @@ public final class StatusEffectHelper {
 
     public static void addEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, StatusEffect effect) {
         addEffect(effects, entity, bodyPart, 0, effect);
+    }
+
+    public static void addPostEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, PostEffect postEffect) {
+        addEffect(effects, entity, bodyPart, postEffect.delay(), postEffect.createInstance());
     }
 
     public static void addEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, int delay, StatusEffect effect) {
@@ -41,11 +46,11 @@ public final class StatusEffectHelper {
         container.markStatusEffectAdded(entity);
     }
 
-    public static StatusEffect removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, Holder<StatusEffectType<?>> holder) {
+    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, Holder<StatusEffectType<?>> holder) {
         return removeEffect(effects, entity, bodyPart, context, holder.value());
     }
 
-    public static StatusEffect removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, StatusEffectType<?> type) {
+    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, StatusEffectType<?> type) {
         return effects.getEffect(type).map(effect -> {
             NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, effect, bodyPart));
             return effects.remove(type, context);

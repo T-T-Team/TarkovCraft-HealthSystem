@@ -12,6 +12,7 @@ import tnt.tarkovcraft.core.common.data.duration.*;
 import tnt.tarkovcraft.core.util.context.Context;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -31,7 +32,7 @@ public abstract class StatusEffect {
 
     public abstract void apply(Context context);
 
-    public abstract StatusEffect onRemoved(Context context);
+    public abstract Collection<PostEffect> onRemoved(Context context);
 
     public abstract StatusEffect copy();
 

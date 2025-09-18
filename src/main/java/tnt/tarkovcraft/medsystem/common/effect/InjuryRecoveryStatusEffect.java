@@ -20,6 +20,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -73,7 +74,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public StatusEffect onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(Context context) {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
             part.setMaxHealth(Math.min(part.getMaxHealth() + this.reduction, part.getOriginalMaxHealth()));

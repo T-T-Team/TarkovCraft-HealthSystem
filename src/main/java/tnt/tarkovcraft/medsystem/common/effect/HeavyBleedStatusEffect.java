@@ -10,6 +10,8 @@ import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -52,10 +54,11 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
     }
 
     @Override
-    public StatusEffect onRemoved(Context context) {
-        return new FreshWoundStatusEffect(
-                Duration.minutes(5).tickValue()
-        );
+    public Collection<PostEffect> onRemoved(Context context) {
+        return Collections.singletonList(new PostEffect(
+                Duration.seconds(5),
+                new FreshWoundStatusEffect(Duration.minutes(5).tickValue())
+        ));
     }
 
     @Override

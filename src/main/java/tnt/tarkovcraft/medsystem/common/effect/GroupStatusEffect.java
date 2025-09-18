@@ -6,10 +6,7 @@ import net.minecraft.network.chat.Component;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupHolder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class GroupStatusEffect extends StatusEffect {
@@ -57,7 +54,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final StatusEffect onRemoved(Context context) {
+    public final Collection<PostEffect> onRemoved(Context context) {
         this.items.forEach(item -> item.cleanUp(context));
         return null;
     }

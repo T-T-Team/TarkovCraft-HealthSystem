@@ -11,6 +11,8 @@ import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 public class FreshWoundStatusEffect extends StatusEffect {
@@ -47,11 +49,11 @@ public class FreshWoundStatusEffect extends StatusEffect {
     }
 
     @Override
-    public StatusEffect onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(Context context) {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         RandomSource source = entity.getRandom();
         if (source.nextFloat() < this.bleedChance) {
-            return new LightBleedStatusEffect(-1);
+            return Collections.singletonList(new PostEffect(new LightBleedStatusEffect(-1)));
         }
         return null;
     }

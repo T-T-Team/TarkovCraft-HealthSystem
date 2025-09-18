@@ -2,6 +2,8 @@ package tnt.tarkovcraft.medsystem.common.effect;
 
 import tnt.tarkovcraft.core.util.context.Context;
 
+import java.util.Collection;
+
 public abstract class SimpleStatusEffect extends StatusEffect {
 
     public SimpleStatusEffect(int duration) {
@@ -13,7 +15,7 @@ public abstract class SimpleStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final StatusEffect onRemoved(Context context) {
+    public final Collection<PostEffect> onRemoved(Context context) {
         return null;
     }
 }

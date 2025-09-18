@@ -8,6 +8,8 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
+import java.util.Collection;
+
 public class MildBloodLossStatusEffect extends IntervalAppliedStatusEffect {
 
     public static final MapCodec<MildBloodLossStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, MildBloodLossStatusEffect::new));
@@ -39,7 +41,7 @@ public class MildBloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public StatusEffect onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(Context context) {
         return null;
     }
 

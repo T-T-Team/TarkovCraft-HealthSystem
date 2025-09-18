@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -38,7 +39,7 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public StatusEffect onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(Context context) {
         return null;
     }
 

@@ -11,6 +11,7 @@ import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,7 +52,7 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public StatusEffect onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(Context context) {
         return null;
     }
 }

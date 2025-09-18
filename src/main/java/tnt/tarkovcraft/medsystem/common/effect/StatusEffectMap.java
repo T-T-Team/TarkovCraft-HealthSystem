@@ -42,7 +42,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         if (this.effects.isEmpty())
             return;
         Iterator<Map.Entry<StatusEffectType<?>, StatusEffect>> it = effects.entrySet().iterator();
-        List<StatusEffect> newEffects = new ArrayList<>();
+        List<PostEffect> newEffects = new ArrayList<>();
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
@@ -54,16 +54,16 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
                 effect.setDuration(newDuration);
                 if (newDuration <= 0) {
                     it.remove();
-                    StatusEffect statusEffect = effect.onRemoved(context);
-                    if (statusEffect != null) {
-                        newEffects.add(statusEffect);
+                    Collection<PostEffect> postEffects = effect.onRemoved(context);
+                    if (postEffects != null && !postEffects.isEmpty()) {
+                        newEffects.addAll(postEffects);
                     }
                 }
             }
         }
         if (entity.isAlive()) {
             BodyPart bodyPart = context.getNullable(MedicalSystemContextKeys.BODY_PART);
-            newEffects.forEach(effect -> StatusEffectHelper.addEffect(this, entity, bodyPart, effect));
+            newEffects.forEach(effect -> StatusEffectHelper.addPostEffect(this, entity, bodyPart, effect));
         }
     }
 
@@ -116,7 +116,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         }
     }
 
-    public StatusEffect remove(StatusEffectType<?> type, Context context) {
+    public Collection<PostEffect> remove(StatusEffectType<?> type, Context context) {
         StatusEffect effect = this.effects.remove(type);
         if (effect != null) {
             return effect.onRemoved(context);
@@ -124,7 +124,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         return null;
     }
 
-    public StatusEffect remove(Holder<StatusEffectType<?>> holder, Context context) {
+    public Collection<PostEffect> remove(Holder<StatusEffectType<?>> holder, Context context) {
         return this.remove(holder.value(), context);
     }
 
