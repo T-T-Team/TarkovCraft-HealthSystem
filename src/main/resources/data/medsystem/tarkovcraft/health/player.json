@@ -307,6 +307,10 @@
             },
             "chanceModifiers": [
               {
+                "type": "medsystem:fall_distance_limit",
+                "min": 6.0
+              },
+              {
                 "type": "medsystem:fall_distance",
                 "scale": 0.75
               }
@@ -420,6 +424,10 @@
               "location": "medsystem:statusEffects/playerFractureFallChance"
             },
             "chanceModifiers": [
+              {
+                "type": "medsystem:fall_distance_limit",
+                "min": 6.0
+              },
               {
                 "type": "medsystem:fall_distance",
                 "scale": 0.75

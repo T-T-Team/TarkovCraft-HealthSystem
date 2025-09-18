@@ -33,6 +33,6 @@ public class FallDistanceScaleFunction implements ChanceFunction {
 
     @Override
     public ChanceFunctionType<?> getType() {
-        return MedSystemChanceFunctions.FALL_DISTANCE.get();
+        return MedSystemChanceFunctions.FALL_DISTANCE.value();
     }
 }
