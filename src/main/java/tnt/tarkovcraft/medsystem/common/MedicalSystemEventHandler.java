@@ -5,7 +5,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -25,6 +27,7 @@ import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
@@ -69,7 +72,7 @@ public final class MedicalSystemEventHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     private void onLivingHeal(LivingHealEvent event) {
         LivingEntity entity = event.getEntity();
         float amount = event.getAmount();
@@ -98,6 +101,13 @@ public final class MedicalSystemEventHandler {
 
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageSource source = event.getSource();
+
+        // no in-block damage when unconscious
+        if (BloodSystem.isEntityUnconscious(livingEntity) && source.is(DamageTypes.IN_WALL)) {
+            event.setInvulnerable(true);
+            return;
+        }
+
         HitCalculator hitCalculator = HealthSystem.getHitCalculator(livingEntity, source, container);
         List<HitResult> hits = hitCalculator.calculateHits(livingEntity, source, container);
         if (hits == null || hits.isEmpty()) {
@@ -197,38 +207,60 @@ public final class MedicalSystemEventHandler {
         DamageContext context = container.getDamageContext();
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
         Map<BodyPart, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
-        float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         List<BodyPart> lostBodyParts = new ArrayList<>();
         SideEffectHolder sideEffects = context.getSideEffects();
-        for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
-            container.hurt(context, entry.getValue(), entry.getKey(), lostBodyParts::add);
-            if (sideEffects != null) {
-                sideEffects.applyFromDamage(entity, source, container, entry.getKey());
-            }
-        }
+
+        // apply health container damage
+        container.hurt(context, distributedDamage, sideEffects, lostBodyParts::add);
+
+        // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
+        // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
+        float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
         }
-        WoundStatusEffectApplyEvent applyEvent = NeoForge.EVENT_BUS.post(new WoundStatusEffectApplyEvent(entity, context, totalDamage, Mth.floor(totalDamage / 4.0F)));
+
+        // Apply wound status effect
+        int duration = Mth.floor(totalDamage / 4.0F); // 4hp damage = 1s of wound status effect
+        WoundStatusEffectApplyEvent applyEvent = NeoForge.EVENT_BUS.post(new WoundStatusEffectApplyEvent(entity, context, totalDamage, duration));
         if (applyEvent.shouldApplyEffect()) {
             StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, 1, new WoundStatusEffect(applyEvent.getDurationSeconds() * 20));
         }
+
+        // Clean data and apply
         container.clearDamageContext();
         container.updateHealth(entity);
-        float deathChance = lostBodyParts.isEmpty() ? 0.0F : MedicalSystem.getConfig().limbLossDeathCauseChance;
-        if (deathChance > 0.0F) {
-            float deathChanceMultiplier = AttributeSystem.getFloatValue(entity, MedSystemAttributes.LIMB_DEATH_CHANCE, 1.0F);
-            deathChance *= (deathChanceMultiplier / lostBodyParts.size());
-        }
+
+        // Death processing
         HealthSystem.synchronizeEntity(entity); // send status to client before death or further processing so that client knows which body part caused death
-        if (container.shouldDie() || (deathChance > 0.0F && entity.getRandom().nextFloat() < deathChance)) {
+        if (container.shouldDie()) {
             entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
-        } else {
-            // disable sprinting
-            MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
-            if (entity.isSprinting() && !component.canSprint(entity)) {
-                entity.setSprinting(false);
+            return;
+        }
+
+        // Unconscious state processing
+        if (BloodSystem.hasBloodDataIntegration(entity) && !entity.level().isClientSide()) {
+            RandomSource random = entity.getRandom();
+            BloodData bloodData = BloodSystem.getBloodData(entity);
+            MedSystemConfig config = MedicalSystem.getConfig();
+            int limbLostCount = lostBodyParts.size();
+            if (config.allowUnconsciousOnLimbLost && limbLostCount > 0) {
+                float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F);
+                if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
+                    int unconsciousDuration = limbLostCount * Duration.seconds(10).tickValue();
+                    bloodData.setOrExtendedUnconsciousTime(unconsciousDuration);
+                }
             }
+
+            // TODO melee/projectile damage unconscious state after armor api rework
+
+            bloodData.sync(entity);
+        }
+
+        // disable sprinting if entity can no longer sprint
+        MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
+        if (entity.isSprinting() && !component.canSprint(entity)) {
+            entity.setSprinting(false);
         }
     }
 
@@ -340,7 +372,7 @@ public final class MedicalSystemEventHandler {
         if (entity.getType() == EntityType.PLAYER && event.getPose() == BloodData.UNCONSCIOUS_POSE) {
             Player player = (Player) entity;
             if (BloodSystem.isEntityUnconscious(player)) {
-                event.setNewSize(EntityDimensions.scalable(1.4F, 0.4F));
+                event.setNewSize(BloodData.PLAYER_UNCONSCIOUS_DIMENSIONS);
             }
         }
     }

@@ -22,13 +22,6 @@ public final class MedSystemConfig {
     public float explosionDamageScale = 0.6F;
 
     @Configurable
-    @Configurable.DecimalRange(min = 0, max = 1.0)
-    @Configurable.Gui.Slider
-    @Configurable.Gui.NumberFormat("0.00#")
-    @Configurable.Comment("Losing limb has small chance to cause immediate death")
-    public float limbLossDeathCauseChance = 0.05F;
-
-    @Configurable
     @Configurable.Comment("Health will be primarily recovered into vital parts")
     public boolean prioritizeVitalHealing = true;
 
@@ -50,10 +43,19 @@ public final class MedSystemConfig {
 
     @Configurable
     @Configurable.Synchronized
-    public boolean useBloodSystem = true; // TODO localization
+    @Configurable.Comment("Enables blood system simulation")
+    public boolean useBloodSystem = true;
 
     @Configurable
+    @Configurable.Comment({
+            "Defines handling of unconscious bleed out stage when the affected player has too low blood level to wake up on their own",
+            "When disabled, bleed out damage will be applied immediately after losing ability to wake up"
+    })
     public UnconsciousMode unconsciousMode = UnconsciousMode.ALLOW;
+
+    @Configurable
+    @Configurable.Comment("Allows transition to unconscious state when losing limb")
+    public boolean allowUnconsciousOnLimbLost = true;
 
     @Configurable
     public StatusEffectConfig statusEffects = new StatusEffectConfig();

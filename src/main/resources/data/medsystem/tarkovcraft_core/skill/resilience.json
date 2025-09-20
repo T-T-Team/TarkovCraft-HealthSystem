@@ -22,10 +22,10 @@
     {
       "display": {
         "name": {
-          "translate": "skill.medsystem.resilience.bonus.limb_death"
+          "translate": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss"
         },
-        "descriptionKey": "skill.medsystem.resilience.bonus.limb_death.description",
-        "icon": "medsystem:textures/icons/skill/bonus/limb_loss_death_chance.png"
+        "descriptionKey": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss.description",
+        "icon": "medsystem:textures/icons/skill/bonus/unconscious_on_limb_loss.png"
       },
       "conditions": [
         {
@@ -35,14 +35,35 @@
       ],
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
-        "attribute": "medsystem:limb_death_chance",
+        "attribute": "medsystem:unconscious_on_limb_loss_chance",
         "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
-        "levelValue": -0.01,
+        "levelValue": -0.0015,
         "displayUnitFormat": {
           "decimalPlaces": 2,
           "multiplier": -100,
           "suffix": "%"
         }
+      }
+    },
+    {
+      "display": {
+        "name": {
+          "translate": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss_scaling"
+        },
+        "descriptionKey": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss_scaling.description",
+        "icon": "medsystem:textures/icons/skills/bonus/unconscious_on_limb_loss_scaling.png"
+      },
+      "conditions": [
+        {
+          "type": "tarkovcraft_core:is_max_skill_level"
+        }
+      ],
+      "apply": {
+        "type": "tarkovcraft_core:add_attribute_modifier",
+        "attribute": "medsystem:unconscious_on_limb_loss_scaling",
+        "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
+        "levelValue": 1,
+        "constant": true
       }
     }
   ]

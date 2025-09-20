@@ -15,8 +15,8 @@ import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.core.util.context.ContextKeys;
-import tnt.tarkovcraft.core.util.context.WritableContext;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.*;
@@ -220,6 +220,17 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         }
         float health = this.getHealth();
         entity.setHealth(health);
+    }
+
+    public void hurt(DamageContext context, Map<BodyPart, Float> distributedDamage, @Nullable SideEffectHolder effects, Consumer<BodyPart> onLimbDeath) {
+        for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
+            BodyPart bodyPart = entry.getKey();
+            float amount = entry.getValue();
+            this.hurt(context, amount, bodyPart, onLimbDeath);
+            if (effects != null) {
+                effects.applyFromDamage(context.getEntity(), context.getSource(), this, bodyPart);
+            }
+        }
     }
 
     public void hurt(DamageContext context, float amount, BodyPart part, Consumer<BodyPart> onBodyPartLoss) {

@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.*;
@@ -51,6 +52,7 @@ public final class BloodData {
     public static final ResourceLocation ATTR_DEBUFF = MedicalSystem.resource("blood_debuff");
     public static final UUID UUID_DEBUFF = UUID.fromString("6079d919-84b8-4e8b-9639-bbfd8d313ee1");
     public static final Pose UNCONSCIOUS_POSE = Pose.SWIMMING;
+    public static final EntityDimensions PLAYER_UNCONSCIOUS_DIMENSIONS = EntityDimensions.scalable(1.4F, 0.4F);
 
     private final float maxBloodVolume;
     private float bloodVolume;
@@ -234,7 +236,7 @@ public final class BloodData {
             if (wakeUp) {
                 player.setForcedPose(null);
             }
-            if (unconscious && !entity.isPassenger()) {
+            if (unconscious && !entity.isPassenger() && player.getForcedPose() == null) {
                 player.setForcedPose(UNCONSCIOUS_POSE);
             }
         }

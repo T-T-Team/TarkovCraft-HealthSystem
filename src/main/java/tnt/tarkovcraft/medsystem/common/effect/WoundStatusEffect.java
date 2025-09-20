@@ -37,4 +37,10 @@ public class WoundStatusEffect extends StatusEffect {
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.WOUND.value();
     }
+
+    public static WoundStatusEffect mergeWithScaling(WoundStatusEffect first, WoundStatusEffect second) {
+        int duration1 = first.getDuration();
+        int duration2 = second.getDuration();
+        return new WoundStatusEffect(duration1 + duration2 * 2);
+    }
 }

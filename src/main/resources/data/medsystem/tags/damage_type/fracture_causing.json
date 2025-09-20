@@ -6,6 +6,7 @@
   "remove": [
     "minecraft:sweet_berry_bush",
     "minecraft:cactus",
-    "minecraft:sting"
+    "minecraft:sting",
+    "minecraft:in_wall"
   ]
 }
