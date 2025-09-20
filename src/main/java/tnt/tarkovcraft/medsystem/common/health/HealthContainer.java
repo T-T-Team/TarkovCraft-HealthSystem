@@ -209,14 +209,32 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return maxHealth;
     }
 
+    public float getOriginalMaxHealth() {
+        float maxHealth = 0.0F;
+        for (BodyPart bodyPart : bodyParts.values()) {
+            maxHealth += bodyPart.getOriginalMaxHealth();
+        }
+        return maxHealth;
+    }
+
     public void updateHealth(LivingEntity entity) {
         float playerMaxHealth = entity.getMaxHealth();
         float containerMaxHealth = this.getMaxHealth();
+        float originalContainerMaxHealth = this.getOriginalMaxHealth();
         if (playerMaxHealth != containerMaxHealth) {
-            BodyPart rootPart = this.getRootBodyPart();
-            float diff = playerMaxHealth - containerMaxHealth;
-            float newMaxHealth = rootPart.getMaxHealth() + diff;
-            rootPart.setMaxHealth(Math.max(newMaxHealth, 1.0F));
+            if (playerMaxHealth == originalContainerMaxHealth) {
+                for (BodyPart bodyPart : bodyParts.values()) {
+                    bodyPart.setMaxHealth(bodyPart.getOriginalMaxHealth());
+                }
+            } else {
+                double diff = playerMaxHealth - containerMaxHealth;
+                int parts = this.bodyParts.size();
+                double perPart = diff / parts;
+                for (BodyPart bodyPart : this.bodyParts.values()) {
+                    float newMaxHealth = (float) (bodyPart.getMaxHealth() + perPart);
+                    bodyPart.setMaxHealth(Math.max(newMaxHealth, 1.0F));
+                }
+            }
         }
         float health = this.getHealth();
         entity.setHealth(health);

@@ -52,23 +52,18 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
             return;
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
-            this.reduction = Math.min((int) part.getOriginalMaxHealth() - 1, this.reduction);
-            int newMaxHealth = (int) part.getOriginalMaxHealth() - this.reduction;
+            this.reduction = Math.min((int) part.getMaxHealth() - 1, this.reduction);
             AttributeMap map = entity.getAttributes();
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
             ResourceLocation modifierId = this.getUniqueModifierId(part);
-            if (newMaxHealth != part.getMaxHealth()) {
-                if (instance.hasModifier(modifierId)) {
-                    instance.removeModifier(modifierId);
-                }
-                instance.addPermanentModifier(new AttributeModifier(modifierId, -this.reduction, AttributeModifier.Operation.ADD_VALUE));
+            AttributeModifier modifier = instance.getModifier(modifierId);
+            if (modifier == null || modifier.amount() != -this.reduction) {
+                float newMaxHealth = part.getMaxHealth() - this.reduction;
+                instance.addOrReplacePermanentModifier(new AttributeModifier(modifierId, -this.reduction, AttributeModifier.Operation.ADD_VALUE));
                 part.setMaxHealth(newMaxHealth);
                 HealthContainer container = context.getOrThrow(MedicalSystemContextKeys.HEALTH_CONTAINER);
                 container.updateHealth(entity);
                 HealthSystem.synchronizeEntity(entity);
-            }
-            if (!instance.hasModifier(modifierId)) {
-                instance.addPermanentModifier(new AttributeModifier(modifierId, -this.reduction, AttributeModifier.Operation.ADD_VALUE));
             }
         });
     }
@@ -77,7 +72,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     public Collection<PostEffect> onRemoved(Context context) {
         LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
         context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
-            part.setMaxHealth(Math.min(part.getMaxHealth() + this.reduction, part.getOriginalMaxHealth()));
+            part.setMaxHealth(part.getMaxHealth() + this.reduction);
             AttributeMap map = entity.getAttributes();
             HealthContainer container = context.getOrThrow(MedicalSystemContextKeys.HEALTH_CONTAINER);
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
