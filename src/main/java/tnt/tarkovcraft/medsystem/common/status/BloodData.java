@@ -11,6 +11,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.*;
@@ -42,12 +43,9 @@ public final class BloodData {
             BloodData::new
     );
 
-    public static final ResourceLocation VANILLA_ATTRIBUTE = MedicalSystem.resource("unconscious");
+    public static final ResourceLocation ATTR_UNCONSCIOUS = MedicalSystem.resource("unconscious");
+    public static final ResourceLocation ATTR_DEBUFF = MedicalSystem.resource("blood_debuff");
     public static final Pose UNCONSCIOUS_POSE = Pose.SWIMMING;
-    public static final float DEATH_LIMIT = 0.50F; // 2.5L
-    public static final float UNCONSCIOUS_LIMIT = 0.65F; // 3.25L
-    public static final float MODERATE_BLOOD_LOSS = 0.80F; // 4.0L
-    public static final float MILD_BLOOD_LOSS = 0.90F; // 4.5L
 
     private final float maxBloodVolume;
     private float bloodVolume;
@@ -78,9 +76,13 @@ public final class BloodData {
         }
         if (this.isUnconscious()) {
             if (--this.unconsciousTime <= 0) {
-                // TODO event on wake up
-                this.updateEffects(entity);
-                this.updateConsciousStatus(entity, true);
+                BloodEvent.OnWakeUp onWakeUp = NeoForge.EVENT_BUS.post(new BloodEvent.OnWakeUp(entity, this));
+                if (onWakeUp.willWakeUp()) {
+                    this.updateEffects(entity);
+                    this.updateConsciousStatus(entity, true);
+                } else {
+                    this.setUnconsciousTime(onWakeUp.getUnconsciousTime());
+                }
             }
         }
     }
@@ -106,6 +108,10 @@ public final class BloodData {
         this.changed = true;
     }
 
+    public void setOrExtendedUnconsciousTime(int unconsciousTime) {
+        this.setUnconsciousTime(Math.max(this.unconsciousTime, unconsciousTime));
+    }
+
     public void setBloodVolume(float bloodVolume) {
         this.bloodVolume = Mth.clamp(bloodVolume, 0.0F, this.maxBloodVolume);
         this.changed = true;
@@ -117,32 +123,11 @@ public final class BloodData {
         HealthContainer container = HealthSystem.getHealthData(entity);
         ServerLevel level = (ServerLevel) entity.level();
         float value = this.getBloodVolumePercentage();
-        BloodStatus status = BloodStatus.HEALTHY;
-        if (value < DEATH_LIMIT) {
-            StatusEffect effect = container.getStatusEffectStream()
-                    .filter(statusEffect -> statusEffect.getType().is(MedSystemTags.StatusEffects.IS_BLEED))
-                    .findAny().orElse(null);
-            RegistryAccess access = level.registryAccess();
-            if (effect != null) {
-                entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, effect.getCausingEntity(level)), 4.0F);
-            } else {
-                entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), 4.0F);
-            }
-            this.addBloodLossStatusEffect(container, entity, false);
-            this.setUnconsciousTime(Math.max(this.unconsciousTime, 300));
-            status = BloodStatus.DEATH;
-        } else if (value < UNCONSCIOUS_LIMIT) {
-            this.addBloodLossStatusEffect(container, entity, false);
-            status = BloodStatus.UNCONSCIOUS;
-            this.setUnconsciousTime(Math.max(this.unconsciousTime, 100));
-        } else if (value < MODERATE_BLOOD_LOSS) {
-            this.addBloodLossStatusEffect(container, entity, false);
-            status = BloodStatus.MODERATE_BLOOD_LOSS;
-        } else if (value < MILD_BLOOD_LOSS) {
-            this.addBloodLossStatusEffect(container, entity, true);
-            status = BloodStatus.MILD_BLOOD_LOSS;
+        BloodStatus status = BloodStatus.fromBloodLevelPercentage(value);
+        if (status.isLowBloodLevel()) {
+            status.applyEffects(this, entity, level, container);
         }
-        NeoForge.EVENT_BUS.post(new BloodEvent.EffectUpdating(entity, this, status, value));
+        NeoForge.EVENT_BUS.post(new BloodEvent.BloodEffectsTick(entity, this, status, value));
     }
 
     public void sync(LivingEntity entity) {
@@ -169,6 +154,46 @@ public final class BloodData {
         }
     }
 
+    public void onDeathBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
+        StatusEffect effect = container.getStatusEffectStream()
+                .filter(statusEffect -> statusEffect.getType().is(MedSystemTags.StatusEffects.IS_BLEED))
+                .findAny().orElse(null);
+        RegistryAccess access = level.registryAccess();
+        if (effect != null) {
+            entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, effect.getCausingEntity(level)), 4.0F);
+        } else {
+            entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), 4.0F);
+        }
+        this.addBloodLossStatusEffect(container, entity, false);
+        this.setOrExtendedUnconsciousTime(300);
+    }
+
+    public void onUnconsciousBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
+        this.addBloodLossStatusEffect(container, entity, false);
+        this.setOrExtendedUnconsciousTime(100);
+    }
+
+    public void onRandomBlackoutBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
+        this.addBloodLossStatusEffect(container, entity, false);
+        float chance = AttributeSystem.getFloatValue(entity, MedSystemAttributes.RANDOM_BLACKOUT_CHANCE, 0.05F);
+        RandomSource random = level.getRandom();
+        if (chance > 0.0F && random.nextFloat() < chance) {
+            this.setOrExtendedUnconsciousTime(100 + random.nextInt(200));
+        }
+    }
+
+    public void onModerateBloodLoss(LivingEntity entity, ServerLevel level, HealthContainer container) {
+        this.addBloodLossStatusEffect(container, entity, false);
+    }
+
+    public void onMildBloodLoss(LivingEntity entity, ServerLevel level, HealthContainer container) {
+        this.addBloodLossStatusEffect(container, entity, true);
+    }
+
+    public void onClearDebuffData(LivingEntity entity, ServerLevel level, HealthContainer container) {
+        // TODO attribute clean up
+    }
+
     private void addBloodLossStatusEffect(HealthContainer container, LivingEntity entity, boolean mild) {
         StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, mild ? new MildBloodLossStatusEffect() : new ModerateBloodLossStatusEffect());
         HealthSystem.synchronizeEntity(entity);
@@ -190,37 +215,45 @@ public final class BloodData {
         StatusEffectMap effects = container.getGlobalStatusEffects();
         AttributeMap attributeMap = entity.getAttributes();
         if (unconscious) {
-            this.addModifier(attributeMap, Attributes.MOVEMENT_SPEED);
-            this.addModifier(attributeMap, Attributes.JUMP_STRENGTH);
-            this.addModifier(attributeMap, Attributes.STEP_HEIGHT);
-            this.addModifier(attributeMap, Attributes.ATTACK_SPEED);
-            this.addModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
-            this.addModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
+            this.addUnconsciousModifier(attributeMap, Attributes.MOVEMENT_SPEED);
+            this.addUnconsciousModifier(attributeMap, Attributes.JUMP_STRENGTH);
+            this.addUnconsciousModifier(attributeMap, Attributes.STEP_HEIGHT);
+            this.addUnconsciousModifier(attributeMap, Attributes.ATTACK_SPEED);
+            this.addUnconsciousModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
+            this.addUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
             if (!effects.hasEffect(MedSystemStatusEffects.UNCONSCIOUS)) {
                 StatusEffectHelper.addEffect(effects, entity, null, new UnconsciousStatusEffect());
             }
         } else {
-            this.removeModifier(attributeMap, Attributes.MOVEMENT_SPEED);
-            this.removeModifier(attributeMap, Attributes.JUMP_STRENGTH);
-            this.removeModifier(attributeMap, Attributes.STEP_HEIGHT);
-            this.removeModifier(attributeMap, Attributes.ATTACK_SPEED);
-            this.removeModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
-            this.removeModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
+            this.removeUnconsciousModifier(attributeMap, Attributes.MOVEMENT_SPEED);
+            this.removeUnconsciousModifier(attributeMap, Attributes.JUMP_STRENGTH);
+            this.removeUnconsciousModifier(attributeMap, Attributes.STEP_HEIGHT);
+            this.removeUnconsciousModifier(attributeMap, Attributes.ATTACK_SPEED);
+            this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
+            this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
             StatusEffectHelper.removeEffect(effects, entity, null, ContextImpl.empty(), MedSystemStatusEffects.UNCONSCIOUS);
         }
     }
 
-    private void addModifier(AttributeMap map, Holder<Attribute> attribute) {
+    private void addModifier(AttributeMap map, Holder<Attribute> attribute, ResourceLocation id, double value) {
         AttributeInstance instance = map.getInstance(attribute);
-        if (!instance.hasModifier(VANILLA_ATTRIBUTE)) {
-            instance.addPermanentModifier(new AttributeModifier(VANILLA_ATTRIBUTE, -1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        if (!instance.hasModifier(id)) {
+            instance.addTransientModifier(new AttributeModifier(id, value, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
     }
 
-    private void removeModifier(AttributeMap map, Holder<Attribute> attribute) {
+    private void addUnconsciousModifier(AttributeMap map, Holder<Attribute> attribute) {
+        this.addModifier(map, attribute, ATTR_UNCONSCIOUS, -1.0);
+    }
+
+    private void removeModifier(AttributeMap map, ResourceLocation id, Holder<Attribute> attribute) {
         AttributeInstance instance = map.getInstance(attribute);
-        if (instance.hasModifier(VANILLA_ATTRIBUTE)) {
-            instance.removeModifier(VANILLA_ATTRIBUTE);
+        if (instance.hasModifier(id)) {
+            instance.removeModifier(id);
         }
+    }
+
+    private void removeUnconsciousModifier(AttributeMap map, Holder<Attribute> attribute) {
+        this.removeModifier(map, ATTR_UNCONSCIOUS, attribute);
     }
 }

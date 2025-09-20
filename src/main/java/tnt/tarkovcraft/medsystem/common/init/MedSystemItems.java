@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
@@ -67,6 +68,7 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> PAINKILLERS = REGISTRY.registerItem(
             "painkillers",
             properties -> new HealingItem(
+                    ItemUseAnimation.EAT,
                     properties.durability(4)
                             .setNoCombineRepair()
                             .component(DataComponents.BREAK_SOUND, null)

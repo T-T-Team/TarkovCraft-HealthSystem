@@ -23,12 +23,12 @@ public abstract class BloodEvent extends Event {
         return data;
     }
 
-    public static final class EffectUpdating extends BloodEvent {
+    public static final class BloodEffectsTick extends BloodEvent {
 
         private final BloodStatus status;
         private final float bloodVolumePercentage;
 
-        public EffectUpdating(LivingEntity entity, BloodData data, BloodStatus status, float bloodVolumePercentage) {
+        public BloodEffectsTick(LivingEntity entity, BloodData data, BloodStatus status, float bloodVolumePercentage) {
             super(entity, data);
             this.status = status;
             this.bloodVolumePercentage = bloodVolumePercentage;
@@ -40,6 +40,31 @@ public abstract class BloodEvent extends Event {
 
         public float getBloodVolumePercentage() {
             return bloodVolumePercentage;
+        }
+    }
+
+    public static final class OnWakeUp extends BloodEvent {
+
+        private Integer unconscious;
+
+        public OnWakeUp(LivingEntity entity, BloodData data) {
+            super(entity, data);
+        }
+
+        public boolean willWakeUp() {
+            return unconscious == null || unconscious <= 0;
+        }
+
+        public void forceWakeUp() {
+            this.unconscious = null;
+        }
+
+        public void cancelWakingUp(int newUnconsciousTime) {
+            this.unconscious = newUnconsciousTime;
+        }
+
+        public Integer getUnconsciousTime() {
+            return unconscious;
         }
     }
 }

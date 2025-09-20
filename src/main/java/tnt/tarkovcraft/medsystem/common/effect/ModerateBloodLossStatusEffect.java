@@ -10,6 +10,7 @@ import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.Collection;
@@ -53,15 +54,11 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
         }
         BloodData data = BloodSystem.getBloodData(entity);
         float percentage = data.getBloodVolumePercentage();
-        if (percentage >= BloodData.MODERATE_BLOOD_LOSS) {
+        if (!BloodStatus.MODERATE_BLOOD_LOSS.isInRange(percentage)) {
             this.markForRemoval();
             return;
         }
-        if (percentage < BloodData.UNCONSCIOUS_LIMIT) {
-            this.critical = true;
-        } else if (percentage < BloodData.MODERATE_BLOOD_LOSS) {
-            this.critical = false;
-        }
+        this.critical = BloodStatus.RANDOM_BLACKOUT.isInRange(percentage);
     }
 
     @Override
