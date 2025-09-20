@@ -126,4 +126,11 @@ public final class MedSystemStatusEffects {
             .setPostEffects()
             .build()
     );
+    public static final Holder<StatusEffectType<?>> CONCUSSION = REGISTRY.register("concussion", key -> StatusEffectType.builder(key, ConcussionStatusEffect::new)
+            .persist(ConcussionStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .setPostEffects()
+            .build()
+    );
 }

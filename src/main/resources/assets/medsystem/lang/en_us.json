@@ -72,6 +72,7 @@
   "status_effect.medsystem.moderate_bloodloss": "Moderate Blood Loss",
   "status_effect.medsystem.critical_bloodloss": "Critical Blood Loss",
   "status_effect.medsystem.unconscious": "Unconscious",
+  "status_effect.medsystem.concussion": "Concussion",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",
