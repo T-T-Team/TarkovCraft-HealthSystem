@@ -117,7 +117,7 @@
   "label.medsystem.healing.other.target": "Healing %s",
   "label.medsystem.unconscious.info": "You are unconscious. Use /giveUp command to give up",
 
-  "command.giveup.failed.not_unconscious": "Cannot use the command while not in unconscious state",
+  "commands.giveup.failed.not_unconscious": "Cannot use the command while not in unconscious state",
 
   "death.attack.medsystem.bleed": "%s has bled out",
   "death.attack.medsystem.bleed.player": "%s has bled out while fighting %s",
