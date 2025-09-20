@@ -23,6 +23,52 @@ public abstract class BloodEvent extends Event {
         return data;
     }
 
+    public static abstract class BloodLossEvent extends BloodEvent {
+
+        private final float originalAmount;
+
+        public BloodLossEvent(LivingEntity entity, BloodData data, float originalAmount) {
+            super(entity, data);
+            this.originalAmount = originalAmount;
+        }
+
+        public final float getOriginalAmount() {
+            return originalAmount;
+        }
+
+        public static final class Pre extends BloodLossEvent {
+
+            private float amount;
+
+            public Pre(LivingEntity entity, BloodData data, float originalAmount) {
+                super(entity, data, originalAmount);
+                this.amount = originalAmount;
+            }
+
+            public void setAmount(float amount) {
+                this.amount = amount;
+            }
+
+            public float getAmount() {
+                return amount;
+            }
+        }
+
+        public static final class Post extends BloodLossEvent {
+
+            private final float amount;
+
+            public Post(LivingEntity entity, BloodData data, float originalAmount, float amount) {
+                super(entity, data, originalAmount);
+                this.amount = amount;
+            }
+
+            public float getAmount() {
+                return amount;
+            }
+        }
+    }
+
     public static final class BloodEffectsTick extends BloodEvent {
 
         private final BloodStatus status;

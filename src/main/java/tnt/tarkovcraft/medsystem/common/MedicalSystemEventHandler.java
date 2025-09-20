@@ -20,6 +20,7 @@ import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
@@ -342,5 +343,12 @@ public final class MedicalSystemEventHandler {
                 event.setNewSize(EntityDimensions.scalable(1.4F, 0.4F));
             }
         }
+    }
+
+    @SubscribeEvent
+    private void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        Player player = event.getEntity();
+        BloodData data = BloodSystem.getBloodData(player);
+        data.updateEffects(player);
     }
 }

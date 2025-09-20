@@ -19,15 +19,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
+import tnt.tarkovcraft.core.common.init.CoreAttributes;
 import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
 import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public final class BloodData {
 
@@ -45,6 +49,7 @@ public final class BloodData {
 
     public static final ResourceLocation ATTR_UNCONSCIOUS = MedicalSystem.resource("unconscious");
     public static final ResourceLocation ATTR_DEBUFF = MedicalSystem.resource("blood_debuff");
+    public static final UUID UUID_DEBUFF = UUID.fromString("6079d919-84b8-4e8b-9639-bbfd8d313ee1");
     public static final Pose UNCONSCIOUS_POSE = Pose.SWIMMING;
 
     private final float maxBloodVolume;
@@ -124,9 +129,7 @@ public final class BloodData {
         ServerLevel level = (ServerLevel) entity.level();
         float value = this.getBloodVolumePercentage();
         BloodStatus status = BloodStatus.fromBloodLevelPercentage(value);
-        if (status.isLowBloodLevel()) {
-            status.applyEffects(this, entity, level, container);
-        }
+        status.applyEffects(this, entity, level, container);
         NeoForge.EVENT_BUS.post(new BloodEvent.BloodEffectsTick(entity, this, status, value));
     }
 
@@ -171,6 +174,12 @@ public final class BloodData {
     public void onUnconsciousBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
         this.addBloodLossStatusEffect(container, entity, false);
         this.setOrExtendedUnconsciousTime(100);
+
+        MedSystemConfig config = MedicalSystem.getConfig();
+        UnconsciousMode mode = config.unconsciousMode;
+        if (!mode.allowsUnconsciousState(level)) {
+            this.onDeathBloodLevel(entity, level, container);
+        }
     }
 
     public void onRandomBlackoutBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
@@ -180,18 +189,36 @@ public final class BloodData {
         if (chance > 0.0F && random.nextFloat() < chance) {
             this.setOrExtendedUnconsciousTime(100 + random.nextInt(200));
         }
+
+        AttributeMap map = entity.getAttributes();
+        this.addModifier(map, Attributes.MOVEMENT_SPEED, ATTR_DEBUFF, -0.3F, true);
+
+        AttributeSystem.addModifier(entity, CoreAttributes.WEIGHT_LIMIT, tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier.multiplier(UUID_DEBUFF, 0.5), true);
     }
 
     public void onModerateBloodLoss(LivingEntity entity, ServerLevel level, HealthContainer container) {
         this.addBloodLossStatusEffect(container, entity, false);
+
+        AttributeMap map = entity.getAttributes();
+        this.addModifier(map, Attributes.MOVEMENT_SPEED, ATTR_DEBUFF, -0.2F, true);
+
+        AttributeSystem.addModifier(entity, CoreAttributes.WEIGHT_LIMIT, tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier.multiplier(UUID_DEBUFF, 0.75), true);
     }
 
     public void onMildBloodLoss(LivingEntity entity, ServerLevel level, HealthContainer container) {
         this.addBloodLossStatusEffect(container, entity, true);
+
+        AttributeMap map = entity.getAttributes();
+        this.addModifier(map, Attributes.MOVEMENT_SPEED, ATTR_DEBUFF, -0.1F, true);
+
+        AttributeSystem.addModifier(entity, CoreAttributes.WEIGHT_LIMIT, tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier.multiplier(UUID_DEBUFF, 0.9), true);
     }
 
     public void onClearDebuffData(LivingEntity entity, ServerLevel level, HealthContainer container) {
-        // TODO attribute clean up
+        AttributeMap map = entity.getAttributes();
+        this.removeModifier(map, ATTR_DEBUFF, Attributes.MOVEMENT_SPEED);
+
+        AttributeSystem.removeModifier(entity, CoreAttributes.WEIGHT_LIMIT, UUID_DEBUFF);
     }
 
     private void addBloodLossStatusEffect(HealthContainer container, LivingEntity entity, boolean mild) {
@@ -235,15 +262,17 @@ public final class BloodData {
         }
     }
 
-    private void addModifier(AttributeMap map, Holder<Attribute> attribute, ResourceLocation id, double value) {
+    private void addModifier(AttributeMap map, Holder<Attribute> attribute, ResourceLocation id, double value, boolean replace) {
         AttributeInstance instance = map.getInstance(attribute);
         if (!instance.hasModifier(id)) {
             instance.addTransientModifier(new AttributeModifier(id, value, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        } else if (replace) {
+            instance.addOrUpdateTransientModifier(new AttributeModifier(id, value, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
     }
 
     private void addUnconsciousModifier(AttributeMap map, Holder<Attribute> attribute) {
-        this.addModifier(map, attribute, ATTR_UNCONSCIOUS, -1.0);
+        this.addModifier(map, attribute, ATTR_UNCONSCIOUS, -1.0, false);
     }
 
     private void removeModifier(AttributeMap map, ResourceLocation id, Holder<Attribute> attribute) {

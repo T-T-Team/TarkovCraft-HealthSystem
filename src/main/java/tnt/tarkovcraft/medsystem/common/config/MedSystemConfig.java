@@ -53,5 +53,8 @@ public final class MedSystemConfig {
     public boolean useBloodSystem = true; // TODO localization
 
     @Configurable
+    public UnconsciousMode unconsciousMode = UnconsciousMode.ALLOW;
+
+    @Configurable
     public StatusEffectConfig statusEffects = new StatusEffectConfig();
 }
