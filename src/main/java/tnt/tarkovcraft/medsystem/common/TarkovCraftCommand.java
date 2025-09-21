@@ -24,9 +24,10 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.api.BodyPartDamageSource;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -219,7 +220,7 @@ public final class TarkovCraftCommand {
         if (type.isSpecialStatusEffect()) {
             throw INVALID_STATUS_EFFECT.create(holder.getKey().location());
         }
-        StatusEffectHelper.removeEffect(map, entity, bodyPart, container, holder.value());
+        StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, entity, bodyPart, container, holder.value());
         StatusEffectHelper.addEffect(map, entity, bodyPart, delay, type.createEffect(duration));
     }
 
@@ -236,7 +237,7 @@ public final class TarkovCraftCommand {
             }
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
             StatusEffectMap map = container.getGlobalStatusEffects();
-            StatusEffectHelper.removeEffect(map, livingEntity, null, container, type);
+            StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, livingEntity, null, container, type);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
@@ -260,7 +261,7 @@ public final class TarkovCraftCommand {
             }
             BodyPart bodyPart = container.getBodyPart(bodyPartId);
             StatusEffectMap map = bodyPart.getStatusEffects();
-            StatusEffectHelper.removeEffect(map, livingEntity, bodyPart, container, type);
+            StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, livingEntity, bodyPart, container, type);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;

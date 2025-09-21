@@ -5,13 +5,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,7 +49,6 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
-        return null;
+    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 }

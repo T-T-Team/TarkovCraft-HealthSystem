@@ -10,6 +10,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.*;
+import tnt.tarkovcraft.medsystem.common.effect.util.PostEffect;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
@@ -35,7 +37,7 @@ public abstract class StatusEffect {
 
     public abstract void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
-    public abstract Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
+    public abstract void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
     public abstract StatusEffect copy();
 

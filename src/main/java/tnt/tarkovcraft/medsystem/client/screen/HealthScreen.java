@@ -18,7 +18,7 @@ import tnt.tarkovcraft.medsystem.api.event.client.RegisterHealthScreenLabelsEven
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
-import tnt.tarkovcraft.medsystem.common.effect.EffectVisibility;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;

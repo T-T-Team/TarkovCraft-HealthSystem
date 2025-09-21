@@ -15,7 +15,13 @@ import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.effect.*;
+import tnt.tarkovcraft.medsystem.common.effect.PainStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.QueuedStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
@@ -104,13 +110,13 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     public void clearBoundData(LivingEntity entity) {
         if (!this.statusEffects.isEmpty()) {
-            this.statusEffects.removeAll(this, entity, null);
+            this.statusEffects.removeAll(StatusEffectSubmitter.NOOP, this, entity, null);
         }
 
         for (BodyPart part : this.bodyParts.values()) {
             StatusEffectMap map = part.getStatusEffects();
             if (!map.isEmpty())
-                map.removeAll(this, entity, part);
+                map.removeAll(StatusEffectSubmitter.NOOP, this, entity, part);
         }
         this.effectQueue.clear();
     }
@@ -167,9 +173,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
     }
 
     public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, LivingEntity entity) {
-        boolean modified = this.statusEffects.removeMatching(tag, this, entity, null);
+        // could be probably used to add post effects
+        boolean modified = this.statusEffects.removeMatching(StatusEffectSubmitter.NOOP, tag, this, entity, null);
         for (BodyPart part : this.bodyParts.values()) {
-            modified |= part.getStatusEffects().removeMatching(tag, this, entity, part);
+            modified |= part.getStatusEffects().removeMatching(StatusEffectSubmitter.NOOP, tag, this, entity, part);
         }
         return modified;
     }

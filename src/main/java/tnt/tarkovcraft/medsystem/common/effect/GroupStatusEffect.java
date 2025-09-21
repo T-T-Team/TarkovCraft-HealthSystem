@@ -5,11 +5,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupHolder;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class GroupStatusEffect extends StatusEffect {
@@ -57,9 +61,8 @@ public abstract class GroupStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public final void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         this.items.forEach(item -> item.cleanUp(container, entity, limb));
-        return null;
     }
 
     @Override

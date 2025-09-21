@@ -1,4 +1,4 @@
-package tnt.tarkovcraft.medsystem.common.effect;
+package tnt.tarkovcraft.medsystem.common.effect.util;
 
 public enum EffectVisibility {
 

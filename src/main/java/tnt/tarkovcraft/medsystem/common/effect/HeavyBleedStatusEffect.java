@@ -7,13 +7,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -56,11 +55,8 @@ public class HeavyBleedStatusEffect extends BleedStatusEffect {
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
-        return Collections.singletonList(new PostEffect(
-                Duration.seconds(5),
-                new FreshWoundStatusEffect(Duration.minutes(5).tickValue())
-        ));
+    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+        submitter.submit(Duration.seconds(5), new FreshWoundStatusEffect(Duration.minutes(5).tickValue()));
     }
 
     @Override

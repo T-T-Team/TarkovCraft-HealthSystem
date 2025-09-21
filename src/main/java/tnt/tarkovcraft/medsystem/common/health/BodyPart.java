@@ -7,7 +7,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 
 import java.util.Objects;
 

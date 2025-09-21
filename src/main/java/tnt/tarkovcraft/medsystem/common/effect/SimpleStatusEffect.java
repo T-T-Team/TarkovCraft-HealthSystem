@@ -1,11 +1,11 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
 import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 public abstract class SimpleStatusEffect extends StatusEffect {
 
@@ -18,7 +18,6 @@ public abstract class SimpleStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
-        return null;
+    public final void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 }

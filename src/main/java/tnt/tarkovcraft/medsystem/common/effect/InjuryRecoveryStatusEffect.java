@@ -12,13 +12,13 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -65,7 +65,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (limb != null) {
             limb.setMaxHealth(limb.getMaxHealth() + this.reduction);
             AttributeMap map = entity.getAttributes();
@@ -74,7 +74,6 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
             container.updateHealth(entity);
             HealthSystem.synchronizeEntity(entity);
         }
-        return null;
     }
 
     public void setReduction(int reduction) {

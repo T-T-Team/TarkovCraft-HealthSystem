@@ -18,7 +18,7 @@ import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifierType;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
-import tnt.tarkovcraft.medsystem.common.effect.EffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;

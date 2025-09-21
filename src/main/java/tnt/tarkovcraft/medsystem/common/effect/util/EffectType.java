@@ -1,4 +1,4 @@
-package tnt.tarkovcraft.medsystem.common.effect;
+package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;

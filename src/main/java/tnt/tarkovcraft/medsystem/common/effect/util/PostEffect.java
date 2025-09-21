@@ -1,6 +1,7 @@
-package tnt.tarkovcraft.medsystem.common.effect;
+package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 
 public record PostEffect(int delay, StatusEffect template) {
 

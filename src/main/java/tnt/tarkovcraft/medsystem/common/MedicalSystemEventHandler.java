@@ -41,9 +41,10 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectProcessor;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.WoundStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
@@ -277,7 +278,7 @@ public final class MedicalSystemEventHandler {
         if (factor > 0.0F) {
             effects.replace(new OverweightStatusEffect(factor >= 1.0F));
         } else {
-            effects.remove(MedSystemStatusEffects.OVERWEIGHT, container, entity, null);
+            effects.remove(StatusEffectSubmitter.NOOP, MedSystemStatusEffects.OVERWEIGHT, container, entity, null);
         }
         HealthSystem.synchronizeEntity(entity);
     }

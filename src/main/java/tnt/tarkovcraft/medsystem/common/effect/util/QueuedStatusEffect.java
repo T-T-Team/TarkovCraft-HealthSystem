@@ -1,9 +1,11 @@
-package tnt.tarkovcraft.medsystem.common.effect;
+package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 
 public record QueuedStatusEffect(long target, String limb, StatusEffect data) implements Comparable<QueuedStatusEffect> {
 

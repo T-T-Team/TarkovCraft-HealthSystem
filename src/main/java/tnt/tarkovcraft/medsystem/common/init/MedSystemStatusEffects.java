@@ -4,6 +4,8 @@ import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.*;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
 
 import java.util.Collections;

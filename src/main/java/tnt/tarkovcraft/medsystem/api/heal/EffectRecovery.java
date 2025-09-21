@@ -12,16 +12,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
-import tnt.tarkovcraft.medsystem.common.effect.PostEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.ListStatusEffectSubmitter;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.function.Consumer;
 
 public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect, boolean extendedTooltip) implements TooltipProvider {
@@ -52,10 +52,9 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
     public void recover(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
         StatusEffectType<?> type = this.effect.value();
         StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-        Collection<PostEffect> postEffects = StatusEffectHelper.removeEffect(effects, entity, part, container, type);
-        if (postEffects != null) {
-            postEffects.forEach(postEffect -> StatusEffectHelper.addPostEffect(effects, entity, part, postEffect));
-        }
+        ListStatusEffectSubmitter submitter = StatusEffectSubmitter.list();
+        StatusEffectHelper.removeEffect(submitter, effects, entity, part, container, type);
+        StatusEffectHelper.handleSubmittedEffects(effects, entity, part, submitter);
     }
 
     @Override

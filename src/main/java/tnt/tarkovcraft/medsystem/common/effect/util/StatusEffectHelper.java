@@ -1,4 +1,4 @@
-package tnt.tarkovcraft.medsystem.common.effect;
+package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
@@ -6,12 +6,13 @@ import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 public final class StatusEffectHelper {
 
@@ -19,6 +20,10 @@ public final class StatusEffectHelper {
 
     public static void addEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, StatusEffect effect) {
         addEffect(effects, entity, bodyPart, 0, effect);
+    }
+
+    public static void handleSubmittedEffects(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, ListStatusEffectSubmitter submitter) {
+        submitter.forEach(post -> addPostEffect(effects, entity, bodyPart, post));
     }
 
     public static void addPostEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, PostEffect postEffect) {
@@ -45,14 +50,14 @@ public final class StatusEffectHelper {
         container.markStatusEffectAdded(entity);
     }
 
-    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, HealthContainer container, Holder<StatusEffectType<?>> holder) {
-        return removeEffect(effects, entity, bodyPart, container, holder.value());
+    public static void removeEffect(StatusEffectSubmitter submitter, StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, HealthContainer container, Holder<StatusEffectType<?>> holder) {
+        removeEffect(submitter, effects, entity, bodyPart, container, holder.value());
     }
 
-    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, HealthContainer container, StatusEffectType<?> type) {
-        return effects.getEffect(type).map(effect -> {
+    public static void removeEffect(StatusEffectSubmitter submitter, StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, HealthContainer container, StatusEffectType<?> type) {
+        effects.getEffect(type).ifPresent(effect -> {
             NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, effect, bodyPart));
-            return effects.remove(type, container, entity, bodyPart);
-        }).orElse(null);
+            effects.remove(submitter, type, container, entity, bodyPart);
+        });
     }
 }

@@ -25,7 +25,13 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
-import tnt.tarkovcraft.medsystem.common.effect.*;
+import tnt.tarkovcraft.medsystem.common.effect.MildBloodLossStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.ModerateBloodLossStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.UnconsciousStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
@@ -259,7 +265,7 @@ public final class BloodData {
             this.removeUnconsciousModifier(attributeMap, Attributes.ATTACK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
-            StatusEffectHelper.removeEffect(effects, entity, null, container, MedSystemStatusEffects.UNCONSCIOUS);
+            StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, effects, entity, null, container, MedSystemStatusEffects.UNCONSCIOUS);
         }
     }
 
