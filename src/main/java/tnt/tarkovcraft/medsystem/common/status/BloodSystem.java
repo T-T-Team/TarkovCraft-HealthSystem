@@ -40,6 +40,6 @@ public final class BloodSystem {
     }
 
     public static boolean isEntityUnconscious(LivingEntity entity) {
-        return entity.isAlive() && getBloodData(entity).isUnconscious();
+        return entity.isAlive() && hasBloodDataIntegration(entity) && getBloodData(entity).isUnconscious();
     }
 }
