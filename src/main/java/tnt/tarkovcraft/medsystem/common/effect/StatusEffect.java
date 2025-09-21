@@ -8,9 +8,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.*;
-import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -30,9 +33,9 @@ public abstract class StatusEffect {
 
     public abstract StatusEffectType<?> getType();
 
-    public abstract void apply(Context context);
+    public abstract void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
-    public abstract Collection<PostEffect> onRemoved(Context context);
+    public abstract Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
     public abstract StatusEffect copy();
 

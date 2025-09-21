@@ -5,15 +5,16 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
-import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunction;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactions;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class DamageSourceHealthEventSource extends ChanceHealthEventSource {
@@ -30,17 +31,14 @@ public class DamageSourceHealthEventSource extends ChanceHealthEventSource {
     }
 
     @Override
-    public boolean canReact(Context context) {
-        BodyPart part = context.getOrDefault(MedicalSystemContextKeys.BODY_PART, null);
-        if (part == null) {
+    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+        if (damageSource == null) {
             return false;
         }
-        return context.get(ContextKeys.DAMAGE_SOURCE).map(source -> {
-            if (!source.is(this.damageType)) {
-                return false;
-            }
-            return super.canReact(context);
-        }).orElse(false);
+        if (!damageSource.is(this.damageType)) {
+            return false;
+        }
+        return super.canReact(container, entity, damageSource, limb);
     }
 
     @Override

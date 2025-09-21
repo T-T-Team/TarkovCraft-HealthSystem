@@ -7,10 +7,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
@@ -38,8 +39,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void apply(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (entity.isSprinting()) {
             this.bleedChance += 0.00035F;
             if (this.bleedChance >= 1.0F) {
@@ -49,8 +49,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         RandomSource source = entity.getRandom();
         if (source.nextFloat() < this.bleedChance) {
             return Collections.singletonList(new PostEffect(new LightBleedStatusEffect(-1)));

@@ -5,8 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
@@ -14,6 +12,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -30,11 +29,7 @@ public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void init(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
-        if (!HealthSystem.hasCustomHealth(entity))
-            return;
-        HealthContainer container = HealthSystem.getHealthData(entity);
+    public void init(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         List<BodyPart> deadLimbs = container.getBodyPartStream()
                 .filter(BodyPart::isDead)
                 .toList();
@@ -46,11 +41,11 @@ public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void apply(Context context) {
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void cleanup(Context context) {
+    public void cleanup(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override

@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.client.screen;
 
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -12,8 +13,6 @@ import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.renderable.IconWithLabelRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.util.HorizontalAlignment;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.client.RegisterHealthScreenLabelsEvent;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -30,6 +29,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 public class HealthScreen extends CharacterSubScreen {
@@ -39,8 +39,8 @@ public class HealthScreen extends CharacterSubScreen {
 
     private HealthContainer healthContainer;
 
-    public HealthScreen(Context context) {
-        super(context.getOrThrow(ContextKeys.UUID), MedicalSystemClient.HEALTH);
+    public HealthScreen(Screen parent, UUID userId) {
+        super(userId, MedicalSystemClient.HEALTH);
     }
 
     @Override

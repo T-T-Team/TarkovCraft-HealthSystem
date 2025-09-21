@@ -4,9 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.core.util.context.WritableContext;
-import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
 
 import java.util.Objects;
@@ -131,15 +131,13 @@ public final class BodyPart {
         return this.statusEffects;
     }
 
-    public void trigger(WritableContext context) {
-        context.set(MedicalSystemContextKeys.BODY_PART, this);
-        this.definition.getReactions().forEach(def -> def.react(context));
+    public void trigger(HealthContainer container, LivingEntity entity, DamageSource source) {
+        this.definition.getReactions().forEach(def -> def.react(container, entity, source, this));
     }
 
-    public void tick(WritableContext context) {
-        context.set(MedicalSystemContextKeys.BODY_PART, this);
-        this.statusEffects.tick(context);
-        this.definition.getReactions().forEach(def -> def.react(context));
+    public void tick(HealthContainer container, LivingEntity entity) {
+        this.statusEffects.tick(container, entity, this);
+        this.definition.getReactions().forEach(def -> def.react(container, entity, null, this));
     }
 
     @Override

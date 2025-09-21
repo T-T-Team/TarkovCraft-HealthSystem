@@ -4,9 +4,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import tnt.tarkovcraft.core.util.context.Context;
+import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,11 +38,11 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public void apply(Context context) {
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         return null;
     }
 

@@ -8,15 +8,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -33,16 +34,15 @@ public class BloodRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void init(Context context) {
+    public void init(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void cleanup(Context context) {
+    public void cleanup(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void apply(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         Level level = entity.level();
         long time = level.getGameTime();
         if (time % 20L != 0L) {

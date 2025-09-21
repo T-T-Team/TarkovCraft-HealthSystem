@@ -21,7 +21,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.init.CoreAttributes;
-import tnt.tarkovcraft.core.util.context.ContextImpl;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -260,7 +259,7 @@ public final class BloodData {
             this.removeUnconsciousModifier(attributeMap, Attributes.ATTACK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
-            StatusEffectHelper.removeEffect(effects, entity, null, ContextImpl.empty(), MedSystemStatusEffects.UNCONSCIOUS);
+            StatusEffectHelper.removeEffect(effects, entity, null, container, MedSystemStatusEffects.UNCONSCIOUS);
         }
     }
 

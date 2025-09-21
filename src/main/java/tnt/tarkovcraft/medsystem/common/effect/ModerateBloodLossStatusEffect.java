@@ -6,13 +6,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
@@ -47,7 +49,7 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public void applyEffect(LivingEntity entity, Context context) {
+    public void applyEffect(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (!BloodSystem.hasBloodDataIntegration(entity)) {
             this.markForRemoval();
             return;
@@ -62,7 +64,7 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         return null;
     }
 

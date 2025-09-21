@@ -8,7 +8,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +34,6 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
-import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.event.WoundStatusEffectApplyEvent;
@@ -275,7 +277,7 @@ public final class MedicalSystemEventHandler {
         if (factor > 0.0F) {
             effects.replace(new OverweightStatusEffect(factor >= 1.0F));
         } else {
-            effects.remove(MedSystemStatusEffects.OVERWEIGHT, Context.NONE);
+            effects.remove(MedSystemStatusEffects.OVERWEIGHT, container, entity, null);
         }
         HealthSystem.synchronizeEntity(entity);
     }

@@ -2,9 +2,13 @@ package tnt.tarkovcraft.medsystem.common.health.reaction;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import tnt.tarkovcraft.core.util.context.Context;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactions;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class OrHealthEventSource implements HealthEventSource {
@@ -20,8 +24,8 @@ public class OrHealthEventSource implements HealthEventSource {
     }
 
     @Override
-    public boolean canReact(Context context) {
-        return this.reactions.stream().anyMatch(reaction -> reaction.canReact(context));
+    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+        return this.reactions.stream().anyMatch(reaction -> reaction.canReact(container, entity, damageSource, limb));
     }
 
     @Override

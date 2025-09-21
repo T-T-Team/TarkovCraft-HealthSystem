@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
-import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -46,14 +45,14 @@ public final class StatusEffectHelper {
         container.markStatusEffectAdded(entity);
     }
 
-    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, Holder<StatusEffectType<?>> holder) {
-        return removeEffect(effects, entity, bodyPart, context, holder.value());
+    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, HealthContainer container, Holder<StatusEffectType<?>> holder) {
+        return removeEffect(effects, entity, bodyPart, container, holder.value());
     }
 
-    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, Context context, StatusEffectType<?> type) {
+    public static Collection<PostEffect> removeEffect(StatusEffectMap effects, LivingEntity entity, @Nullable BodyPart bodyPart, HealthContainer container, StatusEffectType<?> type) {
         return effects.getEffect(type).map(effect -> {
             NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, effect, bodyPart));
-            return effects.remove(type, context);
+            return effects.remove(type, container, entity, bodyPart);
         }).orElse(null);
     }
 }

@@ -4,11 +4,15 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemChanceFunctions;
+
+import javax.annotation.Nullable;
 
 public class FallDistanceLimitFunction implements ChanceFunction {
 
@@ -26,16 +30,14 @@ public class FallDistanceLimitFunction implements ChanceFunction {
     }
 
     @Override
-    public float apply(float chance, Context context) {
-        return context.get(ContextKeys.LIVING_ENTITY).map(entity -> {
-            double fallDistance = entity.fallDistance;
-            float min = this.minDistance.floatValue(context);
-            float max = this.maxDistance.floatValue(context);
-            if (fallDistance >= min && fallDistance <= max) {
-                return chance;
-            }
-            return 0.0F;
-        }).orElse(0.0F);
+    public float apply(float chance, HealthContainer container, LivingEntity entity, @Nullable DamageSource source, BodyPart limb) {
+        double fallDistance = entity.fallDistance;
+        float min = this.minDistance.floatValue();
+        float max = this.maxDistance.floatValue();
+        if (fallDistance >= min && fallDistance <= max) {
+            return chance;
+        }
+        return 0.0F;
     }
 
     @Override

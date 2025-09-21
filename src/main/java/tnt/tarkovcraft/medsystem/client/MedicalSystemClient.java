@@ -14,7 +14,6 @@ import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
 import tnt.tarkovcraft.core.client.screen.navigation.OptionalNavigationEntry;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
@@ -31,9 +30,9 @@ public final class MedicalSystemClient {
 
     public static final NavigationEntry HEALTH = new OptionalNavigationEntry(
             TextHelper.createScreenTitle(MedicalSystem.MOD_ID, "health"),
-            ctx -> {
+            (parent, userId) -> {
                 UUID clientId = Minecraft.getInstance().player.getUUID();
-                return ctx.get(ContextKeys.UUID).filter(uuid -> uuid.equals(clientId)).isPresent();
+                return userId.equals(clientId);
             },
             HealthScreen::new,
             25

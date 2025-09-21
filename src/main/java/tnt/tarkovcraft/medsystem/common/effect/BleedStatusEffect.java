@@ -5,12 +5,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
-import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,27 +32,24 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
     public abstract float getDamageAmount();
 
     @Override
-    public void apply(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         Level level = entity.level();
         long time = level.getGameTime();
-        if (time % this.getDamageInterval() == 0L && level instanceof ServerLevel serverLevel) {
-            context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
-                if (BloodSystem.hasBloodDataIntegration(entity)) {
-                    float perMinuteBloodLoss = this.getPerMinuteBloodLossAmount(entity);
-                    float bloodLoss = (perMinuteBloodLoss * this.getDamageInterval()) / 1200;
-                    BloodSystem.causeBloodLoss(entity, bloodLoss);
-                } else {
-                    RegistryAccess access = serverLevel.registryAccess();
-                    DamageSource damageSource = MedSystemDamageTypes.causeBleedDamage(access, this.getCausingEntity(serverLevel));
-                    entity.hurtServer(serverLevel, damageSource, this.getDamageAmount());
-                }
-            });
+        if (limb != null && time % this.getDamageInterval() == 0L && level instanceof ServerLevel serverLevel) {
+            if (BloodSystem.hasBloodDataIntegration(entity)) {
+                float perMinuteBloodLoss = this.getPerMinuteBloodLossAmount(entity);
+                float bloodLoss = (perMinuteBloodLoss * this.getDamageInterval()) / 1200;
+                BloodSystem.causeBloodLoss(entity, bloodLoss);
+            } else {
+                RegistryAccess access = serverLevel.registryAccess();
+                DamageSource damageSource = MedSystemDamageTypes.causeBleedDamage(access, this.getCausingEntity(serverLevel));
+                entity.hurtServer(serverLevel, damageSource, this.getDamageAmount());
+            }
         }
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(Context context) {
+    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         return null;
     }
 }

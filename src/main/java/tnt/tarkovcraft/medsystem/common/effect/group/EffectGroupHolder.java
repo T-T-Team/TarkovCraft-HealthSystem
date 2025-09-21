@@ -3,9 +3,12 @@ package tnt.tarkovcraft.medsystem.common.effect.group;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
-import tnt.tarkovcraft.core.util.context.Context;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -38,22 +41,22 @@ public final class EffectGroupHolder {
         return new Factory(items);
     }
 
-    public void tick(Context context) {
+    public void tick(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (this.delay > 0 && --this.delay > 0) {
             return;
         }
         if (!this.active) {
             this.active = true;
-            this.item.init(context);
+            this.item.init(container, entity, limb);
         }
-        this.item.apply(context);
+        this.item.apply(container, entity, limb);
         if (--this.duration <= 0) {
-            this.cleanUp(context);
+            this.cleanUp(container, entity, limb);
         }
     }
 
-    public void cleanUp(Context context) {
-        this.item.cleanup(context);
+    public void cleanUp(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+        this.item.cleanup(container, entity, limb);
     }
 
     public void addInformation(Consumer<Component> tooltip, boolean isItemTooltip) {

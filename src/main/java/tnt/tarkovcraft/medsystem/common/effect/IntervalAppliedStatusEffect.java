@@ -2,8 +2,9 @@ package tnt.tarkovcraft.medsystem.common.effect;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
+import org.jetbrains.annotations.Nullable;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
 public abstract class IntervalAppliedStatusEffect extends StatusEffect {
 
@@ -16,15 +17,14 @@ public abstract class IntervalAppliedStatusEffect extends StatusEffect {
 
     public abstract int getUpdateInterval();
 
-    public abstract void applyEffect(LivingEntity entity, Context context);
+    public abstract void applyEffect(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
     @Override
-    public final void apply(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public final void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         Level level = entity.level();
         long gameTime = level.getGameTime();
         if (this.updateInterval <= 0 || gameTime % this.updateInterval == 0) {
-            this.applyEffect(entity, context);
+            this.applyEffect(container, entity, limb);
         }
     }
 }

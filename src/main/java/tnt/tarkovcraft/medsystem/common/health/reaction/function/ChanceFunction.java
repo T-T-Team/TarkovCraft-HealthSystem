@@ -1,10 +1,15 @@
 package tnt.tarkovcraft.medsystem.common.health.reaction.function;
 
-import tnt.tarkovcraft.core.util.context.Context;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+
+import javax.annotation.Nullable;
 
 public interface ChanceFunction {
 
-    float apply(float chance, Context context);
+    float apply(float chance, HealthContainer container, LivingEntity entity, @Nullable DamageSource source, BodyPart limb);
 
     ChanceFunctionType<?> getType();
 }

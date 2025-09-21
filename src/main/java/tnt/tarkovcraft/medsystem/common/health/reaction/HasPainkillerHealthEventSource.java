@@ -1,10 +1,14 @@
 package tnt.tarkovcraft.medsystem.common.health.reaction;
 
 import com.mojang.serialization.MapCodec;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactions;
+
+import javax.annotation.Nullable;
 
 public class HasPainkillerHealthEventSource implements HealthEventSource {
 
@@ -12,10 +16,8 @@ public class HasPainkillerHealthEventSource implements HealthEventSource {
     public static final MapCodec<HasPainkillerHealthEventSource> CODEC = MapCodec.unit(INSTANCE);
 
     @Override
-    public boolean canReact(Context context) {
-        return context.get(ContextKeys.LIVING_ENTITY)
-                .map(HealthSystem::hasPainRelief)
-                .orElse(false);
+    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+        return HealthSystem.hasPainRelief(entity);
     }
 
     @Override

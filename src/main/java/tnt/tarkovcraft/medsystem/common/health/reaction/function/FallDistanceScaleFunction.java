@@ -4,11 +4,15 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemChanceFunctions;
+
+import javax.annotation.Nullable;
 
 public class FallDistanceScaleFunction implements ChanceFunction {
 
@@ -23,12 +27,10 @@ public class FallDistanceScaleFunction implements ChanceFunction {
     }
 
     @Override
-    public float apply(float chance, Context context) {
-        return context.get(ContextKeys.LIVING_ENTITY).map(entity -> {
-            double distance = entity.fallDistance;
-            float scaleValue = this.scale.floatValue(context);
-            return (float) (distance * scaleValue) * chance;
-        }).orElse(chance);
+    public float apply(float chance, HealthContainer container, LivingEntity entity, @Nullable DamageSource source, BodyPart limb) {
+        double distance = entity.fallDistance;
+        float scaleValue = this.scale.floatValue();
+        return (float) (distance * scaleValue) * chance;
     }
 
     @Override

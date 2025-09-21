@@ -2,12 +2,9 @@ package tnt.tarkovcraft.medsystem.common.effect;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import tnt.tarkovcraft.core.util.context.Context;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-import java.util.Collection;
-
-public class WoundStatusEffect extends StatusEffect {
+public class WoundStatusEffect extends SimpleStatusEffect {
 
     public static final MapCodec<WoundStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).apply(instance, WoundStatusEffect::new));
 
@@ -17,15 +14,6 @@ public class WoundStatusEffect extends StatusEffect {
 
     public static WoundStatusEffect createTemplate() {
         return new WoundStatusEffect(20);
-    }
-
-    @Override
-    public void apply(Context context) {
-    }
-
-    @Override
-    public Collection<PostEffect> onRemoved(Context context) {
-        return null;
     }
 
     @Override

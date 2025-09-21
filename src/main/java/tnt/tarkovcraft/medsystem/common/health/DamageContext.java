@@ -4,8 +4,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
-import tnt.tarkovcraft.core.util.context.ContextImpl;
-import tnt.tarkovcraft.core.util.context.WritableContext;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.EvenDamageDistributor;
@@ -23,7 +21,6 @@ public final class DamageContext {
     private HitCalculator hitCalculator;
     private DamageDistributor damageDistributor;
     private SideEffectHolder sideEffects;
-    private final WritableContext data = ContextImpl.builder().build();
 
     public DamageContext(LivingEntity entity, DamageSource source) {
         this.entity = entity;
@@ -84,9 +81,5 @@ public final class DamageContext {
         DamageDistributor original = this.damageDistributor != null ? this.damageDistributor : EvenDamageDistributor.INSTANCE;
         DamageDistributor custom = this.hitCalculator.getCustomDamageDistributor(this.entity, this.source, container, original);
         return custom != null ? custom : original;
-    }
-
-    public WritableContext getData() {
-        return data;
     }
 }

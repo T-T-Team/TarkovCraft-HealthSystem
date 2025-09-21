@@ -11,15 +11,13 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -47,39 +45,35 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void apply(Context context) {
-        if (this.reduction < 1)
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+        if (this.reduction < 1 || limb == null) {
+            this.markForRemoval();
             return;
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
-        context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
-            this.reduction = Math.min((int) part.getMaxHealth() - 1, this.reduction);
-            AttributeMap map = entity.getAttributes();
-            AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
-            ResourceLocation modifierId = this.getUniqueModifierId(part);
-            AttributeModifier modifier = instance.getModifier(modifierId);
-            if (modifier == null || modifier.amount() != -this.reduction) {
-                float newMaxHealth = part.getMaxHealth() - this.reduction;
-                instance.addOrReplacePermanentModifier(new AttributeModifier(modifierId, -this.reduction, AttributeModifier.Operation.ADD_VALUE));
-                part.setMaxHealth(newMaxHealth);
-                HealthContainer container = context.getOrThrow(MedicalSystemContextKeys.HEALTH_CONTAINER);
-                container.updateHealth(entity);
-                HealthSystem.synchronizeEntity(entity);
-            }
-        });
+        }
+        this.reduction = Math.min((int) limb.getMaxHealth() - 1, this.reduction);
+        AttributeMap map = entity.getAttributes();
+        AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
+        ResourceLocation modifierId = this.getUniqueModifierId(limb);
+        AttributeModifier modifier = instance.getModifier(modifierId);
+        if (modifier == null || modifier.amount() != -this.reduction) {
+            float newMaxHealth = limb.getMaxHealth() - this.reduction;
+            instance.addOrReplacePermanentModifier(new AttributeModifier(modifierId, -this.reduction, AttributeModifier.Operation.ADD_VALUE));
+            limb.setMaxHealth(newMaxHealth);
+            container.updateHealth(entity);
+            HealthSystem.synchronizeEntity(entity);
+        }
     }
 
     @Override
-    public Collection<PostEffect> onRemoved(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
-        context.get(MedicalSystemContextKeys.BODY_PART).ifPresent(part -> {
-            part.setMaxHealth(part.getMaxHealth() + this.reduction);
+    public Collection<PostEffect> onRemoved(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+        if (limb != null) {
+            limb.setMaxHealth(limb.getMaxHealth() + this.reduction);
             AttributeMap map = entity.getAttributes();
-            HealthContainer container = context.getOrThrow(MedicalSystemContextKeys.HEALTH_CONTAINER);
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
-            instance.removeModifier(this.getUniqueModifierId(part));
+            instance.removeModifier(this.getUniqueModifierId(limb));
             container.updateHealth(entity);
             HealthSystem.synchronizeEntity(entity);
-        });
+        }
         return null;
     }
 

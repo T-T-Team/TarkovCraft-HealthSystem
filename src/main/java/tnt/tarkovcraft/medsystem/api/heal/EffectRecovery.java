@@ -10,15 +10,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextImpl;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
-import tnt.tarkovcraft.medsystem.common.MedicalSystemContextKeys;
-import tnt.tarkovcraft.medsystem.common.effect.*;
+import tnt.tarkovcraft.medsystem.common.effect.PostEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
@@ -52,11 +49,10 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
         return container.getBodyPartStream().anyMatch(part -> part.getStatusEffects().hasEffect(this.effect));
     }
 
-    public void recover(LivingEntity entity, HealthContainer container, ItemStack stack, @Nullable BodyPart part) {
+    public void recover(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
         StatusEffectType<?> type = this.effect.value();
         StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-        Context context = ContextImpl.of(ContextKeys.LIVING_ENTITY, entity, MedicalSystemContextKeys.HEALTH_CONTAINER, container, LootContextParams.TOOL, stack);
-        Collection<PostEffect> postEffects = StatusEffectHelper.removeEffect(effects, entity, part, context, type);
+        Collection<PostEffect> postEffects = StatusEffectHelper.removeEffect(effects, entity, part, container, type);
         if (postEffects != null) {
             postEffects.forEach(postEffect -> StatusEffectHelper.addPostEffect(effects, entity, part, postEffect));
         }

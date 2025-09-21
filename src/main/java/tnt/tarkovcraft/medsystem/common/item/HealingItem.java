@@ -309,7 +309,7 @@ public class HealingItem extends Item implements SideEffectProcessor {
         List<EffectRecovery> recoveries = attributes.recoveries();
         for (EffectRecovery recovery : recoveries) {
             if (recovery.canRecover(container, part) && checkDurability(stack, consume + recovery.consumption())) {
-                recovery.recover(targetEntity, container, stack, part);
+                recovery.recover(targetEntity, container, part);
                 consume += recovery.consumption();
             }
         }

@@ -17,13 +17,14 @@ import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier;
 import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifierType;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.core.util.context.Context;
-import tnt.tarkovcraft.core.util.context.ContextKeys;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class AttributeModifierEffectGroupItem implements EffectGroupItem {
@@ -48,12 +49,11 @@ public class AttributeModifierEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void apply(Context context) {
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void init(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public void init(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (!AttributeSystem.isEnabledForEntity(entity))
             return;
         EntityAttributeData attributeData = AttributeSystem.getAttributes(entity);
@@ -63,8 +63,7 @@ public class AttributeModifierEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void cleanup(Context context) {
-        LivingEntity entity = context.getOrThrow(ContextKeys.LIVING_ENTITY);
+    public void cleanup(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (!AttributeSystem.isEnabledForEntity(entity))
             return;
         EntityAttributeData attributeData = AttributeSystem.getAttributes(entity);
