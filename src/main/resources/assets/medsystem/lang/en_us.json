@@ -9,6 +9,10 @@
   "itemGroup.medsystem.medical": "Medical",
 
   "skill.medsystem.resilience": "Resilience",
+  "skill.medsystem.resilience.bonus.unconscious_on_limb_loss": "Unconsciousness from limb loss",
+  "skill.medsystem.resilience.bonus.unconscious_on_limb_loss.description": "Decreases unconsciousness chance by %s",
+  "skill.medsystem.resilience.bonus.blood_regeneration": "Blood regeneration",
+  "skill.medsystem.resilience.bonus.blood_regeneration.description": "Increases blood regeneration by %s",
   "skill.medsystem.armors": "Armors",
   "skill.medsystem.armors.bonus.armor_durability": "Armor durability",
   "skill.medsystem.armors.bonus.armor_durability.description": "Reduces armor damage by %s",
@@ -116,6 +120,7 @@
   "label.medsystem.healing.other.infinite": "Healing %s...",
   "label.medsystem.healing.other.target": "Healing %s",
   "label.medsystem.unconscious.info": "You are unconscious. Use /giveUp command to give up",
+  "label.medsystem.unit.liter_per_day.suffix": "L/day",
 
   "commands.giveup.failed.not_unconscious": "Cannot use the command while not in unconscious state",
 

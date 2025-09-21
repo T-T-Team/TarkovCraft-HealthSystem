@@ -48,10 +48,10 @@
     {
       "display": {
         "name": {
-          "translate": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss_scaling"
+          "translate": "skill.medsystem.resilience.bonus.blood_regeneration"
         },
-        "descriptionKey": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss_scaling.description",
-        "icon": "medsystem:textures/icons/skills/bonus/unconscious_on_limb_loss_scaling.png"
+        "descriptionKey": "skill.medsystem.resilience.bonus.blood_regeneration.description",
+        "icon": "medsystem:textures/icons/skill/bonus/blood_regeneration.png"
       },
       "conditions": [
         {
@@ -60,10 +60,17 @@
       ],
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
-        "attribute": "medsystem:unconscious_on_limb_loss_scaling",
+        "attribute": "medsystem:blood_regeneration_amount",
         "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
-        "levelValue": 1,
-        "constant": true
+        "levelValue": 0.00025,
+        "constant": true,
+        "displayUnitFormat": {
+          "decimalPlaces": 2,
+          "multiplier": 1200,
+          "suffix": {
+            "translate": "label.medsystem.unit.liter_per_day.suffix"
+          }
+        }
       }
     }
   ]
