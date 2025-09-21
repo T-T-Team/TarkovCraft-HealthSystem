@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.effect.util;
 
-import cpw.mods.util.Lazy;
+import tnt.tarkovcraft.core.util.Lazy;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 
 import java.util.ArrayList;

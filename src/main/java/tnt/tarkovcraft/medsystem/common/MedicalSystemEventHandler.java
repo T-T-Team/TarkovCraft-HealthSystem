@@ -33,7 +33,6 @@ import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
-import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.event.WoundStatusEffectApplyEvent;
@@ -324,19 +323,8 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         LivingEntity entity = event.getEntity();
-        DamageSource source = event.getSource();
-        Entity killer = source.getEntity();
         if (HealthSystem.hasCustomHealth(entity)) {
             HealthContainer container = HealthSystem.getHealthData(entity);
-            if (killer != null) {
-                boolean headshot = source.is(DamageTypeTags.IS_PROJECTILE) && container.getBodyPartStream().anyMatch(part -> part.getGroup() == BodyPartGroup.HEAD && part.isDead());
-                if (headshot) {
-                    StatisticTracker.incrementOptional(killer, MedSystemStats.HEADSHOTS);
-                    if (entity.getType() == EntityType.PLAYER) {
-                        StatisticTracker.increment(killer, MedSystemStats.PLAYER_HEADSHOTS);
-                    }
-                }
-            }
             container.invalidate();
         }
     }

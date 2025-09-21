@@ -47,10 +47,6 @@
   "attribute.medsystem.unconscious_on_limb_loss_scaling": "Unconscious chance scaling on limb loss",
 
   "stat.medsystem.limbs_lost": "Limbs lost",
-  "stat.medsystem.headshots": "Headshots",
-  "stat.medsystem.headshot_percentage": "Headshot rate",
-  "stat.medsystem.player_headshots": "Headshots (PvP)",
-  "stat.medsystem.player_headshot_percentage": "Headshot rate (PvP)",
 
   "status_effect.medsystem.pain_relief": "Pain Relief",
   "status_effect.medsystem.pain": "Pain",
