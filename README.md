@@ -8,16 +8,29 @@ Player hitbox is for example split into:
 - Right and left arm
 - Right and left leg
 
+![health](https://cdn.modrinth.com/data/sodxIUKj/images/e5c0e9e6bcf2f62189ddf76d3c0c581adfcf6d28.png)
+
 Each limb has its own health pool, losing any vital part (head or torso) means instant death even if some other parts
 still had some health left. While this makes the game slightly harder it brings in some extra realism for those who like
 challenge. But since hostile mobs also have custom limbs, you can take out their legs for example and run away as they won't be able to move much ;)
 
 Losing non-vital limbs also has some negative effects - you will be barely able to move without legs, quickly lose hunger without stomach, ...
-However, you can fix dead limbs by crafting Emergency surgery kit and healing with it.
+However, you can fix dead limbs by crafting Emergency surgery kit and healing with it. Remember, you can also heal your friends, sometimes you 
+may be able to save their lives if they're unconscious and slowly bleeding out, so cooperation is encouraged.
 
 Armor system is also changed - now only armor actually covering the attacked limb counts.
 
 We also have custom status effects such as bleeds (light/heavy), fractures and much more. These status effects can be healed via our custom medical items.
+Some of these effect come with special screen effects such as blur, desaturation and so on.
+
+Pain post-process shader
+![pain](https://cdn.modrinth.com/data/sodxIUKj/images/4acf3c14a282ef2f5f0fd640bcca2e67f515baca.png)
+
+Moderate blood loss post-process shader
+![moderate-blood-loss](https://cdn.modrinth.com/data/sodxIUKj/images/f4901ca1f0d651e4c28390e45415861ecd078639.png)
+
+Pain relief post-process shader
+![pain-relief](https://cdn.modrinth.com/data/sodxIUKj/images/3daecfff3a60d5e939bef47a3d7e3821229821c7.png)
 
 ## For mod/modpack developers
 The health system is designed to be fully editable/configurable via datapacks, which means that you can add support for

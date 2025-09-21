@@ -1,2 +1,21 @@
 # Release 1.21.8-1.7.0
-- Special status effects can no longer be added via commands
+- Added **Blood system**
+  - Each player has 5L of blood by default
+  - Bleeds no longer cause health loss directly, instead blood data are used
+  - Losing larger quantities of blood now leads to gradually worsening effects and eventually death
+  - Blood system can be disabled in config to revert to previous behaviour
+  - Blood is recovered naturally overtime, can be sped up by consuming sweet foods or by skills
+- Added **Unconscious** entity state
+  - Losing limbs can now cause unconsciousness (previously it could cause death)
+  - Losing large quantities of blood causes unconsciousness
+    - you may still wake up if you have not lost too much blood
+    - players who lost too much blood can only be saved by other players
+- Added Post-processing shaders for specific status effects
+  - pain, pain relief and blood loss effects have custom effects
+  - concussion has own effect too, but this status effect is currently obtainable only via commands
+- Reworked extra health spreading logic
+  - when player has increased max health, for example from other mod, the health is now spread evenly across all body parts
+- Body part selection healing screen now allows you to select limbs by clicking its health status too
+- Fixed Fresh Wound status effect always resulting in bleed
+- Reduced chance for Fractures from falling
+- Berry bushes and similar "weak" damage sources will no longer cause bleeds or fractures
