@@ -29,7 +29,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
-import tnt.tarkovcraft.medsystem.common.item.HealTarget;
+import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SelectBodyPart;
 
 import java.util.ArrayList;
@@ -146,7 +146,7 @@ public class SelectBodyPartScreen extends Screen {
     }
 
     private void bodyPartClicked(BodyPart part) {
-        HealTarget target = new HealTarget(this.selfHealing, this.entityId, part.getName());
+        InteractionTarget target = new InteractionTarget(this.selfHealing, this.entityId, part.getName());
         ClientPacketDistributor.sendToServer(new C2S_SelectBodyPart(target));
         this.minecraft.setScreen(null);
     }

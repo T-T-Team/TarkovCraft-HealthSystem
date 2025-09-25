@@ -7,7 +7,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorStat;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.common.item.HealTarget;
+import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 
 import java.util.function.Supplier;
 
@@ -21,9 +21,9 @@ public final class MedSystemItemComponents {
     public static final Supplier<DataComponentType<HealItemAttributes>> HEAL_ATTRIBUTES = REGISTRY.registerComponentType("heal_attributes", builder -> builder
             .persistent(HealItemAttributes.CODEC)
     );
-    public static final Supplier<DataComponentType<HealTarget>> HEAL_TARGET = REGISTRY.registerComponentType("heal_target", builder -> builder
-            .persistent(HealTarget.CODEC)
-            .networkSynchronized(HealTarget.STREAM_CODEC)
+    public static final Supplier<DataComponentType<InteractionTarget>> INTERACTION_TARGET = REGISTRY.registerComponentType("interaction_target", builder -> builder
+            .persistent(InteractionTarget.CODEC)
+            .networkSynchronized(InteractionTarget.STREAM_CODEC)
     );
     public static final Supplier<DataComponentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.registerComponentType("side_effects", builder -> builder
             .persistent(SideEffectHolder.CODEC)

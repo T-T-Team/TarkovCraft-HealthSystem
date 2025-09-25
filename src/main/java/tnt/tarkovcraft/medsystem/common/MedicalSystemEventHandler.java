@@ -48,7 +48,7 @@ import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.init.*;
-import tnt.tarkovcraft.medsystem.common.item.HealTarget;
+import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
@@ -350,7 +350,7 @@ public final class MedicalSystemEventHandler {
         if (stack.has(MedSystemItemComponents.SIDE_EFFECTS) && !(stack.getItem() instanceof SideEffectProcessor)) {
             SideEffectHolder holder = stack.get(MedSystemItemComponents.SIDE_EFFECTS);
             HealthContainer container = HealthSystem.getHealthData(entity);
-            HealTarget target = stack.get(MedSystemItemComponents.HEAL_TARGET);
+            InteractionTarget target = stack.get(MedSystemItemComponents.INTERACTION_TARGET);
             String targetLimb = target != null ? target.limbCode() : null;
             BodyPart part = container.getBodyPart(targetLimb);
             holder.apply(entity, container, part);

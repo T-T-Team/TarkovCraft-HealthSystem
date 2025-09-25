@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tnt.tarkovcraft.medsystem.client.ClientNetworkHandler;
+import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 public record S2C_OpenBodyPartSelectScreen(boolean selfHealing, int entityId) implements CustomPacketPayload {
@@ -20,6 +21,10 @@ public record S2C_OpenBodyPartSelectScreen(boolean selfHealing, int entityId) im
             ByteBufCodecs.INT, S2C_OpenBodyPartSelectScreen::entityId,
             S2C_OpenBodyPartSelectScreen::new
     );
+
+    public S2C_OpenBodyPartSelectScreen(InteractionTarget.Mutable interaction) {
+        this(interaction.isSelf(), interaction.getEntityId());
+    }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

@@ -16,15 +16,15 @@ import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
-import tnt.tarkovcraft.medsystem.common.item.HealTarget;
+import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
-public record C2S_SelectBodyPart(HealTarget target) implements CustomPacketPayload {
+public record C2S_SelectBodyPart(InteractionTarget target) implements CustomPacketPayload {
 
     public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(C2S_SelectBodyPart.class);
     public static final Type<C2S_SelectBodyPart> TYPE = new Type<>(PACKET_ID);
     public static final StreamCodec<ByteBuf, C2S_SelectBodyPart> CODEC = StreamCodec.composite(
-            HealTarget.STREAM_CODEC, C2S_SelectBodyPart::target,
+            InteractionTarget.STREAM_CODEC, C2S_SelectBodyPart::target,
             C2S_SelectBodyPart::new
     );
 
@@ -49,7 +49,7 @@ public record C2S_SelectBodyPart(HealTarget target) implements CustomPacketPaylo
         HealthContainer container = HealthSystem.getHealthData(targetEntity);
         BodyPart part = container.getBodyPart(this.target.limbCode());
         if (attributes != null && attributes.canUseOnPart(part, stack, container)) {
-            stack.set(MedSystemItemComponents.HEAL_TARGET, this.target);
+            stack.set(MedSystemItemComponents.INTERACTION_TARGET, this.target);
         }
     }
 
