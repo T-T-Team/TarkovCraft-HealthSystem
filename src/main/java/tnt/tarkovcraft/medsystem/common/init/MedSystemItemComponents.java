@@ -8,6 +8,7 @@ import tnt.tarkovcraft.medsystem.api.ArmorStat;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
+import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 
 import java.util.function.Supplier;
 
@@ -27,5 +28,9 @@ public final class MedSystemItemComponents {
     );
     public static final Supplier<DataComponentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.registerComponentType("side_effects", builder -> builder
             .persistent(SideEffectHolder.CODEC)
+    );
+    public static final Supplier<DataComponentType<BloodContainer>> BLOOD_CONTAINER = REGISTRY.registerComponentType("blood_container", builder -> builder
+            .persistent(BloodContainer.CODEC)
+            .networkSynchronized(BloodContainer.STREAM_CODEC)
     );
 }

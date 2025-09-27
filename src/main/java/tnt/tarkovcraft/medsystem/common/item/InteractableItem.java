@@ -18,11 +18,16 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.util.InteractionHelper;
 
 import javax.annotation.Nullable;
+import java.util.Locale;
 
 public abstract class InteractableItem extends Item {
 
     public InteractableItem(Properties properties) {
         super(properties);
+    }
+
+    protected static String formatUsageDuration(int time) {
+        return String.format(Locale.ROOT, "%.2f", time / 20.0F);
     }
 
     /**
@@ -126,7 +131,7 @@ public abstract class InteractableItem extends Item {
         // Interaction progress message
         if (!level.isClientSide()) {
             boolean infinite = this.getUseDuration(stack, livingEntity) >= Item.APPROXIMATELY_INFINITE_USE_DURATION;
-            Component label = this.getInteractionLabel(interaction, target, livingEntity, remainingUseDuration, infinite);
+            Component label = this.getInteractionLabel(stack, interaction, target, livingEntity, remainingUseDuration, infinite);
             if (label != null && livingEntity instanceof Player player) {
                 player.displayClientMessage(label, true);
             }
@@ -186,7 +191,7 @@ public abstract class InteractableItem extends Item {
     }
 
     @Nullable
-    protected Component getInteractionLabel(InteractionTarget interaction, LivingEntity target, LivingEntity origin, int time, boolean infinite) {
+    protected Component getInteractionLabel(ItemStack itemStack, InteractionTarget interaction, LivingEntity target, LivingEntity origin, int time, boolean infinite) {
         return null;
     }
 

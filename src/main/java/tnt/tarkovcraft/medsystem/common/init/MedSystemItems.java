@@ -9,7 +9,9 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
+import tnt.tarkovcraft.medsystem.common.item.BloodBagItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
+import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 
 public final class MedSystemItems {
 
@@ -89,6 +91,13 @@ public final class MedSystemItems {
                                     .removesEffect(4, MedSystemStatusEffects.LIGHT_BLEED)
                                     .build()
                             )
+            )
+    );
+    public static final DeferredItem<BloodBagItem> BLOODBAG = REGISTRY.registerItem(
+            "bloodbag",
+            properties -> new BloodBagItem(
+                    properties.stacksTo(1)
+                            .component(MedSystemItemComponents.BLOOD_CONTAINER, new BloodContainer(0.5F, 0.0F, true))
             )
     );
 }

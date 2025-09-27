@@ -29,6 +29,14 @@ public enum BloodStatus {
         return this != HEALTHY;
     }
 
+    public boolean isSameOrAbove(BloodStatus status) {
+        return this.ordinal() >= status.ordinal();
+    }
+
+    public boolean isSameOrBelow(BloodStatus status) {
+        return this.ordinal() <= status.ordinal();
+    }
+
     public void applyEffects(BloodData bloodData, LivingEntity entity, ServerLevel level, HealthContainer container) {
         this.effect.apply(bloodData, entity, level, container);
     }

@@ -5,6 +5,7 @@
   "item.medsystem.splint": "Splint",
   "item.medsystem.painkillers": "Painkillers",
   "item.medsystem.first_aid_kit": "First Aid Kit",
+  "item.medsystem.bloodbag": "Blood Bag",
 
   "itemGroup.medsystem.medical": "Medical",
 
@@ -115,8 +116,15 @@
   "label.medsystem.healing.other": "Healing %s, remaining %s",
   "label.medsystem.healing.other.infinite": "Healing %s...",
   "label.medsystem.healing.other.target": "Healing %s",
+  "label.medsystem.blood_extraction.self": "Filling blood bag, remaining %s",
+  "label.medsystem.blood_insertion.self": "Performing blood transfusion, remaining %s",
+  "label.medsystem.blood_extraction.other": "Filling blood bag from %s, remaining %s",
+  "label.medsystem.blood_insertion.other": "Performing blood transfusion for %s, remaining %s",
   "label.medsystem.unconscious.info": "You are unconscious. Use /giveUp command to give up",
   "label.medsystem.unit.liter_per_day.suffix": "L/day",
+  "label.medsystem.unit.liter": "%sL",
+  "label.medsystem.blood": "Blood: %s/%s",
+  "label.medsystem.blood.unit": "Blood: %sL/%sL",
 
   "commands.giveup.failed.not_unconscious": "Cannot use the command while not in unconscious state",
 

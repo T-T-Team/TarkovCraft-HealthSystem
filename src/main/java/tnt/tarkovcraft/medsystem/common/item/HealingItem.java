@@ -30,7 +30,6 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Consumer;
 
 public class HealingItem extends InteractableItem implements SideEffectProcessor {
@@ -204,15 +203,15 @@ public class HealingItem extends InteractableItem implements SideEffectProcessor
     }
 
     @Override
-    protected @Nullable Component getInteractionLabel(InteractionTarget interaction, LivingEntity target, LivingEntity origin, int time, boolean infinite) {
+    protected @Nullable Component getInteractionLabel(ItemStack itemStack, InteractionTarget interaction, LivingEntity target, LivingEntity origin, int time, boolean infinite) {
         if (interaction.self()) {
             return infinite
                     ? Component.translatable("label.medsystem.healing.self.infinite")
-                    : Component.translatable("label.medsystem.healing.self", String.format(Locale.ROOT, "%.2f", time / 20.0F));
+                    : Component.translatable("label.medsystem.healing.self", formatUsageDuration(time));
         } else {
             return infinite
                     ? Component.translatable("label.medsystem.healing.other.infinite", target.getDisplayName())
-                    : Component.translatable("label.medsystem.healing.other", target.getDisplayName(), String.format(Locale.ROOT, "%.2f", time / 20.0F));
+                    : Component.translatable("label.medsystem.healing.other", target.getDisplayName(), formatUsageDuration(time));
         }
     }
 

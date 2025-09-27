@@ -111,6 +111,14 @@ public final class BloodData {
         return maxBloodVolume;
     }
 
+    public float getMissingBloodVolume() {
+        return this.maxBloodVolume - this.bloodVolume;
+    }
+
+    public boolean hasFullBloodVolume() {
+        return this.bloodVolume >= this.maxBloodVolume;
+    }
+
     public boolean isUnconscious() {
         return this.unconsciousTime > 0;
     }
@@ -127,6 +135,18 @@ public final class BloodData {
     public void setBloodVolume(float bloodVolume) {
         this.bloodVolume = Mth.clamp(bloodVolume, 0.0F, this.maxBloodVolume);
         this.changed = true;
+    }
+
+    public float extract(float requested) {
+        float extractionAmount = Math.min(this.bloodVolume, requested);
+        this.setBloodVolume(this.bloodVolume - extractionAmount);
+        return extractionAmount;
+    }
+
+    public float insert(float requested) {
+        float insertionAmount = Math.min(this.getMissingBloodVolume(), requested);
+        this.setBloodVolume(this.bloodVolume + insertionAmount);
+        return insertionAmount;
     }
 
     public void updateEffects(LivingEntity entity) {
@@ -258,6 +278,8 @@ public final class BloodData {
             if (!effects.hasEffect(MedSystemStatusEffects.UNCONSCIOUS)) {
                 StatusEffectHelper.addEffect(effects, entity, null, new UnconsciousStatusEffect());
             }
+            if (entity.isUsingItem())
+                entity.stopUsingItem();
         } else {
             this.removeUnconsciousModifier(attributeMap, Attributes.MOVEMENT_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.JUMP_STRENGTH);
