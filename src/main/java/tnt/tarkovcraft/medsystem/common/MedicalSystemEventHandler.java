@@ -37,7 +37,6 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.event.WoundStatusEffectApplyEvent;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.api.heal.SideEffectProcessor;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.WoundStatusEffect;
@@ -347,7 +346,7 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         if (!HealthSystem.hasCustomHealth(entity))
             return;
-        if (stack.has(MedSystemItemComponents.SIDE_EFFECTS) && !(stack.getItem() instanceof SideEffectProcessor)) {
+        if (stack.has(MedSystemItemComponents.SIDE_EFFECTS)) {
             SideEffectHolder holder = stack.get(MedSystemItemComponents.SIDE_EFFECTS);
             HealthContainer container = HealthSystem.getHealthData(entity);
             InteractionTarget target = stack.get(MedSystemItemComponents.INTERACTION_TARGET);

@@ -13,8 +13,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
@@ -128,7 +128,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         private boolean requiresSpecificBodyPart = true;
         private boolean alwaysConsumable = false;
         private int minUseTime = 20;
-        Surgery surgery;
+        private Surgery surgery;
         private HealthRecovery healthRecovery;
         private final List<EffectRecovery> recoveries = new ArrayList<>();
         private final List<ConsumeEffect> effects = new ArrayList<>();

@@ -71,12 +71,10 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         if (source.isDirect()) {
             ItemStack stack = source.getWeaponItem();
             if (stack == null || stack.isEmpty()) return null;
-            if (!(stack.getItem() instanceof SideEffectProcessor)) {
-                return stack.get(MedSystemItemComponents.SIDE_EFFECTS);
-            }
+            return stack.get(MedSystemItemComponents.SIDE_EFFECTS);
         } else {
             Entity projectile = source.getDirectEntity();
-            if (projectile != null && projectile.hasData(MedSystemDataAttachments.SIDE_EFFECTS) && !(projectile instanceof SideEffectProcessor)) {
+            if (projectile != null && projectile.hasData(MedSystemDataAttachments.SIDE_EFFECTS)) {
                 return projectile.getData(MedSystemDataAttachments.SIDE_EFFECTS);
             }
         }

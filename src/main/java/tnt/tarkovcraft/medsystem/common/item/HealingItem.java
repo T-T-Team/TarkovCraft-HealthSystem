@@ -20,7 +20,10 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
-import tnt.tarkovcraft.medsystem.api.heal.*;
+import tnt.tarkovcraft.medsystem.api.heal.EffectRecovery;
+import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
+import tnt.tarkovcraft.medsystem.api.heal.HealthRecovery;
+import tnt.tarkovcraft.medsystem.api.heal.Surgery;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
@@ -32,7 +35,7 @@ import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class HealingItem extends InteractableItem implements SideEffectProcessor {
+public class HealingItem extends InteractableItem {
 
     private final ItemUseAnimation useAnimation;
 
@@ -162,11 +165,6 @@ public class HealingItem extends InteractableItem implements SideEffectProcessor
                 recovery.recover(target, container, part);
                 consume += recovery.consumption();
             }
-        }
-        // Side effect application
-        if (itemStack.has(MedSystemItemComponents.SIDE_EFFECTS)) {
-            SideEffectHolder holder = itemStack.get(MedSystemItemComponents.SIDE_EFFECTS);
-            holder.apply(target, container, part);
         }
         // Consume effect application
         Level level = origin.level();
