@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
+import tnt.tarkovcraft.core.common.init.CoreItemDataComponents;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
@@ -23,6 +24,7 @@ public final class MedSystemItems {
                     properties.durability(10)
                             .setNoCombineRepair()
                             .component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 1000)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .surgeryItem(builder -> builder
                                             .useTime(Duration.seconds(15))
@@ -38,6 +40,7 @@ public final class MedSystemItems {
             "bandage",
             properties -> new HealingItem(
                     properties.component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 150)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
                                     .removesEffect(MedSystemStatusEffects.LIGHT_BLEED)
@@ -49,6 +52,7 @@ public final class MedSystemItems {
             "tourniquet",
             properties -> new HealingItem(
                     properties.component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 250)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
                                     .removesEffect(MedSystemStatusEffects.HEAVY_BLEED)
@@ -60,6 +64,7 @@ public final class MedSystemItems {
             "splint",
             properties -> new HealingItem(
                     properties.component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 600)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(5))
                                     .removesEffect(MedSystemStatusEffects.FRACTURE)
@@ -74,6 +79,7 @@ public final class MedSystemItems {
                     properties.durability(4)
                             .setNoCombineRepair()
                             .component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 50)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.withSideEffectsOnly(Duration.seconds(3)))
                             .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.withItemUsage()
                                     .delayed(Duration.minutes(10), Duration.seconds(45), PainReliefEffect.createTemplate())
@@ -86,6 +92,7 @@ public final class MedSystemItems {
             properties -> new HealingItem(
                     properties.durability(30)
                             .component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 750)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .unrestrictedHealing(20, 2)
                                     .removesEffect(4, MedSystemStatusEffects.LIGHT_BLEED)
@@ -97,6 +104,7 @@ public final class MedSystemItems {
             "bloodbag",
             properties -> new BloodBagItem(
                     properties.stacksTo(1)
+                            .component(CoreItemDataComponents.WEIGHT, 100)
                             .component(MedSystemItemComponents.BLOOD_CONTAINER, new BloodContainer(0.5F, 0.0F, true))
             )
     );

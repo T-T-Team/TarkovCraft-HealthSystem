@@ -4,7 +4,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
 import tnt.tarkovcraft.medsystem.common.effect.group.BloodRecoveryEffectGroupItem;
