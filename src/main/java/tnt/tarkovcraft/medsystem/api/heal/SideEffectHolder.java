@@ -179,15 +179,15 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
             return this.delayed(1.0F, -1, delay, effect);
         }
 
-        public Builder positiveGroup(Consumer<EffectGroupHolder.Factory> builder) {
+        public Builder buffs(Consumer<EffectGroupHolder.Factory> builder) {
             return this.infinite(PositiveEffectsGroup.createTemplate(builder));
         }
 
-        public Builder neutralGroup(Consumer<EffectGroupHolder.Factory> builder) {
+        public Builder neutral(Consumer<EffectGroupHolder.Factory> builder) {
             return this.infinite(NeutralEffectsGroup.createTemplate(builder));
         }
 
-        public Builder negativeGroup(Consumer<EffectGroupHolder.Factory> builder) {
+        public Builder debuffs(Consumer<EffectGroupHolder.Factory> builder) {
             return this.infinite(NegativeEffectsGroup.createTemplate(builder));
         }
 

@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 
 public interface EffectGroupItem {
 
-    void init(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
+    void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
-    void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
+    void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
-    void cleanup(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
+    void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
 
     void addInformation(EffectGroupHolder holder, Consumer<Component> tooltip, boolean isItemTooltip);
 

@@ -12,6 +12,10 @@ public class ConcussionStatusEffect extends SimpleStatusEffect {
         super(duration);
     }
 
+    public static ConcussionStatusEffect createTemplate() {
+        return new ConcussionStatusEffect(-1);
+    }
+
     @Override
     public StatusEffect copy() {
         return new ConcussionStatusEffect(this.getDuration());

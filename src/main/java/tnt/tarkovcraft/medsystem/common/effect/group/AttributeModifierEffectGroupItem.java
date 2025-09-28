@@ -49,11 +49,11 @@ public class AttributeModifierEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void init(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (!AttributeSystem.isEnabledForEntity(entity))
             return;
         EntityAttributeData attributeData = AttributeSystem.getAttributes(entity);
@@ -63,7 +63,7 @@ public class AttributeModifierEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void cleanup(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         if (!AttributeSystem.isEnabledForEntity(entity))
             return;
         EntityAttributeData attributeData = AttributeSystem.getAttributes(entity);

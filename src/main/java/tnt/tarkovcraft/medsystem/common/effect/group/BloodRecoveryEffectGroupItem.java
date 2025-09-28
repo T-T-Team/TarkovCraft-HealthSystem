@@ -34,15 +34,15 @@ public class BloodRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void init(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void cleanup(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         Level level = entity.level();
         long time = level.getGameTime();
         if (time % 20L != 0L) {

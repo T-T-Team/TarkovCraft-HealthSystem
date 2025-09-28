@@ -52,11 +52,11 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
     }
 
     public static HealItemAttributes withSideEffectsOnly(int minUseTime) {
-        return builder().setMinUseTime(minUseTime).setNoBodyPartSelection().setAlwaysConsumable().build();
+        return builder().setMinUseTime(minUseTime).setAlwaysConsumable().setNoBodyPartSelection().build();
     }
 
     public static HealItemAttributes withSideEffectsOnly(TickValue minUseTime) {
-        return builder().setMinUseTime(minUseTime).setAlwaysConsumable().setNoBodyPartSelection().build();
+        return withSideEffectsOnly(minUseTime.tickValue());
     }
 
     public int getUseDuration(int max) {

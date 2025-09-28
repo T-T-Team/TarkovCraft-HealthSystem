@@ -22,6 +22,8 @@ public final class MedSystemCreativeTabs {
                 output.accept(MedSystemItems.PAINKILLERS);
                 output.accept(MedSystemItems.FIRST_AID_KIT);
                 output.accept(MedSystemItems.BLOODBAG);
+                output.accept(MedSystemItems.MORPHINE_INJECTOR);
+                output.accept(MedSystemItems.REGENERATIVE_INJECTOR);
             })
             .build()
     );

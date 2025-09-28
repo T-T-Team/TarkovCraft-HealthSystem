@@ -202,15 +202,7 @@ public class HealingItem extends InteractableItem {
 
     @Override
     protected @Nullable Component getInteractionLabel(ItemStack itemStack, InteractionTarget interaction, LivingEntity target, LivingEntity origin, int time, boolean infinite) {
-        if (interaction.self()) {
-            return infinite
-                    ? Component.translatable("label.medsystem.healing.self.infinite")
-                    : Component.translatable("label.medsystem.healing.self", formatUsageDuration(time));
-        } else {
-            return infinite
-                    ? Component.translatable("label.medsystem.healing.other.infinite", target.getDisplayName())
-                    : Component.translatable("label.medsystem.healing.other", target.getDisplayName(), formatUsageDuration(time));
-        }
+        return SimpleHealingItem.getCommonInteractionLabel(interaction, target, time, infinite);
     }
 
     @Override
@@ -236,10 +228,7 @@ public class HealingItem extends InteractableItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag flag) {
-        int max = Math.max(stack.getMaxDamage(), 1);
-        int damage = max - stack.getDamageValue();
-        Component durability = Component.literal(damage + "/" + max).withStyle(ChatFormatting.RED);
-        tooltipAdder.accept(Component.translatable("tooltip.medsystem.item.durability", durability).withStyle(ChatFormatting.GRAY));
+        tooltipAdder.accept(SimpleHealingItem.getCommonDurabilityLabel(stack));
     }
 
     public static boolean checkDurability(ItemStack stack, int durabilityUse) {

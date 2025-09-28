@@ -29,7 +29,7 @@ public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void init(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
         List<BodyPart> deadLimbs = container.getBodyPartStream()
                 .filter(BodyPart::isDead)
                 .toList();
@@ -41,11 +41,11 @@ public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override
-    public void cleanup(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
     }
 
     @Override

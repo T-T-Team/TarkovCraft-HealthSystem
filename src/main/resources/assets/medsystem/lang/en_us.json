@@ -6,6 +6,8 @@
   "item.medsystem.painkillers": "Painkillers",
   "item.medsystem.first_aid_kit": "First Aid Kit",
   "item.medsystem.bloodbag": "Blood Bag",
+  "item.medsystem.morphine_injector": "Morphine Injector",
+  "item.medsystem.regenerative_injector": "Regenerative Injector",
 
   "itemGroup.medsystem.medical": "Medical",
 

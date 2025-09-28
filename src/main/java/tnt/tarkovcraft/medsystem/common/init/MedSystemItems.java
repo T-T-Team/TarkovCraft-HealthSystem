@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
@@ -9,9 +9,13 @@ import tnt.tarkovcraft.core.common.init.CoreItemDataComponents;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
+import tnt.tarkovcraft.medsystem.common.effect.group.HealthEffectGroupItem;
+import tnt.tarkovcraft.medsystem.common.effect.group.MobEffectGroupItem;
 import tnt.tarkovcraft.medsystem.common.item.BloodBagItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
+import tnt.tarkovcraft.medsystem.common.item.SimpleHealingItem;
 import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 
 public final class MedSystemItems {
@@ -72,15 +76,13 @@ public final class MedSystemItems {
                             )
             )
     );
-    public static final DeferredItem<HealingItem> PAINKILLERS = REGISTRY.registerItem(
+    public static final DeferredItem<SimpleHealingItem> PAINKILLERS = REGISTRY.registerItem(
             "painkillers",
-            properties -> new HealingItem(
-                    ItemUseAnimation.EAT,
+            properties -> new SimpleHealingItem(
                     properties.durability(4)
                             .setNoCombineRepair()
                             .component(DataComponents.BREAK_SOUND, null)
                             .component(CoreItemDataComponents.WEIGHT, 50)
-                            .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.withSideEffectsOnly(Duration.seconds(3)))
                             .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.withItemUsage()
                                     .delayed(Duration.minutes(10), Duration.seconds(45), PainReliefEffect.createTemplate())
                                     .build()
@@ -106,6 +108,42 @@ public final class MedSystemItems {
                     properties.stacksTo(1)
                             .component(CoreItemDataComponents.WEIGHT, 100)
                             .component(MedSystemItemComponents.BLOOD_CONTAINER, new BloodContainer(0.5F, 0.0F, true))
+            )
+    );
+    public static final DeferredItem<SimpleHealingItem> MORPHINE_INJECTOR = REGISTRY.registerItem(
+            "morphine_injector",
+            properties -> new SimpleHealingItem(
+                    properties.durability(1)
+                            .component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 80)
+                            .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.withItemUsage()
+                                    .delayed(Duration.minutes(10), Duration.seconds(3), PainReliefEffect.createTemplate())
+                                    .buffs(factory -> {
+                                        factory.create(Duration.seconds(10), Duration.seconds(3), new HealthEffectGroupItem("f8994779-eefd-48bc-a274-d27af57ef6d3", 0.5F));
+                                    })
+                                    .debuffs(factory -> {
+                                        factory.create(Duration.minutes(3), Duration.minutes(10).addSeconds(3), new MobEffectGroupItem(MobEffects.WEAKNESS));
+                                    })
+                                    .build()
+                            )
+            )
+    );
+    public static final DeferredItem<HealingItem> REGENERATIVE_INJECTOR = REGISTRY.registerItem(
+            "regenerative_injector",
+            properties -> new HealingItem(
+                    properties.durability(1)
+                            .component(DataComponents.BREAK_SOUND, null)
+                            .component(CoreItemDataComponents.WEIGHT, 80)
+                            .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.withItemUsage()
+                                    .buffs(factory -> {
+                                        factory.create(Duration.minutes(1).addSeconds(30), Duration.seconds(3), new HealthEffectGroupItem("8dfbb21e-2156-4b54-82aa-415b341319fe", 0.25F, 10));
+                                    })
+                                    .delayed(0.4F, Duration.seconds(10), Duration.minutes(5), ConcussionStatusEffect.createTemplate())
+                                    .debuffs(factory -> {
+                                        factory.create(Duration.minutes(1), Duration.minutes(5), new MobEffectGroupItem(MobEffects.HUNGER, 1));
+                                    })
+                                    .build()
+                            )
             )
     );
 }

@@ -47,16 +47,16 @@ public final class EffectGroupHolder {
         }
         if (!this.active) {
             this.active = true;
-            this.item.init(container, entity, limb);
+            this.item.init(this, container, entity, limb);
         }
-        this.item.apply(container, entity, limb);
+        this.item.apply(this, container, entity, limb);
         if (--this.duration <= 0) {
             this.cleanUp(container, entity, limb);
         }
     }
 
     public void cleanUp(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
-        this.item.cleanup(container, entity, limb);
+        this.item.cleanup(this, container, entity, limb);
     }
 
     public void addInformation(Consumer<Component> tooltip, boolean isItemTooltip) {

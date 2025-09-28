@@ -61,7 +61,7 @@ public final class VanillaItemComponentAssignments {
 
         // Foods
         SideEffectHolder bloodRegeneration = SideEffectHolder.builder()
-                .positiveGroup(builder ->
+                .buffs(builder ->
                         builder.create(Duration.minutes(2), Duration.minutes(1), new BloodRecoveryEffectGroupItem(0.002F))
                 )
                 .build();
