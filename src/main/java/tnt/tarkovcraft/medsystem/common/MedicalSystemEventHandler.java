@@ -344,15 +344,19 @@ public final class MedicalSystemEventHandler {
     private void onItemUseFinished(LivingEntityUseItemEvent.Finish event) {
         ItemStack stack = event.getItem();
         LivingEntity entity = event.getEntity();
-        if (!HealthSystem.hasCustomHealth(entity))
-            return;
         if (stack.has(MedSystemItemComponents.SIDE_EFFECTS)) {
             SideEffectHolder holder = stack.get(MedSystemItemComponents.SIDE_EFFECTS);
-            HealthContainer container = HealthSystem.getHealthData(entity);
             InteractionTarget target = stack.get(MedSystemItemComponents.INTERACTION_TARGET);
             String targetLimb = target != null ? target.limbCode() : null;
+            LivingEntity targetEntity = entity;
+            if (target != null) {
+                targetEntity = target.getTargetLivingEntity(entity);
+            }
+            if (!HealthSystem.hasCustomHealth(targetEntity))
+                return;
+            HealthContainer container = HealthSystem.getHealthData(targetEntity);
             BodyPart part = container.getBodyPart(targetLimb);
-            holder.apply(entity, container, part);
+            holder.apply(targetEntity, container, part);
         }
     }
 

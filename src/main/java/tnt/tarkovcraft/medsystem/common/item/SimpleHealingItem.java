@@ -14,6 +14,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 
 import java.util.function.Consumer;
@@ -22,6 +23,11 @@ public class SimpleHealingItem extends InteractableItem {
 
     public SimpleHealingItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    protected boolean canUseItem(ItemStack itemStack, LivingEntity target, LivingEntity origin) {
+        return super.canUseItem(itemStack, target, origin) && HealthSystem.hasCustomHealth(target);
     }
 
     @Override

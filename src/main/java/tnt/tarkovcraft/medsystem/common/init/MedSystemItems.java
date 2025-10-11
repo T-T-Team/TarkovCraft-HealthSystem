@@ -128,9 +128,9 @@ public final class MedSystemItems {
                             )
             )
     );
-    public static final DeferredItem<HealingItem> REGENERATIVE_INJECTOR = REGISTRY.registerItem(
+    public static final DeferredItem<SimpleHealingItem> REGENERATIVE_INJECTOR = REGISTRY.registerItem(
             "regenerative_injector",
-            properties -> new HealingItem(
+            properties -> new SimpleHealingItem(
                     properties.durability(1)
                             .component(DataComponents.BREAK_SOUND, null)
                             .component(CoreItemDataComponents.WEIGHT, 80)
