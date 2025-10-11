@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.status;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
@@ -41,5 +42,18 @@ public final class BloodSystem {
 
     public static boolean isEntityUnconscious(LivingEntity entity) {
         return entity.isAlive() && hasBloodDataIntegration(entity) && getBloodData(entity).isUnconscious();
+    }
+
+    public static boolean canGiveUp(Player player) {
+        if (player == null)
+            return false;
+        BloodData bloodData = getBloodData(player);
+        if (bloodData.isUnconscious()) {
+            BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
+            float percentage = bloodData.getBloodVolumePercentage();
+            BloodStatus status = BloodStatus.fromBloodLevelPercentage(percentage);
+            return info.showGiveUpHint() && status != BloodStatus.DEATH;
+        }
+        return false;
     }
 }

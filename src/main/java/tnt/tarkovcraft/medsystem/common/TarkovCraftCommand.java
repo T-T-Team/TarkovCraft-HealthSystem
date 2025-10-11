@@ -315,7 +315,7 @@ public final class TarkovCraftCommand {
         }
         BloodData data = BloodSystem.getBloodData(livingEntity);
         int time = IntegerArgumentType.getInteger(ctx, "time");
-        data.setUnconsciousTime(time);
+        data.setUnconsciousTime(time, BloodData.UnconsciousInfo.EMPTY);
         data.sync(livingEntity);
         return 0;
     }

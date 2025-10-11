@@ -245,11 +245,11 @@ public final class MedicalSystemEventHandler {
             BloodData bloodData = BloodSystem.getBloodData(entity);
             MedSystemConfig config = MedicalSystem.getConfig();
             int limbLostCount = lostBodyParts.size();
-            if (config.allowUnconsciousOnLimbLost && limbLostCount > 0) {
+            if (!bloodData.isUnconscious() && config.allowUnconsciousOnLimbLost && limbLostCount > 0) {
                 float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F);
                 if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
                     int unconsciousDuration = limbLostCount * Duration.seconds(10).tickValue();
-                    bloodData.setOrExtendedUnconsciousTime(unconsciousDuration);
+                    bloodData.setOrExtendedUnconsciousTime(unconsciousDuration, BloodData.UnconsciousInfo.PAIN);
                 }
             }
 

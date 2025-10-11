@@ -92,9 +92,11 @@ public abstract class BloodEvent extends Event {
     public static final class OnWakeUp extends BloodEvent {
 
         private Integer unconscious;
+        private BloodData.UnconsciousInfo unconsciousInfo;
 
         public OnWakeUp(LivingEntity entity, BloodData data) {
             super(entity, data);
+            this.unconsciousInfo = data.getUnconsciousInfo();
         }
 
         public boolean willWakeUp() {
@@ -109,8 +111,16 @@ public abstract class BloodEvent extends Event {
             this.unconscious = newUnconsciousTime;
         }
 
+        public void setUnconsciousInfo(BloodData.UnconsciousInfo unconsciousInfo) {
+            this.unconsciousInfo = unconsciousInfo;
+        }
+
         public Integer getUnconsciousTime() {
             return unconscious;
+        }
+
+        public BloodData.UnconsciousInfo getUnconsciousInfo() {
+            return unconsciousInfo != null ? this.unconsciousInfo : this.getData().getUnconsciousInfo();
         }
     }
 }

@@ -3,9 +3,12 @@ package tnt.tarkovcraft.medsystem.common.status;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -44,12 +47,14 @@ public final class BloodData {
     public static final MapCodec<BloodData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.FLOAT.fieldOf("maxBloodVolume").forGetter(t -> t.maxBloodVolume),
             Codec.FLOAT.fieldOf("bloodVolume").forGetter(t -> t.bloodVolume),
-            Codec.INT.optionalFieldOf("unconsciousTime", 0).forGetter(t -> t.unconsciousTime)
+            Codec.INT.optionalFieldOf("unconsciousTime", 0).forGetter(t -> t.unconsciousTime),
+            UnconsciousInfo.CODEC.optionalFieldOf("unconsciousInfo", UnconsciousInfo.EMPTY).forGetter(t -> t.unconsciousInfo)
     ).apply(instance, BloodData::new));
-    public static final StreamCodec<ByteBuf, BloodData> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, BloodData> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT, t -> t.maxBloodVolume,
             ByteBufCodecs.FLOAT, t -> t.bloodVolume,
             ByteBufCodecs.INT, t -> t.unconsciousTime,
+            UnconsciousInfo.STREAM_CODEC, t -> t.unconsciousInfo,
             BloodData::new
     );
 
@@ -63,15 +68,17 @@ public final class BloodData {
     private float bloodVolume;
     private int unconsciousTime;
     private boolean changed;
+    private UnconsciousInfo unconsciousInfo;
 
     public BloodData(float maxBloodVolume) {
-        this(maxBloodVolume, maxBloodVolume, 0);
+        this(maxBloodVolume, maxBloodVolume, 0, UnconsciousInfo.EMPTY);
     }
 
-    private BloodData(float maxBloodVolume, float bloodVolume, int unconsciousTime) {
+    private BloodData(float maxBloodVolume, float bloodVolume, int unconsciousTime, UnconsciousInfo unconsciousInfo) {
         this.maxBloodVolume = maxBloodVolume;
         this.bloodVolume = bloodVolume;
         this.unconsciousTime = unconsciousTime;
+        this.unconsciousInfo = unconsciousInfo;
     }
 
     public void update(LivingEntity entity) {
@@ -93,7 +100,7 @@ public final class BloodData {
                     this.updateEffects(entity);
                     this.updateConsciousStatus(entity, true);
                 } else {
-                    this.setUnconsciousTime(onWakeUp.getUnconsciousTime());
+                    this.setUnconsciousTime(onWakeUp.getUnconsciousTime(), onWakeUp.getUnconsciousInfo());
                 }
             }
         }
@@ -123,13 +130,18 @@ public final class BloodData {
         return this.unconsciousTime > 0;
     }
 
-    public void setUnconsciousTime(int unconsciousTime) {
+    public UnconsciousInfo getUnconsciousInfo() {
+        return unconsciousInfo;
+    }
+
+    public void setUnconsciousTime(int unconsciousTime, UnconsciousInfo info) {
         this.unconsciousTime = unconsciousTime;
+        this.unconsciousInfo = info;
         this.changed = true;
     }
 
-    public void setOrExtendedUnconsciousTime(int unconsciousTime) {
-        this.setUnconsciousTime(Math.max(this.unconsciousTime, unconsciousTime));
+    public void setOrExtendedUnconsciousTime(int unconsciousTime, UnconsciousInfo info) {
+        this.setUnconsciousTime(Math.max(this.unconsciousTime, unconsciousTime), info);
     }
 
     public void setBloodVolume(float bloodVolume) {
@@ -195,12 +207,12 @@ public final class BloodData {
             entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), 4.0F);
         }
         this.addBloodLossStatusEffect(container, entity, false);
-        this.setOrExtendedUnconsciousTime(300);
+        this.setOrExtendedUnconsciousTime(300, UnconsciousInfo.LOW_BLOOD_LEVEL);
     }
 
     public void onUnconsciousBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
         this.addBloodLossStatusEffect(container, entity, false);
-        this.setOrExtendedUnconsciousTime(100);
+        this.setOrExtendedUnconsciousTime(100, UnconsciousInfo.LOW_BLOOD_LEVEL);
 
         MedSystemConfig config = MedicalSystem.getConfig();
         UnconsciousMode mode = config.unconsciousMode;
@@ -213,8 +225,9 @@ public final class BloodData {
         this.addBloodLossStatusEffect(container, entity, false);
         float chance = AttributeSystem.getFloatValue(entity, MedSystemAttributes.RANDOM_BLACKOUT_CHANCE, 0.05F);
         RandomSource random = level.getRandom();
-        if (chance > 0.0F && random.nextFloat() < chance) {
-            this.setOrExtendedUnconsciousTime(100 + random.nextInt(200));
+        long time = level.getGameTime();
+        if (!this.isUnconscious() && chance > 0.0F && random.nextFloat() < chance) {
+            this.setOrExtendedUnconsciousTime(100 + random.nextInt(200), UnconsciousInfo.RANDOM_UNCONSCIOUSNESS);
         }
 
         AttributeMap map = entity.getAttributes();
@@ -313,5 +326,23 @@ public final class BloodData {
 
     private void removeUnconsciousModifier(AttributeMap map, Holder<Attribute> attribute) {
         this.removeModifier(map, ATTR_UNCONSCIOUS, attribute);
+    }
+
+    public record UnconsciousInfo(boolean showGiveUpHint, Component reason) {
+
+        public static final UnconsciousInfo EMPTY = new UnconsciousInfo(true, CommonComponents.EMPTY);
+        public static final UnconsciousInfo LOW_BLOOD_LEVEL = new UnconsciousInfo(true, Component.translatable("label.medsystem.unconscious.info.low_blood_level"));
+        public static final UnconsciousInfo RANDOM_UNCONSCIOUSNESS = new UnconsciousInfo(false, Component.translatable("label.medsystem.unconscious.info.random_unconsciousness"));
+        public static final UnconsciousInfo PAIN = new UnconsciousInfo(false, Component.translatable("label.medsystem.unconscious.info.pain"));
+
+        public static final Codec<UnconsciousInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.BOOL.fieldOf("showGiveUpHint").forGetter(UnconsciousInfo::showGiveUpHint),
+                ComponentSerialization.CODEC.fieldOf("reason").forGetter(UnconsciousInfo::reason)
+        ).apply(instance, UnconsciousInfo::new));
+        public static final StreamCodec<RegistryFriendlyByteBuf, UnconsciousInfo> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL, UnconsciousInfo::showGiveUpHint,
+                ComponentSerialization.STREAM_CODEC, UnconsciousInfo::reason,
+                UnconsciousInfo::new
+        );
     }
 }

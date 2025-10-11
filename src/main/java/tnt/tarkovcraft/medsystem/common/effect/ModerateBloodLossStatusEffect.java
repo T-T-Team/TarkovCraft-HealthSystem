@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +17,7 @@ import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
 
@@ -31,6 +33,7 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
             MedicalSystem.resource("textures/icons/status_effect/moderate_bloodloss.png"),
             MedicalSystem.resource("textures/icons/status_effect/critical_bloodloss.png"),
     };
+    private static final Component DESCRIPTION_CRITICAL_STATE = Component.translatable("status_effect.medsystem.critical_bloodloss.info").withStyle(ChatFormatting.DARK_GRAY);
 
     private boolean critical;
 
@@ -85,6 +88,13 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
     @Override
     public boolean hasVisibleDuration() {
         return false;
+    }
+
+    @Override
+    public void addAdditionalInfo(Consumer<Component> tooltip) {
+        if (this.critical) {
+            tooltip.accept(DESCRIPTION_CRITICAL_STATE);
+        }
     }
 
     @Override
