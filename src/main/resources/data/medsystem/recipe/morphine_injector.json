@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "#c:nuggets/iron",
+    "P": "minecraft:paper",
+    "B": "minecraft:glass_bottle",
+    "M": "minecraft:glistering_melon_slice"
+  },
+  "pattern": [
+    " I ",
+    "MBP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:morphine_injector"
+  }
+}

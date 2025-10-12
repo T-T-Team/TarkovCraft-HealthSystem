@@ -101,6 +101,7 @@
   "medsystem.bodypart.leftLeg": "Left Leg",
   "medsystem.bodypart.legs": "Legs",
 
+  "category.medsystem": "Medical system",
   "key.medsystem.give_up": "Give up",
 
   "screen.medsystem.health.title": "Health",
@@ -167,6 +168,10 @@
   "config.medsystem.option.enableItemDamageStatusEffects.comment.0": "Enables transferring of status effects from items/projectiles to hit entities",
   "config.medsystem.option.itemStatusEffectDuration": "Item status effect duration",
   "config.medsystem.option.itemStatusEffectDuration.comment.0": "Default duration of item/projectile transferred side effects",
+  "config.medsystem.option.lightBleedAmount": "Light bleed amount",
+  "config.medsystem.option.lightBleedAmount.comment.0": "Blood loss per minute for light bleeds",
+  "config.medsystem.option.heavyBleedAmount": "Heavy bleed amount",
+  "config.medsystem.option.heavyBleedAmount.comment.0": "Blood loss per minute for heavy bleeds",
   "config.medsystem.option.playerBleedChance": "Bleed chance",
   "config.medsystem.option.playerBleedChance.comment.0": "Base chance for getting any type of bleed from '#medsystem:bleed_causing' damage type",
   "config.medsystem.option.playerFractureChance": "Fracture chance",

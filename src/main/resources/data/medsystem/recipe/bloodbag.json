@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "I": "#c:nuggets/iron",
+    "P": "minecraft:paper",
+    "B": "minecraft:glass_bottle"
+  },
+  "pattern": [
+    " I ",
+    "PBP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:bloodbag"
+  }
+}
