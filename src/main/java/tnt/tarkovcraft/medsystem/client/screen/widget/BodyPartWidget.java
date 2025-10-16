@@ -4,6 +4,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
@@ -58,12 +60,12 @@ public class BodyPartWidget extends AbstractWidget {
     }
 
     @Override
-    protected boolean isValidClickButton(int button) {
+    protected boolean isValidClickButton(MouseButtonInfo info) {
         return this.onClick != null;
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.onClick.onClick();
     }
 

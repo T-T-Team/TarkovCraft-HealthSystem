@@ -37,7 +37,14 @@ import java.util.UUID;
 @Mod(value = MedicalSystem.MOD_ID, dist = Dist.CLIENT)
 public final class MedicalSystemClient {
 
-    public static final KeyMapping KEY_GIVE_UP = new KeyMapping(TextHelper.createKeybindName(MedicalSystem.MOD_ID, "give_up"), KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_X, "category.medsystem");
+    public static final KeyMapping.Category KEYMAPPING_CATEGORY = new KeyMapping.Category(MedicalSystem.resource("keymap"));
+    public static final KeyMapping KEY_GIVE_UP = new KeyMapping(
+            TextHelper.createKeybindName(MedicalSystem.MOD_ID, "give_up"),
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_X,
+            KEYMAPPING_CATEGORY
+    );
     private static MedSystemClientConfig config;
 
     public static final NavigationEntry HEALTH = new OptionalNavigationEntry(

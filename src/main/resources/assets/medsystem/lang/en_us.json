@@ -101,7 +101,7 @@
   "medsystem.bodypart.leftLeg": "Left Leg",
   "medsystem.bodypart.legs": "Legs",
 
-  "category.medsystem": "Medical system",
+  "key.category.medsystem.keymap": "Medical system",
   "key.medsystem.give_up": "Give up",
 
   "screen.medsystem.health.title": "Health",

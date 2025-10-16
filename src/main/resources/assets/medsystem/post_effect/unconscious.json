@@ -4,7 +4,7 @@
   },
   "passes": [
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "tarkovcraft_core:post/brightness",
       "inputs": [
         {
@@ -24,7 +24,7 @@
       "output": "swap"
     },
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "tarkovcraft_core:post/vignette",
       "inputs": [
         {
@@ -49,7 +49,7 @@
       "output": "swap"
     },
     {
-      "vertex_shader": "minecraft:post/blit",
+      "vertex_shader": "minecraft:core/screenquad",
       "fragment_shader": "minecraft:post/blit",
       "inputs": [
         {
