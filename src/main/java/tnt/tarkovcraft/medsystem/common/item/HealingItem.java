@@ -141,7 +141,7 @@ public class HealingItem extends InteractableItem {
             }
         }
 
-        return true;
+        return !itemStack.isEmpty();
     }
 
     @Override
