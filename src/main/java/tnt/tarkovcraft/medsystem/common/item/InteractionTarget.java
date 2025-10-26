@@ -8,6 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import tnt.tarkovcraft.core.util.helper.TextHelper;
 
 import java.util.Objects;
 
@@ -71,6 +72,10 @@ public record InteractionTarget(boolean self, int entityId, String limbCode) {
 
         public void setLimbCode(String limbCode) {
             this.limbCode = limbCode;
+        }
+
+        public boolean isLimbSelected() {
+            return TextHelper.isNotBlank(this.limbCode);
         }
 
         public InteractionTarget toImmutable() {

@@ -8,24 +8,24 @@ import java.util.Set;
 
 public enum BodyPartGroup {
 
-    HEAD(0xFF0000, EquipmentSlot.HEAD),
-    TORSO(0xFFFF00, EquipmentSlot.CHEST),
-    STOMACH(0xFF00, EquipmentSlot.CHEST),
-    ARM(0xFFFF),
-    LEG(0xFF, EquipmentSlot.LEGS, EquipmentSlot.FEET),
-    ANIMAL(0x00FF00, EquipmentSlot.BODY),
-    OTHER(0x444444),
-    // To be used for data loading to mark the body part as removed
-    INACTIVE(0);
+    HEAD(0, 0xFF0000, EquipmentSlot.HEAD),
+    TORSO(0, 0xFFFF00, EquipmentSlot.CHEST),
+    STOMACH(WoundPriorities.SURGERY_HEALTH, 0xFF00, EquipmentSlot.CHEST),
+    ARM(WoundPriorities.SURGERY_OTHER, 0xFFFF),
+    LEG(WoundPriorities.SURGERY_MOVEMENT, 0xFF, EquipmentSlot.LEGS, EquipmentSlot.FEET),
+    ANIMAL(0, 0x00FF00, EquipmentSlot.BODY),
+    OTHER(0, 0x444444);
 
-    private final Set<EquipmentSlot> armorSlots;
+    private final int surgeryPriority;
     private final int hitboxColor;
+    private final Set<EquipmentSlot> armorSlots;
 
-    BodyPartGroup(int hitboxColor) {
-        this(hitboxColor, null);
+    BodyPartGroup(int surgeryPriority, int hitboxColor) {
+        this(surgeryPriority, hitboxColor, null);
     }
 
-    BodyPartGroup(int hitboxColor, EquipmentSlot first, EquipmentSlot... other) {
+    BodyPartGroup(int surgeryPriority, int hitboxColor, EquipmentSlot first, EquipmentSlot... other) {
+        this.surgeryPriority = surgeryPriority;
         this.hitboxColor = hitboxColor;
         this.armorSlots = first != null ? EnumSet.of(first, other) : Collections.emptySet();
     }
@@ -48,7 +48,7 @@ public enum BodyPartGroup {
         return hitboxColor;
     }
 
-    public boolean isInactive() {
-        return this == INACTIVE;
+    public int getSurgeryHealingPriority() {
+        return surgeryPriority;
     }
 }

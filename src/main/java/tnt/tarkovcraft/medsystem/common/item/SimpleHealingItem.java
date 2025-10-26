@@ -17,12 +17,22 @@ import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class SimpleHealingItem extends InteractableItem {
 
+    private ItemUseAnimation selfUseAnimation = ItemUseAnimation.BOW; // when healing self
+    private ItemUseAnimation otherUseAnimation = ItemUseAnimation.BOW; // when healing others
+
     public SimpleHealingItem(Properties properties) {
         super(properties);
+    }
+
+    public SimpleHealingItem withUseAnimations(ItemUseAnimation selfUseAnimation, ItemUseAnimation otherUseAnimation) {
+        this.selfUseAnimation = Objects.requireNonNull(selfUseAnimation);
+        this.otherUseAnimation = Objects.requireNonNull(otherUseAnimation);
+        return this;
     }
 
     @Override
@@ -71,7 +81,8 @@ public class SimpleHealingItem extends InteractableItem {
 
     @Override
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return ItemUseAnimation.BOW;
+        InteractionTarget interaction = this.getActiveInteraction(stack);
+        return interaction != null && !interaction.self() ? this.otherUseAnimation : this.selfUseAnimation;
     }
 
     @Override

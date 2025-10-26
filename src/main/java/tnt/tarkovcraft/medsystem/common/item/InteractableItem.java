@@ -129,6 +129,7 @@ public abstract class InteractableItem extends Item {
             return;
         }
         // Interaction progress message
+        // TODO handle on client side instead?
         if (!level.isClientSide()) {
             boolean infinite = this.getUseDuration(stack, livingEntity) >= Item.APPROXIMATELY_INFINITE_USE_DURATION;
             Component label = this.getInteractionLabel(stack, interaction, target, livingEntity, remainingUseDuration, infinite);

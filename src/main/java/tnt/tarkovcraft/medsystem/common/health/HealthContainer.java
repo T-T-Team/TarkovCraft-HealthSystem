@@ -157,6 +157,10 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
         return this.getBodyPart(null);
     }
 
+    public Collection<BodyPart> getBodyParts() {
+        return this.bodyParts.values();
+    }
+
     public Stream<BodyPart> getBodyPartStream() {
         return this.bodyParts.values().stream();
     }

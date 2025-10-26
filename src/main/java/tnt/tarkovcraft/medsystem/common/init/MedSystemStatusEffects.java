@@ -7,6 +7,7 @@ import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
+import tnt.tarkovcraft.medsystem.common.health.WoundPriorities;
 
 import java.util.Collections;
 
@@ -36,6 +37,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .combineEffects(StatusEffect::maxDuration)
             .ignoresBodyParts(BodyPartGroup.HEAD, BodyPartGroup.TORSO, BodyPartGroup.STOMACH)
+            .healPriority(WoundPriorities.EFFECT_MAJOR)
             .build()
     );
     public static final Holder<StatusEffectType<?>> INJURY_RECOVERY = REGISTRY.register("injury_recovery", key -> StatusEffectType.builder(key, InjuryRecoveryStatusEffect::new)
@@ -43,21 +45,25 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .visibility(EffectVisibility.UI)
             .combineEffects(InjuryRecoveryStatusEffect::merge)
+            .healPriority(WoundPriorities.EFFECT_MINOR)
             .build()
     );
     public static final Holder<StatusEffectType<?>> LIGHT_BLEED = REGISTRY.register("light_bleed", key -> StatusEffectType.builder(key, LightBleedStatusEffect::new)
             .persist(LightBleedStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
+            .healPriority(WoundPriorities.EFFECT_MINOR)
             .build()
     );
     public static final Holder<StatusEffectType<?>> HEAVY_BLEED = REGISTRY.register("heavy_bleed", key -> StatusEffectType.builder(key, HeavyBleedStatusEffect::new)
             .persist(HeavyBleedStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
+            .healPriority(WoundPriorities.EFFECT_CRITICAL)
             .build()
     );
     public static final Holder<StatusEffectType<?>> FRESH_WOUND = REGISTRY.register("fresh_wound", key -> StatusEffectType.builder(key, FreshWoundStatusEffect::new)
             .persist(FreshWoundStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
+            .healPriority(WoundPriorities.EFFECT_MINOR)
             .build()
     );
     public static final Holder<StatusEffectType<?>> OVERWEIGHT = REGISTRY.register("overweight", key -> StatusEffectType.builder(key, (duration) -> new OverweightStatusEffect(false))
@@ -97,6 +103,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .combineEffects(WoundStatusEffect::mergeWithScaling)
             .visibility(EffectVisibility.NEVER)
+            .healPriority(WoundPriorities.EFFECT_MINOR)
             .setGlobal()
             .build()
     );
@@ -133,6 +140,7 @@ public final class MedSystemStatusEffects {
             .type(EffectType.NEGATIVE)
             .setGlobal()
             .setPostEffects()
+            .healPriority(WoundPriorities.EFFECT_MINOR)
             .build()
     );
 }

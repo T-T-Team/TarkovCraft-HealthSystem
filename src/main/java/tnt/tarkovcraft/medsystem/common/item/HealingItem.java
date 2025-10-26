@@ -1,10 +1,10 @@
 package tnt.tarkovcraft.medsystem.common.item;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,28 +24,30 @@ import tnt.tarkovcraft.medsystem.api.heal.EffectRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.HealthRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.Surgery;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class HealingItem extends InteractableItem {
 
-    private final ItemUseAnimation useAnimation;
-
-    public HealingItem(ItemUseAnimation animation, Properties properties) {
-        super(properties);
-        this.useAnimation = animation;
-    }
+    private ItemUseAnimation selfUseAnimation = ItemUseAnimation.BOW; // when healing self
+    private ItemUseAnimation otherUseAnimation = ItemUseAnimation.BOW; // when healing others
 
     public HealingItem(Properties properties) {
-        this(ItemUseAnimation.BOW, properties);
+        super(properties);
+    }
+
+    public HealingItem withUseAnimations(ItemUseAnimation selfUseAnimation, ItemUseAnimation otherUseAnimation) {
+        this.selfUseAnimation = Objects.requireNonNull(selfUseAnimation);
+        this.otherUseAnimation = Objects.requireNonNull(otherUseAnimation);
+        return this;
     }
 
     @Override
@@ -78,8 +80,13 @@ public class HealingItem extends InteractableItem {
         HealItemAttributes attributes = this.getHealingAttributes(itemStack);
         if (!attributes.applyGlobally()) {
             Level level = origin.level();
-            // TODO auto-select body part if player is not crouched
-            if (!level.isClientSide()) {
+            if (interaction.isSelf() && !origin.isCrouching()) {
+                this.selectBodyPart(interaction, itemStack, target);
+            }
+            if (interaction.isLimbSelected()) {
+                setActiveInteraction(itemStack, interaction.toImmutable());
+                return InteractionResult.SUCCESS;
+            } else if (!level.isClientSide()) {
                 PacketDistributor.sendToPlayer((ServerPlayer) origin, new S2C_OpenBodyPartSelectScreen(interaction));
             }
             return InteractionResult.CONSUME;
@@ -213,7 +220,8 @@ public class HealingItem extends InteractableItem {
 
     @Override
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return this.useAnimation;
+        InteractionTarget interaction = this.getActiveInteraction(stack);
+        return interaction != null && !interaction.self() ? this.otherUseAnimation : this.selfUseAnimation;
     }
 
     @Override
@@ -238,5 +246,91 @@ public class HealingItem extends InteractableItem {
 
     private HealItemAttributes getHealingAttributes(ItemStack itemStack) {
         return itemStack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
+    }
+
+    private void selectBodyPart(InteractionTarget.Mutable activeTarget, ItemStack itemStack, LivingEntity entity) {
+        HealthContainer container = HealthSystem.getHealthData(entity);
+        HealItemAttributes attributes = this.getHealingAttributes(itemStack);
+        List<BodyPartWithPriority> bodyParts = container.getBodyPartStream()
+                .map(part -> new BodyPartWithPriority(part, part.isVital() ? WoundPriorities.VITAL_PART_MULTIPLIER : 1.0F))
+                .toList();
+
+        if (attributes.isSurgeryItem()) {
+            bodyParts.forEach(this::addSurgeryHealingPriorities);
+        }
+        if (attributes.isRecoveryItem()) {
+            bodyParts.forEach(part -> this.addStatusEffectHealingPriorities(part, attributes.recoveries(), container));
+        }
+        if (attributes.isHealing()) {
+            bodyParts.forEach(this::addHealthHealingPriorities);
+        }
+
+        bodyParts.stream()
+                .filter(BodyPartWithPriority::isViable)
+                .max(Comparator.comparingInt(BodyPartWithPriority::priority))
+                .ifPresent(priorityPart -> activeTarget.setLimbCode(priorityPart.bodyPart.getName()));
+    }
+
+    private void addSurgeryHealingPriorities(BodyPartWithPriority part) {
+        if (part.bodyPart.isDead()) {
+            BodyPartGroup group = part.bodyPart.getGroup();
+            part.add(WoundPriorities.SURGERY_BASE + group.getSurgeryHealingPriority());
+        }
+    }
+
+    private void addStatusEffectHealingPriorities(BodyPartWithPriority part, List<EffectRecovery> recoveries, HealthContainer container) {
+        BodyPart bodyPart = part.bodyPart;
+        Collection<StatusEffect> statusEffects = new ArrayList<>(bodyPart.getStatusEffects().listEffects());
+        if (bodyPart == container.getRootBodyPart()) {
+            statusEffects.addAll(container.getGlobalStatusEffects().listEffects());
+        }
+        Set<StatusEffectType<?>> uniqueTypes = statusEffects.stream()
+                .map(StatusEffect::getType)
+                .collect(Collectors.toSet());
+        if (!uniqueTypes.isEmpty()) {
+            for (EffectRecovery recovery : recoveries) {
+                StatusEffectType<?> type = recovery.effect().value();
+                if (uniqueTypes.contains(type)) {
+                    part.add(type.getHealingPriority());
+                }
+            }
+        }
+    }
+
+    private void addHealthHealingPriorities(BodyPartWithPriority part) {
+        BodyPart bodyPart = part.bodyPart;
+        float missingAmount = bodyPart.getMaxHealAmount();
+        if (!bodyPart.isDead() && missingAmount > 0) {
+            part.add(Mth.ceil(WoundPriorities.HEALTH_UNIT * missingAmount));
+        }
+    }
+
+    private static final class BodyPartWithPriority {
+
+        private final BodyPart bodyPart;
+        private final float multiplier;
+        private int priority;
+
+        public BodyPartWithPriority(BodyPart bodyPart, float multiplier) {
+            this.bodyPart = bodyPart;
+            this.multiplier = multiplier;
+        }
+
+        private void add(int amount) {
+            this.priority += Mth.ceil(amount * this.multiplier);
+        }
+
+        private boolean isViable() {
+            return this.priority > 0;
+        }
+
+        private int priority() {
+            return this.priority;
+        }
+
+        @Override
+        public String toString() {
+            return bodyPart.getName() + ": " + priority;
+        }
     }
 }

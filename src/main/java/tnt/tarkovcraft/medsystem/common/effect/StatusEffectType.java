@@ -31,6 +31,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final Set<BodyPartGroup> ignoredBodyParts;
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
+    private final int healingPriority;
     private final Collection<ResourceLocation> blockedPostEffects;
     private final ResourceLocation icon;
     private final Component displayName;
@@ -45,6 +46,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.ignoredBodyParts = builder.bodyPartGroups;
         this.isGlobalEffect = builder.globalEffect;
         this.isSpecial = builder.special;
+        this.healingPriority = builder.healingPriority;
         this.blockedPostEffects = builder.blockedPostEffects != null ? Arrays.asList(builder.blockedPostEffects) : null;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
@@ -111,6 +113,10 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.isSpecial;
     }
 
+    public int getHealingPriority() {
+        return this.healingPriority;
+    }
+
     public boolean hasPostShader() {
         return this.blockedPostEffects != null;
     }
@@ -150,6 +156,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         private BinaryOperator<S> merger = StatusEffect::merge;
         private boolean globalEffect;
         private boolean special;
+        private int healingPriority = 0;
 
         private Builder(ResourceLocation identifier, Factory<S> factory) {
             this.identifier = identifier;
@@ -200,6 +207,11 @@ public final class StatusEffectType<S extends StatusEffect> {
             return this;
         }
 
+        public Builder<S> healPriority(int healingPriority) {
+            this.healingPriority = healingPriority;
+            return this;
+        }
+
         public StatusEffectType<S> build() {
             Objects.requireNonNull(this.identifier, "Identifier is required");
             Objects.requireNonNull(this.factory, "Instance factory is required");
@@ -208,7 +220,7 @@ public final class StatusEffectType<S extends StatusEffect> {
             Objects.requireNonNull(this.effectType, "Effect type is required");
             Objects.requireNonNull(this.visibility, "Effect visibility is required");
             if (!this.globalEffect && this.blockedPostEffects != null) {
-                throw new IllegalArgumentException("Shader effects are only supported for global status effects");
+                throw new IllegalArgumentException("Post effect shaders are only supported for global status effects");
             }
 
             return new StatusEffectType<>(this);

@@ -108,6 +108,14 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         return this.surgery != null;
     }
 
+    public boolean isRecoveryItem() {
+        return !this.recoveries.isEmpty();
+    }
+
+    public boolean isHealing() {
+        return this.health != null;
+    }
+
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
         if (this.health != null) {

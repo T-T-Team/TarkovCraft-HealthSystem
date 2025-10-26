@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
@@ -87,7 +88,7 @@ public final class MedSystemItems {
                                     .delayed(Duration.minutes(10), Duration.seconds(45), PainReliefEffect.createTemplate())
                                     .build()
                             )
-            )
+            ).withUseAnimations(ItemUseAnimation.EAT, ItemUseAnimation.BOW)
     );
     public static final DeferredItem<HealingItem> FIRST_AID_KIT = REGISTRY.registerItem(
             "first_aid_kit",
