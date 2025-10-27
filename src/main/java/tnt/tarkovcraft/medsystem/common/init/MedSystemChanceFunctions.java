@@ -7,8 +7,6 @@ import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunctionT
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.FallDistanceLimitFunction;
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.FallDistanceScaleFunction;
 
-import java.util.function.Supplier;
-
 public final class MedSystemChanceFunctions {
 
     public static final DeferredRegister<ChanceFunctionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.CHANCE_FUNCTION, MedicalSystem.MOD_ID);

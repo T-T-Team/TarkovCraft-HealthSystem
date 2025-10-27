@@ -11,7 +11,10 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.PositionedAABB;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class MeleeHitCalculator implements HitCalculator {
 

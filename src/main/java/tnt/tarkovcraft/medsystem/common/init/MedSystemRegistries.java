@@ -7,8 +7,8 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupItemType;
 import tnt.tarkovcraft.medsystem.common.health.reaction.HealthEventSourceType;
-import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunctionType;
 import tnt.tarkovcraft.medsystem.common.health.reaction.event.HealthSourceEventType;
+import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunctionType;
 import tnt.tarkovcraft.medsystem.common.health.transform.EntityHitboxTransformType;
 import tnt.tarkovcraft.medsystem.common.health.transform.TransformConditionType;
 

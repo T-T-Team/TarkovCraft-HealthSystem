@@ -10,8 +10,9 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
-import tnt.tarkovcraft.core.client.screen.renderable.AbstractTextRenderable;
+import tnt.tarkovcraft.core.client.screen.renderable.LabelRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
+import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
@@ -20,9 +21,9 @@ import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
-import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -71,8 +72,14 @@ public class SelectBodyPartScreen extends Screen {
         }
 
         this.addRenderableOnly(new ShapeRenderable(0, 0, this.width, this.height, ColorPalette.BG_TRANSPARENT_DARK));
-        this.addRenderableOnly(new AbstractTextRenderable.CenteredComponent(0, 0, this.width, 20, ColorPalette.WHITE, true, this.font, TITLE));
-        this.addRenderableOnly(new AbstractTextRenderable.CenteredComponent(0, 20, this.width, 10, ColorPalette.WHITE, true, this.font, subtitle));
+        LabelRenderable titleLabel = this.addRenderableOnly(LabelRenderable.fromComponent(0, 0, this.width, 20, this.font, TITLE));
+        titleLabel.setShadow(true);
+        titleLabel.setTextColor(ColorPalette.WHITE);
+        titleLabel.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        LabelRenderable subtitleLabel = this.addRenderableOnly(LabelRenderable.fromComponent(0, 20, this.width, 10, this.font, subtitle));
+        subtitleLabel.setShadow(true);
+        subtitleLabel.setTextColor(ColorPalette.WHITE);
+        subtitleLabel.setHorizontalAlignment(HorizontalAlignment.CENTER);
         if (itemStack.isEmpty()) {
             this.addError();
             return;
@@ -152,6 +159,9 @@ public class SelectBodyPartScreen extends Screen {
     }
 
     private void addError() {
-        this.addRenderableOnly(new AbstractTextRenderable.CenteredComponent(0, 0, this.width, this.height, ColorPalette.RED, true, this.font, LABEL_ERROR));
+        LabelRenderable error = this.addRenderableOnly(LabelRenderable.fromComponent(0, 0, this.width, this.height, this.font, LABEL_ERROR));
+        error.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        error.setTextColor(ColorPalette.RED);
+        error.setShadow(true);
     }
 }

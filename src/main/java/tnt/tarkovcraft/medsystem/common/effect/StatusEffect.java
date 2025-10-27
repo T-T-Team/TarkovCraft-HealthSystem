@@ -10,14 +10,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.*;
-import tnt.tarkovcraft.medsystem.common.effect.util.PostEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;

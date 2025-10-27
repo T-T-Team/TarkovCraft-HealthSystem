@@ -4,13 +4,15 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
-import tnt.tarkovcraft.core.network.Synchronizable;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
@@ -32,7 +34,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public final class HealthContainer implements Synchronizable<HealthContainer> {
+public final class HealthContainer {
 
     public static final MapCodec<HealthContainer> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
@@ -41,7 +43,7 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
             Codecs.collection(QueuedStatusEffect.CODEC, list -> (Queue<QueuedStatusEffect>) new PriorityQueue<>(list), ArrayList::new).optionalFieldOf("effectQueue", new PriorityQueue<>()).forGetter(t -> t.effectQueue),
             Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
     ).apply(instance, HealthContainer::new));
-    public static final Codec<HealthContainer> CODEC = MAP_CODEC.codec();
+    public static final StreamCodec<RegistryFriendlyByteBuf, HealthContainer> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(MAP_CODEC.codec());
 
     private final HealthContainerDefinition definition;
     private final Map<String, BodyPart> bodyParts;
@@ -306,11 +308,6 @@ public final class HealthContainer implements Synchronizable<HealthContainer> {
 
     public DamageContext getDamageContext() {
         return this.activeDamageContext;
-    }
-
-    @Override
-    public Codec<HealthContainer> networkCodec() {
-        return CODEC;
     }
 
     public boolean shouldDie() {

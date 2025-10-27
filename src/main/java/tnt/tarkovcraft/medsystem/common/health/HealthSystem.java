@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.health;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.DamageTypeTags;
@@ -17,11 +16,9 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.core.compatibility.Component;
-import tnt.tarkovcraft.core.network.message.S2C_SendDataAttachments;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
@@ -90,11 +87,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
 
     public static void synchronizeEntity(LivingEntity entity) {
         if (!entity.level().isClientSide() && hasCustomHealth(entity)) {
-            S2C_SendDataAttachments packet = new S2C_SendDataAttachments(entity, MedSystemDataAttachments.HEALTH_CONTAINER.get());
-            PacketDistributor.sendToPlayersTrackingEntity(entity, packet);
-            if (entity instanceof ServerPlayer player) {
-                PacketDistributor.sendToPlayer(player, packet);
-            }
+            entity.syncData(MedSystemDataAttachments.HEALTH_CONTAINER);
         }
     }
 
