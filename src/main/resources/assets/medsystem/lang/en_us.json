@@ -170,8 +170,6 @@
   "config.medsystem.option.unconsciousOnDeathChance.comment.0": "Chance specifying if you can enter unconscious state instead of dying so that you may be rescued by your friends",
   "config.medsystem.option.rescueWaitDuration": "Rescue wait duration",
   "config.medsystem.option.rescueWaitDuration.comment.0": "Rescue waiting period before dying while in death unconscious state",
-  "config.medsystem.option.rescueInvulnerabilityGracePeriod": "Rescue invulnerability duration",
-  "config.medsystem.option.rescueInvulnerabilityGracePeriod.comment.0": "Invulnerability duration after getting unconscious and waiting for rescue",
   "config.medsystem.option.allowUnconsciousOnHeadDeath": "Allow rescue for dead head limb",
   "config.medsystem.option.allowUnconsciousOnHeadDeath.comment.0": "Will prevent entering unconscious state on death if your head body part is dead too",
   "config.medsystem.option.statusEffects": "Status effects",

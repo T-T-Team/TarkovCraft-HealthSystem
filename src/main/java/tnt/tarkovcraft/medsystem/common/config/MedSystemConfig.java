@@ -76,11 +76,6 @@ public final class MedSystemConfig {
     public int rescueWaitDuration = 150; // 2.5 minutes
 
     @Configurable
-    @Configurable.Range(min = 0)
-    @Configurable.Comment("Invulnerability duration after getting unconscious and waiting for rescue")
-    public int rescueInvulnerabilityGracePeriod = 5; // 5 seconds
-
-    @Configurable
     @Configurable.Comment("Will prevent entering unconscious state on death if your head body part is dead too")
     public boolean allowUnconsciousOnHeadDeath = true;
 

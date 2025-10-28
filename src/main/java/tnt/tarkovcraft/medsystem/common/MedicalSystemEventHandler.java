@@ -184,7 +184,7 @@ public final class MedicalSystemEventHandler {
         }
 
         // Apply wound status effect
-        int duration = Mth.floor(totalDamage / 4.0F); // 4hp damage = 1s of wound status effect
+        int duration = Mth.floor(totalDamage / 4.0F); // 4 hp damage = 1 s of wound status effect
         WoundStatusEffectApplyEvent applyEvent = NeoForge.EVENT_BUS.post(new WoundStatusEffectApplyEvent(entity, context, totalDamage, duration));
         if (applyEvent.shouldApplyEffect()) {
             StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, 1, new WoundStatusEffect(applyEvent.getDurationSeconds() * 20));
@@ -195,7 +195,7 @@ public final class MedicalSystemEventHandler {
         container.updateHealth(entity);
 
         // Death processing
-        HealthSystem.synchronizeEntity(entity); // send status to client before death or further processing so that client knows which body part caused death
+        HealthSystem.synchronizeEntity(entity); // send status to a client before death or further processing so that a client knows which body part caused death
         if (container.shouldDie()) {
             entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
             return;
@@ -220,7 +220,7 @@ public final class MedicalSystemEventHandler {
             bloodData.sync(entity);
         }
 
-        // disable sprinting if entity can no longer sprint
+        // disable sprinting if an entity can no longer sprint
         MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
         if (entity.isSprinting() && !component.canSprint(entity)) {
             entity.setSprinting(false);
@@ -304,7 +304,6 @@ public final class MedicalSystemEventHandler {
                         return;
                 }
                 event.setCanceled(true);
-                player.invulnerableTime = Math.max(player.invulnerableTime, config.rescueInvulnerabilityGracePeriod * 20);
                 // recover vital body part health - otherwise player would immediately "die" again
                 container.getLimbsAsStream().forEach(part -> {
                     if (part.isDead() && part.isVital()) {
@@ -330,7 +329,7 @@ public final class MedicalSystemEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    private void addItemstackTooltips(ItemTooltipEvent event) {
+    private void addItemStackTooltips(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
         Item.TooltipContext context = event.getContext();
         List<Component> tooltip = event.getToolTip();
@@ -377,5 +376,17 @@ public final class MedicalSystemEventHandler {
         Player player = event.getEntity();
         BloodData data = BloodSystem.getBloodData(player);
         data.updateEffects(player);
+    }
+
+    @SubscribeEvent
+    private void onSetAttackTarget(LivingChangeTargetEvent event) {
+        LivingEntity newTarget = event.getNewAboutToBeSetTarget();
+        if (!event.isCanceled() && newTarget instanceof Player player) {
+            BloodData data = BloodSystem.getBloodData(player);
+            BloodData.UnconsciousInfo info = data.getUnconsciousInfo();
+            if (data.isUnconscious() && info.causesDeath()) {
+                event.setNewAboutToBeSetTarget(null);
+            }
+        }
     }
 }

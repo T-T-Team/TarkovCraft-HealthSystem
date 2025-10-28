@@ -1,5 +1,5 @@
 # Medical system
-First submodule for TarkovCraft ecosystem with expansion of traditional Minecraft health system by separating entity hitbox into separate parts for each limb.
+First submodule for TarkovCraft ecosystem with expansion of a traditional Minecraft health system by separating entity hitbox into separate parts for each limb.
 
 Player hitbox is for example split into:
 - Head
@@ -31,6 +31,10 @@ Moderate blood loss post-process shader
 
 Pain relief post-process shader
 ![pain-relief](https://cdn.modrinth.com/data/sodxIUKj/images/3daecfff3a60d5e939bef47a3d7e3821229821c7.png)
+
+There is also a rescue system that allows you to save your friends after they've been killed by hostile mobs.
+Simply approach the player and use First Aid Kit to heal them, and they should wake up soon. Hostile mobs won't 
+attack downed players.
 
 ## For mod/modpack developers
 The health system is designed to be fully editable/configurable via datapacks, which means that you can add support for
