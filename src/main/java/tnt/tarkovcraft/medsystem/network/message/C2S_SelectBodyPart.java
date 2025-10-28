@@ -48,7 +48,7 @@ public record C2S_SelectBodyPart(InteractionTarget target) implements CustomPack
         }
         HealthContainer container = HealthSystem.getHealthData(targetEntity);
         BodyPart part = container.getBodyPart(this.target.limbCode());
-        if (attributes != null && attributes.canUseOnPart(part, stack, container)) {
+        if (attributes != null && attributes.canUseOnPart(part, stack, container, this.target.self(), targetEntity)) {
             stack.set(MedSystemItemComponents.INTERACTION_TARGET, this.target);
         }
     }

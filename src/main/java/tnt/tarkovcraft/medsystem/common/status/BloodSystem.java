@@ -11,6 +11,8 @@ import static tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments.BLO
 
 public final class BloodSystem {
 
+    public static final int RESCUE_WAKE_UP_DELAY = 100;
+
     public static boolean isEnabled() {
         MedSystemConfig config = MedicalSystem.getConfig();
         return config.useBloodSystem;

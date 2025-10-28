@@ -29,6 +29,8 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
+import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 
 import java.util.*;
@@ -62,7 +64,7 @@ public class HealingItem extends InteractableItem {
         if (attributes == null) {
             return false;
         }
-        return attributes.canUseOn(target, itemStack, HealthSystem.getHealthData(target));
+        return attributes.canUseOn(target, origin, itemStack, HealthSystem.getHealthData(target));
     }
 
     @Override
@@ -132,8 +134,17 @@ public class HealingItem extends InteractableItem {
                 if (leftover > 0 && container.canHeal(null, false)) {
                     container.heal(target, amount, null);
                 }
+                // rescue logic
+                if (!interaction.self() && target instanceof Player player) {
+                    BloodData bloodData = BloodSystem.getBloodData(player);
+                    BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
+                    if (bloodData.isUnconscious() && info.causesDeath()) {
+                        bloodData.setUnconsciousTime(BloodSystem.RESCUE_WAKE_UP_DELAY, BloodData.UnconsciousInfo.PAIN);
+                        bloodData.sync(player);
+                    }
+                }
                 container.updateHealth(target);
-                if (cycleIndex + 1 > cycleLimit || (part != null && !attributes.canUseOnPart(part, itemStack, container))) {
+                if (cycleIndex + 1 > cycleLimit || (part != null && !attributes.canUseOnPart(part, itemStack, container, interaction.self(), target))) {
                     origin.useItemRemaining = 0;
                 } else {
                     HealthSystem.synchronizeEntity(target);

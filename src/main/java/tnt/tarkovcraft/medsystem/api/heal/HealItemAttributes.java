@@ -7,6 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -18,6 +19,8 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.BodyPart;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
+import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +73,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         return Math.max(duration, this.minUseTime());
     }
 
-    public boolean canUseOn(LivingEntity entity, ItemStack stack, HealthContainer container) {
+    public boolean canUseOn(LivingEntity entity, LivingEntity origin, ItemStack stack, HealthContainer container) {
         if (this.alwaysConsumable) {
             return true;
         }
@@ -82,10 +85,20 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         if (this.isSurgeryItem() && this.surgery.canHeal(container)) {
             return true;
         }
-        return this.health != null && entity.getHealth() < entity.getMaxHealth();
+        if (this.health != null) {
+            if (entity.getHealth() < entity.getMaxHealth())
+                return true;
+            // rescue
+            if (origin != entity && entity instanceof Player player) {
+                BloodData data = BloodSystem.getBloodData(player);
+                BloodData.UnconsciousInfo info = data.getUnconsciousInfo();
+                return data.isUnconscious() && info.causesDeath();
+            }
+        }
+        return false;
     }
 
-    public boolean canUseOnPart(BodyPart part, ItemStack stack, HealthContainer container) {
+    public boolean canUseOnPart(BodyPart part, ItemStack stack, HealthContainer container, boolean selfHealing, LivingEntity target) {
         if (this.alwaysConsumable) {
             return true;
         }
@@ -101,7 +114,17 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         if (this.isSurgeryItem() && part.isDead()) {
             return true;
         }
-        return this.health != null && part.getHealth() < part.getMaxHealth() && !part.isDead();
+        if (this.health != null) {
+            if (!part.isDead() && part.getHealth() < part.getMaxHealth()) {
+                return true;
+            }
+            if (!selfHealing && target instanceof Player player && container.getRootBodyPart().getName().equals(part.getName())) {
+                BloodData bloodData = BloodSystem.getBloodData(player);
+                BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
+                return bloodData.isUnconscious() && info.causesDeath();
+            }
+        }
+        return false;
     }
 
     public boolean isSurgeryItem() {

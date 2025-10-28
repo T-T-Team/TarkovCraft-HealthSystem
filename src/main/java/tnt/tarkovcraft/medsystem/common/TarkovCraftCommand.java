@@ -63,7 +63,7 @@ public final class TarkovCraftCommand {
                                                                                                 Commands.argument("type", ResourceArgument.resource(context, MedSystemRegistries.Keys.STATUS_EFFECT))
                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, Duration.seconds(60).tickValue(), 0))
                                                                                                         .then(
-                                                                                                                Commands.literal("infinite")
+                                                                                                                Commands.literal("causesDeath")
                                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, -1, 0))
                                                                                                                         .then(
                                                                                                                                 Commands.argument("delay", IntegerArgumentType.integer(0))
@@ -88,7 +88,7 @@ public final class TarkovCraftCommand {
                                                                                 Commands.argument("type", ResourceArgument.resource(context, MedSystemRegistries.Keys.STATUS_EFFECT))
                                                                                         .executes(ctx -> addGlobalStatusEffect(ctx, Duration.seconds(60).tickValue(), 0))
                                                                                         .then(
-                                                                                                Commands.literal("infinite")
+                                                                                                Commands.literal("causesDeath")
                                                                                                         .executes(ctx -> addGlobalStatusEffect(ctx, -1, 0))
                                                                                                         .then(
                                                                                                                 Commands.argument("delay", IntegerArgumentType.integer(0))

@@ -49,6 +49,7 @@ import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.*;
@@ -322,7 +323,46 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         LivingEntity entity = event.getEntity();
-        if (HealthSystem.hasCustomHealth(entity)) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        DamageSource source = event.getSource();
+        if (!event.isCanceled() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && entity instanceof Player player) {
+            BloodData bloodData = BloodSystem.getBloodData(player);
+            BloodStatus status = BloodStatus.fromBloodLevelPercentage(bloodData.getBloodVolumePercentage());
+            BloodData.UnconsciousInfo unconsciousInfo = bloodData.getUnconsciousInfo();
+            if (status == BloodStatus.DEATH || (unconsciousInfo != null && unconsciousInfo.causesDeath()))
+                return; // no rescue on full blood loss, small workaround for immediate death
+            RandomSource random = player.getRandom();
+            if (random.nextFloat() < config.unconsciousOnDeathChance) {
+                HealthContainer container = HealthSystem.getHealthData(player);
+                if (!config.allowUnconsciousOnHeadDeath) {
+                    boolean allPartsDead = container.getBodyPartStream()
+                            .filter(part -> part.getGroup() == BodyPartGroup.HEAD)
+                            .allMatch(BodyPart::isDead);
+                    // no head body part alive, terminate further processing logic
+                    if (allPartsDead)
+                        return;
+                }
+                event.setCanceled(true);
+                player.invulnerableTime = Math.max(player.invulnerableTime, config.rescueInvulnerabilityGracePeriod * 20);
+                // recover vital body part health - otherwise player would immediately "die" again
+                container.getBodyPartStream().forEach(part -> {
+                    if (part.isDead() && part.isVital()) {
+                        part.heal(1.0F);
+                    }
+                });
+                container.updateHealth(player);
+                HealthSystem.synchronizeEntity(player);
+                // set unconscious
+
+                bloodData.setUnconsciousTime(
+                        Duration.seconds(config.rescueWaitDuration).tickValue(),
+                        BloodData.UnconsciousInfo.DEATH
+                );
+                bloodData.sync(player);
+            }
+        }
+
+        if (!event.isCanceled() && HealthSystem.hasCustomHealth(entity)) {
             HealthContainer container = HealthSystem.getHealthData(entity);
             container.invalidate();
         }

@@ -58,5 +58,26 @@ public final class MedSystemConfig {
     public boolean allowUnconsciousOnLimbLost = true;
 
     @Configurable
+    @Configurable.DecimalRange(min = 0.0, max = 1.0)
+    @Configurable.Gui.NumberFormat("0.00")
+    @Configurable.Gui.Slider
+    @Configurable.Comment("Chance specifying if you can enter unconscious state instead of dying so that you may be rescued by your friends")
+    public float unconsciousOnDeathChance = 1.0F;
+
+    @Configurable
+    @Configurable.Range(min = 10)
+    @Configurable.Comment("Rescue waiting period before dying while in death unconscious state")
+    public int rescueWaitDuration = 150; // 2.5 minutes
+
+    @Configurable
+    @Configurable.Range(min = 0)
+    @Configurable.Comment("Invulnerability duration after getting unconscious and waiting for rescue")
+    public int rescueInvulnerabilityGracePeriod = 5; // 5 seconds
+
+    @Configurable
+    @Configurable.Comment("Will prevent entering unconscious state on death if your head body part is dead too")
+    public boolean allowUnconsciousOnHeadDeath = true;
+
+    @Configurable
     public StatusEffectConfig statusEffects = new StatusEffectConfig();
 }

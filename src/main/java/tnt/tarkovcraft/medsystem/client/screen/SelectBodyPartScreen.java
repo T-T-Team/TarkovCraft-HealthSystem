@@ -100,7 +100,7 @@ public class SelectBodyPartScreen extends Screen {
             if (part == null)
                 continue;
             Vector4i rect = display.getPositionForGui(scale, center);
-            boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container);
+            boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container, selfHealing, target);
             BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, part, this.font));
             widget.setScale(3);
             widget.setColorProvider(value -> {

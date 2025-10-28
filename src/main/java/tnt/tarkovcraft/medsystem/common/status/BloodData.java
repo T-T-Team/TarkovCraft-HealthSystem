@@ -96,11 +96,14 @@ public final class BloodData {
         if (this.isUnconscious()) {
             if (--this.unconsciousTime <= 0) {
                 BloodEvent.OnWakeUp onWakeUp = NeoForge.EVENT_BUS.post(new BloodEvent.OnWakeUp(entity, this));
-                if (onWakeUp.willWakeUp()) {
+                UnconsciousInfo info = onWakeUp.getUnconsciousInfo();
+                if (info.causesDeath()) {
+                    BloodSystem.causeBloodLoss(entity, Float.MAX_VALUE);
+                } else if (onWakeUp.willWakeUp()) {
                     this.updateEffects(entity);
                     this.updateConsciousStatus(entity, true);
                 } else {
-                    this.setUnconsciousTime(onWakeUp.getUnconsciousTime(), onWakeUp.getUnconsciousInfo());
+                    this.setUnconsciousTime(onWakeUp.getUnconsciousTime(), info);
                 }
             }
         }
@@ -225,7 +228,6 @@ public final class BloodData {
         this.addBloodLossStatusEffect(container, entity, false);
         float chance = AttributeSystem.getFloatValue(entity, MedSystemAttributes.RANDOM_BLACKOUT_CHANCE, 0.05F);
         RandomSource random = level.getRandom();
-        long time = level.getGameTime();
         if (!this.isUnconscious() && chance > 0.0F && random.nextFloat() < chance) {
             this.setOrExtendedUnconsciousTime(100 + random.nextInt(200), UnconsciousInfo.RANDOM_UNCONSCIOUSNESS);
         }
@@ -328,19 +330,22 @@ public final class BloodData {
         this.removeModifier(map, ATTR_UNCONSCIOUS, attribute);
     }
 
-    public record UnconsciousInfo(boolean showGiveUpHint, Component reason) {
+    public record UnconsciousInfo(boolean showGiveUpHint, boolean causesDeath, Component reason) {
 
-        public static final UnconsciousInfo EMPTY = new UnconsciousInfo(true, CommonComponents.EMPTY);
-        public static final UnconsciousInfo LOW_BLOOD_LEVEL = new UnconsciousInfo(true, Component.translatable("label.medsystem.unconscious.info.low_blood_level"));
-        public static final UnconsciousInfo RANDOM_UNCONSCIOUSNESS = new UnconsciousInfo(false, Component.translatable("label.medsystem.unconscious.info.random_unconsciousness"));
-        public static final UnconsciousInfo PAIN = new UnconsciousInfo(false, Component.translatable("label.medsystem.unconscious.info.pain"));
+        public static final UnconsciousInfo EMPTY = new UnconsciousInfo(true, false, CommonComponents.EMPTY);
+        public static final UnconsciousInfo LOW_BLOOD_LEVEL = new UnconsciousInfo(true, false, Component.translatable("label.medsystem.unconscious.info.low_blood_level"));
+        public static final UnconsciousInfo RANDOM_UNCONSCIOUSNESS = new UnconsciousInfo(false, false, Component.translatable("label.medsystem.unconscious.info.random_unconsciousness"));
+        public static final UnconsciousInfo PAIN = new UnconsciousInfo(false, false, Component.translatable("label.medsystem.unconscious.info.pain"));
+        public static final UnconsciousInfo DEATH = new UnconsciousInfo(true, true, Component.translatable("label.medsystem.unconscious.info.death"));
 
         public static final Codec<UnconsciousInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.BOOL.fieldOf("showGiveUpHint").forGetter(UnconsciousInfo::showGiveUpHint),
+                Codec.BOOL.optionalFieldOf("causesDeath", false).forGetter(UnconsciousInfo::causesDeath),
                 ComponentSerialization.CODEC.fieldOf("reason").forGetter(UnconsciousInfo::reason)
         ).apply(instance, UnconsciousInfo::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, UnconsciousInfo> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL, UnconsciousInfo::showGiveUpHint,
+                ByteBufCodecs.BOOL, UnconsciousInfo::causesDeath,
                 ComponentSerialization.STREAM_CODEC, UnconsciousInfo::reason,
                 UnconsciousInfo::new
         );
