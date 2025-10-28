@@ -144,6 +144,9 @@ public final class BloodData {
     }
 
     public void setOrExtendedUnconsciousTime(int unconsciousTime, UnconsciousInfo info) {
+        if (this.isUnconscious() && this.unconsciousInfo.causesDeath()) {
+            return;
+        }
         this.setUnconsciousTime(Math.max(this.unconsciousTime, unconsciousTime), info);
     }
 

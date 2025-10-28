@@ -352,8 +352,8 @@ public final class MedicalSystemEventHandler {
                 });
                 container.updateHealth(player);
                 HealthSystem.synchronizeEntity(player);
-                // set unconscious
 
+                // set unconscious
                 bloodData.setUnconsciousTime(
                         Duration.seconds(config.rescueWaitDuration).tickValue(),
                         BloodData.UnconsciousInfo.DEATH
