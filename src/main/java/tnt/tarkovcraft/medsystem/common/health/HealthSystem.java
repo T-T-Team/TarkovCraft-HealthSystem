@@ -18,9 +18,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import tnt.tarkovcraft.core.compatibility.Component;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
 import tnt.tarkovcraft.medsystem.api.event.HitCalculatorResolveEvent;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
@@ -35,8 +33,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthContainerDefinition> {
-
-    public static final Component<ArmorComponent> ARMOR = new Component<>("armor", DefaultArmorComponent.INSTANCE);
 
     public static final Marker MARKER = MarkerManager.getMarker("HealthSystemManager");
     public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_system");

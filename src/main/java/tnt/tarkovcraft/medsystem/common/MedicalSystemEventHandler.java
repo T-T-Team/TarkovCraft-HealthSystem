@@ -10,7 +10,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -20,6 +19,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -34,9 +34,10 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.ArmorComponent;
 import tnt.tarkovcraft.medsystem.api.event.WoundStatusEffectApplyEvent;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
+import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.WoundStatusEffect;
@@ -52,9 +53,10 @@ import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public final class MedicalSystemEventHandler {
 
@@ -129,25 +131,12 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         LivingEntity entity = event.getEntity();
-        ArmorComponent component = HealthSystem.ARMOR.getComponent();
-        if (!HealthSystem.hasCustomHealth(entity) || component.useVanillaArmorDamage())
+        if (!HealthSystem.hasCustomHealth(entity))
             return;
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        DamageContext context = container.getDamageContext();
-        Set<EquipmentSlot> hitSlots = new HashSet<>(context.getAffectedSlots());
-        Set<EquipmentSlot> armorSlots = new HashSet<>(event.getArmorMap().keySet());
-        Map<EquipmentSlot, ArmorHurtEvent.ArmorEntry> map = event.getArmorMap();
-        float damageReductionMultiplier = AttributeSystem.getFloatValue(entity, MedSystemAttributes.ARMOR_DURABILITY, 1.0F);
-        for (EquipmentSlot slot : armorSlots) {
-            if (!hitSlots.contains(slot)) {
-                map.remove(slot);
-            } else {
-                float damage = event.getNewDamage(slot);
-                if (damage > 0 && damageReductionMultiplier != 1.0F) {
-                    event.setNewDamage(slot, Math.max(damage * damageReductionMultiplier, 1.0F));
-                }
-            }
-        }
+        MedSystemConfig config = MedicalSystem.getConfig();
+        ArmorSystem system = config.armorSystem;
+        ArmorComponent component = system.getComponent();
+        component.applyItemDamage(event);
     }
 
     // Entity armor damage recalculation
@@ -155,46 +144,18 @@ public final class MedicalSystemEventHandler {
     private void onLivingDamage(LivingIncomingDamageEvent event) {
         // calculate correct damage for armor and so on
         LivingEntity entity = event.getEntity();
-        if (!HealthSystem.hasCustomHealth(entity))
+        DamageSource source = event.getSource();
+        if (!HealthSystem.hasCustomHealth(entity) || source.is(DamageTypeTags.BYPASSES_ARMOR))
             return;
+        if (entity.level().isClientSide())
+            return;
+        ArmorSystem armorSystem = MedicalSystem.getConfig().armorSystem;
+        ArmorComponent component = armorSystem.getComponent();
+        component.applyDamageReduction(event);
 
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        DamageContext context = container.getDamageContext();
-        List<HitResult> hits = context.getHits();
-        // Hit hitbox groups
-        EnumSet<LimbType> hitGroups = EnumSet.noneOf(LimbType.class);
-        for (HitResult hit : hits) {
-            Limb limb = hit.limb();
-            LimbType group = limb.getType();
-            hitGroups.add(group);
-        }
-        ArmorComponent component = HealthSystem.ARMOR.getComponent();
-        // Protected hitbox groups
-        EnumSet<LimbType> protectedGroups = EnumSet.noneOf(LimbType.class);
-        component.collectAffectedBodyPartsWithProtection(
-                protectedGroups::add,
-                entity,
-                context
-        );
-        // remove not affected groups
-        protectedGroups.removeIf(group -> !hitGroups.contains(group));
-        // armor reduction calculation preparation
-
-        Set<EquipmentSlot> protectedSlots = protectedGroups.stream()
-                .flatMap(group -> group.getArmorSlots().stream())
-                .collect(Collectors.toSet());
-
-        context.setAffectedSlots(new ArrayList<>());
-        float reduction = component.handleReductions(
-                entity,
-                context,
-                protectedSlots,
-                event::getAmount,
-                event::setAmount,
-                event::addReductionModifier
-        );
-        if (reduction > 0.0F) {
-            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, reduction);
+        float armorReduction = event.getContainer().getReduction(DamageContainer.Reduction.ARMOR);
+        if (armorReduction > 0.0F) {
+            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, armorReduction);
         }
     }
 

@@ -76,8 +76,6 @@
     "death.attack.medsystem.fracture": "%s因骨折而死",
     "death.attack.medsystem.fracture.player": "%s在与%s的战斗中因骨折而死",
     "config.screen.medsystem": "MedSystem",
-    "config.medsystem.option.simpleArmorCalculation": "简易装甲计算",
-    "config.medsystem.option.simpleArmorCalculation.comment.0": "包括所有装备装甲的伤害减免计算",
     "config.medsystem.option.explosionDamageScale": "爆炸伤害大小",
     "config.medsystem.option.explosionDamageScale.comment.0": "爆炸伤害等级",
     "config.medsystem.option.prioritizeVitalHealing": "重要部位优先治疗",

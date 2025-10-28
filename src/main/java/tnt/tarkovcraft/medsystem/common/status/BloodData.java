@@ -133,6 +133,10 @@ public final class BloodData {
         return this.unconsciousTime > 0;
     }
 
+    public int getRemainingUnconsciousTime() {
+        return this.unconsciousTime;
+    }
+
     public UnconsciousInfo getUnconsciousInfo() {
         return unconsciousInfo;
     }

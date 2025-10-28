@@ -4,15 +4,21 @@ import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdateRestrictions;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.health.DefaultArmorComponent;
+import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 
 @Config(id = MedicalSystem.MOD_ID, filename = "medicalsystem")
 public final class MedSystemConfig {
 
     @Configurable
-    @Configurable.Comment("Includes all equipped armors for damage reduction calculation")
-    @Configurable.Validate(DefaultArmorComponent.ConfigValidator.class)
-    public boolean simpleArmorCalculation = false;
+    @Configurable.Comment({
+            "Defines armor calculation logic with custom health system",
+            "SIMULATED - modular armor with fully simulated logic such as deflections, blunt damage and so on",
+            "MODULAR - modular armor - getting hit in head damages only helmet",
+            "MODULAR_BOOSTED - same as above, but each armor piece has 150% additional protection",
+            "VANILLA - vanilla armor calculation, full armor is used for any damage calculations"
+    })
+    @Configurable.UpdateRestriction(UpdateRestrictions.MAIN_MENU)
+    public ArmorSystem armorSystem = ArmorSystem.SIMULATED;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.15, max = 3.0)
