@@ -24,7 +24,7 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
@@ -96,7 +96,7 @@ public class SelectBodyPartScreen extends Screen {
         float scale = (this.width / 256.0F);
         List<BodyPartHealthWidget> healthWidgets = new ArrayList<>();
         for (BodyPartDisplay display : displays) {
-            BodyPart part = container.getBodyPart(display.source());
+            Limb part = container.getLimb(display.source());
             if (part == null)
                 continue;
             Vector4i rect = display.getPositionForGui(scale, center);
@@ -113,7 +113,7 @@ public class SelectBodyPartScreen extends Screen {
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
             Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
-            if (container.getRootBodyPart().getName().equals(part.getName())) {
+            if (container.getRootLimb().getLimbCode().equals(part.getLimbCode())) {
                 stream = Stream.concat(
                         container.getGlobalStatusEffects().getEffectsStream(),
                         stream
@@ -152,8 +152,8 @@ public class SelectBodyPartScreen extends Screen {
         return false;
     }
 
-    private void bodyPartClicked(BodyPart part) {
-        InteractionTarget target = new InteractionTarget(this.selfHealing, this.entityId, part.getName());
+    private void bodyPartClicked(Limb part) {
+        InteractionTarget target = new InteractionTarget(this.selfHealing, this.entityId, part.getLimbCode());
         ClientPacketDistributor.sendToServer(new C2S_SelectBodyPart(target));
         this.minecraft.setScreen(null);
     }

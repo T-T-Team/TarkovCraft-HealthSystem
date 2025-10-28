@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactions;
 
@@ -23,7 +23,7 @@ public class NotHealthEventSource implements HealthEventSource {
     }
 
     @Override
-    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, Limb limb) {
         return !this.reaction.canReact(container, entity, damageSource, limb);
     }
 

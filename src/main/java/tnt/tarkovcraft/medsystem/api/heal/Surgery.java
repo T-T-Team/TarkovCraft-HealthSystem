@@ -17,7 +17,7 @@ import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.effect.InjuryRecoveryStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
@@ -35,14 +35,14 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
     ).apply(instance, Surgery::new));
 
     public boolean canHeal(HealthContainer container) {
-        return container.getBodyPartStream().anyMatch(part -> part.isDead() && part.getMaxHealth() >= this.minLimbHealth);
+        return container.getLimbsAsStream().anyMatch(part -> part.isDead() && part.getMaxHealth() >= this.minLimbHealth);
     }
 
     public boolean hasPostRecovery() {
         return this.recoveryTime > 0 && this.maxHealthMultiplier < 1.0F;
     }
 
-    public void addRecoveryAttributes(LivingEntity entity, BodyPart part) {
+    public void addRecoveryAttributes(LivingEntity entity, Limb part) {
         if (this.hasPostRecovery()) {
             float reductionScale = AttributeSystem.getFloatValue(entity, MedSystemAttributes.INJURY_RECOVERY_AMOUNT, 1.0F);
             float durationScale = AttributeSystem.getFloatValue(entity, MedSystemAttributes.INJURY_RECOVERY_DURATION, 1.0F);

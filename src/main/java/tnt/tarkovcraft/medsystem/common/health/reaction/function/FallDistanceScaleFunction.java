@@ -8,7 +8,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemChanceFunctions;
 
@@ -27,7 +27,7 @@ public class FallDistanceScaleFunction implements ChanceFunction {
     }
 
     @Override
-    public float apply(float chance, HealthContainer container, LivingEntity entity, @Nullable DamageSource source, BodyPart limb) {
+    public float apply(float chance, HealthContainer container, LivingEntity entity, @Nullable DamageSource source, Limb limb) {
         double distance = entity.fallDistance;
         float scaleValue = this.scale.floatValue();
         return (float) (distance * scaleValue) * chance;

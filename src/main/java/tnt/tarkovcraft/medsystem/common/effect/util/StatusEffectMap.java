@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
@@ -36,7 +36,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         this.effects = new LinkedHashMap<>(effects);
     }
 
-    public void tick(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void tick(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         if (this.effects.isEmpty())
             return;
         Iterator<Map.Entry<StatusEffectType<?>, StatusEffect>> it = effects.entrySet().iterator();
@@ -102,25 +102,25 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         return this.getEffect((StatusEffectType<T>) holder.value());
     }
 
-    public void removeAll(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void removeAll(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         Collection<StatusEffectType<?>> keys = new ArrayList<>(this.effects.keySet());
         for (StatusEffectType<?> key : keys) {
             this.remove(submitter, key, container, entity, limb);
         }
     }
 
-    public void remove(StatusEffectSubmitter submitter, StatusEffectType<?> type, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void remove(StatusEffectSubmitter submitter, StatusEffectType<?> type, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         StatusEffect effect = this.effects.remove(type);
         if (effect != null) {
             effect.onRemoved(submitter, container, entity, limb);
         }
     }
 
-    public void remove(StatusEffectSubmitter submitter, Holder<StatusEffectType<?>> holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void remove(StatusEffectSubmitter submitter, Holder<StatusEffectType<?>> holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         this.remove(submitter, holder.value(), container, entity, limb);
     }
 
-    public boolean removeMatching(StatusEffectSubmitter submitter, TagKey<StatusEffectType<?>> tag, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public boolean removeMatching(StatusEffectSubmitter submitter, TagKey<StatusEffectType<?>> tag, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         return this.effects.entrySet().removeIf(entry -> {
             if (entry.getKey().is(tag)) {
                 entry.getValue().onRemoved(submitter, container, entity, limb);

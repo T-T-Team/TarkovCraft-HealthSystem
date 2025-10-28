@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
@@ -56,11 +56,11 @@ public class HealthEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override
-    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         Level level = entity.level();
         if (level.isClientSide())
             return;
@@ -78,7 +78,7 @@ public class HealthEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override

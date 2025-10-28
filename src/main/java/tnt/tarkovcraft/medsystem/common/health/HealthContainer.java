@@ -38,7 +38,7 @@ public final class HealthContainer {
 
     public static final MapCodec<HealthContainer> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
-            Codec.unboundedMap(Codec.STRING, BodyPart.CODEC).fieldOf("bodyParts").forGetter(t -> t.bodyParts),
+            Codec.unboundedMap(Codec.STRING, Limb.CODEC).fieldOf("bodyParts").forGetter(t -> t.limbs),
             StatusEffectMap.CODEC.fieldOf("effects").forGetter(t -> t.statusEffects),
             Codecs.collection(QueuedStatusEffect.CODEC, list -> (Queue<QueuedStatusEffect>) new PriorityQueue<>(list), ArrayList::new).optionalFieldOf("effectQueue", new PriorityQueue<>()).forGetter(t -> t.effectQueue),
             Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
@@ -46,12 +46,13 @@ public final class HealthContainer {
     public static final StreamCodec<RegistryFriendlyByteBuf, HealthContainer> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(MAP_CODEC.codec());
 
     private final HealthContainerDefinition definition;
-    private final Map<String, BodyPart> bodyParts;
-    private final Map<BodyPart, BodyPart> bodyPartLinks;
-    private final List<BodyPart> vitalParts;
-    private final String root;
+    private final Map<String, Limb> limbs;
+    private final Map<Limb, Limb> limbLinks;
+    private final List<Limb> vitalLimbs;
+    private final String rootLimbCode;
     private final StatusEffectMap statusEffects;
     private final Queue<QueuedStatusEffect> effectQueue;
+    @Deprecated
     private DamageContext activeDamageContext;
     private boolean invalidated;
 
@@ -62,31 +63,31 @@ public final class HealthContainer {
         this.definition = MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).orElse(null);
         this.statusEffects = new StatusEffectMap();
         this.effectQueue = new PriorityQueue<>();
-        ImmutableMap.Builder<String, BodyPart> builder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, Limb> builder = ImmutableMap.builder();
         if (this.definition != null) {
-            for (Map.Entry<String, BodyPartDefinition> entry : this.definition.getBodyParts().entrySet()) {
+            for (Map.Entry<String, LimbDefinition> entry : this.definition.getLimbDefinitionMap().entrySet()) {
                 String key = entry.getKey();
-                BodyPartDefinition partDefinition = entry.getValue();
-                builder.put(key, partDefinition.createContainer(key));
+                LimbDefinition partDefinition = entry.getValue();
+                builder.put(key, partDefinition.createLimbInstance(key));
             }
-            this.bodyParts = builder.build();
-            this.bodyPartLinks = new IdentityHashMap<>();
-            this.vitalParts = new ArrayList<>();
-            this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
+            this.limbs = builder.build();
+            this.limbLinks = new IdentityHashMap<>();
+            this.vitalLimbs = new ArrayList<>();
+            this.rootLimbCode = this.resolveBodyParts(this.definition, this.limbLinks, this.vitalLimbs);
         } else {
-            this.bodyParts = Collections.emptyMap();
-            this.bodyPartLinks = Collections.emptyMap();
-            this.vitalParts = Collections.emptyList();
-            this.root = "";
+            this.limbs = Collections.emptyMap();
+            this.limbLinks = Collections.emptyMap();
+            this.vitalLimbs = Collections.emptyList();
+            this.rootLimbCode = "";
         }
     }
 
-    private HealthContainer(HealthContainerDefinition definition, Map<String, BodyPart> bodyParts, StatusEffectMap statusEffects, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
+    private HealthContainer(HealthContainerDefinition definition, Map<String, Limb> limbs, StatusEffectMap statusEffects, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
         this.definition = definition;
-        this.bodyParts = bodyParts;
-        this.bodyPartLinks = new IdentityHashMap<>();
-        this.vitalParts = new ArrayList<>();
-        this.root = this.resolveBodyParts(this.definition, this.bodyPartLinks, this.vitalParts);
+        this.limbs = limbs;
+        this.limbLinks = new IdentityHashMap<>();
+        this.vitalLimbs = new ArrayList<>();
+        this.rootLimbCode = this.resolveBodyParts(this.definition, this.limbLinks, this.vitalLimbs);
         this.statusEffects = statusEffects;
         this.effectQueue = new PriorityQueue<>(effectQueue);
         this.invalidated = invalidated;
@@ -100,7 +101,7 @@ public final class HealthContainer {
             this.tickEffectQueue(entity);
             this.tickStatusEffectCheck(entity, 20, false);
             this.statusEffects.tick(this, entity, null);
-            for (BodyPart part : this.bodyParts.values()) {
+            for (Limb part : this.limbs.values()) {
                 part.tick(this, entity);
             }
             float health = this.getHealth();
@@ -115,7 +116,7 @@ public final class HealthContainer {
             this.statusEffects.removeAll(StatusEffectSubmitter.NOOP, this, entity, null);
         }
 
-        for (BodyPart part : this.bodyParts.values()) {
+        for (Limb part : this.limbs.values()) {
             StatusEffectMap map = part.getStatusEffects();
             if (!map.isEmpty())
                 map.removeAll(StatusEffectSubmitter.NOOP, this, entity, part);
@@ -123,8 +124,8 @@ public final class HealthContainer {
         this.effectQueue.clear();
     }
 
-    public void scheduleStatusEffect(LivingEntity entity, int delay, @Nullable BodyPart part, StatusEffect effect) {
-        String partId = part != null ? part.getName() : "";
+    public void scheduleStatusEffect(LivingEntity entity, int delay, @Nullable Limb part, StatusEffect effect) {
+        String partId = part != null ? part.getLimbCode() : "";
         Level level = entity.level();
         long target = level.getGameTime() + delay;
         QueuedStatusEffect queuedStatusEffect = new QueuedStatusEffect(target, partId, effect);
@@ -140,37 +141,37 @@ public final class HealthContainer {
     }
 
     public boolean isInvalid() {
-        return this.definition == null || this.bodyParts.isEmpty() || this.invalidated;
+        return this.definition == null || this.limbs.isEmpty() || this.invalidated;
     }
 
     public HealthContainerDefinition getDefinition() {
         return definition;
     }
 
-    public boolean hasBodyPart(String part) {
-        return this.bodyParts.containsKey(part);
+    public boolean hasLimb(String code) {
+        return this.limbs.containsKey(code);
     }
 
-    public BodyPart getBodyPart(@Nullable String name) {
-        return this.bodyParts.get(name != null ? name : this.root);
+    public Limb getLimb(@Nullable String code) {
+        return this.limbs.get(code != null ? code : this.rootLimbCode);
     }
 
-    public BodyPart getRootBodyPart() {
-        return this.getBodyPart(null);
+    public Limb getRootLimb() {
+        return this.getLimb(null);
     }
 
-    public Collection<BodyPart> getBodyParts() {
-        return this.bodyParts.values();
+    public Collection<Limb> getLimbs() {
+        return this.limbs.values();
     }
 
-    public Stream<BodyPart> getBodyPartStream() {
-        return this.bodyParts.values().stream();
+    public Stream<Limb> getLimbsAsStream() {
+        return this.limbs.values().stream();
     }
 
     public Stream<StatusEffect> getStatusEffectStream() {
         return Stream.concat(
                 this.statusEffects.getEffectsStream(),
-                this.bodyParts.values().stream().flatMap(part -> part.getStatusEffects().getEffectsStream())
+                this.limbs.values().stream().flatMap(part -> part.getStatusEffects().getEffectsStream())
         );
     }
 
@@ -181,7 +182,7 @@ public final class HealthContainer {
     public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, LivingEntity entity) {
         // could be probably used to add post effects
         boolean modified = this.statusEffects.removeMatching(StatusEffectSubmitter.NOOP, tag, this, entity, null);
-        for (BodyPart part : this.bodyParts.values()) {
+        for (Limb part : this.limbs.values()) {
             modified |= part.getStatusEffects().removeMatching(StatusEffectSubmitter.NOOP, tag, this, entity, part);
         }
         return modified;
@@ -189,27 +190,27 @@ public final class HealthContainer {
 
     public float getHealth() {
         float health = 0.0F;
-        for (BodyPart bodyPart : bodyParts.values()) {
-            if (bodyPart.shouldOwnerDie()) {
+        for (Limb limb : limbs.values()) {
+            if (limb.shouldOwnerDie()) {
                 return 0.0F;
             }
-            health += bodyPart.getHealth();
+            health += limb.getHealth();
         }
         return health;
     }
 
     public float getMaxHealth() {
         float maxHealth = 0.0F;
-        for (BodyPart bodyPart : bodyParts.values()) {
-            maxHealth += bodyPart.getMaxHealth();
+        for (Limb limb : limbs.values()) {
+            maxHealth += limb.getMaxHealth();
         }
         return maxHealth;
     }
 
     public float getOriginalMaxHealth() {
         float maxHealth = 0.0F;
-        for (BodyPart bodyPart : bodyParts.values()) {
-            maxHealth += bodyPart.getOriginalMaxHealth();
+        for (Limb limb : limbs.values()) {
+            maxHealth += limb.getOriginalMaxHealth();
         }
         return maxHealth;
     }
@@ -220,16 +221,16 @@ public final class HealthContainer {
         float originalContainerMaxHealth = this.getOriginalMaxHealth();
         if (playerMaxHealth != containerMaxHealth) {
             if (playerMaxHealth == originalContainerMaxHealth) {
-                for (BodyPart bodyPart : bodyParts.values()) {
-                    bodyPart.setMaxHealth(bodyPart.getOriginalMaxHealth());
+                for (Limb limb : limbs.values()) {
+                    limb.setMaxHealth(limb.getOriginalMaxHealth());
                 }
             } else {
                 double diff = playerMaxHealth - containerMaxHealth;
-                int parts = this.bodyParts.size();
+                int parts = this.limbs.size();
                 double perPart = diff / parts;
-                for (BodyPart bodyPart : this.bodyParts.values()) {
-                    float newMaxHealth = (float) (bodyPart.getMaxHealth() + perPart);
-                    bodyPart.setMaxHealth(Math.max(newMaxHealth, 1.0F));
+                for (Limb limb : this.limbs.values()) {
+                    float newMaxHealth = (float) (limb.getMaxHealth() + perPart);
+                    limb.setMaxHealth(Math.max(newMaxHealth, 1.0F));
                 }
             }
         }
@@ -237,18 +238,18 @@ public final class HealthContainer {
         entity.setHealth(health);
     }
 
-    public void hurt(DamageContext context, Map<BodyPart, Float> distributedDamage, @Nullable SideEffectHolder effects, Consumer<BodyPart> onLimbDeath) {
-        for (Map.Entry<BodyPart, Float> entry : distributedDamage.entrySet()) {
-            BodyPart bodyPart = entry.getKey();
+    public void hurt(DamageContext context, Map<Limb, Float> distributedDamage, @Nullable SideEffectHolder effects, Consumer<Limb> onLimbDeath) {
+        for (Map.Entry<Limb, Float> entry : distributedDamage.entrySet()) {
+            Limb limb = entry.getKey();
             float amount = entry.getValue();
-            this.hurt(context, amount, bodyPart, onLimbDeath);
+            this.hurt(context, amount, limb, onLimbDeath);
             if (effects != null) {
-                effects.applyFromDamage(context.getEntity(), context.getSource(), this, bodyPart);
+                effects.applyFromDamage(context.getEntity(), context.getSource(), this, limb);
             }
         }
     }
 
-    public void hurt(DamageContext context, float amount, BodyPart part, Consumer<BodyPart> onBodyPartLoss) {
+    public void hurt(DamageContext context, float amount, Limb part, Consumer<Limb> onLimbLoss) {
         float damage = Math.min(part.getHealth(), amount * part.getDamageScale());
         float leftover = amount - damage;
         boolean wasDead = part.isDead();
@@ -258,26 +259,26 @@ public final class HealthContainer {
         part.trigger(this, entity, source);
         if (!part.isVital() && part.isDead() != wasDead) {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
-            onBodyPartLoss.accept(part);
+            onLimbLoss.accept(part);
         }
         // no need to redistribute damage from vital parts
         if (!part.isVital() && leftover > 0) {
-            BodyPart parent = this.bodyPartLinks.get(part);
+            Limb parent = this.limbLinks.get(part);
             if (parent != null) {
                 float scale = parent.getParentDamageScale();
-                this.hurt(context, leftover * scale, parent, onBodyPartLoss);
+                this.hurt(context, leftover * scale, parent, onLimbLoss);
             }
         }
     }
 
-    public boolean canHeal(@Nullable BodyPart part, boolean allowDead) {
+    public boolean canHeal(@Nullable Limb part, boolean allowDead) {
         if (part != null) {
             return (part.isDead() && allowDead) || part.getMaxHealAmount() > 0;
         }
         return this.getPartToHeal(allowDead) != null;
     }
 
-    public float heal(LivingEntity entity, float amount, @Nullable BodyPart targetPart) {
+    public float heal(LivingEntity entity, float amount, @Nullable Limb targetPart) {
         if (targetPart != null && !targetPart.isDead()) {
             // Heal specific body part only
             float healAmount = Math.min(amount, targetPart.getMaxHealAmount());
@@ -286,7 +287,7 @@ public final class HealthContainer {
             return amount - healAmount;
         } else {
             // Heal body parts, prioritize vitals, then according to health
-            BodyPart part;
+            Limb part;
             while (amount > 0.0F && (part = this.getPartToHeal(false)) != null) {
                 float healAmount = Math.min(amount, part.getMaxHealAmount());
                 part.heal(healAmount);
@@ -312,7 +313,7 @@ public final class HealthContainer {
 
     public boolean shouldDie() {
         float health = 0.0F;
-        for (BodyPart part : this.bodyParts.values()) {
+        for (Limb part : this.limbs.values()) {
             health += part.getHealth();
             if (part.shouldOwnerDie()) {
                 return true;
@@ -321,13 +322,13 @@ public final class HealthContainer {
         return health <= 0.0F;
     }
 
-    public void acceptHitboxes(BiConsumer<BodyPartHitbox, BodyPart> consumer) {
+    public void acceptHitboxes(BiConsumer<BodyPartHitbox, Limb> consumer) {
         this.acceptHitboxes((hb, p) -> true, consumer);
     }
 
-    public void acceptHitboxes(BiPredicate<BodyPartHitbox, BodyPart> filter, BiConsumer<BodyPartHitbox, BodyPart> consumer) {
+    public void acceptHitboxes(BiPredicate<BodyPartHitbox, Limb> filter, BiConsumer<BodyPartHitbox, Limb> consumer) {
         for (BodyPartHitbox hitbox : this.definition.getHitboxes()) {
-            BodyPart part = this.bodyParts.get(hitbox.getOwner());
+            Limb part = this.limbs.get(hitbox.getOwner());
             if (part == null)
                 continue;
             if (filter.test(hitbox, part)) {
@@ -336,12 +337,12 @@ public final class HealthContainer {
         }
     }
 
-    public BodyPart getPartToHeal(boolean allowDead) {
-        BodyPart targetPart = null;
+    public Limb getPartToHeal(boolean allowDead) {
+        Limb targetPart = null;
         float targetPercentage = 1.0F;
         MedSystemConfig config = MedicalSystem.getConfig();
         if (config.prioritizeVitalHealing) {
-            for (BodyPart vitalPart : this.vitalParts) {
+            for (Limb vitalPart : this.vitalLimbs) {
                 if (vitalPart.isDead() && !allowDead)
                     continue;
                 float percentage = vitalPart.getHealthPercent();
@@ -354,8 +355,8 @@ public final class HealthContainer {
         if (targetPart != null) {
             return targetPart;
         }
-        BodyPart target = null;
-        for (BodyPart part : this.bodyParts.values()) {
+        Limb target = null;
+        for (Limb part : this.limbs.values()) {
             if (part.isDead() && !allowDead)
                 continue;
             float percentage = part.getHealthPercent();
@@ -371,22 +372,22 @@ public final class HealthContainer {
         this.tickStatusEffectCheck(entity, 0, true);
     }
 
-    private String resolveBodyParts(HealthContainerDefinition definition, Map<BodyPart, BodyPart> links, List<BodyPart> vitalParts) {
+    private String resolveBodyParts(HealthContainerDefinition definition, Map<Limb, Limb> links, List<Limb> vitalParts) {
         String root = null;
-        for (Map.Entry<String, BodyPartDefinition> health : definition.getBodyParts().entrySet()) {
+        for (Map.Entry<String, LimbDefinition> health : definition.getLimbDefinitionMap().entrySet()) {
             String part = health.getKey();
             String parent = health.getValue().getParent();
-            BodyPart bodyPart = this.bodyParts.get(part);
+            Limb limb = this.limbs.get(part);
             if (parent == null) {
                 root = part;
             } else {
-                links.put(bodyPart, this.bodyParts.get(parent));
+                links.put(limb, this.limbs.get(parent));
             }
-            BodyPartDefinition healthDef = health.getValue();
+            LimbDefinition healthDef = health.getValue();
             if (healthDef.isVital()) {
-                vitalParts.add(bodyPart);
+                vitalParts.add(limb);
             }
-            bodyPart.setDefinition(healthDef);
+            limb.setDefinition(healthDef);
         }
         return root;
     }
@@ -400,9 +401,9 @@ public final class HealthContainer {
             String limbCode = effect.limb();
 
             StatusEffectMap map = this.statusEffects;
-            BodyPart part = null;
+            Limb part = null;
             if (!limbCode.isBlank()) {
-                part = this.bodyParts.get(limbCode);
+                part = this.limbs.get(limbCode);
                 if (part == null)
                     continue;
                 map = part.getStatusEffects();

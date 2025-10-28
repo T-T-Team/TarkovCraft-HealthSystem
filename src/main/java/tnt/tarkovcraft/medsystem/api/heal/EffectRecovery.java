@@ -17,7 +17,7 @@ import tnt.tarkovcraft.medsystem.common.effect.util.ListStatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
@@ -32,7 +32,7 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
             Codec.BOOL.optionalFieldOf("extendedTooltip", true).forGetter(EffectRecovery::extendedTooltip)
     ).apply(instance, EffectRecovery::new));
 
-    public boolean canRecover(HealthContainer container, @Nullable BodyPart part) {
+    public boolean canRecover(HealthContainer container, @Nullable Limb part) {
         StatusEffectType<?> type = this.effect.value();
         if (type.isGlobalEffect() && part == null) {
             return false;
@@ -46,10 +46,10 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
         if (type.isGlobalEffect()) {
             return container.getGlobalStatusEffects().hasEffect(this.effect);
         }
-        return container.getBodyPartStream().anyMatch(part -> part.getStatusEffects().hasEffect(this.effect));
+        return container.getLimbsAsStream().anyMatch(part -> part.getStatusEffects().hasEffect(this.effect));
     }
 
-    public void recover(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
+    public void recover(LivingEntity entity, HealthContainer container, @Nullable Limb part) {
         StatusEffectType<?> type = this.effect.value();
         StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
         ListStatusEffectSubmitter submitter = StatusEffectSubmitter.list();

@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.Event;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import javax.annotation.Nullable;
 
@@ -13,12 +13,12 @@ public abstract class StatusEffectEvent extends Event {
     private final LivingEntity entity;
     private final StatusEffect statusEffect;
     @Nullable
-    private final BodyPart bodyPart;
+    private final Limb limb;
 
-    public StatusEffectEvent(LivingEntity entity, StatusEffect statusEffect, @Nullable BodyPart bodyPart) {
+    public StatusEffectEvent(LivingEntity entity, StatusEffect statusEffect, @Nullable Limb limb) {
         this.entity = entity;
         this.statusEffect = statusEffect;
-        this.bodyPart = bodyPart;
+        this.limb = limb;
     }
 
     public LivingEntity getEntity() {
@@ -30,8 +30,8 @@ public abstract class StatusEffectEvent extends Event {
     }
 
     @Nullable
-    public BodyPart getBodyPart() {
-        return bodyPart;
+    public Limb getBodyPart() {
+        return limb;
     }
 
     public static class Schedule extends StatusEffectEvent {
@@ -39,8 +39,8 @@ public abstract class StatusEffectEvent extends Event {
         private int delay;
         private boolean cancelled;
 
-        public Schedule(LivingEntity entity, StatusEffect statusEffect, @Nullable BodyPart bodyPart, int delay) {
-            super(entity, statusEffect, bodyPart);
+        public Schedule(LivingEntity entity, StatusEffect statusEffect, @Nullable Limb limb, int delay) {
+            super(entity, statusEffect, limb);
             this.delay = delay;
         }
 
@@ -69,8 +69,8 @@ public abstract class StatusEffectEvent extends Event {
 
         private boolean cancelled;
 
-        public Add(LivingEntity entity, StatusEffect statusEffect, @Nullable BodyPart bodyPart) {
-            super(entity, statusEffect, bodyPart);
+        public Add(LivingEntity entity, StatusEffect statusEffect, @Nullable Limb limb) {
+            super(entity, statusEffect, limb);
         }
 
         public void setCancelled() {
@@ -84,8 +84,8 @@ public abstract class StatusEffectEvent extends Event {
 
     public static class Remove extends StatusEffectEvent {
 
-        public Remove(LivingEntity entity, StatusEffect statusEffect, @Nullable BodyPart bodyPart) {
-            super(entity, statusEffect, bodyPart);
+        public Remove(LivingEntity entity, StatusEffect statusEffect, @Nullable Limb limb) {
+            super(entity, statusEffect, limb);
         }
     }
 }

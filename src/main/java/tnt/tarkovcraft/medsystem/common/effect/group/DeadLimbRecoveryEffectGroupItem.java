@@ -7,7 +7,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
@@ -29,11 +29,11 @@ public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
-        List<BodyPart> deadLimbs = container.getBodyPartStream()
-                .filter(BodyPart::isDead)
+    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+        List<Limb> deadLimbs = container.getLimbsAsStream()
+                .filter(Limb::isDead)
                 .toList();
-        for (BodyPart part : deadLimbs) {
+        for (Limb part : deadLimbs) {
             part.setHealth(this.health);
         }
         container.updateHealth(entity);
@@ -41,11 +41,11 @@ public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override
-    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override

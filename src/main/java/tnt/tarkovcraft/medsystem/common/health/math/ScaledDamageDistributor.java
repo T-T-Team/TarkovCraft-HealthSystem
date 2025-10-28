@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.health.math;
 
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
@@ -18,10 +18,10 @@ public class ScaledDamageDistributor implements DamageDistributor {
     }
 
     @Override
-    public Map<BodyPart, Float> distribute(DamageContext context, HealthContainer container, float damage) {
-        Map<BodyPart, Float> damageMap = this.source.distribute(context, container, damage);
-        Map<BodyPart, Float> result = new HashMap<>();
-        for (Map.Entry<BodyPart, Float> entry : damageMap.entrySet()) {
+    public Map<Limb, Float> distribute(DamageContext context, HealthContainer container, float damage) {
+        Map<Limb, Float> damageMap = this.source.distribute(context, container, damage);
+        Map<Limb, Float> result = new HashMap<>();
+        for (Map.Entry<Limb, Float> entry : damageMap.entrySet()) {
             result.put(entry.getKey(), entry.getValue() * this.scale);
         }
         return result;

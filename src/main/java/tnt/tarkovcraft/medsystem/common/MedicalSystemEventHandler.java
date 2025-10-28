@@ -162,15 +162,15 @@ public final class MedicalSystemEventHandler {
         DamageContext context = container.getDamageContext();
         List<HitResult> hits = context.getHits();
         // Hit hitbox groups
-        EnumSet<BodyPartGroup> hitGroups = EnumSet.noneOf(BodyPartGroup.class);
+        EnumSet<LimbType> hitGroups = EnumSet.noneOf(LimbType.class);
         for (HitResult hit : hits) {
-            BodyPart bodyPart = hit.bodyPart();
-            BodyPartGroup group = bodyPart.getGroup();
+            Limb limb = hit.limb();
+            LimbType group = limb.getType();
             hitGroups.add(group);
         }
         ArmorComponent component = HealthSystem.ARMOR.getComponent();
         // Protected hitbox groups
-        EnumSet<BodyPartGroup> protectedGroups = EnumSet.noneOf(BodyPartGroup.class);
+        EnumSet<LimbType> protectedGroups = EnumSet.noneOf(LimbType.class);
         component.collectAffectedBodyPartsWithProtection(
                 protectedGroups::add,
                 entity,
@@ -208,12 +208,12 @@ public final class MedicalSystemEventHandler {
         DamageSource source = event.getSource();
         DamageContext context = container.getDamageContext();
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
-        Map<BodyPart, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
-        List<BodyPart> lostBodyParts = new ArrayList<>();
+        Map<Limb, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
+        List<Limb> lostLimbs = new ArrayList<>();
         SideEffectHolder sideEffects = context.getSideEffects();
 
         // apply health container damage
-        container.hurt(context, distributedDamage, sideEffects, lostBodyParts::add);
+        container.hurt(context, distributedDamage, sideEffects, lostLimbs::add);
 
         // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
         // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
@@ -245,7 +245,7 @@ public final class MedicalSystemEventHandler {
             RandomSource random = entity.getRandom();
             BloodData bloodData = BloodSystem.getBloodData(entity);
             MedSystemConfig config = MedicalSystem.getConfig();
-            int limbLostCount = lostBodyParts.size();
+            int limbLostCount = lostLimbs.size();
             if (!bloodData.isUnconscious() && config.allowUnconsciousOnLimbLost && limbLostCount > 0) {
                 float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F);
                 if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
@@ -335,9 +335,9 @@ public final class MedicalSystemEventHandler {
             if (random.nextFloat() < config.unconsciousOnDeathChance) {
                 HealthContainer container = HealthSystem.getHealthData(player);
                 if (!config.allowUnconsciousOnHeadDeath) {
-                    boolean allPartsDead = container.getBodyPartStream()
-                            .filter(part -> part.getGroup() == BodyPartGroup.HEAD)
-                            .allMatch(BodyPart::isDead);
+                    boolean allPartsDead = container.getLimbsAsStream()
+                            .filter(part -> part.getType() == LimbType.HEAD)
+                            .allMatch(Limb::isDead);
                     // no head body part alive, terminate further processing logic
                     if (allPartsDead)
                         return;
@@ -345,7 +345,7 @@ public final class MedicalSystemEventHandler {
                 event.setCanceled(true);
                 player.invulnerableTime = Math.max(player.invulnerableTime, config.rescueInvulnerabilityGracePeriod * 20);
                 // recover vital body part health - otherwise player would immediately "die" again
-                container.getBodyPartStream().forEach(part -> {
+                container.getLimbsAsStream().forEach(part -> {
                     if (part.isDead() && part.isVital()) {
                         part.heal(1.0F);
                     }
@@ -395,7 +395,7 @@ public final class MedicalSystemEventHandler {
             if (!HealthSystem.hasCustomHealth(targetEntity))
                 return;
             HealthContainer container = HealthSystem.getHealthData(targetEntity);
-            BodyPart part = container.getBodyPart(targetLimb);
+            Limb part = container.getLimb(targetLimb);
             holder.apply(targetEntity, container, part);
         }
     }

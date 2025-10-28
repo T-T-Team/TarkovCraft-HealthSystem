@@ -9,7 +9,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunction;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactions;
@@ -31,7 +31,7 @@ public class DamageSourceHealthEventSource extends ChanceHealthEventSource {
     }
 
     @Override
-    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, Limb limb) {
         if (damageSource == null) {
             return false;
         }

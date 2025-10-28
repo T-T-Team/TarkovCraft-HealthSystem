@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
 import javax.annotation.Nullable;
@@ -41,7 +41,7 @@ public final class EffectGroupHolder {
         return new Factory(items);
     }
 
-    public void tick(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void tick(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         if (this.delay > 0 && --this.delay > 0) {
             return;
         }
@@ -55,7 +55,7 @@ public final class EffectGroupHolder {
         }
     }
 
-    public void cleanUp(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void cleanUp(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         this.item.cleanup(this, container, entity, limb);
     }
 

@@ -24,8 +24,8 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
@@ -41,15 +41,15 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
             StatusEffectType.CODEC.fieldOf("template").forGetter(t -> t.template)
     ).apply(instance, SideEffect::new));
 
-    public void apply(LivingEntity entity, HealthContainer container, @Nullable BodyPart part) {
+    public void apply(LivingEntity entity, HealthContainer container, @Nullable Limb part) {
         this.applyFromDamage(entity, null, container, part);
     }
 
-    public void applyFromDamage(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable BodyPart part) {
+    public void applyFromDamage(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable Limb part) {
         // Skip ignored effect body parts
         StatusEffectType<?> type = this.template.getType();
         if (part != null && !type.isGlobalEffect()) {
-            BodyPartGroup group = part.getGroup();
+            LimbType group = part.getType();
             if (type.isIgnoredBodyPart(group)) {
                 return;
             }

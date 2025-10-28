@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartDefinition;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
+import tnt.tarkovcraft.medsystem.common.health.LimbDefinition;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartHitbox;
 
 @Mixin(LivingEntityRenderer.class)
@@ -34,10 +34,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
     private void medsystem$extractAdditionalHitboxes(T entity, ImmutableList.Builder<HitboxRenderState> builder, float delta, CallbackInfo ci) {
         MedicalSystem.HEALTH_SYSTEM.getHealthContainer(entity).ifPresent(container -> {
             for (BodyPartHitbox hitbox : container.getHitboxes()) {
-                BodyPartDefinition healthTpl = container.getHealthTpl(hitbox.getOwner());
+                LimbDefinition healthTpl = container.getLimbConfiguration(hitbox.getOwner());
                 if (healthTpl == null)
                     continue;
-                BodyPartGroup group = healthTpl.getBodyPartGroup();
+                LimbType group = healthTpl.getBodyPartGroup();
                 int color = group.getHitboxColor();
                 float red = ARGB.redFloat(color);
                 float green = ARGB.greenFloat(color);

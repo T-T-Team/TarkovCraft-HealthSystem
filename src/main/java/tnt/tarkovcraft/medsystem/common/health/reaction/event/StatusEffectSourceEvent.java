@@ -8,7 +8,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.reaction.HealthEventSource;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactionResponses;
@@ -28,7 +28,7 @@ public class StatusEffectSourceEvent implements HealthSourceEvent {
     }
 
     @Override
-    public void onReactionPassed(HealthEventSource source, HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+    public void onReactionPassed(HealthEventSource source, HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, Limb limb) {
         StatusEffectType<?> type = this.template.getType();
         StatusEffectMap map = type.isGlobalEffect() ? container.getGlobalStatusEffects() : limb.getStatusEffects();
         StatusEffectHelper.addEffect(map, entity, limb, this.template.copy());

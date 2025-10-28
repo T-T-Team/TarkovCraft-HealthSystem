@@ -28,7 +28,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
@@ -204,24 +204,24 @@ public final class TarkovCraftCommand {
                 continue;
             }
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
-            if (!container.hasBodyPart(bodyPartId)) {
+            if (!container.hasLimb(bodyPartId)) {
                 continue;
             }
-            BodyPart bodyPart = container.getBodyPart(bodyPartId);
-            StatusEffectMap map = bodyPart.getStatusEffects();
-            addEffect(map, livingEntity, bodyPart, container, reference, duration, delay);
+            Limb limb = container.getLimb(bodyPartId);
+            StatusEffectMap map = limb.getStatusEffects();
+            addEffect(map, livingEntity, limb, container, reference, duration, delay);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
     }
 
-    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable BodyPart bodyPart, HealthContainer container, Holder<StatusEffectType<?>> holder, int duration, int delay) throws CommandSyntaxException {
+    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable Limb limb, HealthContainer container, Holder<StatusEffectType<?>> holder, int duration, int delay) throws CommandSyntaxException {
         StatusEffectType<T> type = (StatusEffectType<T>) holder.value();
         if (type.isSpecialStatusEffect()) {
             throw INVALID_STATUS_EFFECT.create(holder.getKey().location());
         }
-        StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, entity, bodyPart, container, holder.value());
-        StatusEffectHelper.addEffect(map, entity, bodyPart, delay, type.createEffect(duration));
+        StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, entity, limb, container, holder.value());
+        StatusEffectHelper.addEffect(map, entity, limb, delay, type.createEffect(duration));
     }
 
     private static int removeGlobalStatusEffect(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
@@ -256,12 +256,12 @@ public final class TarkovCraftCommand {
                 continue;
             }
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
-            if (!container.hasBodyPart(bodyPartId)) {
+            if (!container.hasLimb(bodyPartId)) {
                 continue;
             }
-            BodyPart bodyPart = container.getBodyPart(bodyPartId);
-            StatusEffectMap map = bodyPart.getStatusEffects();
-            StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, livingEntity, bodyPart, container, type);
+            Limb limb = container.getLimb(bodyPartId);
+            StatusEffectMap map = limb.getStatusEffects();
+            StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, livingEntity, limb, container, type);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;

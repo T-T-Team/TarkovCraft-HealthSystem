@@ -77,12 +77,12 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         if (map.hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING)) {
             return true;
         }
-        Stream<BodyPart> parts = healthContainer.getBodyPartStream();
+        Stream<Limb> parts = healthContainer.getLimbsAsStream();
         return parts.anyMatch(HealthSystem::isMovementRestrictingPart);
     }
 
-    public static boolean isMovementRestrictingPart(BodyPart part) {
-        return part.getGroup() == BodyPartGroup.LEG && (part.isDead() || part.getStatusEffects().hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING));
+    public static boolean isMovementRestrictingPart(Limb part) {
+        return part.getType() == LimbType.LEG && (part.isDead() || part.getStatusEffects().hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING));
     }
 
     public static void synchronizeEntity(LivingEntity entity) {
@@ -130,7 +130,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         return NeoForge.EVENT_BUS.post(new HitboxPiercingEvent(entity, source, container, projectile, pierceLevel)).getPiercing();
     }
 
-    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<BodyPartHitbox, BodyPart> filter) {
+    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<BodyPartHitbox, Limb> filter) {
         List<HitResult> results = new ArrayList<>();
         container.acceptHitboxes(
                 filter,

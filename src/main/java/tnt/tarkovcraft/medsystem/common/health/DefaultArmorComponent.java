@@ -45,7 +45,7 @@ public class DefaultArmorComponent implements ArmorComponent {
     }
 
     @Override
-    public void collectAffectedBodyPartsWithProtection(Consumer<BodyPartGroup> register, LivingEntity entity, DamageContext context) {
+    public void collectAffectedBodyPartsWithProtection(Consumer<LimbType> register, LivingEntity entity, DamageContext context) {
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             if (!slot.isArmor())
                 continue;
@@ -94,12 +94,12 @@ public class DefaultArmorComponent implements ArmorComponent {
         return incomingDamage - adjustedDamage;
     }
 
-    protected Collection<BodyPartGroup> getItemProtectedGroups(ItemStack itemStack, EquipmentSlot slot) {
+    protected Collection<LimbType> getItemProtectedGroups(ItemStack itemStack, EquipmentSlot slot) {
         if (itemStack.has(MedSystemItemComponents.ARMOR_STAT)) {
             ArmorStat stat = itemStack.get(MedSystemItemComponents.ARMOR_STAT);
             return stat.protectedArea();
         } else {
-            return BodyPartGroup.getProtectedByEquipment(slot);
+            return LimbType.getProtectedByEquipment(slot);
         }
     }
 

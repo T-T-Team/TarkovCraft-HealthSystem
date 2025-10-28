@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.health.math;
 
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
@@ -13,10 +13,10 @@ public class FullDamageDistributor implements DamageDistributor {
     public static final FullDamageDistributor INSTANCE = new FullDamageDistributor();
 
     @Override
-    public Map<BodyPart, Float> distribute(DamageContext context, HealthContainer container, float damage) {
-        Map<BodyPart, Float> damages = new HashMap<>();
+    public Map<Limb, Float> distribute(DamageContext context, HealthContainer container, float damage) {
+        Map<Limb, Float> damages = new HashMap<>();
         for (HitResult hit : context.getHits()) {
-            damages.put(hit.bodyPart(), damage);
+            damages.put(hit.limb(), damage);
         }
         return damages;
     }

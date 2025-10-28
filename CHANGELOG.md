@@ -9,3 +9,6 @@
     - `rescueWaitDuration` - how long you will wait for rescue, default 2.5 minutes
     - `rescueInvulnerabilityGracePeriod` - how long you will be invulnerable after entering rescue mode, default 5 seconds
     - `allowUnconsciousOnHeadDeath` - if losing head body part also allows rescue, default True
+- Updated Core library, now requires 1.6.3+ version
+- **Internal health container structure has been updated and is not compatible with save data - your health will be 
+reset with this update**

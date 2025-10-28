@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
@@ -47,7 +47,7 @@ public record C2S_SelectBodyPart(InteractionTarget target) implements CustomPack
             return;
         }
         HealthContainer container = HealthSystem.getHealthData(targetEntity);
-        BodyPart part = container.getBodyPart(this.target.limbCode());
+        Limb part = container.getLimb(this.target.limbCode());
         if (attributes != null && attributes.canUseOnPart(part, stack, container, this.target.self(), targetEntity)) {
             stack.set(MedSystemItemComponents.INTERACTION_TARGET, this.target);
         }

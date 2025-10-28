@@ -13,7 +13,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
@@ -45,7 +45,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         if (this.reduction < 1 || limb == null) {
             this.markForRemoval();
             return;
@@ -65,7 +65,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         if (limb != null) {
             limb.setMaxHealth(limb.getMaxHealth() + this.reduction);
             AttributeMap map = entity.getAttributes();
@@ -95,8 +95,8 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         return MedSystemStatusEffects.INJURY_RECOVERY.value();
     }
 
-    private ResourceLocation getUniqueModifierId(BodyPart part) {
-        return MedicalSystem.resource("health_reduction/" + part.getName().toLowerCase(Locale.ROOT));
+    private ResourceLocation getUniqueModifierId(Limb part) {
+        return MedicalSystem.resource("health_reduction/" + part.getLimbCode().toLowerCase(Locale.ROOT));
     }
 
     public static InjuryRecoveryStatusEffect merge(InjuryRecoveryStatusEffect initial, InjuryRecoveryStatusEffect additional) {

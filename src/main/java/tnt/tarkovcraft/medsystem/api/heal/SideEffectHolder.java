@@ -23,7 +23,7 @@ import tnt.tarkovcraft.medsystem.common.effect.NeutralEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.PositiveEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupHolder;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
@@ -54,11 +54,11 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         return builder().title(USAGE_TITLE);
     }
 
-    public void apply(LivingEntity target, HealthContainer container, @Nullable BodyPart part) {
+    public void apply(LivingEntity target, HealthContainer container, @Nullable Limb part) {
         this.applyFromDamage(target, null, container, part);
     }
 
-    public void applyFromDamage(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable BodyPart part) {
+    public void applyFromDamage(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable Limb part) {
         MedSystemConfig config = MedicalSystem.getConfig();
         if (!config.statusEffects.enableItemDamageStatusEffects)
             return;

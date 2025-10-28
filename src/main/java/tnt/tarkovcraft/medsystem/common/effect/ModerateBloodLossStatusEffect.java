@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
@@ -52,7 +52,7 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public void applyEffect(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void applyEffect(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         if (!BloodSystem.hasBloodDataIntegration(entity)) {
             this.markForRemoval();
             return;
@@ -67,7 +67,7 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override

@@ -62,7 +62,7 @@ public class HealthLayer implements GuiLayer {
         HealthContainerDefinition definition = container.getDefinition();
         List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
         for (BodyPartDisplay display : displays) {
-            BodyPart health = container.getBodyPart(display.source());
+            Limb health = container.getLimb(display.source());
             if (health == null)
                 return;
             Vector4f pos = display.getPosition(scale, center);
@@ -90,7 +90,7 @@ public class HealthLayer implements GuiLayer {
         }
     }
 
-    public static int getColor(String deadLimbColor, String[] colorSchema, BodyPart part) {
+    public static int getColor(String deadLimbColor, String[] colorSchema, Limb part) {
         if (part.isDead()) {
             return Integer.decode(deadLimbColor);
         }

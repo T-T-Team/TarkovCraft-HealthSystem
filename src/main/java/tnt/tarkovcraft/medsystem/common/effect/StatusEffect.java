@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.*;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
 import javax.annotation.Nullable;
@@ -33,9 +33,9 @@ public abstract class StatusEffect {
 
     public abstract StatusEffectType<?> getType();
 
-    public abstract void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
+    public abstract void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb);
 
-    public abstract void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb);
+    public abstract void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb);
 
     public abstract StatusEffect copy();
 

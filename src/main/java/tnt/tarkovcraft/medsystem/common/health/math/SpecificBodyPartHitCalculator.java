@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health.math;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
 
@@ -23,10 +23,10 @@ public class SpecificBodyPartHitCalculator implements HitCalculator {
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> hits = new ArrayList<>();
         for (String bodyPartId : this.bodyParts) {
-            if (container.hasBodyPart(bodyPartId)) {
-                BodyPart part = container.getBodyPart(bodyPartId);
+            if (container.hasLimb(bodyPartId)) {
+                Limb part = container.getLimb(bodyPartId);
                 if (!part.isDead() || this.allowDeadBodyParts) {
-                    HitResult result = new HitResult(null, container.getBodyPart(bodyPartId));
+                    HitResult result = new HitResult(null, container.getLimb(bodyPartId));
                     hits.add(result);
                 }
 

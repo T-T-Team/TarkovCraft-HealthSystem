@@ -11,55 +11,55 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 
 import java.util.Objects;
 
-public final class BodyPart {
+public final class Limb {
 
-    public static final Codec<BodyPart> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.STRING.fieldOf("name").forGetter(t -> t.name),
+    public static final Codec<Limb> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("code").forGetter(t -> t.limbCode),
             Codec.BOOL.fieldOf("vital").forGetter(t -> t.vital),
             Codec.FLOAT.fieldOf("health").forGetter(t -> t.health),
             Codec.FLOAT.fieldOf("maxHealth").forGetter(t -> t.maxHealth),
             Codec.FLOAT.fieldOf("originalMaxHealth").forGetter(t -> t.originalMaxHealth),
             Codec.FLOAT.fieldOf("parentDamageScale").forGetter(t -> t.parentDamageScale),
             Codec.FLOAT.fieldOf("damageScale").forGetter(t -> t.damageScale),
-            Codecs.simpleEnumCodec(BodyPartGroup.class).fieldOf("group").forGetter(t -> t.group),
+            Codecs.simpleEnumCodec(LimbType.class).fieldOf("group").forGetter(t -> t.type),
             StatusEffectMap.CODEC.fieldOf("statusEffects").forGetter(t -> t.statusEffects)
-    ).apply(instance, BodyPart::new));
+    ).apply(instance, Limb::new));
 
-    private BodyPartDefinition definition;
-    private final String name;
+    private LimbDefinition definition;
+    private final String limbCode;
     private final boolean vital;
     private final float originalMaxHealth;
     private float health;
     private float maxHealth;
     private final float parentDamageScale;
     private final float damageScale;
-    private final BodyPartGroup group;
+    private final LimbType type;
     private final Component displayName;
     private final StatusEffectMap statusEffects;
 
-    public BodyPart(String name, boolean vital, float maxHealth, float parentDamageScale, float damageScale, BodyPartGroup group) {
-        this(name, vital, maxHealth, maxHealth, maxHealth, parentDamageScale, damageScale, group, new StatusEffectMap());
+    public Limb(String limbCode, boolean vital, float maxHealth, float parentDamageScale, float damageScale, LimbType type) {
+        this(limbCode, vital, maxHealth, maxHealth, maxHealth, parentDamageScale, damageScale, type, new StatusEffectMap());
     }
 
-    private BodyPart(String name, boolean vital, float health, float maxHealth, float originalMaxHealth, float parentDamageScale, float damageScale, BodyPartGroup group, StatusEffectMap statusEffects) {
-        this.name = name;
+    private Limb(String limbCode, boolean vital, float health, float maxHealth, float originalMaxHealth, float parentDamageScale, float damageScale, LimbType type, StatusEffectMap statusEffects) {
+        this.limbCode = limbCode;
         this.vital = vital;
         this.health = health;
         this.maxHealth = maxHealth;
         this.originalMaxHealth = originalMaxHealth;
         this.parentDamageScale = parentDamageScale;
         this.damageScale = damageScale;
-        this.group = group;
-        this.displayName = Component.translatable("medsystem.bodypart." + name);
+        this.type = type;
+        this.displayName = Component.translatable("medsystem.bodypart." + limbCode);
         this.statusEffects = statusEffects;
     }
 
-    public void setDefinition(BodyPartDefinition definition) {
+    public void setDefinition(LimbDefinition definition) {
         this.definition = definition;
     }
 
-    public String getName() {
-        return name;
+    public String getLimbCode() {
+        return limbCode;
     }
 
     public Component getDisplayName() {
@@ -86,8 +86,8 @@ public final class BodyPart {
         return vital;
     }
 
-    public BodyPartGroup getGroup() {
-        return group;
+    public LimbType getType() {
+        return type;
     }
 
     public float getHealth() {
@@ -142,12 +142,12 @@ public final class BodyPart {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof BodyPart part)) return false;
-        return Objects.equals(name, part.name);
+        if (!(o instanceof Limb part)) return false;
+        return Objects.equals(limbCode, part.limbCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hashCode(limbCode);
     }
 }

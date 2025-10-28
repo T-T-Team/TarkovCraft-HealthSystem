@@ -6,7 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactions;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
@@ -26,7 +26,7 @@ public class HasStatusEffectHealthEventSource implements HealthEventSource {
     }
 
     @Override
-    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, Limb limb) {
         StatusEffectType<?> effectType = this.type.value();
         if (effectType.isGlobalEffect()) {
             return container.getGlobalStatusEffects().hasEffect(this.type);

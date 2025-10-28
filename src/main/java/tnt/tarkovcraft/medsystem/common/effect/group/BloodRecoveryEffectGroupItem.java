@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
@@ -34,15 +34,15 @@ public class BloodRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override
-    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override
-    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         Level level = entity.level();
         long time = level.getGameTime();
         if (time % 20L != 0L) {

@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
 
@@ -29,7 +29,7 @@ public class LavaHitCalculator implements HitCalculator {
         if (hits.isEmpty()) {
             // nothing is apparently in fluid, add leg hitboxes
             container.acceptHitboxes(
-                    (hitbox, part) -> part.getGroup() == BodyPartGroup.LEG,
+                    (hitbox, part) -> part.getType() == LimbType.LEG,
                     (hitbox, part) -> hits.add(new HitResult(hitbox, part))
             );
         }

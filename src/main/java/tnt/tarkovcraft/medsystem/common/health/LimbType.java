@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-public enum BodyPartGroup {
+public enum LimbType {
 
     HEAD(0, 0xFF0000, EquipmentSlot.HEAD),
     TORSO(0, 0xFFFF00, EquipmentSlot.CHEST),
@@ -20,19 +20,19 @@ public enum BodyPartGroup {
     private final int hitboxColor;
     private final Set<EquipmentSlot> armorSlots;
 
-    BodyPartGroup(int surgeryPriority, int hitboxColor) {
+    LimbType(int surgeryPriority, int hitboxColor) {
         this(surgeryPriority, hitboxColor, null);
     }
 
-    BodyPartGroup(int surgeryPriority, int hitboxColor, EquipmentSlot first, EquipmentSlot... other) {
+    LimbType(int surgeryPriority, int hitboxColor, EquipmentSlot first, EquipmentSlot... other) {
         this.surgeryPriority = surgeryPriority;
         this.hitboxColor = hitboxColor;
         this.armorSlots = first != null ? EnumSet.of(first, other) : Collections.emptySet();
     }
 
-    public static EnumSet<BodyPartGroup> getProtectedByEquipment(EquipmentSlot slot) {
-        EnumSet<BodyPartGroup> set = EnumSet.noneOf(BodyPartGroup.class);
-        for (BodyPartGroup group : BodyPartGroup.values()) {
+    public static EnumSet<LimbType> getProtectedByEquipment(EquipmentSlot slot) {
+        EnumSet<LimbType> set = EnumSet.noneOf(LimbType.class);
+        for (LimbType group : LimbType.values()) {
             if (group.armorSlots.contains(slot)) {
                 set.add(group);
             }

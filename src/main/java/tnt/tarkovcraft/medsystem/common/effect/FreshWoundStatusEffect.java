@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
@@ -38,7 +38,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         if (entity.isSprinting()) {
             this.bleedChance += 0.00035F;
             if (this.bleedChance >= 1.0F) {
@@ -48,7 +48,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         RandomSource source = entity.getRandom();
         if (source.nextFloat() < this.bleedChance) {
             submitter.submitImmediate(new LightBleedStatusEffect(-1));

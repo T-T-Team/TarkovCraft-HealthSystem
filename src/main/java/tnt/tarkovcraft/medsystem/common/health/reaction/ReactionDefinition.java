@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.reaction.event.HealthSourceEvent;
 import tnt.tarkovcraft.medsystem.common.health.reaction.event.HealthSourceEventType;
@@ -23,7 +23,7 @@ public record ReactionDefinition(HealthEventSource reaction, List<HealthSourceEv
             Codecs.list(HealthSourceEventType.CODEC).fieldOf("events").forGetter(ReactionDefinition::responses)
     ).apply(instance, ReactionDefinition::new));
 
-    public void react(HealthContainer container, LivingEntity entity, @Nullable DamageSource source, BodyPart limb) {
+    public void react(HealthContainer container, LivingEntity entity, @Nullable DamageSource source, Limb limb) {
         MedSystemConfig config = MedicalSystem.getConfig();
         boolean noEffects = entity instanceof Player player && (player.isCreative() || player.isSpectator());
         if (config.statusEffects.enableStatusEffects && this.reaction.canReact(container, entity, source, limb) && !noEffects) {

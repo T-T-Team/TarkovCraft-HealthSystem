@@ -20,7 +20,7 @@ import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.Optional;
 public class BodyPartHealthWidget extends AbstractWidget {
 
     private final Font font;
-    private final BodyPart part;
+    private final Limb part;
 
     private int frameSize = 1;
     private int frameColor = ColorPalette.WHITE;
@@ -43,7 +43,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private List<StatusEffect> effects;
     private boolean effectDetail = true;
 
-    public BodyPartHealthWidget(int x, int y, int width, int height, Font font, BodyPart part) {
+    public BodyPartHealthWidget(int x, int y, int width, int height, Font font, Limb part) {
         super(x, y, width, height, CommonComponents.EMPTY);
         this.font = font;
         this.part = part;

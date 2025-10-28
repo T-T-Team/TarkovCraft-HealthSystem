@@ -21,7 +21,7 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
@@ -74,7 +74,7 @@ public class HealthScreen extends CharacterSubScreen {
         float scale = (this.width / 256.0F);
         for (BodyPartDisplay display : displays) {
             String name = display.source();
-            BodyPart part = this.healthContainer.getBodyPart(name);
+            Limb part = this.healthContainer.getLimb(name);
             if (part == null)
                 continue;
             Vector4i pos = display.getPositionForGui(scale, center);
@@ -88,7 +88,7 @@ public class HealthScreen extends CharacterSubScreen {
             // status effects
             Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
             // add global effects to root body part
-            if (this.healthContainer.getRootBodyPart().getName().equals(part.getName())) {
+            if (this.healthContainer.getRootLimb().getLimbCode().equals(part.getLimbCode())) {
                 stream = Stream.concat(
                         this.healthContainer.getGlobalStatusEffects().getEffectsStream(),
                         stream

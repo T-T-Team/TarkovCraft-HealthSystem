@@ -6,7 +6,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health.WoundPriorities;
 
 import java.util.Collections;
@@ -36,7 +36,7 @@ public final class MedSystemStatusEffects {
             .persist(FractureStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .combineEffects(StatusEffect::maxDuration)
-            .ignoresBodyParts(BodyPartGroup.HEAD, BodyPartGroup.TORSO, BodyPartGroup.STOMACH)
+            .ignoresBodyParts(LimbType.HEAD, LimbType.TORSO, LimbType.STOMACH)
             .healPriority(WoundPriorities.EFFECT_MAJOR)
             .build()
     );

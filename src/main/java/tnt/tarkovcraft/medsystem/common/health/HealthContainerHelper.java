@@ -12,25 +12,25 @@ public final class HealthContainerHelper {
     public static DataResult<HealthContainerDefinition> validate(HealthContainerDefinition container) {
         // validation of hitbox links
         Set<String> hitboxOwners = container.getHitboxes().stream().map(BodyPartHitbox::getOwner).collect(Collectors.toSet());
-        if (container.getBodyParts().isEmpty()) {
+        if (container.getLimbDefinitionMap().isEmpty()) {
             return DataResult.error(() -> "At least one body part must be specified");
         }
-        if (hitboxOwners.size() != container.getBodyParts().size()) {
-            return DataResult.error(() -> "Mismatched hitbox count. Got " + hitboxOwners.size() + ", expected " + container.getBodyParts().size());
+        if (hitboxOwners.size() != container.getLimbDefinitionMap().size()) {
+            return DataResult.error(() -> "Mismatched hitbox count. Got " + hitboxOwners.size() + ", expected " + container.getLimbDefinitionMap().size());
         }
-        for (String owner : container.getBodyParts().keySet()) {
+        for (String owner : container.getLimbDefinitionMap().keySet()) {
             if (!hitboxOwners.contains(owner)) {
                 return DataResult.error(() -> "Missing hitbox definition for body part " + owner);
             }
         }
         // Validation of body part links
-        DataResult<String> rootValidation = getRootBodyPart(container.getBodyParts());
+        DataResult<String> rootValidation = getRootBodyPart(container.getLimbDefinitionMap());
         if (rootValidation.isError()) {
             return rootValidation.map(s -> container);
         }
         String root = rootValidation.getOrThrow();
-        for (Map.Entry<String, BodyPartDefinition> entry : container.getBodyParts().entrySet()) {
-            String error = validateBodyPartLink(root, entry.getKey(), entry.getValue(), container.getBodyParts());
+        for (Map.Entry<String, LimbDefinition> entry : container.getLimbDefinitionMap().entrySet()) {
+            String error = validateBodyPartLink(root, entry.getKey(), entry.getValue(), container.getLimbDefinitionMap());
             if (error != null) {
                 return DataResult.error(() -> "Validation of body part links of " + entry.getKey() + " part failed: " + error);
             }
@@ -38,14 +38,14 @@ public final class HealthContainerHelper {
         // Validation of display links
         Set<String> displaySources = container.getDisplayConfiguration().stream().map(BodyPartDisplay::source).collect(Collectors.toSet());
         for (String source : displaySources) {
-            if (!container.getBodyParts().containsKey(source)) {
+            if (!container.getLimbDefinitionMap().containsKey(source)) {
                 return DataResult.error(() -> "Missing body part for source " + source);
             }
         }
         return DataResult.success(container);
     }
 
-    private static String validateBodyPartLink(String root, String partId, BodyPartDefinition part, Map<String, BodyPartDefinition> bodyParts) {
+    private static String validateBodyPartLink(String root, String partId, LimbDefinition part, Map<String, LimbDefinition> bodyParts) {
         if (partId.equals(root)) {
             return null;
         }
@@ -67,10 +67,10 @@ public final class HealthContainerHelper {
         }
     }
 
-    private static DataResult<String> getRootBodyPart(Map<String, BodyPartDefinition> parts) {
+    private static DataResult<String> getRootBodyPart(Map<String, LimbDefinition> parts) {
         String root = null;
-        for (Map.Entry<String, BodyPartDefinition> entry : parts.entrySet()) {
-            BodyPartDefinition part = entry.getValue();
+        for (Map.Entry<String, LimbDefinition> entry : parts.entrySet()) {
+            LimbDefinition part = entry.getValue();
             if (part.getParent() == null) {
                 if (root != null) {
                     return DataResult.error(() -> "Multiple root body parts detected");

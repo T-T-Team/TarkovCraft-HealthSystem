@@ -6,7 +6,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
@@ -32,7 +32,7 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
     public abstract float getDamageAmount();
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         Level level = entity.level();
         long time = level.getGameTime();
         if (limb != null && time % this.getDamageInterval() == 0L && level instanceof ServerLevel serverLevel) {
@@ -49,6 +49,6 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable BodyPart limb) {
+    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
     }
 }

@@ -16,7 +16,7 @@ import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
@@ -98,7 +98,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         return false;
     }
 
-    public boolean canUseOnPart(BodyPart part, ItemStack stack, HealthContainer container, boolean selfHealing, LivingEntity target) {
+    public boolean canUseOnPart(Limb part, ItemStack stack, HealthContainer container, boolean selfHealing, LivingEntity target) {
         if (this.alwaysConsumable) {
             return true;
         }
@@ -118,7 +118,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             if (!part.isDead() && part.getHealth() < part.getMaxHealth()) {
                 return true;
             }
-            if (!selfHealing && target instanceof Player player && container.getRootBodyPart().getName().equals(part.getName())) {
+            if (!selfHealing && target instanceof Player player && container.getRootLimb().getLimbCode().equals(part.getLimbCode())) {
                 BloodData bloodData = BloodSystem.getBloodData(player);
                 BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
                 return bloodData.isUnconscious() && info.causesDeath();

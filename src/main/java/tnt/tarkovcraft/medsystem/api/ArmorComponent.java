@@ -5,7 +5,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.damagesource.IReductionFunction;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartGroup;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 
 import java.util.Set;
@@ -17,7 +17,7 @@ public interface ArmorComponent {
 
     boolean useVanillaArmorDamage();
 
-    void collectAffectedBodyPartsWithProtection(Consumer<BodyPartGroup> register, LivingEntity entity, DamageContext context);
+    void collectAffectedBodyPartsWithProtection(Consumer<LimbType> register, LivingEntity entity, DamageContext context);
 
     float handleReductions(LivingEntity entity, DamageContext ctx, Set<EquipmentSlot> protectedSlots, Supplier<Float> incomingDamage, FloatConsumer damageProvider, BiConsumer<DamageContainer.Reduction, IReductionFunction> reductionProvider);
 }

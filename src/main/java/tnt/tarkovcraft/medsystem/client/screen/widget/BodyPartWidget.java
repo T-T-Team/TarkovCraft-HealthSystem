@@ -12,7 +12,7 @@ import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +21,16 @@ import java.util.function.ToIntFunction;
 
 public class BodyPartWidget extends AbstractWidget {
 
-    private final BodyPart part;
+    private final Limb part;
     private final Font font;
 
     private int scale = 2;
-    private ToIntFunction<BodyPart> colorProvider;
+    private ToIntFunction<Limb> colorProvider;
     private SimpleClickListener onClick;
 
     private List<Component> customTooltip = new ArrayList<>();
 
-    public BodyPartWidget(int x, int y, int width, int height, BodyPart part, Font font) {
+    public BodyPartWidget(int x, int y, int width, int height, Limb part, Font font) {
         super(x, y, width, height, part.getDisplayName());
         this.part = part;
         this.font = font;
@@ -73,7 +73,7 @@ public class BodyPartWidget extends AbstractWidget {
         this.scale = scale;
     }
 
-    public void setColorProvider(ToIntFunction<BodyPart> colorProvider) {
+    public void setColorProvider(ToIntFunction<Limb> colorProvider) {
         this.colorProvider = colorProvider;
     }
 

@@ -17,39 +17,37 @@ import java.util.Map;
 public final class HealthContainerDefinition {
 
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
-            Codec.BOOL.optionalFieldOf("replace", false).forGetter(t -> t.replace),
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets", Collections.emptyList()).forGetter(t -> t.targets),
-            Codec.unboundedMap(Codec.STRING, BodyPartDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.bodyParts),
+            Codec.unboundedMap(Codec.STRING, LimbDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.limbs),
             BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
             BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
 
-    private final boolean replace;
     private final List<EntityType<?>> targets;
-    private final Map<String, BodyPartDefinition> bodyParts;
+    private final Map<String, LimbDefinition> limbs;
     private final List<BodyPartHitbox> hitboxes;
     private final List<BodyPartDisplay> display;
 
-    HealthContainerDefinition(boolean replace, List<EntityType<?>> targets, Map<String, BodyPartDefinition> bodyParts, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
-        this.replace = replace;
+    HealthContainerDefinition(List<EntityType<?>> targets, Map<String, LimbDefinition> limbs, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
         this.targets = targets;
-        this.bodyParts = bodyParts;
+        this.limbs = limbs;
         this.hitboxes = hitboxes;
         this.display = display;
     }
 
-    public BodyPartDefinition getHealthTpl(String id) {
-        return bodyParts.get(id);
+    public LimbDefinition getLimbConfiguration(String code) {
+        return limbs.get(code);
     }
 
-    public Map<String, BodyPartDefinition> getBodyParts() {
-        return bodyParts;
+    public Map<String, LimbDefinition> getLimbDefinitionMap() {
+        return limbs;
     }
 
     public List<BodyPartHitbox> getHitboxes() {
         return hitboxes;
     }
 
+    // FIXME make health setting more compatible with mods reducing health by default
     public void bind(LivingEntity entity) {
         // bind new container only to entities without existing health container or with invalid health data
         HealthContainer data = HealthSystem.hasCustomHealth(entity) ? HealthSystem.getHealthData(entity) : null;
@@ -71,7 +69,7 @@ public final class HealthContainerDefinition {
 
     public float getMaxHealth() {
         float value = 0.0F;
-        for (BodyPartDefinition definition : this.bodyParts.values()) {
+        for (LimbDefinition definition : this.limbs.values()) {
             value += definition.getMaxHealth();
         }
         return value;
@@ -83,9 +81,5 @@ public final class HealthContainerDefinition {
 
     List<EntityType<?>> getTargets() {
         return targets;
-    }
-
-    public boolean canReplace() {
-        return this.replace;
     }
 }

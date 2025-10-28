@@ -10,7 +10,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
-import tnt.tarkovcraft.medsystem.common.health.BodyPart;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunction;
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunctionType;
@@ -32,7 +32,7 @@ public class ChanceHealthEventSource implements HealthEventSource {
         this.functions = functions;
     }
 
-    public float getChance(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+    public float getChance(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, Limb limb) {
         float result = this.baseChance.floatValue();
         for (ChanceFunction function : this.functions) {
             result = function.apply(result, container, entity, damageSource, limb);
@@ -41,7 +41,7 @@ public class ChanceHealthEventSource implements HealthEventSource {
     }
 
     @Override
-    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, BodyPart limb) {
+    public boolean canReact(HealthContainer container, LivingEntity entity, @Nullable DamageSource damageSource, Limb limb) {
         RandomSource random = entity.getRandom();
         return random.nextFloat() < this.getChance(container, entity, damageSource, limb);
     }
