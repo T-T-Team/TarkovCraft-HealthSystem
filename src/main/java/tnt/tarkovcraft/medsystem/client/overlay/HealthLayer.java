@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.gui.GuiLayer;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
+import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -74,11 +75,12 @@ public class HealthLayer implements GuiLayer {
         Stream<StatusEffect> effectStream = container.getStatusEffectStream().filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.ALWAYS));
         Map<StatusEffectType<?>, List<StatusEffect>> effects = effectStream.collect(Collectors.groupingBy(StatusEffect::getType, LinkedHashMap::new, Collectors.toList()));
         int index = 0;
+        HorizontalAlignment overlayAlignment = overlay.horizontalAlignment;
         for (Map.Entry<StatusEffectType<?>, List<StatusEffect>> entry : effects.entrySet()) {
             StatusEffectType<?> type = entry.getKey();
             List<StatusEffect> effectList = entry.getValue();
             ResourceLocation icon = type.getIcon(effectList.getFirst());
-            int x = (int) (overlayPos.x() + overlayWidth);
+            int x = overlayAlignment != HorizontalAlignment.RIGHT ? (int) (overlayPos.x() + overlayWidth) : (int) (overlayPos.x() - 12);
             int y = (int) (overlayPos.y() + index++ * 12);
 
             RenderUtils.blitFull(graphics, icon, x, y, x + 12, y + 12, -1);
