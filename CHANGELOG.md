@@ -8,6 +8,14 @@
     - `unconsciousOnDeathChance` - chance of entering rescue wait mode instead of dying, default 100%
     - `rescueWaitDuration` - how long you will wait for rescue, default 2.5 minutes
     - `allowUnconsciousOnHeadDeath` - if losing head body part also allows rescue, default True
+- Armor system improvements
+  - Replaced the existing `simpleArmorCalculation` config option with `armorSystem` option
+  - There are now 4 different armor systems which you can choose from:
+    - `SIMULATED` - currenly same as modular, but in near future will cover better calculations, deflections, blunt damage and so on
+    - `MODULAR` - armor reduction is applied only if the damaged part is actually covered by armor
+    - `MODULAR_BOOSTED` - same as modular, but each armor piece has boosted reduction by 150%
+    - `VANILLA` - vanilla armor system, full armor set is used in reduction calculations
+- Fixed issue where status effects would not be visible on HUD when using health overlay aligned to the right side of screen
 - Updated Core library, now requires 1.6.3+ version
 - **Internal health container structure has been updated and is not compatible with save data - your health will be 
 reset with this update**
