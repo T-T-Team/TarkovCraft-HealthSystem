@@ -16,7 +16,7 @@ public final class InteractionHelper {
         Vec3 vec3 = hitResult.getLocation();
         if (!vec3.closerThan(pos, blockInteractionRange)) {
             Vec3 vec31 = hitResult.getLocation();
-            Direction direction = Direction.getApproximateNearest(vec31.x - pos.x, vec31.y - pos.y, vec31.z - pos.z);
+            Direction direction = getApproximateNearest(vec31.x - pos.x, vec31.y - pos.y, vec31.z - pos.z);
             return BlockHitResult.miss(vec31, direction, BlockPos.containing(vec31));
         } else {
             return hitResult;
@@ -26,7 +26,7 @@ public final class InteractionHelper {
     public static boolean hasCooldown(LivingEntity entity, ItemStack itemStack) {
         if (entity instanceof Player player) {
             ItemCooldowns cooldowns = player.getCooldowns();
-            return cooldowns.isOnCooldown(itemStack);
+            return cooldowns.isOnCooldown(itemStack.getItem());
         }
         return false;
     }
@@ -34,7 +34,22 @@ public final class InteractionHelper {
     public static void addCooldown(LivingEntity entity, ItemStack itemStack, int cooldownTicks) {
         if (entity instanceof Player player) {
             ItemCooldowns cooldowns = player.getCooldowns();
-            cooldowns.addCooldown(itemStack, cooldownTicks);
+            cooldowns.addCooldown(itemStack.getItem(), cooldownTicks);
         }
+    }
+
+    public static Direction getApproximateNearest(double x, double y, double z) {
+        Direction direction = Direction.NORTH;
+        double f = Float.MIN_VALUE;
+
+        for (Direction direction1 : Direction.values()) {
+            double f1 = x * direction1.getNormal().getX() + y * direction1.getNormal().getY() + z * direction1.getNormal().getZ();
+            if (f1 > f) {
+                f = f1;
+                direction = direction1;
+            }
+        }
+
+        return direction;
     }
 }

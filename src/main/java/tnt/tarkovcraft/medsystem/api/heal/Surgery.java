@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.api.heal;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
@@ -17,8 +16,8 @@ import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.effect.InjuryRecoveryStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
 import java.util.function.Consumer;
@@ -57,7 +56,7 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
     }
 
     @Override
-    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag) {
         Component health = Component.literal(String.valueOf(Mth.ceil(healthAfterHeal))).withStyle(ChatFormatting.YELLOW);
         tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.recovery", health).withStyle(ChatFormatting.DARK_GRAY));
         Component maxHealth = Component.literal((int) ((1.0F - maxHealthMultiplier) * 100) + "%").withStyle(ChatFormatting.YELLOW);

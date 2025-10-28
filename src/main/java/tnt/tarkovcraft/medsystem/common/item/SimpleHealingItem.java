@@ -8,28 +8,27 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class SimpleHealingItem extends InteractableItem {
 
-    private ItemUseAnimation selfUseAnimation = ItemUseAnimation.BOW; // when healing self
-    private ItemUseAnimation otherUseAnimation = ItemUseAnimation.BOW; // when healing others
+    private UseAnim selfUseAnimation = UseAnim.BOW; // when healing self
+    private UseAnim otherUseAnimation = UseAnim.BOW; // when healing others
 
     public SimpleHealingItem(Properties properties) {
         super(properties);
     }
 
-    public SimpleHealingItem withUseAnimations(ItemUseAnimation selfUseAnimation, ItemUseAnimation otherUseAnimation) {
+    public SimpleHealingItem withUseAnimations(UseAnim selfUseAnimation, UseAnim otherUseAnimation) {
         this.selfUseAnimation = Objects.requireNonNull(selfUseAnimation);
         this.otherUseAnimation = Objects.requireNonNull(otherUseAnimation);
         return this;
@@ -80,14 +79,14 @@ public class SimpleHealingItem extends InteractableItem {
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+    public UseAnim getUseAnimation(ItemStack stack) {
         InteractionTarget interaction = this.getActiveInteraction(stack);
         return interaction != null && !interaction.self() ? this.otherUseAnimation : this.selfUseAnimation;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag flag) {
-        tooltipAdder.accept(getCommonDurabilityLabel(stack));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(getCommonDurabilityLabel(stack));
     }
 
     public static Component getCommonDurabilityLabel(ItemStack itemStack) {

@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.item;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -75,7 +76,7 @@ public abstract class InteractableItem extends Item {
     protected abstract ItemStack finishInteraction(ItemStack itemStack, InteractionTarget interaction, LivingEntity target, LivingEntity origin);
 
     @Override
-    public final InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public final InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
         InteractionTarget activeInteraction = this.getActiveInteraction(itemStack);
         // Existing interaction processing
@@ -83,14 +84,14 @@ public abstract class InteractableItem extends Item {
             LivingEntity target = activeInteraction.getTargetLivingEntity(player);
             if (this.canUseItem(itemStack, target, player) && this.tryInitiateExistingInteraction(itemStack, activeInteraction, target, player)) {
                 player.startUsingItem(hand);
-                return InteractionResult.SUCCESS;
+                return InteractionResultHolder.success(itemStack);
             }
         }
         // Handle initiation of new interaction
         LivingEntity target = this.findInteractiveTarget(itemStack, player);
         if (target == null) {
             this.resetActiveInteraction(itemStack);
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(itemStack);
         }
         // Initialize
         boolean selfInteraction = target == player;
@@ -100,7 +101,12 @@ public abstract class InteractableItem extends Item {
             this.setActiveInteraction(itemStack, interaction.toImmutable());
             player.startUsingItem(hand);
         }
-        return result;
+        return switch (result) {
+            case CONSUME, CONSUME_PARTIAL -> InteractionResultHolder.consume(itemStack);
+            case SUCCESS, SUCCESS_NO_ITEM_USED -> InteractionResultHolder.success(itemStack);
+            case FAIL -> InteractionResultHolder.fail(itemStack);
+            case PASS -> InteractionResultHolder.pass(itemStack);
+        };
     }
 
     @Override
@@ -131,7 +137,7 @@ public abstract class InteractableItem extends Item {
         // Interaction progress message
         // TODO handle on client side instead?
         if (!level.isClientSide()) {
-            boolean infinite = this.getUseDuration(stack, livingEntity) >= Item.APPROXIMATELY_INFINITE_USE_DURATION;
+            boolean infinite = this.getUseDuration(stack, livingEntity) >= 72000;
             Component label = this.getInteractionLabel(stack, interaction, target, livingEntity, remainingUseDuration, infinite);
             if (label != null && livingEntity instanceof Player player) {
                 player.displayClientMessage(label, true);
@@ -177,7 +183,7 @@ public abstract class InteractableItem extends Item {
         if (target != origin && origin.distanceToSqr(target) > 10) {
             return false;
         }
-        return !(origin instanceof Player player) || !player.getCooldowns().isOnCooldown(itemStack);
+        return !(origin instanceof Player player) || !player.getCooldowns().isOnCooldown(itemStack.getItem());
     }
 
     protected boolean canInteractWithEntity(ItemStack stack, LivingEntity entity, LivingEntity origin) {

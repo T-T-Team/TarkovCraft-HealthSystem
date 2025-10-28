@@ -1,8 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
@@ -27,8 +26,7 @@ public final class MedSystemItems {
             "emergency_surgery_kit",
             properties -> new HealingItem(
                     properties.durability(10)
-                            .setNoCombineRepair()
-                            .component(DataComponents.BREAK_SOUND, null)
+                            .setNoRepair()
                             .component(CoreItemDataComponents.WEIGHT, 1000)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .surgeryItem(builder -> builder
@@ -44,7 +42,7 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> BANDAGE = REGISTRY.registerItem(
             "bandage",
             properties -> new HealingItem(
-                    properties.component(DataComponents.BREAK_SOUND, null)
+                    properties
                             .component(CoreItemDataComponents.WEIGHT, 150)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
@@ -56,7 +54,7 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> TOURNIQUET = REGISTRY.registerItem(
             "tourniquet",
             properties -> new HealingItem(
-                    properties.component(DataComponents.BREAK_SOUND, null)
+                    properties
                             .component(CoreItemDataComponents.WEIGHT, 250)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
@@ -68,7 +66,7 @@ public final class MedSystemItems {
     public static final DeferredItem<HealingItem> SPLINT = REGISTRY.registerItem(
             "splint",
             properties -> new HealingItem(
-                    properties.component(DataComponents.BREAK_SOUND, null)
+                    properties
                             .component(CoreItemDataComponents.WEIGHT, 600)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(5))
@@ -81,20 +79,18 @@ public final class MedSystemItems {
             "painkillers",
             properties -> new SimpleHealingItem(
                     properties.durability(4)
-                            .setNoCombineRepair()
-                            .component(DataComponents.BREAK_SOUND, null)
+                            .setNoRepair()
                             .component(CoreItemDataComponents.WEIGHT, 50)
                             .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.withItemUsage()
                                     .delayed(Duration.minutes(10), Duration.seconds(45), PainReliefEffect.createTemplate())
                                     .build()
                             )
-            ).withUseAnimations(ItemUseAnimation.EAT, ItemUseAnimation.BOW)
+            ).withUseAnimations(UseAnim.EAT, UseAnim.BOW)
     );
     public static final DeferredItem<HealingItem> FIRST_AID_KIT = REGISTRY.registerItem(
             "first_aid_kit",
             properties -> new HealingItem(
                     properties.durability(30)
-                            .component(DataComponents.BREAK_SOUND, null)
                             .component(CoreItemDataComponents.WEIGHT, 750)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .unrestrictedHealing(20, 2)
@@ -115,7 +111,6 @@ public final class MedSystemItems {
             "morphine_injector",
             properties -> new SimpleHealingItem(
                     properties.durability(1)
-                            .component(DataComponents.BREAK_SOUND, null)
                             .component(CoreItemDataComponents.WEIGHT, 80)
                             .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.withItemUsage()
                                     .delayed(Duration.minutes(10), Duration.seconds(3), PainReliefEffect.createTemplate())
@@ -133,7 +128,6 @@ public final class MedSystemItems {
             "regenerative_injector",
             properties -> new SimpleHealingItem(
                     properties.durability(1)
-                            .component(DataComponents.BREAK_SOUND, null)
                             .component(CoreItemDataComponents.WEIGHT, 80)
                             .component(MedSystemItemComponents.SIDE_EFFECTS, SideEffectHolder.withItemUsage()
                                     .buffs(factory -> {

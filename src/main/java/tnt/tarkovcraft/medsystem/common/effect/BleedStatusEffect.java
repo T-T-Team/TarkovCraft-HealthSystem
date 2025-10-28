@@ -43,7 +43,7 @@ public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
             } else {
                 RegistryAccess access = serverLevel.registryAccess();
                 DamageSource damageSource = MedSystemDamageTypes.causeBleedDamage(access, this.getCausingEntity(serverLevel));
-                entity.hurtServer(serverLevel, damageSource, this.getDamageAmount());
+                entity.hurt(damageSource, this.getDamageAmount());
             }
         }
     }

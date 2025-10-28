@@ -10,10 +10,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
-import net.minecraft.world.item.consume_effects.ConsumeEffect;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -34,19 +32,18 @@ import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class HealingItem extends InteractableItem {
 
-    private ItemUseAnimation selfUseAnimation = ItemUseAnimation.BOW; // when healing self
-    private ItemUseAnimation otherUseAnimation = ItemUseAnimation.BOW; // when healing others
+    private UseAnim selfUseAnimation = UseAnim.BOW; // when healing self
+    private UseAnim otherUseAnimation = UseAnim.BOW; // when healing others
 
     public HealingItem(Properties properties) {
         super(properties);
     }
 
-    public HealingItem withUseAnimations(ItemUseAnimation selfUseAnimation, ItemUseAnimation otherUseAnimation) {
+    public HealingItem withUseAnimations(UseAnim selfUseAnimation, UseAnim otherUseAnimation) {
         this.selfUseAnimation = Objects.requireNonNull(selfUseAnimation);
         this.otherUseAnimation = Objects.requireNonNull(otherUseAnimation);
         return this;
@@ -184,13 +181,8 @@ public class HealingItem extends InteractableItem {
                 consume += recovery.consumption();
             }
         }
-        // Consume effect application
-        Level level = origin.level();
-        List<ConsumeEffect> consumeEffects = attributes.effects();
-        for (ConsumeEffect effect : consumeEffects) {
-            effect.apply(level, itemStack, target);
-        }
         // Apply durability reduction
+        Level level = origin.level();
         if (!level.isClientSide()) {
             int consumeAmount = Math.max(1, consume);
             SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, origin, consumeAmount);
@@ -226,11 +218,11 @@ public class HealingItem extends InteractableItem {
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
-        return attributes.getUseDuration(APPROXIMATELY_INFINITE_USE_DURATION);
+        return attributes.getUseDuration(72000);
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+    public UseAnim getUseAnimation(ItemStack stack) {
         InteractionTarget interaction = this.getActiveInteraction(stack);
         return interaction != null && !interaction.self() ? this.otherUseAnimation : this.selfUseAnimation;
     }
@@ -246,8 +238,8 @@ public class HealingItem extends InteractableItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag flag) {
-        tooltipAdder.accept(SimpleHealingItem.getCommonDurabilityLabel(stack));
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(SimpleHealingItem.getCommonDurabilityLabel(stack));
     }
 
     public static boolean checkDurability(ItemStack stack, int durabilityUse) {

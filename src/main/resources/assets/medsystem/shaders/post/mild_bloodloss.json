@@ -1,0 +1,29 @@
+{
+  "targets": [
+    "swap"
+  ],
+  "passes": [
+    {
+      "name": "medsystem:desaturate",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        {
+          "name": "Strength",
+          "values": [ 0.3 ]
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main",
+      "uniforms": [
+        {
+          "name": "ColorModulate",
+          "values": [ 1.0, 1.0, 1.0, 1.0 ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.mixin;
 
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,16 +13,14 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin {
 
-    // This will stop working if minecraft stops processing player food data on single thread
-
     @Unique
-    private ServerPlayer medsystem$player;
+    private Player medsystem$player;
 
     @Inject(
             method = "tick",
             at = @At("HEAD")
     )
-    private void medsystem$capturePlayer(ServerPlayer player, CallbackInfo ci) {
+    private void medsystem$capturePlayer(Player player, CallbackInfo ci) {
         this.medsystem$player = player;
     }
 

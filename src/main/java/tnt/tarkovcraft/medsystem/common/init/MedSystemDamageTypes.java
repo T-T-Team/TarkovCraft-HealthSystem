@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -32,7 +32,7 @@ public interface MedSystemDamageTypes {
     }
 
     static Holder<DamageType> of(RegistryAccess access, ResourceKey<DamageType> type) {
-        Registry<DamageType> registry = access.lookupOrThrow(Registries.DAMAGE_TYPE);
+        HolderLookup.RegistryLookup<DamageType> registry = access.lookupOrThrow(Registries.DAMAGE_TYPE);
         return registry.getOrThrow(type);
     }
 }

@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.api.heal;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
@@ -24,7 +23,7 @@ public record HealthRecovery(int cycleDuration, float healthPerCycle, int maxCyc
     }
 
     @Override
-    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag) {
         Component healthPoints = Component.literal(String.format(Locale.ROOT, "%.1f", healthPerCycle)).withStyle(ChatFormatting.GREEN);
         Component duration = Duration.format(cycleDuration).copy().withStyle(ChatFormatting.GREEN);
         if (maxCycles > 0) {

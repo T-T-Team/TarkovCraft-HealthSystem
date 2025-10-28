@@ -28,6 +28,7 @@ public final class StatusEffectHelper {
 
     public static void addPostEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, PostEffect postEffect) {
         addEffect(effects, entity, limb, postEffect.delay(), postEffect.createInstance());
+        HealthSystem.synchronizeEntity(entity);
     }
 
     public static void addEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, int delay, StatusEffect effect) {

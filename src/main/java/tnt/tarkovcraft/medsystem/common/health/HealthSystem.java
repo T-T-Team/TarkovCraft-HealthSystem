@@ -1,7 +1,10 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -32,14 +35,14 @@ import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
-public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthContainerDefinition> {
+public final class HealthSystem extends SimpleJsonResourceReloadListener {
 
     public static final Marker MARKER = MarkerManager.getMarker("HealthSystemManager");
     public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_system");
     private final Map<EntityType<?>, HealthContainerDefinition> healthContainers = new HashMap<>();
 
     public HealthSystem() {
-        super(HealthContainerDefinition.CODEC, FileToIdConverter.json("tarkovcraft/health"));
+        super(new Gson(), "tarkovcraft/health");
     }
 
     public static boolean hasCustomHealth(Entity entity) {
@@ -162,16 +165,22 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, HealthContainerDefinition> map, ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler) {
         MedicalSystem.LOGGER.debug(MARKER, "Loading custom entity health containers");
         this.healthContainers.clear();
-        for (HealthContainerDefinition definition : map.values()) {
-            List<EntityType<?>> targets = definition.getTargets();
-            targets.forEach(type -> {
-                if (this.healthContainers.put(type, definition) != null) {
-                    MedicalSystem.LOGGER.warn(MARKER, "Detected health container override for entity {}", EntityType.getKey(type));
-                }
-            });
+        for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
+            try {
+                DataResult<HealthContainerDefinition> result = HealthContainerDefinition.CODEC.parse(JsonOps.INSTANCE, entry.getValue());
+                HealthContainerDefinition definition = result.getOrThrow();
+                List<EntityType<?>> targets = definition.getTargets();
+                targets.forEach(type -> {
+                    if (this.healthContainers.put(type, definition) != null) {
+                        MedicalSystem.LOGGER.warn(MARKER, "Detected health container override for entity {}", EntityType.getKey(type));
+                    }
+                });
+            } catch (Exception e) {
+                MedicalSystem.LOGGER.error(MARKER, "Failed to load health container file {} due to error", entry.getKey(), e);
+            }
         }
         MedicalSystem.LOGGER.debug(MARKER, "Loaded {} custom entity health containers", this.healthContainers.size());
     }

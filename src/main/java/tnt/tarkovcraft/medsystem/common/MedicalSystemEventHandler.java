@@ -2,7 +2,6 @@ package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -262,7 +261,7 @@ public final class MedicalSystemEventHandler {
             return;
         if (config.statusEffects.enableStatusEffects && gameTime % 20L == 0L && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
-            entity.hurtServer((ServerLevel) level, MedSystemDamageTypes.causeFractureDamage(access), 0.25F);
+            entity.hurt(MedSystemDamageTypes.causeFractureDamage(access), 0.25F);
         }
     }
 
@@ -275,7 +274,7 @@ public final class MedicalSystemEventHandler {
             return;
         if (config.statusEffects.enableStatusEffects && HealthSystem.isMovementRestricted(entity)) {
             RegistryAccess access = entity.registryAccess();
-            entity.hurtServer((ServerLevel) level, MedSystemDamageTypes.causeFractureDamage(access), 0.50F);
+            entity.hurt(MedSystemDamageTypes.causeFractureDamage(access), 0.50F);
         }
     }
 

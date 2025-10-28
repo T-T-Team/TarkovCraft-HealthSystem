@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -12,12 +11,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
-import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
@@ -30,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Surgery surgery,
-                                 HealthRecovery health, List<EffectRecovery> recoveries, List<ConsumeEffect> effects) implements TooltipProvider {
+                                 HealthRecovery health, List<EffectRecovery> recoveries) implements TooltipProvider {
 
     public static final Codec<HealItemAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealItemAttributes::applyGlobally),
@@ -38,16 +36,15 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealItemAttributes::minUseTime),
             Surgery.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.surgery)),
             HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)),
-            EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealItemAttributes::recoveries),
-            ConsumeEffect.CODEC.listOf().optionalFieldOf("consumeEffects", Collections.emptyList()).forGetter(HealItemAttributes::effects)
+            EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealItemAttributes::recoveries)
     ).apply(instance, HealItemAttributes::new));
 
     private HealItemAttributes(Builder builder) {
-        this(!builder.requiresSpecificBodyPart, builder.alwaysConsumable, builder.minUseTime, builder.surgery, builder.healthRecovery, builder.recoveries, builder.effects);
+        this(!builder.requiresSpecificBodyPart, builder.alwaysConsumable, builder.minUseTime, builder.surgery, builder.healthRecovery, builder.recoveries);
     }
 
-    private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<Surgery> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<ConsumeEffect> effects) {
-        this(applyGlobally, alwaysConsumable, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries, effects);
+    private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<Surgery> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries) {
+        this(applyGlobally, alwaysConsumable, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries);
     }
 
     public static Builder builder() {
@@ -140,17 +137,17 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
     }
 
     @Override
-    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag) {
         if (this.health != null) {
-            this.health.addToTooltip(context, tooltipAdder, flag, componentGetter);
+            this.health.addToTooltip(context, tooltipAdder, flag);
         }
         if (this.isSurgeryItem()) {
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.title").withStyle(ChatFormatting.GRAY));
-            this.surgery.addToTooltip(context, tooltipAdder, flag, componentGetter);
+            this.surgery.addToTooltip(context, tooltipAdder, flag);
         }
         if (!this.recoveries.isEmpty()) {
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.title").withStyle(ChatFormatting.GRAY));
-            this.recoveries.forEach(recovery -> recovery.addToTooltip(context, tooltipAdder, flag, componentGetter));
+            this.recoveries.forEach(recovery -> recovery.addToTooltip(context, tooltipAdder, flag));
         }
     }
 
@@ -162,7 +159,6 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         private Surgery surgery;
         private HealthRecovery healthRecovery;
         private final List<EffectRecovery> recoveries = new ArrayList<>();
-        private final List<ConsumeEffect> effects = new ArrayList<>();
 
         private Builder() {
         }
@@ -224,11 +220,6 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
 
         public Builder removesEffect(Holder<StatusEffectType<?>> effect) {
             return this.removesEffect(1, effect, false);
-        }
-
-        public Builder consumeEffect(ConsumeEffect effect) {
-            this.effects.add(effect);
-            return this;
         }
 
         public HealItemAttributes build() {

@@ -4,11 +4,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
+import tnt.tarkovcraft.core.util.helper.ARGB;
+import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
@@ -16,11 +16,11 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 public class BodyPartWidget extends AbstractWidget {
 
+    private final Screen parent;
     private final Limb part;
     private final Font font;
 
@@ -30,8 +30,9 @@ public class BodyPartWidget extends AbstractWidget {
 
     private List<Component> customTooltip = new ArrayList<>();
 
-    public BodyPartWidget(int x, int y, int width, int height, Limb part, Font font) {
+    public BodyPartWidget(int x, int y, int width, int height, Limb part, Font font, Screen parent) {
         super(x, y, width, height, part.getDisplayName());
+        this.parent = parent;
         this.part = part;
         this.font = font;
         this.colorProvider = bodypart -> {
@@ -47,7 +48,7 @@ public class BodyPartWidget extends AbstractWidget {
         graphics.fill(this.getX() + this.scale, this.getY() + this.scale, this.getRight() - this.scale, this.getBottom() - this.scale, color);
 
         if (!this.customTooltip.isEmpty() && this.isHovered()) {
-            graphics.setTooltipForNextFrame(this.font, this.customTooltip, Optional.empty(), mouseX, mouseY);
+            this.parent.setTooltipForNextRenderPass(RenderUtils.splitTooltip(this.customTooltip, this.font));
         }
     }
 
@@ -60,12 +61,12 @@ public class BodyPartWidget extends AbstractWidget {
     }
 
     @Override
-    protected boolean isValidClickButton(MouseButtonInfo info) {
+    protected boolean isValidClickButton(int button) {
         return this.onClick != null;
     }
 
     @Override
-    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+    public void onClick(double mouseX, double mouseY, int button) {
         this.onClick.onClick();
     }
 

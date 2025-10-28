@@ -1,15 +1,11 @@
 #version 150
 
-#moj_import <minecraft:globals.glsl>
-
-uniform sampler2D InSampler;
-
-layout(std140) uniform ConcussionConfig {
-    float Speed;
-    int Replicas;
-    float Radius;
-    float ReplicaBlur;
-};
+uniform sampler2D DiffuseSampler;
+uniform float Speed;
+uniform int Replicas;
+uniform float Radius;
+uniform float ReplicaBlur;
+uniform float GameTime;
 
 in vec2 texCoord;
 out vec4 fragColor;
@@ -21,7 +17,7 @@ float rand(vec2 co) {
 void main() {
     vec2 uv = texCoord;
     float Time = GameTime * 24000;
-    vec3 scene = texture(InSampler, uv).rgb;
+    vec3 scene = texture(DiffuseSampler, uv).rgb;
     float angle = Time * Speed;
     vec2 dir = vec2(cos(angle), sin(angle));
     vec3 accum = scene;
@@ -31,7 +27,7 @@ void main() {
         float radius = Radius * t + 0.03 * len * t;
         float replicaBlur = (rand(uv * (Time + float(i))) - 0.5) * ReplicaBlur;
         vec2 offset = dir * radius + replicaBlur;
-        accum += texture(InSampler, uv + offset).rgb;
+        accum += texture(DiffuseSampler, uv + offset).rgb;
     }
 
     vec3 color = accum / float(Replicas + 1);

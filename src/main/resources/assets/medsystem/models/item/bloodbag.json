@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "medsystem:item/bloodbag_0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "medsystem:blood_volume": 0.01
+      },
+      "model": "medsystem:item/bloodbag_1"
+    },
+    {
+      "predicate": {
+        "medsystem:blood_volume": 0.45
+      },
+      "model": "medsystem:item/bloodbag_2"
+    },
+    {
+      "predicate": {
+        "medsystem:blood_volume": 0.70
+      },
+      "model": "medsystem:item/bloodbag_3"
+    },
+    {
+      "predicate": {
+        "medsystem:blood_volume": 0.95
+      },
+      "model": "medsystem:item/bloodbag_4"
+    }
+  ]
+}

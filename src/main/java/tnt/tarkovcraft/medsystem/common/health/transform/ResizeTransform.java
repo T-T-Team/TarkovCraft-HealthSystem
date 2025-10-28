@@ -6,11 +6,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec2;
 import tnt.tarkovcraft.medsystem.common.health.PositionedAABB;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHitboxTransforms;
+import tnt.tarkovcraft.medsystem.util.MedsystemCodecs;
 
 public class ResizeTransform implements EntityHitboxTransform {
 
     public static final MapCodec<ResizeTransform> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Vec2.CODEC.fieldOf("size").forGetter(t -> t.size)
+            MedsystemCodecs.VEC2_CODEC.fieldOf("size").forGetter(t -> t.size)
     ).apply(instance, ResizeTransform::new));
 
     private final Vec2 size;

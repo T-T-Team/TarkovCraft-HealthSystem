@@ -7,13 +7,14 @@ import net.minecraft.world.phys.Vec2;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.joml.Vector4i;
+import tnt.tarkovcraft.medsystem.util.MedsystemCodecs;
 
 public record BodyPartDisplay(String source, Vec2 pos, Vec2 size) {
 
     public static final Codec<BodyPartDisplay> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.fieldOf("source").forGetter(BodyPartDisplay::source),
-            Vec2.CODEC.fieldOf("pos").forGetter(BodyPartDisplay::pos),
-            Vec2.CODEC.fieldOf("size").forGetter(BodyPartDisplay::size)
+            MedsystemCodecs.VEC2_CODEC.fieldOf("pos").forGetter(BodyPartDisplay::pos),
+            MedsystemCodecs.VEC2_CODEC.fieldOf("size").forGetter(BodyPartDisplay::size)
     ).apply(instance, BodyPartDisplay::new));
 
     public Vector4f getPosition(float scale, Vector2f center) {

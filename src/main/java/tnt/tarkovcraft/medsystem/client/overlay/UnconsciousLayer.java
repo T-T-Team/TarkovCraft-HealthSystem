@@ -5,11 +5,11 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.gui.GuiLayer;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
@@ -19,7 +19,7 @@ import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.List;
 
-public class UnconsciousLayer implements GuiLayer {
+public class UnconsciousLayer implements LayeredDraw.Layer {
 
     public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/unconscious");
 

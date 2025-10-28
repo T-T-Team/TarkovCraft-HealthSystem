@@ -7,9 +7,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -19,8 +18,8 @@ import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
+import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 public class BloodBagItem extends InteractableItem {
 
@@ -111,14 +110,14 @@ public class BloodBagItem extends InteractableItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         BloodContainer container = this.getContainer(stack);
         if (container == null) {
             return;
         }
         Component value = Component.translatable("label.medsystem.unit.liter", String.format(Locale.ROOT, "%.2f", container.value())).withStyle(ChatFormatting.RED);
         Component capacity = Component.translatable("label.medsystem.unit.liter", String.format(Locale.ROOT, "%.2f", container.capacity())).withStyle(ChatFormatting.RED);
-        tooltipAdder.accept(Component.translatable("label.medsystem.blood", value, capacity).withStyle(ChatFormatting.GRAY));
+        tooltipComponents.add(Component.translatable("label.medsystem.blood", value, capacity).withStyle(ChatFormatting.GRAY));
     }
 
     @Override
@@ -127,8 +126,8 @@ public class BloodBagItem extends InteractableItem {
     }
 
     @Override
-    public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        return ItemUseAnimation.BOW;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     private BloodContainer getContainer(ItemStack itemStack) {

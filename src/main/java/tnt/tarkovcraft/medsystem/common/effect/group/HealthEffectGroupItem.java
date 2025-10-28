@@ -73,7 +73,7 @@ public class HealthEffectGroupItem implements EffectGroupItem {
             entity.heal(this.amount);
         } else {
             DamageSource damageSource = MedSystemDamageTypes.causeToxinDamage(level.registryAccess());
-            entity.hurtServer((ServerLevel) level, damageSource, Mth.abs(this.amount));
+            entity.hurt(damageSource, Mth.abs(this.amount));
         }
     }
 

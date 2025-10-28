@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
@@ -41,6 +42,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
             return;
         Iterator<Map.Entry<StatusEffectType<?>, StatusEffect>> it = effects.entrySet().iterator();
         ListStatusEffectSubmitter submitter = StatusEffectSubmitter.list();
+        boolean needsUpdate = false;
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
             effect.apply(container, entity, limb);
@@ -52,11 +54,15 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
                 if (newDuration <= 0) {
                     it.remove();
                     effect.onRemoved(submitter, container, entity, limb);
+                    needsUpdate = true;
                 }
             }
         }
         if (entity.isAlive()) {
             StatusEffectHelper.handleSubmittedEffects(this, entity, limb, submitter);
+        }
+        if (needsUpdate) {
+            HealthSystem.synchronizeEntity(entity);
         }
     }
 

@@ -5,14 +5,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
+import tnt.tarkovcraft.medsystem.util.MedsystemCodecs;
 
 public record BloodContainer(float capacity, float value, boolean refillable) {
 
     public static final Codec<BloodContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ExtraCodecs.NON_NEGATIVE_FLOAT.fieldOf("capacity").forGetter(BloodContainer::capacity),
-            ExtraCodecs.NON_NEGATIVE_FLOAT.optionalFieldOf("value", 0.0F).forGetter(BloodContainer::value),
+            MedsystemCodecs.NON_NEGATIVE_FLOAT.fieldOf("capacity").forGetter(BloodContainer::capacity),
+            MedsystemCodecs.NON_NEGATIVE_FLOAT.optionalFieldOf("value", 0.0F).forGetter(BloodContainer::value),
             Codec.BOOL.optionalFieldOf("refillable", true).forGetter(BloodContainer::refillable)
     ).apply(instance, BloodContainer::new));
     public static final StreamCodec<ByteBuf, BloodContainer> STREAM_CODEC = StreamCodec.composite(

@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "L": "#c:leathers",
-    "I": "#c:ingots/iron",
-    "S": "#c:rods/wooden",
-    "T": "minecraft:shears"
+    "L": {
+      "tag": "c:leathers"
+    },
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    },
+    "T": {
+      "item": "minecraft:shears"
+    }
   },
   "pattern": [
     " LL",

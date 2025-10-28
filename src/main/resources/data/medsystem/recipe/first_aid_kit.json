@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "L": "#c:leathers",
-    "B": "medsystem:bandage",
-    "F": "#c:flowers/small",
-    "P": "minecraft:paper"
+    "L": {
+      "tag": "c:leathers"
+    },
+    "B": {
+      "item": "medsystem:bandage"
+    },
+    "F": {
+      "tag": "c:flowers/small"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
   },
   "pattern": [
     "FPF",

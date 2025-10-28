@@ -45,7 +45,7 @@ public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefini
         Map<EntityType<?>, HealthContainerDefinition> map = new HashMap<>(pairs);
         for (int i = 0; i < pairs; i++) {
             ResourceLocation id = buf.readResourceLocation();
-            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(id);
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(id);
             CompoundTag tag = buf.readNbt();
             HealthContainerDefinition definition = Codecs.deserializeNbtCompound(HealthContainerDefinition.CODEC, tag);
             map.put(type, definition);

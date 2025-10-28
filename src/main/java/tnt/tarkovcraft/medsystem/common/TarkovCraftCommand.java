@@ -16,7 +16,6 @@ import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
@@ -28,9 +27,9 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
@@ -63,7 +62,7 @@ public final class TarkovCraftCommand {
                                                                                                 Commands.argument("type", ResourceArgument.resource(context, MedSystemRegistries.Keys.STATUS_EFFECT))
                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, Duration.seconds(60).tickValue(), 0))
                                                                                                         .then(
-                                                                                                                Commands.literal("causesDeath")
+                                                                                                                Commands.literal("infinite")
                                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, -1, 0))
                                                                                                                         .then(
                                                                                                                                 Commands.argument("delay", IntegerArgumentType.integer(0))
@@ -88,7 +87,7 @@ public final class TarkovCraftCommand {
                                                                                 Commands.argument("type", ResourceArgument.resource(context, MedSystemRegistries.Keys.STATUS_EFFECT))
                                                                                         .executes(ctx -> addGlobalStatusEffect(ctx, Duration.seconds(60).tickValue(), 0))
                                                                                         .then(
-                                                                                                Commands.literal("causesDeath")
+                                                                                                Commands.literal("infinite")
                                                                                                         .executes(ctx -> addGlobalStatusEffect(ctx, -1, 0))
                                                                                                         .then(
                                                                                                                 Commands.argument("delay", IntegerArgumentType.integer(0))
@@ -280,7 +279,7 @@ public final class TarkovCraftCommand {
         float amount = FloatArgumentType.getFloat(ctx, "amount");
         DamageSource damageSource = new BodyPartDamageSource(damageTypeHolder, projectile, source, limb);
         for (LivingEntity entity : entities) {
-            entity.hurtServer((ServerLevel) entity.level(), damageSource, amount);
+            entity.hurt(damageSource, amount);
         }
         return 0;
     }
@@ -305,6 +304,7 @@ public final class TarkovCraftCommand {
         float volume = FloatArgumentType.getFloat(ctx, "volume");
         data.setBloodVolume(volume);
         data.sync(livingEntity);
+        HealthSystem.synchronizeEntity(livingEntity);
         return 0;
     }
 
@@ -317,6 +317,7 @@ public final class TarkovCraftCommand {
         int time = IntegerArgumentType.getInteger(ctx, "time");
         data.setUnconsciousTime(time, BloodData.UnconsciousInfo.EMPTY);
         data.sync(livingEntity);
+        HealthSystem.synchronizeEntity(livingEntity);
         return 0;
     }
 }

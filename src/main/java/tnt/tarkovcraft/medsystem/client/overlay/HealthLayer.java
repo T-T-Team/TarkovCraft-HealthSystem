@@ -4,16 +4,16 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.gui.GuiLayer;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.util.HorizontalAlignment;
+import tnt.tarkovcraft.core.util.helper.ARGB;
 import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class HealthLayer implements GuiLayer {
+public class HealthLayer implements LayeredDraw.Layer {
 
     public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/health");
 

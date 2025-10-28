@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "F": "#c:flowers/small",
-    "P": "minecraft:paper"
+    "F": {
+      "tag": "c:flowers/small"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
   },
   "pattern": [
     "PFP",

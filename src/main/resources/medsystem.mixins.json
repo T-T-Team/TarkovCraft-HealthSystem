@@ -7,14 +7,14 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "LivingEntityMixin",
-    "FoodDataMixin"
+    "FoodDataMixin",
+    "LivingEntityMixin"
   ],
   "client": [
-    "client.LivingEntityRendererMixin",
     "client.CameraMixin",
     "client.LocalPlayerMixin",
     "client.MouseHandlerMixin",
+    "client.EntityRenderDispatcherMixin",
     "client.GameRendererMixin"
   ]
 }

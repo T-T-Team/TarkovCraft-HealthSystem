@@ -4,14 +4,13 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.listener.SimpleClickListener;
+import tnt.tarkovcraft.core.util.helper.ARGB;
 import tnt.tarkovcraft.core.util.helper.MathHelper;
 import tnt.tarkovcraft.core.util.helper.RenderUtils;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -24,10 +23,10 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class BodyPartHealthWidget extends AbstractWidget {
 
+    private final Screen parent;
     private final Font font;
     private final Limb part;
 
@@ -43,8 +42,9 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private List<StatusEffect> effects;
     private boolean effectDetail = true;
 
-    public BodyPartHealthWidget(int x, int y, int width, int height, Font font, Limb part) {
+    public BodyPartHealthWidget(int x, int y, int width, int height, Font font, Limb part, Screen parent) {
         super(x, y, width, height, CommonComponents.EMPTY);
+        this.parent = parent;
         this.font = font;
         this.part = part;
     }
@@ -94,12 +94,12 @@ public class BodyPartHealthWidget extends AbstractWidget {
     }
 
     @Override
-    protected boolean isValidClickButton(MouseButtonInfo info) {
+    protected boolean isValidClickButton(int button) {
         return this.onClick != null;
     }
 
     @Override
-    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+    public void onClick(double mouseX, double mouseY, int button) {
         this.onClick.onClick();
     }
 
@@ -154,7 +154,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
                     if (effect.hasVisibleDuration() && !effect.isInfinite()) {
                         tooltip.add(StatusEffect.getDurationLabel(effect.getDuration()));
                     }
-                    graphics.setTooltipForNextFrame(this.font, tooltip, Optional.empty(), mouseX, mouseY);
+                    this.parent.setTooltipForNextRenderPass(RenderUtils.splitTooltip(tooltip, this.font));
                 }
             }
         }

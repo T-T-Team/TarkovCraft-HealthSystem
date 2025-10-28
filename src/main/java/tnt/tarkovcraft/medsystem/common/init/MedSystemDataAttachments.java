@@ -17,12 +17,12 @@ public final class MedSystemDataAttachments {
     public static final DeferredRegister<AttachmentType<?>> REGISTRY = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MedicalSystem.MOD_ID);
 
     public static final Supplier<AttachmentType<HealthContainer>> HEALTH_CONTAINER = REGISTRY.register("health_container", () -> AttachmentType.builder(HealthContainer::new)
-            .serialize(HealthContainer.MAP_CODEC)
-            .sync(HealthContainer.STREAM_CODEC)
+            .serialize(HealthContainer.CODEC)
+            .sync(new HealthContainer.SyncHandler())
             .build()
     );
     public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Optional.empty(), Collections.emptyList(), false))
-            .serialize(SideEffectHolder.MAP_CODEC)
+            .serialize(SideEffectHolder.CODEC)
             .build()
     );
     public static final Supplier<AttachmentType<BloodData>> BLOOD_DATA = REGISTRY.register("blood_data", () -> AttachmentType.builder(() -> new BloodData(5.0F))

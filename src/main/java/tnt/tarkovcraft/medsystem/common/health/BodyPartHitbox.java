@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.health.transform.HitboxTransformDefinition;
+import tnt.tarkovcraft.medsystem.util.MedsystemCodecs;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,7 @@ public final class BodyPartHitbox {
             Codec.STRING.fieldOf("owner").forGetter(BodyPartHitbox::getOwner),
             Codecs.list(HitboxTransformDefinition.CODEC).optionalFieldOf("transforms",Collections.emptyList()).forGetter(t -> t.transforms),
             Vec3.CODEC.fieldOf("pos").forGetter(t -> t.aabb.center()),
-            Vec2.CODEC.fieldOf("size").forGetter(t -> t.aabb.size())
+            MedsystemCodecs.VEC2_CODEC.fieldOf("size").forGetter(t -> t.aabb.size())
     ).apply(instance, BodyPartHitbox::new));
 
     private final String owner;

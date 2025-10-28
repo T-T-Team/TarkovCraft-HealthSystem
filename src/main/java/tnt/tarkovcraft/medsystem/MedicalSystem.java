@@ -1,12 +1,13 @@
 package tnt.tarkovcraft.medsystem;
 
 import dev.toma.configuration.Configuration;
+import dev.toma.configuration.config.format.ConfigFormats;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -36,7 +37,7 @@ public final class MedicalSystem {
     private static MedSystemConfig config;
 
     public MedicalSystem(IEventBus modEventBus, ModContainer container) {
-        config = Configuration.registerSimpleYmlConfig(MedSystemConfig.class);
+        config = Configuration.registerConfig(MedSystemConfig.class, ConfigFormats.YAML).getConfigInstance();
 
         modEventBus.addListener(this::createRegistries);
         modEventBus.addListener(this::modifyDefaultComponents);
@@ -78,8 +79,8 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
     }
 
-    private void addReloadListeners(AddServerReloadListenersEvent event) {
-        event.addListener(HealthSystem.IDENTIFIER, HEALTH_SYSTEM);
+    private void addReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(HEALTH_SYSTEM);
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

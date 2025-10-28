@@ -83,7 +83,7 @@ public class HealthScreen extends CharacterSubScreen {
             int width = pos.z;
             int height = pos.w;
             int xOffset = (int) ((pos.x + width / 2f) - center.x);
-            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, part, this.font));
+            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, part, this.font, this));
             bodyPartWidget.setScale(3);
             // status effects
             Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
@@ -100,7 +100,7 @@ public class HealthScreen extends CharacterSubScreen {
             int healthHeight = effects.isEmpty() ? 20 : 33;
             int healthX = getHealthLabelWidgetX(xOffset, x, healthWidth, width);
             int healthY = y + (height - healthHeight) / 2;
-            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part);
+            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part, this);
             healthWidget.setHealthUnitScale(UNIT_SCALE);
             healthWidget.setEffects(effects);
             healthWidget.setTextHoverColor(ColorPalette.WHITE);

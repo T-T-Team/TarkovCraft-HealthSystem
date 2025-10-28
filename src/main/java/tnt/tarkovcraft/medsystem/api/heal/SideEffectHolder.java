@@ -2,10 +2,8 @@ package tnt.tarkovcraft.medsystem.api.heal;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,8 +21,8 @@ import tnt.tarkovcraft.medsystem.common.effect.NeutralEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.PositiveEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupHolder;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 
@@ -39,12 +37,11 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
     public static final Component DEFAULT_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title").withStyle(ChatFormatting.GRAY);
     public static final Component ITEM_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title_item").withStyle(ChatFormatting.GRAY);
     public static final Component USAGE_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title_usage").withStyle(ChatFormatting.GRAY);
-    public static final MapCodec<SideEffectHolder> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final Codec<SideEffectHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ComponentSerialization.CODEC.optionalFieldOf("title").forGetter(t -> t.title),
             SideEffect.CODEC.listOf().fieldOf("effects").forGetter(t -> t.sideEffects),
             Codec.BOOL.optionalFieldOf("hideTooltip", false).forGetter(t -> t.hideTooltip)
     ).apply(instance, SideEffectHolder::new));
-    public static final Codec<SideEffectHolder> CODEC = MAP_CODEC.codec();
 
     public static Builder builder() {
         return new Builder();
@@ -82,12 +79,12 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
     }
 
     @Override
-    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag) {
         if (this.hideTooltip)
             return;
         Component title = this.title.orElse(DEFAULT_TITLE);
         tooltipAdder.accept(title);
-        this.sideEffects.forEach(effect -> effect.addToTooltip(context, tooltipAdder, flag, componentGetter));
+        this.sideEffects.forEach(effect -> effect.addToTooltip(context, tooltipAdder, tooltipFlag));
     }
 
     public static final class Builder {

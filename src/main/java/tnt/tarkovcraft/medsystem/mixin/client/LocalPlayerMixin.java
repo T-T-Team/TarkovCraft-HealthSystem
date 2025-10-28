@@ -19,7 +19,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     }
 
     @Inject(
-            method = "applyInput",
+            method = "serverAiStep",
             at = @At("HEAD"),
             cancellable = true
     )

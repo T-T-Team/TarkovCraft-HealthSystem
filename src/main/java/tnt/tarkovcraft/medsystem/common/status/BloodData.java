@@ -1,7 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.status;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -44,7 +43,7 @@ import java.util.UUID;
 
 public final class BloodData {
 
-    public static final MapCodec<BloodData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+    public static final Codec<BloodData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.FLOAT.fieldOf("maxBloodVolume").forGetter(t -> t.maxBloodVolume),
             Codec.FLOAT.fieldOf("bloodVolume").forGetter(t -> t.bloodVolume),
             Codec.INT.optionalFieldOf("unconsciousTime", 0).forGetter(t -> t.unconsciousTime),
@@ -212,9 +211,9 @@ public final class BloodData {
                 .findAny().orElse(null);
         RegistryAccess access = level.registryAccess();
         if (effect != null) {
-            entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, effect.getCausingEntity(level)), 4.0F);
+            entity.hurt(MedSystemDamageTypes.causeBleedDamage(access, effect.getCausingEntity(level)), 4.0F);
         } else {
-            entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), 4.0F);
+            entity.hurt(MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), 4.0F);
         }
         this.addBloodLossStatusEffect(container, entity, false);
         this.setOrExtendedUnconsciousTime(300, UnconsciousInfo.LOW_BLOOD_LEVEL);
@@ -299,6 +298,7 @@ public final class BloodData {
             this.addUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
             if (!effects.hasEffect(MedSystemStatusEffects.UNCONSCIOUS)) {
                 StatusEffectHelper.addEffect(effects, entity, null, new UnconsciousStatusEffect());
+                HealthSystem.synchronizeEntity(entity);
             }
             if (entity.isUsingItem())
                 entity.stopUsingItem();
@@ -309,7 +309,10 @@ public final class BloodData {
             this.removeUnconsciousModifier(attributeMap, Attributes.ATTACK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
-            StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, effects, entity, null, container, MedSystemStatusEffects.UNCONSCIOUS);
+            if (effects.hasEffect(MedSystemStatusEffects.UNCONSCIOUS)) {
+                StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, effects, entity, null, container, MedSystemStatusEffects.UNCONSCIOUS);
+                HealthSystem.synchronizeEntity(entity);
+            }
         }
     }
 

@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
@@ -24,10 +24,10 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
@@ -101,7 +101,7 @@ public class SelectBodyPartScreen extends Screen {
                 continue;
             Vector4i rect = display.getPositionForGui(scale, center);
             boolean isPartHealable = attributes.canUseOnPart(part, itemStack, container, selfHealing, target);
-            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, part, this.font));
+            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, part, this.font, this));
             widget.setScale(3);
             widget.setColorProvider(value -> {
                 HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
@@ -126,7 +126,7 @@ public class SelectBodyPartScreen extends Screen {
             int xOffset = (int) ((rect.x + rect.z / 2f) - center.x);
             int healthX = HealthScreen.getHealthLabelWidgetX(xOffset, rect.x, healthWidth, rect.z);
             int healthY = rect.y + (rect.w - healthHeight) / 2;
-            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part);
+            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part, this);
             healthWidget.setHealthUnitScale(HealthScreen.UNIT_SCALE);
             healthWidget.setEffects(effects);
             healthWidget.setFrameColor(isPartHealable ? widget.getColor() : 0xFF << 24);
@@ -154,7 +154,7 @@ public class SelectBodyPartScreen extends Screen {
 
     private void bodyPartClicked(Limb part) {
         InteractionTarget target = new InteractionTarget(this.selfHealing, this.entityId, part.getLimbCode());
-        ClientPacketDistributor.sendToServer(new C2S_SelectBodyPart(target));
+        PacketDistributor.sendToServer(new C2S_SelectBodyPart(target));
         this.minecraft.setScreen(null);
     }
 

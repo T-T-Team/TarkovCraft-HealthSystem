@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "I": "#c:nuggets/iron",
-    "P": "minecraft:paper",
-    "B": "minecraft:glass_bottle",
-    "T": "minecraft:ghast_tear"
+    "I": {
+      "tag": "c:nuggets/iron"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "B": {
+      "item": "minecraft:glass_bottle"
+    },
+    "T": {
+      "item": "minecraft:ghast_tear"
+    }
   },
   "pattern": [
     " I ",

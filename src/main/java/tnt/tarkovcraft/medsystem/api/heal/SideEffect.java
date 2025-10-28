@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.api.heal;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
@@ -81,7 +80,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
     }
 
     @Override
-    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag) {
         if (this.template.hasCustomTooltip()) {
             this.template.addCustomTooltip(tooltipAdder);
         } else {

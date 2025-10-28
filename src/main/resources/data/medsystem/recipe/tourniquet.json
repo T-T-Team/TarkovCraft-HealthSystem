@@ -2,9 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "L": "#c:leathers",
-    "I": "#c:nuggets/iron",
-    "S": "#c:rods/wooden"
+    "L": {
+      "tag": "c:leathers"
+    },
+    "I": {
+      "tag": "c:nuggets/iron"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
   },
   "pattern": [
     " S ",
