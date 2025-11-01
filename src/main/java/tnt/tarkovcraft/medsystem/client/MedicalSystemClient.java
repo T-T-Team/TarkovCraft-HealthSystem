@@ -4,8 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.toma.configuration.Configuration;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -68,6 +71,8 @@ public final class MedicalSystemClient {
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
         NeoForge.EVENT_BUS.addListener(ShaderHelper::updateActiveEffects);
 
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
@@ -112,5 +117,26 @@ public final class MedicalSystemClient {
 
     private void registerRangeSelectItemModelProperties(RegisterRangeSelectItemModelPropertyEvent event) {
         event.register(MedicalSystem.resource("blood_volume"), BloodVolumeItemModelProperty.CODEC);
+    }
+
+    private void onMouseInput(InputEvent.MouseButton.Pre event) {
+        this.cancelInputEventIfUnconscious(event);
+    }
+
+    private void onMouseWheelInput(InputEvent.MouseScrollingEvent event) {
+        this.cancelInputEventIfUnconscious(event);
+    }
+
+    private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Player player = minecraft.player;
+        if (player == null)
+            return;
+        Screen screen = minecraft.screen;
+        if (screen != null)
+            return; // allows screen events
+        if (BloodSystem.isEntityUnconscious(player)) {
+            event.setCanceled(true);
+        }
     }
 }
