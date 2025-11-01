@@ -210,9 +210,19 @@
   "config.medsystem-client.option.transparency.comment.0": "Health overlay transparency",
   "config.medsystem-client.option.deadLimbColor": "Dead limb color",
   "config.medsystem-client.option.deadLimbColor.comment.0": "Overlay color for dead body parts",
-  "config.medsystem-client.option.colorSchema": "Overlay color for dead body parts",
+  "config.medsystem-client.option.colorSchema": "Body part health color schema",
   "config.medsystem-client.option.colorSchema.entry": "Color input",
   "config.medsystem-client.option.colorSchema.comment.0": "Color schema used for color blending of body part overlay based on the part health",
   "config.medsystem-client.option.renderHealth": "Render health",
-  "config.medsystem-client.option.renderHealth.comment.0": "Allows you to toggle default health HUD overlay"
+  "config.medsystem-client.option.renderHealth.comment.0": "Allows you to toggle default health HUD overlay",
+  "config.medsystem-client.option.enabled": "Render",
+  "config.medsystem-client.option.enabled.comment.0": "Toggles the overlay",
+  "config.medsystem-client.option.horizontalAlignment": "Horizontal alignment",
+  "config.medsystem-client.option.horizontalAlignment.comment.0": "Set horizontal alignment for the overlay",
+  "config.medsystem-client.option.verticalAlignment": "Vertical alignment",
+  "config.medsystem-client.option.verticalAlignment.comment.0": "Set vertical alignment for the overlay",
+  "config.medsystem-client.option.x": "X axis offset",
+  "config.medsystem-client.option.x.comment.0": "Set x axis offset for the overlay",
+  "config.medsystem-client.option.y": "Y axis offset",
+  "config.medsystem-client.option.y.comment.0": "Set y axis offset for the overlay"
 }
