@@ -1,4 +1,5 @@
 {
+  "identifier": "medsystem:firstaid",
   "description": {
     "translate": "skill.medsystem.firstaid"
   },

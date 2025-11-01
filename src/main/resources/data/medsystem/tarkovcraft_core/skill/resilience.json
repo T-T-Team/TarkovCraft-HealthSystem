@@ -1,4 +1,5 @@
 {
+  "identifier": "medsystem:resilience",
   "description": {
     "translate": "skill.medsystem.resilience"
   },

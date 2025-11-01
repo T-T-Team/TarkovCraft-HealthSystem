@@ -1,4 +1,5 @@
 {
+  "identifier": "medsystem:armors",
   "description": {
     "translate": "skill.medsystem.armors"
   },

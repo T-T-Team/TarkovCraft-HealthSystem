@@ -1,4 +1,5 @@
 {
+  "identifier": "medsystem:surgery",
   "description": {
     "translate": "skill.medsystem.surgery"
   },
