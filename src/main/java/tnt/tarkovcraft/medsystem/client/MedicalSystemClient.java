@@ -5,17 +5,17 @@ import dev.toma.configuration.Configuration;
 import dev.toma.configuration.config.format.ConfigFormats;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
@@ -73,6 +73,8 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerOnScreenHints);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
 
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
@@ -119,5 +121,26 @@ public final class MedicalSystemClient {
 
     private void registerOnScreenHints(RegisterOnScreenHintEvent event) {
         event.register(new GiveUpOnScreenHint());
+    }
+
+    private void onMouseInput(InputEvent.MouseButton.Pre event) {
+        this.cancelInputEventIfUnconscious(event);
+    }
+
+    private void onMouseWheelInput(InputEvent.MouseScrollingEvent event) {
+        this.cancelInputEventIfUnconscious(event);
+    }
+
+    private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Player player = minecraft.player;
+        if (player == null)
+            return;
+        Screen screen = minecraft.screen;
+        if (screen != null)
+            return; // allows screen events
+        if (BloodSystem.isEntityUnconscious(player)) {
+            event.setCanceled(true);
+        }
     }
 }
