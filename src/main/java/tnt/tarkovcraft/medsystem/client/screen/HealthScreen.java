@@ -55,7 +55,7 @@ public class HealthScreen extends CharacterSubScreen {
         List<IconWithLabel> list = new ArrayList<>();
         list.add(new IconWithLabel(
                         HEALTH_ICON,
-                        () -> Component.literal(Mth.ceil(healthContainer.getHealth() * UNIT_SCALE) + "/" + Mth.ceil(healthContainer.getMaxHealth() * UNIT_SCALE)),
+                        () -> Component.literal(Mth.floor(healthContainer.getHealth() * UNIT_SCALE) + "/" + Mth.floor(healthContainer.getMaxHealth() * UNIT_SCALE)),
                         0xFF55FF55, 0xFF55FF55
                 )
         );
