@@ -526,8 +526,16 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING"
+            "type": "medsystem:or",
+            "values": [
+              {
+                "type": "medsystem:pose",
+                "allow": "SWIMMING"
+              },
+              {
+                "type": "medsystem:unconscious"
+              }
+            ]
           },
           "apply": [
             {
@@ -543,8 +551,16 @@
           "if": {
             "type": "medsystem:not",
             "child": {
-              "type": "medsystem:pose",
-              "allow": "SWIMMING"
+              "type": "medsystem:or",
+              "values": [
+                {
+                  "type": "medsystem:pose",
+                  "allow": "SWIMMING"
+                },
+                {
+                  "type": "medsystem:unconscious"
+                }
+              ]
             }
           },
           "apply": {
@@ -575,8 +591,16 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING"
+            "type": "medsystem:or",
+            "values": [
+              {
+                "type": "medsystem:pose",
+                "allow": "SWIMMING"
+              },
+              {
+                "type": "medsystem:unconscious"
+              }
+            ]
           },
           "apply": [
             {
@@ -616,8 +640,16 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING"
+            "type": "medsystem:or",
+            "values": [
+              {
+                "type": "medsystem:pose",
+                "allow": "SWIMMING"
+              },
+              {
+                "type": "medsystem:unconscious"
+              }
+            ]
           },
           "apply": [
             {
@@ -652,8 +684,16 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING"
+            "type": "medsystem:or",
+            "values": [
+              {
+                "type": "medsystem:pose",
+                "allow": "SWIMMING"
+              },
+              {
+                "type": "medsystem:unconscious"
+              }
+            ]
           },
           "apply": [
             {
@@ -690,8 +730,16 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING"
+            "type": "medsystem:or",
+            "values": [
+              {
+                "type": "medsystem:pose",
+                "allow": "SWIMMING"
+              },
+              {
+                "type": "medsystem:unconscious"
+              }
+            ]
           },
           "apply": [
             {
@@ -734,8 +782,16 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING"
+            "type": "medsystem:or",
+            "values": [
+              {
+                "type": "medsystem:pose",
+                "allow": "SWIMMING"
+              },
+              {
+                "type": "medsystem:unconscious"
+              }
+            ]
           },
           "apply": [
             {
@@ -793,8 +849,16 @@
         },
         {
           "if": {
-            "type": "medsystem:pose",
-            "allow": "SWIMMING"
+            "type": "medsystem:or",
+            "values": [
+              {
+                "type": "medsystem:pose",
+                "allow": "SWIMMING"
+              },
+              {
+                "type": "medsystem:unconscious"
+              }
+            ]
           },
           "apply": [
             {

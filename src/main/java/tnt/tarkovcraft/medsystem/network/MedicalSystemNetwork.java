@@ -10,10 +10,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
-import tnt.tarkovcraft.medsystem.network.message.C2S_SelectBodyPart;
-import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
-import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
+import tnt.tarkovcraft.medsystem.network.message.*;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -33,6 +30,7 @@ public final class MedicalSystemNetwork {
         PayloadRegistrar registry = event.registrar(NETWORK_ID).executesOn(HandlerThread.MAIN);
 
         registry.playToClient(S2C_OpenBodyPartSelectScreen.TYPE, S2C_OpenBodyPartSelectScreen.CODEC, S2C_OpenBodyPartSelectScreen::handleMessage);
+        registry.playToClient(S2C_RefreshEntityDimensions.TYPE, S2C_RefreshEntityDimensions.CODEC, S2C_RefreshEntityDimensions::handleMessage);
 
         registry.playToServer(C2S_SelectBodyPart.TYPE, C2S_SelectBodyPart.CODEC, C2S_SelectBodyPart::handleMessage);
         registry.playToServer(C2S_RequestGiveUp.TYPE, C2S_RequestGiveUp.CODEC, C2S_RequestGiveUp::handleMessage);

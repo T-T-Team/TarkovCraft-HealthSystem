@@ -16,9 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.*;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
@@ -37,6 +35,7 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.network.message.S2C_RefreshEntityDimensions;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -60,7 +59,6 @@ public final class BloodData {
     public static final ResourceLocation ATTR_UNCONSCIOUS = MedicalSystem.resource("unconscious");
     public static final ResourceLocation ATTR_DEBUFF = MedicalSystem.resource("blood_debuff");
     public static final UUID UUID_DEBUFF = UUID.fromString("6079d919-84b8-4e8b-9639-bbfd8d313ee1");
-    public static final Pose UNCONSCIOUS_POSE = Pose.SWIMMING;
     public static final EntityDimensions PLAYER_UNCONSCIOUS_DIMENSIONS = EntityDimensions.scalable(1.4F, 0.4F);
 
     private final float maxBloodVolume;
@@ -85,6 +83,8 @@ public final class BloodData {
         this.updateConsciousStatus(entity, false);
         if (this.changed) {
             this.updateEffects(entity);
+            entity.refreshDimensions();
+            S2C_RefreshEntityDimensions.broadcast(entity);
             this.changed = false;
             this.sync(entity);
         }
@@ -103,6 +103,7 @@ public final class BloodData {
                     this.updateConsciousStatus(entity, true);
                 } else {
                     this.setUnconsciousTime(onWakeUp.getUnconsciousTime(), info);
+                    this.sync(entity);
                 }
             }
         }
@@ -278,17 +279,13 @@ public final class BloodData {
         if (!entity.isAlive())
             return;
         boolean unconscious = this.isUnconscious();
-        if (entity instanceof Player player) {
-            if (wakeUp) {
-                player.setForcedPose(null);
-            }
-            if (unconscious && !entity.isPassenger() && player.getForcedPose() == null) {
-                player.setForcedPose(UNCONSCIOUS_POSE);
-            }
-        }
         HealthContainer container = HealthSystem.getHealthData(entity);
         StatusEffectMap effects = container.getGlobalStatusEffects();
         AttributeMap attributeMap = entity.getAttributes();
+        if (wakeUp) {
+            entity.refreshDimensions();
+            S2C_RefreshEntityDimensions.broadcast(entity);
+        }
         if (unconscious) {
             this.addUnconsciousModifier(attributeMap, Attributes.MOVEMENT_SPEED);
             this.addUnconsciousModifier(attributeMap, Attributes.JUMP_STRENGTH);

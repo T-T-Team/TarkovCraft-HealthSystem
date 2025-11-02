@@ -362,7 +362,7 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void adjustHitboxSize(EntityEvent.Size event) {
         Entity entity = event.getEntity();
-        if (entity.getType() == EntityType.PLAYER && event.getPose() == BloodData.UNCONSCIOUS_POSE) {
+        if (entity.getType() == EntityType.PLAYER && !entity.isPassenger()) {
             Player player = (Player) entity;
             if (BloodSystem.isEntityUnconscious(player)) {
                 event.setNewSize(BloodData.PLAYER_UNCONSCIOUS_DIMENSIONS);
