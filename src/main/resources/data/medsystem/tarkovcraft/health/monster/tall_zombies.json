@@ -28,7 +28,7 @@
           "events": {
             "type": "medsystem:mob_effect",
             "effect": "minecraft:slowness",
-            "duration": -1,
+            "duration": 40,
             "amplifier": 2
           }
         }
