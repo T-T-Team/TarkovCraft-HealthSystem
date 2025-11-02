@@ -5,6 +5,8 @@ import dev.toma.configuration.Configuration;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -15,6 +17,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 import org.lwjgl.glfw.GLFW;
@@ -68,6 +71,7 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerRangeSelectItemModelProperties);
         modEventBus.addListener(this::registerKeyBinds);
         modEventBus.addListener(this::registerOnScreenHints);
+        modEventBus.addListener(this::registerRenderStateExtensions);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
@@ -80,6 +84,18 @@ public final class MedicalSystemClient {
 
     public static MedSystemClientConfig getConfig() {
         return config;
+    }
+
+    @SuppressWarnings({"unchecked", "RedundantCast"})
+    private void registerRenderStateExtensions(RegisterRenderStateModifiersEvent event) {
+        event.registerEntityModifier(
+                (Class<? extends AvatarRenderer<AbstractClientPlayer>>)(Object)AvatarRenderer.class,
+                (entity, state) -> {
+                    state.setRenderData(RenderStateExtensions.PASSENGER, entity.isPassenger());
+                    state.setRenderData(RenderStateExtensions.UNCONSCIOUS, BloodSystem.isEntityUnconscious(entity));
+                }
+        );
+
     }
 
     private void registerGuiLayer(RegisterGuiLayersEvent event) {

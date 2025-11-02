@@ -11,7 +11,10 @@ public final class MedSystemTransformConditions {
     public static final DeferredRegister<TransformConditionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.TRANSFORM_CONDITION, MedicalSystem.MOD_ID);
 
     public static final Supplier<TransformConditionType<NotTransformCondition>> NOT = REGISTRY.register("not", key -> new TransformConditionType<>(key, NotTransformCondition.CODEC));
+    public static final Supplier<TransformConditionType<OrTransformCondition>> OR = REGISTRY.register("or", key -> new TransformConditionType<>(key, OrTransformCondition.CODEC));
+    public static final Supplier<TransformConditionType<AndTransformCondition>> AND = REGISTRY.register("and", key -> new TransformConditionType<>(key, AndTransformCondition.CODEC));
     public static final Supplier<TransformConditionType<EntityPoseTransformCondition>> ENTITY_POSE = REGISTRY.register("pose", key -> new TransformConditionType<>(key, EntityPoseTransformCondition.CODEC));
     public static final Supplier<TransformConditionType<IsSittingTransformCondition>> IS_SITTING = REGISTRY.register("is_sitting", key -> new TransformConditionType<>(key, IsSittingTransformCondition.CODEC));
     public static final Supplier<TransformConditionType<IsBabyTransformCondition>> IS_BABY = REGISTRY.register("is_baby", key -> new TransformConditionType<>(key, IsBabyTransformCondition.CODEC));
+    public static final Supplier<TransformConditionType<UnconsciousTransformCondition>> UNCONSCIOUS = REGISTRY.register("unconscious", key -> new TransformConditionType<>(key, UnconsciousTransformCondition.CODEC));
 }
