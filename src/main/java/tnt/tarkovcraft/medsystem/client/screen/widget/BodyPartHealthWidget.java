@@ -167,6 +167,6 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private Component getStatusTitle() {
         return this.isHovered
                 ? this.part.getDisplayName()
-                : Component.literal(Mth.ceil(this.part.getHealth() * this.healthScale) + "/" + Mth.ceil(this.part.getMaxHealth() * this.healthScale));
+                : Component.literal(Mth.floor(this.part.getHealth() * this.healthScale) + "/" + Mth.floor(this.part.getMaxHealth() * this.healthScale));
     }
 }

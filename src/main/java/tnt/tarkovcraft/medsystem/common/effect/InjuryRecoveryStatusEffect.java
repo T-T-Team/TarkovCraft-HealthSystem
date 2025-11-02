@@ -76,10 +76,6 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         }
     }
 
-    public void setReduction(int reduction) {
-        this.reduction = reduction;
-    }
-
     @Override
     public StatusEffect copy() {
         return new InjuryRecoveryStatusEffect(this.getDuration(), this.reduction);

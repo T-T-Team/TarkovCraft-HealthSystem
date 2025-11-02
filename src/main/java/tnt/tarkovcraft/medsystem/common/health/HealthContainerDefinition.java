@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
@@ -47,7 +48,6 @@ public final class HealthContainerDefinition {
         return hitboxes;
     }
 
-    // FIXME make health setting more compatible with mods reducing health by default
     public void bind(LivingEntity entity) {
         // bind new container only to entities without existing health container or with invalid health data
         HealthContainer data = HealthSystem.hasCustomHealth(entity) ? HealthSystem.getHealthData(entity) : null;
@@ -57,12 +57,13 @@ public final class HealthContainerDefinition {
             data.clearBoundData(entity);
         }
 
-        float maxHealth = this.getMaxHealth();
-        AttributeInstance instance = entity.getAttribute(Attributes.MAX_HEALTH);
-        if (instance != null) {
-            instance.setBaseValue(maxHealth);
-        }
         HealthContainer container = new HealthContainer(entity);
+        float containerMaxHealth = this.getMaxHealth();
+        float entityMaxHealth = entity.getMaxHealth();
+        float diff = containerMaxHealth - entityMaxHealth;
+        AttributeModifier modifier = new AttributeModifier(HealthSystem.IDENTIFIER, diff, AttributeModifier.Operation.ADD_VALUE);
+        AttributeInstance instance = entity.getAttribute(Attributes.MAX_HEALTH);
+        instance.addOrReplacePermanentModifier(modifier);
         container.updateHealth(entity);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
     }
