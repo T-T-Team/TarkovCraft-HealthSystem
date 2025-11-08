@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "F": {
-      "tag": "c:flowers/small"
+      "tag": "minecraft:small_flowers"
     },
     "P": {
       "item": "minecraft:paper"

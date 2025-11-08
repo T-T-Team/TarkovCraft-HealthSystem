@@ -19,7 +19,7 @@
       "medsystem:splint",
       "medsystem:tourniquet",
       "medsystem:bloodbag",
-      "medsystem:morpine_injector",
+      "medsystem:morphine_injector",
       "medsystem:regenerative_injector"
     ]
   }
