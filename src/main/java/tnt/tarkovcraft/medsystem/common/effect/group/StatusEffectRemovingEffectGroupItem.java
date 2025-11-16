@@ -13,9 +13,9 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 

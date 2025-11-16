@@ -8,8 +8,8 @@ import net.minecraft.world.entity.player.Player;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.reaction.event.HealthSourceEvent;
 import tnt.tarkovcraft.medsystem.common.health.reaction.event.HealthSourceEventType;
 

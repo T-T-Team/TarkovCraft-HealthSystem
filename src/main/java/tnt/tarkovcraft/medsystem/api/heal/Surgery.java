@@ -17,8 +17,8 @@ import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.effect.InjuryRecoveryStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
 import java.util.function.Consumer;

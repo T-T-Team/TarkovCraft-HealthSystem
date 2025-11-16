@@ -8,8 +8,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemChanceFunctions;
 
 import javax.annotation.Nullable;

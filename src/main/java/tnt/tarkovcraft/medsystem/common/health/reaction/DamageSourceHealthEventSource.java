@@ -9,8 +9,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.reaction.function.ChanceFunction;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactions;
 

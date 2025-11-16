@@ -10,8 +10,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.reaction.HealthEventSource;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthReactionResponses;
 

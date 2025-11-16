@@ -2,9 +2,9 @@ package tnt.tarkovcraft.medsystem.common.health.math;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
 
 import java.util.ArrayList;
 import java.util.List;
