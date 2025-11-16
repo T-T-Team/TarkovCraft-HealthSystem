@@ -6,6 +6,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.armor.ArmorMaterial;
+import tnt.tarkovcraft.medsystem.common.armor.ArmorRating;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 
@@ -28,5 +30,11 @@ public final class MedSystemItemComponents {
     public static final Supplier<DataComponentType<BloodContainer>> BLOOD_CONTAINER = REGISTRY.registerComponentType("blood_container", builder -> builder
             .persistent(BloodContainer.CODEC)
             .networkSynchronized(BloodContainer.STREAM_CODEC)
+    );
+    public static final Supplier<DataComponentType<ArmorRating>> ARMOR_RATING = REGISTRY.registerComponentType("armor_rating", builder -> builder
+            .persistent(ArmorRating.CODEC)
+    );
+    public static final Supplier<DataComponentType<ArmorMaterial>> ARMOR_MATERIAL = REGISTRY.registerComponentType("armor_material", builder -> builder
+            .persistent(ArmorMaterial.CODEC)
     );
 }

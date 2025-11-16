@@ -52,8 +52,6 @@ public final class HealthContainer {
     private final String rootLimbCode;
     private final StatusEffectMap statusEffects;
     private final Queue<QueuedStatusEffect> effectQueue;
-    @Deprecated
-    private DamageContext activeDamageContext;
     private boolean invalidated;
 
     public HealthContainer(IAttachmentHolder holder) {
@@ -296,19 +294,6 @@ public final class HealthContainer {
             }
         }
         return amount;
-    }
-
-    public void setDamageContext(DamageContext damageContext) {
-        if (this.activeDamageContext == null || this.activeDamageContext.getId() != damageContext.getId())
-            this.activeDamageContext = damageContext;
-    }
-
-    public void clearDamageContext() {
-        this.activeDamageContext = null;
-    }
-
-    public DamageContext getDamageContext() {
-        return this.activeDamageContext;
     }
 
     public boolean shouldDie() {

@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
+import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -43,6 +44,7 @@ public final class MedicalSystem {
         modEventBus.addListener(this::registerCustomWeightProviders);
         modEventBus.register(new MedicalSystemNetwork());
 
+        NeoForge.EVENT_BUS.register(new DamageHandler());
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
         NeoForge.EVENT_BUS.register(new BloodSystemEventHandler());
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);

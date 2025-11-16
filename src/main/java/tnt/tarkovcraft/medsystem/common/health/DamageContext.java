@@ -9,6 +9,7 @@ import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.EvenDamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class DamageContext {
@@ -17,7 +18,7 @@ public final class DamageContext {
     private final DamageSource source;
     private final long id;
     private List<HitResult> hits;
-    private List<EquipmentSlot> affectedSlots;
+    private List<EquipmentSlot> affectedSlots = new ArrayList<>();
     private HitCalculator hitCalculator;
     private DamageDistributor damageDistributor;
     private SideEffectHolder sideEffects;
@@ -43,10 +44,6 @@ public final class DamageContext {
 
     public void setHits(List<HitResult> hits) {
         this.hits = hits;
-    }
-
-    public void setAffectedSlots(List<EquipmentSlot> affectedSlots) {
-        this.affectedSlots = affectedSlots;
     }
 
     public void setDamageDistributor(DamageDistributor damageDistributor) {

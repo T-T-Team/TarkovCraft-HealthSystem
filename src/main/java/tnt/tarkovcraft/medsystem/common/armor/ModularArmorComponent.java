@@ -18,7 +18,6 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.*;
 
@@ -31,10 +30,13 @@ public class ModularArmorComponent implements ArmorComponent {
     }
 
     @Override
-    public void applyItemDamage(ArmorHurtEvent event) {
+    public boolean shouldDeflectIncomingHit(DamageSource source, LivingEntity entity, List<HitResult> hits) {
+        return false;
+    }
+
+    @Override
+    public void applyItemDamage(ArmorHurtEvent event, DamageContext context) {
         LivingEntity entity = event.getEntity();
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        DamageContext context = container.getDamageContext();
         Set<EquipmentSlot> hitSlots = new HashSet<>(context.getAffectedSlots());
         Set<EquipmentSlot> armorSlots = new HashSet<>(event.getArmorMap().keySet());
         Map<EquipmentSlot, ArmorHurtEvent.ArmorEntry> map = event.getArmorMap();
@@ -52,10 +54,8 @@ public class ModularArmorComponent implements ArmorComponent {
     }
 
     @Override
-    public void applyDamageReduction(LivingIncomingDamageEvent event) {
+    public void applyDamageReduction(LivingIncomingDamageEvent event, DamageContext context) {
         LivingEntity entity = event.getEntity();
-        HealthContainer container = HealthSystem.getHealthData(entity);
-        DamageContext context = container.getDamageContext();
         // we work only with first limb as that should be the damage entry, the rest happens "within" the entity itself
         Limb limb = context.getHits().stream().map(HitResult::limb).findFirst()
                 .orElse(null);
@@ -89,8 +89,7 @@ public class ModularArmorComponent implements ArmorComponent {
         }
     }
 
-    private void calculateReductions(Collection<EquipmentSlot> slots, DamageContext ctx, LivingEntity entity, MutableFloat armor, MutableFloat enchants) {
-        ctx.setAffectedSlots(new ArrayList<>());
+    protected void calculateReductions(Collection<EquipmentSlot> slots, DamageContext ctx, LivingEntity entity, MutableFloat armor, MutableFloat enchants) {
         double armorAttribute = entity.getAttribute(Attributes.ARMOR).getBaseValue();
         for (EquipmentSlot slot : slots) {
             ItemStack itemStack = entity.getItemBySlot(slot);
