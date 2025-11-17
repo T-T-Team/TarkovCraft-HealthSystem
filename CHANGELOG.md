@@ -1,6 +1,4 @@
-# Release 1.21.1-1.8.2
-- Fixed incorrect recipe ID in "Take damage advancement" which did not unlock morphine injector crafting
-- Fixed uncraftable items due to using empty tags
-  - First aid kit
-  - Painkillers
-  - Morphine injector
+# Release 1.21.1-1.8.3
+- Added new unconscious pose for players
+- Mobs with broken legs no longer have infinite slowness allowing you to heal them again
+- Mod compatibility improvements, entity health is modified via attribute modifier instead of forcing base attribute value directly
