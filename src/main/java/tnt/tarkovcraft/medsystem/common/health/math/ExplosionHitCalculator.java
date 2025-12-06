@@ -20,7 +20,8 @@ public class ExplosionHitCalculator implements HitCalculator {
     public static final ExplosionHitCalculator INSTANCE = new ExplosionHitCalculator();
 
     public static boolean isValidExplosionSource(DamageSource source) {
-        return source.is(DamageTypeTags.IS_EXPLOSION) && source.getSourcePosition() != null;
+        Vec3 sourcePosition = source.getSourcePosition();
+        return source.is(DamageTypeTags.IS_EXPLOSION) && !Vec3.ZERO.equals(sourcePosition);
     }
 
     @Override
