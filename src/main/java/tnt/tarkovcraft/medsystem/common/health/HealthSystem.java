@@ -113,8 +113,10 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         }
         if (source.isDirect()) {
             return MeleeHitCalculator.INSTANCE;
-        } else {
+        } else if (source.getDirectEntity() != null) {
             return ProjectileHitCalculator.INSTANCE;
+        } else {
+            return GenericHitCalculator.INSTANCE;
         }
     }
 
