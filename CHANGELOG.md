@@ -1,2 +1,2 @@
-# Release 1.21.1-1.8.4
-- Improved explosion damage calculation which should resolve conflicts with other mods
+# Release 1.21.1-1.8.5
+- Fixed incompatibility issue with SuperbWarfare mod which caused crashes
