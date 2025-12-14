@@ -10,7 +10,7 @@ public final class RenderStateExtensions {
     public static final ContextKey<Boolean> UNCONSCIOUS = create("unconscious");
 
     private static <T> ContextKey<T> create(String code) {
-        return new ContextKey<>(MedicalSystem.resource(code));
+        return new ContextKey<>(MedicalSystem.createIdentifier(code));
     }
 
     public static boolean shouldApplyUnconsciousAttributes(BaseRenderState renderState) {

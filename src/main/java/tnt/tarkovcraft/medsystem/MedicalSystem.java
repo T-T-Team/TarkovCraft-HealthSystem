@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem;
 
 import dev.toma.configuration.Configuration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -97,7 +97,7 @@ public final class MedicalSystem {
         event.register(BloodContainerWeightProvider.PROVIDER_ID, new BloodContainerWeightProvider());
     }
 
-    public static ResourceLocation resource(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier createIdentifier(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 }

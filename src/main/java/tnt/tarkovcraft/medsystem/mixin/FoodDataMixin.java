@@ -13,8 +13,6 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin {
 
-    // This will stop working if minecraft stops processing player food data on single thread
-
     @Unique
     private ServerPlayer medsystem$player;
 

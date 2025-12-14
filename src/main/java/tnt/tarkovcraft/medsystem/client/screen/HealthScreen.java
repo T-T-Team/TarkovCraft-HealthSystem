@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.client.screen;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector2f;
@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 
 public class HealthScreen extends CharacterSubScreen {
 
-    public static final ResourceLocation HEALTH_ICON = MedicalSystem.resource("textures/icons/health.png");
+    public static final Identifier HEALTH_ICON = MedicalSystem.createIdentifier("textures/icons/health.png");
     public static final float UNIT_SCALE = 10.0F;
 
     private HealthContainer healthContainer;

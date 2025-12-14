@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.network;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
@@ -20,9 +20,9 @@ public final class MedicalSystemNetwork {
     public static final int VERSION = 1;
     public static final String NETWORK_ID = "MedicalSystemNetwork@" + VERSION;
 
-    public static ResourceLocation createId(Class<? extends CustomPacketPayload> type) {
+    public static Identifier createId(Class<? extends CustomPacketPayload> type) {
         String name = type.getSimpleName().toLowerCase(Locale.ROOT);
-        return MedicalSystem.resource("net/" + name);
+        return MedicalSystem.createIdentifier("net/" + name);
     }
 
     @SubscribeEvent
@@ -45,7 +45,7 @@ public final class MedicalSystemNetwork {
 
     private record HealthContainerSynchronizationTask(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
 
-        public static final Type TYPE = new Type(MedicalSystem.resource("health_container_sync"));
+        public static final Type TYPE = new Type(MedicalSystem.createIdentifier("health_container_sync"));
 
         @Override
         public void run(Consumer<CustomPacketPayload> sender) {

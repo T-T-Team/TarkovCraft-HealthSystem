@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common.health.reaction.function;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Objects;
 
-public record ChanceFunctionType<T extends ChanceFunction>(ResourceLocation identifier, MapCodec<T> codec) {
+public record ChanceFunctionType<T extends ChanceFunction>(Identifier identifier, MapCodec<T> codec) {
 
     public static final Codec<ChanceFunction> CODEC = MedSystemRegistries.CHANCE_FUNCTION.byNameCodec().dispatch(ChanceFunction::getType, ChanceFunctionType::codec);
 

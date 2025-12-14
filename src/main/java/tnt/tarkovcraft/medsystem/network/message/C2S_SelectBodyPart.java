@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.network.message;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +21,7 @@ import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 public record C2S_SelectBodyPart(InteractionTarget target) implements CustomPacketPayload {
 
-    public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(C2S_SelectBodyPart.class);
+    public static final Identifier PACKET_ID = MedicalSystemNetwork.createId(C2S_SelectBodyPart.class);
     public static final Type<C2S_SelectBodyPart> TYPE = new Type<>(PACKET_ID);
     public static final StreamCodec<ByteBuf, C2S_SelectBodyPart> CODEC = StreamCodec.composite(
             InteractionTarget.STREAM_CODEC, C2S_SelectBodyPart::target,

@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.gui.GuiLayer;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class UnconsciousLayer implements GuiLayer {
 
-    public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/unconscious");
+    public static final Identifier LAYER_ID = MedicalSystem.createIdentifier("layer/unconscious");
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {

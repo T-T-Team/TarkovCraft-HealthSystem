@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 
 public class HealthLayer implements GuiLayer {
 
-    public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/health");
+    public static final Identifier LAYER_ID = MedicalSystem.createIdentifier("layer/health");
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
@@ -79,7 +79,7 @@ public class HealthLayer implements GuiLayer {
         for (Map.Entry<StatusEffectType<?>, List<StatusEffect>> entry : effects.entrySet()) {
             StatusEffectType<?> type = entry.getKey();
             List<StatusEffect> effectList = entry.getValue();
-            ResourceLocation icon = type.getIcon(effectList.getFirst());
+            Identifier icon = type.getIcon(effectList.getFirst());
             int x = overlayAlignment != HorizontalAlignment.RIGHT ? (int) (overlayPos.x() + overlayWidth) : (int) (overlayPos.x() - 12);
             int y = (int) (overlayPos.y() + index++ * 12);
 
@@ -113,6 +113,6 @@ public class HealthLayer implements GuiLayer {
         int baseColor = Integer.decode(colorSchema[stepIndex]);
         int transitionColor = Integer.decode(colorSchema[stepIndex + 1]);
         float transitionPercent = (percent - stepIndex * step) / step;
-        return ARGB.lerp(transitionPercent, baseColor, transitionColor) & 0xFFFFFF;
+        return ARGB.srgbLerp(transitionPercent, baseColor, transitionColor) & 0xFFFFFF;
     }
 }

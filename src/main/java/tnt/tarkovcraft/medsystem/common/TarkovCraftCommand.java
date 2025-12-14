@@ -52,7 +52,7 @@ public final class TarkovCraftCommand {
                 Commands.literal("tarkovcraft")
                         .then(
                                 Commands.literal("effect")
-                                        .requires(src -> src.hasPermission(2))
+                                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                         .then(
                                                 Commands.argument("target", EntityArgument.entities())
                                                         .then(
@@ -126,7 +126,7 @@ public final class TarkovCraftCommand {
                         )
                         .then(
                                 Commands.literal("hurt")
-                                        .requires(src -> src.hasPermission(2))
+                                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                         .then(
                                                 Commands.argument("targets", EntityArgument.entities())
                                                         .then(
@@ -156,7 +156,7 @@ public final class TarkovCraftCommand {
                         )
                         .then(
                                 Commands.literal("blood")
-                                        .requires(src -> src.hasPermission(2))
+                                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                         .then(
                                                 Commands.argument("target", EntityArgument.entity())
                                                         .executes(TarkovCraftCommand::getBloodInfo)
@@ -168,7 +168,7 @@ public final class TarkovCraftCommand {
                         )
                         .then(
                                 Commands.literal("unconscious")
-                                        .requires(src -> src.hasPermission(2))
+                                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                                         .then(
                                                 Commands.argument("target", EntityArgument.entity())
                                                         .then(
@@ -218,7 +218,7 @@ public final class TarkovCraftCommand {
     private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable Limb limb, HealthContainer container, Holder<StatusEffectType<?>> holder, int duration, int delay) throws CommandSyntaxException {
         StatusEffectType<T> type = (StatusEffectType<T>) holder.value();
         if (type.isSpecialStatusEffect()) {
-            throw INVALID_STATUS_EFFECT.create(holder.getKey().location());
+            throw INVALID_STATUS_EFFECT.create(holder.getKey().identifier());
         }
         StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, entity, limb, container, holder.value());
         StatusEffectHelper.addEffect(map, entity, limb, delay, type.createEffect(duration));
@@ -228,7 +228,7 @@ public final class TarkovCraftCommand {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
         StatusEffectType<?> type = reference.value();
         if (type.isSpecialStatusEffect()) {
-            throw INVALID_STATUS_EFFECT.create(reference.getKey().location());
+            throw INVALID_STATUS_EFFECT.create(reference.getKey().identifier());
         }
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
@@ -247,7 +247,7 @@ public final class TarkovCraftCommand {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
         StatusEffectType<?> type = reference.value();
         if (type.isSpecialStatusEffect()) {
-            throw INVALID_STATUS_EFFECT.create(reference.getKey().location());
+            throw INVALID_STATUS_EFFECT.create(reference.getKey().identifier());
         }
         String bodyPartId = StringArgumentType.getString(ctx, "limb");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");

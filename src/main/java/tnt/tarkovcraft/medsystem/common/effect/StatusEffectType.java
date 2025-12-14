@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
@@ -22,7 +22,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     public static final Codec<StatusEffect> CODEC = MedSystemRegistries.STATUS_EFFECT.byNameCodec().dispatch(StatusEffect::getType, t -> t.codec);
 
     private final Holder<StatusEffectType<?>> intrusiveHolder = MedSystemRegistries.STATUS_EFFECT.createIntrusiveHolder(this);
-    private final ResourceLocation identifier;
+    private final Identifier identifier;
     private final Factory<S> factory;
     private final MapCodec<S> codec;
     private final BinaryOperator<S> merger;
@@ -32,8 +32,8 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
     private final int healingPriority;
-    private final Collection<ResourceLocation> blockedPostEffects;
-    private final ResourceLocation icon;
+    private final Collection<Identifier> blockedPostEffects;
+    private final Identifier icon;
     private final Component displayName;
 
     private StatusEffectType(Builder<S> builder) {
@@ -52,7 +52,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
     }
 
-    public static <S extends StatusEffect> Builder<S> builder(ResourceLocation identifier, Factory<S> factory) {
+    public static <S extends StatusEffect> Builder<S> builder(Identifier identifier, Factory<S> factory) {
         return new Builder<>(identifier, factory);
     }
 
@@ -60,11 +60,11 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.intrusiveHolder.is(tag);
     }
 
-    public ResourceLocation getIcon(@Nullable StatusEffect instance) {
+    public Identifier getIcon(@Nullable StatusEffect instance) {
         return instance != null && instance.getCustomIcon() != null ? instance.getCustomIcon() : this.icon;
     }
 
-    public ResourceLocation getIcon() {
+    public Identifier getIcon() {
         return this.getIcon(null);
     }
 
@@ -121,11 +121,11 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.blockedPostEffects != null;
     }
 
-    public Collection<ResourceLocation> getBlockedPostEffects() {
+    public Collection<Identifier> getBlockedPostEffects() {
         return this.blockedPostEffects;
     }
 
-    public ResourceLocation getIdentifier() {
+    public Identifier getIdentifier() {
         return identifier;
     }
 
@@ -146,10 +146,10 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public static final class Builder<S extends StatusEffect> {
 
-        private final ResourceLocation identifier;
+        private final Identifier identifier;
         private final Factory<S> factory;
         private final Set<LimbType> limbTypes = EnumSet.noneOf(LimbType.class);
-        private ResourceLocation[] blockedPostEffects;
+        private Identifier[] blockedPostEffects;
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
         private EffectVisibility visibility = EffectVisibility.ALWAYS;
@@ -158,7 +158,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         private boolean special;
         private int healingPriority = 0;
 
-        private Builder(ResourceLocation identifier, Factory<S> factory) {
+        private Builder(Identifier identifier, Factory<S> factory) {
             this.identifier = identifier;
             this.factory = factory;
         }
@@ -202,7 +202,7 @@ public final class StatusEffectType<S extends StatusEffect> {
             return this.setPostEffectsWithBlocking();
         }
 
-        public Builder<S> setPostEffectsWithBlocking(ResourceLocation... blocking) {
+        public Builder<S> setPostEffectsWithBlocking(Identifier... blocking) {
             this.blockedPostEffects = blocking;
             return this;
         }

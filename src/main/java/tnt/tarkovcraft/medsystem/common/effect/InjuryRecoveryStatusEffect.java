@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
@@ -53,7 +53,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         this.reduction = Math.min((int) limb.getMaxHealth() - 1, this.reduction);
         AttributeMap map = entity.getAttributes();
         AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
-        ResourceLocation modifierId = this.getUniqueModifierId(limb);
+        Identifier modifierId = this.getUniqueModifierId(limb);
         AttributeModifier modifier = instance.getModifier(modifierId);
         if (modifier == null || modifier.amount() != -this.reduction) {
             float newMaxHealth = limb.getMaxHealth() - this.reduction;
@@ -91,8 +91,8 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         return MedSystemStatusEffects.INJURY_RECOVERY.value();
     }
 
-    private ResourceLocation getUniqueModifierId(Limb part) {
-        return MedicalSystem.resource("health_reduction/" + part.getLimbCode().toLowerCase(Locale.ROOT));
+    private Identifier getUniqueModifierId(Limb part) {
+        return MedicalSystem.createIdentifier("health_reduction/" + part.getLimbCode().toLowerCase(Locale.ROOT));
     }
 
     public static InjuryRecoveryStatusEffect merge(InjuryRecoveryStatusEffect initial, InjuryRecoveryStatusEffect additional) {

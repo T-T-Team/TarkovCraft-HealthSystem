@@ -43,7 +43,7 @@ import java.util.UUID;
 @Mod(value = MedicalSystem.MOD_ID, dist = Dist.CLIENT)
 public final class MedicalSystemClient {
 
-    public static final KeyMapping.Category KEYMAPPING_CATEGORY = new KeyMapping.Category(MedicalSystem.resource("keymap"));
+    public static final KeyMapping.Category KEYMAPPING_CATEGORY = new KeyMapping.Category(MedicalSystem.createIdentifier("keymap"));
     public static final KeyMapping KEY_GIVE_UP = new KeyMapping(
             TextHelper.createKeybindName(MedicalSystem.MOD_ID, "give_up"),
             KeyConflictContext.IN_GAME,
@@ -128,11 +128,11 @@ public final class MedicalSystemClient {
     }
 
     private void registerConditionalItemModelProperties(RegisterConditionalItemModelPropertyEvent event) {
-        event.register(MedicalSystem.resource("empty_blood_container"), IsEmptyBloodContainerItemModelProperty.CODEC);
+        event.register(MedicalSystem.createIdentifier("empty_blood_container"), IsEmptyBloodContainerItemModelProperty.CODEC);
     }
 
     private void registerRangeSelectItemModelProperties(RegisterRangeSelectItemModelPropertyEvent event) {
-        event.register(MedicalSystem.resource("blood_volume"), BloodVolumeItemModelProperty.CODEC);
+        event.register(MedicalSystem.createIdentifier("blood_volume"), BloodVolumeItemModelProperty.CODEC);
     }
 
     private void onMouseInput(InputEvent.MouseButton.Pre event) {

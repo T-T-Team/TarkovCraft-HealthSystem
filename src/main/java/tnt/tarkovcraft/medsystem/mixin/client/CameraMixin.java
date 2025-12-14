@@ -13,7 +13,7 @@ import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 
-    @Shadow public abstract Entity getEntity();
+    @Shadow private Entity entity;
 
     @Inject(
             method = "setRotation(FFF)V",
@@ -21,8 +21,7 @@ public abstract class CameraMixin {
             cancellable = true
     )
     private void medsystem$setRotation(CallbackInfo ci) {
-        Entity entity = getEntity();
-        if (entity instanceof Player player && BloodSystem.isEntityUnconscious(player)) {
+        if (this.entity instanceof Player player && BloodSystem.isEntityUnconscious(player)) {
             ci.cancel();
         }
     }

@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -57,8 +57,8 @@ public final class BloodData {
             BloodData::new
     );
 
-    public static final ResourceLocation ATTR_UNCONSCIOUS = MedicalSystem.resource("unconscious");
-    public static final ResourceLocation ATTR_DEBUFF = MedicalSystem.resource("blood_debuff");
+    public static final Identifier ATTR_UNCONSCIOUS = MedicalSystem.createIdentifier("unconscious");
+    public static final Identifier ATTR_DEBUFF = MedicalSystem.createIdentifier("blood_debuff");
     public static final UUID UUID_DEBUFF = UUID.fromString("6079d919-84b8-4e8b-9639-bbfd8d313ee1");
     public static final EntityDimensions PLAYER_UNCONSCIOUS_DIMENSIONS = EntityDimensions.scalable(1.4F, 0.4F);
 
@@ -310,7 +310,7 @@ public final class BloodData {
         }
     }
 
-    private void addModifier(AttributeMap map, Holder<Attribute> attribute, ResourceLocation id, double value, boolean replace) {
+    private void addModifier(AttributeMap map, Holder<Attribute> attribute, Identifier id, double value, boolean replace) {
         AttributeInstance instance = map.getInstance(attribute);
         if (!instance.hasModifier(id)) {
             instance.addTransientModifier(new AttributeModifier(id, value, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
@@ -323,7 +323,7 @@ public final class BloodData {
         this.addModifier(map, attribute, ATTR_UNCONSCIOUS, -1.0, false);
     }
 
-    private void removeModifier(AttributeMap map, ResourceLocation id, Holder<Attribute> attribute) {
+    private void removeModifier(AttributeMap map, Identifier id, Holder<Attribute> attribute) {
         AttributeInstance instance = map.getInstance(attribute);
         if (instance.hasModifier(id)) {
             instance.removeModifier(id);

@@ -24,12 +24,12 @@ public final class MedSystemRegistries {
 
     public static final class Keys {
 
-        public static final ResourceKey<Registry<TransformConditionType<?>>> TRANSFORM_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.resource("transform/condition"));
-        public static final ResourceKey<Registry<EntityHitboxTransformType<?>>> TRANSFORM = ResourceKey.createRegistryKey(MedicalSystem.resource("transform/transformer"));
-        public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect"));
-        public static final ResourceKey<Registry<HealthEventSourceType<?>>> HEALTH_REACTION = ResourceKey.createRegistryKey(MedicalSystem.resource("health/reaction"));
-        public static final ResourceKey<Registry<HealthSourceEventType<?>>> HEALTH_REACTION_RESPONSE = ResourceKey.createRegistryKey(MedicalSystem.resource("health/reaction_response"));
-        public static final ResourceKey<Registry<ChanceFunctionType<?>>> CHANCE_FUNCTION = ResourceKey.createRegistryKey(MedicalSystem.resource("health/chance_function"));
-        public static final ResourceKey<Registry<EffectGroupItemType<?>>> EFFECT_GROUP_ITEM = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect_group_item"));
+        public static final ResourceKey<Registry<TransformConditionType<?>>> TRANSFORM_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("transform/condition"));
+        public static final ResourceKey<Registry<EntityHitboxTransformType<?>>> TRANSFORM = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("transform/transformer"));
+        public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("status_effect"));
+        public static final ResourceKey<Registry<HealthEventSourceType<?>>> HEALTH_REACTION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health/reaction"));
+        public static final ResourceKey<Registry<HealthSourceEventType<?>>> HEALTH_REACTION_RESPONSE = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health/reaction_response"));
+        public static final ResourceKey<Registry<ChanceFunctionType<?>>> CHANCE_FUNCTION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health/chance_function"));
+        public static final ResourceKey<Registry<EffectGroupItemType<?>>> EFFECT_GROUP_ITEM = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("status_effect_group_item"));
     }
 }

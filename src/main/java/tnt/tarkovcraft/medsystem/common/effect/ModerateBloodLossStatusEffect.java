@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
@@ -29,9 +29,9 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
             Component.translatable("status_effect.medsystem.moderate_bloodloss"),
             Component.translatable("status_effect.medsystem.critical_bloodloss")
     };
-    private static final ResourceLocation[] ICONS = {
-            MedicalSystem.resource("textures/icons/status_effect/moderate_bloodloss.png"),
-            MedicalSystem.resource("textures/icons/status_effect/critical_bloodloss.png"),
+    private static final Identifier[] ICONS = {
+            MedicalSystem.createIdentifier("textures/icons/status_effect/moderate_bloodloss.png"),
+            MedicalSystem.createIdentifier("textures/icons/status_effect/critical_bloodloss.png"),
     };
     private static final Component DESCRIPTION_CRITICAL_STATE = Component.translatable("status_effect.medsystem.critical_bloodloss.info").withStyle(ChatFormatting.DARK_GRAY);
 
@@ -81,7 +81,7 @@ public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public ResourceLocation getCustomIcon() {
+    public Identifier getCustomIcon() {
         return ICONS[this.critical ? 1 : 0];
     }
 

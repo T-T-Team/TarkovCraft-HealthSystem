@@ -76,7 +76,7 @@ public final class LimbDefinition {
         return reactions;
     }
 
-    public LimbType getBodyPartGroup() {
+    public LimbType getLimbType() {
         return limbType;
     }
 }

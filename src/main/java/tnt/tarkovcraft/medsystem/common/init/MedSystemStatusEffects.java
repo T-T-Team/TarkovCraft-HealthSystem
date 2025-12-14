@@ -113,7 +113,7 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .combineEffects(StatusEffect::keep)
             .setSpecial()
-            .setPostEffectsWithBlocking(MedicalSystem.resource("pain_relief"))
+            .setPostEffectsWithBlocking(MedicalSystem.createIdentifier("pain_relief"))
             .build()
     );
     public static final Holder<StatusEffectType<?>> MODERATE_BLOODLOSS = REGISTRY.register("moderate_bloodloss", key -> StatusEffectType.builder(key, duration -> new ModerateBloodLossStatusEffect())
@@ -122,7 +122,7 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .combineEffects(StatusEffect::keep)
             .setSpecial()
-            .setPostEffectsWithBlocking(MedicalSystem.resource("pain_relief"))
+            .setPostEffectsWithBlocking(MedicalSystem.createIdentifier("pain_relief"))
             .build()
     );
     public static final Holder<StatusEffectType<?>> UNCONSCIOUS = REGISTRY.register("unconscious", key -> StatusEffectType.builder(key, duration -> new UnconsciousStatusEffect())

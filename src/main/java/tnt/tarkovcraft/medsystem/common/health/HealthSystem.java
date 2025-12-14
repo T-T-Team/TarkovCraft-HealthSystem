@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.DamageTypeTags;
@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthContainerDefinition> {
 
     public static final Marker MARKER = MarkerManager.getMarker("HealthSystemManager");
-    public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_system");
+    public static final Identifier IDENTIFIER = MedicalSystem.createIdentifier("health_system");
     private final Map<EntityType<?>, HealthContainerDefinition> healthContainers = new HashMap<>();
 
     public HealthSystem() {
@@ -164,7 +164,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, HealthContainerDefinition> map, ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected void apply(Map<Identifier, HealthContainerDefinition> map, ResourceManager resourceManager, ProfilerFiller profiler) {
         MedicalSystem.LOGGER.debug(MARKER, "Loading custom entity health containers");
         this.healthContainers.clear();
         for (HealthContainerDefinition definition : map.values()) {

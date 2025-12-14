@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common.health.reaction;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Objects;
 
-public record HealthEventSourceType<R extends HealthEventSource>(ResourceLocation identifier, MapCodec<R> codec) {
+public record HealthEventSourceType<R extends HealthEventSource>(Identifier identifier, MapCodec<R> codec) {
 
     public static final Codec<HealthEventSource> CODEC = MedSystemRegistries.HEALTH_REACTION.byNameCodec().dispatch(HealthEventSource::getType, HealthEventSourceType::codec);
 

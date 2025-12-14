@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.integration.core;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import tnt.tarkovcraft.core.common.weight.WeightContext;
@@ -11,7 +11,7 @@ import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 
 public class BloodContainerWeightProvider implements WeightProvider {
 
-    public static final ResourceLocation PROVIDER_ID = MedicalSystem.resource("weight/item/blood_container");
+    public static final Identifier PROVIDER_ID = MedicalSystem.createIdentifier("weight/item/blood_container");
 
     @Override
     public WeightSource getSource() {

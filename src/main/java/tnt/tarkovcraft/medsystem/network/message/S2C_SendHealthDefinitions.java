@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tnt.tarkovcraft.core.util.Codecs;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefinition> definitionMap) implements CustomPacketPayload {
 
-    public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(S2C_SendHealthDefinitions.class);
+    public static final Identifier PACKET_ID = MedicalSystemNetwork.createId(S2C_SendHealthDefinitions.class);
     public static final Type<S2C_SendHealthDefinitions> TYPE = new Type<>(PACKET_ID);
     public static final StreamCodec<FriendlyByteBuf, S2C_SendHealthDefinitions> CODEC = StreamCodec.of(
             (buffer, value) -> value.encode(buffer),
@@ -34,7 +34,7 @@ public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefini
         int pairs = this.definitionMap.size();
         buf.writeInt(pairs);
         for (Map.Entry<EntityType<?>, HealthContainerDefinition> entry : this.definitionMap.entrySet()) {
-            buf.writeResourceLocation(BuiltInRegistries.ENTITY_TYPE.getKey(entry.getKey()));
+            buf.writeIdentifier(BuiltInRegistries.ENTITY_TYPE.getKey(entry.getKey()));
             CompoundTag tag = Codecs.serializeNbtCompound(HealthContainerDefinition.CODEC, entry.getValue());
             buf.writeNbt(tag);
         }
@@ -44,7 +44,7 @@ public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefini
         int pairs = buf.readInt();
         Map<EntityType<?>, HealthContainerDefinition> map = new HashMap<>(pairs);
         for (int i = 0; i < pairs; i++) {
-            ResourceLocation id = buf.readResourceLocation();
+            Identifier id = buf.readIdentifier();
             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(id);
             CompoundTag tag = buf.readNbt();
             HealthContainerDefinition definition = Codecs.deserializeNbtCompound(HealthContainerDefinition.CODEC, tag);

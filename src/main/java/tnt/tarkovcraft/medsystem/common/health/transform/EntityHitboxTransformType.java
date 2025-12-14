@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common.health.transform;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Objects;
 
-public record EntityHitboxTransformType<T extends EntityHitboxTransform>(ResourceLocation identifier, MapCodec<T> codec) {
+public record EntityHitboxTransformType<T extends EntityHitboxTransform>(Identifier identifier, MapCodec<T> codec) {
 
     public static final Codec<EntityHitboxTransform> CODEC = MedSystemRegistries.TRANSFORM.byNameCodec().dispatch(EntityHitboxTransform::getType, EntityHitboxTransformType::codec);
 
