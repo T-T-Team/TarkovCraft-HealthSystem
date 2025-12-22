@@ -123,12 +123,6 @@ public class SelectBodyPartScreen extends Screen implements HealthContainerScree
             widget.addTooltip(part.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
             Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
-            if (container.getRootLimb().getLimbCode().equals(part.getLimbCode())) {
-                stream = Stream.concat(
-                        container.getGlobalStatusEffects().getEffectsStream(),
-                        stream
-                );
-            }
             List<StatusEffect> effects = stream.filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
                     .toList();
             int healthWidth = 80;

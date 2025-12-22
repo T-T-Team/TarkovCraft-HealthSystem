@@ -15,5 +15,6 @@ public final class MedSystemDamageEffectConditions {
     public static final Holder<DamageEffectConditionType<?>> IS_DEAD_LIMB = REGISTRY.register("is_dead_limb", key -> new DamageEffectConditionType<>(key, IsDeadLimbDamageEffectCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> HAS_EFFECT = REGISTRY.register("has_effect", key -> new DamageEffectConditionType<>(key, HasStatusEffectDamageCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> RANDOM_CHANCE = REGISTRY.register("random_chance", key -> new DamageEffectConditionType<>(key, RandomChanceDamageEffectCondition.CODEC));
+    public static final Holder<DamageEffectConditionType<?>> FALL_FRACTURE = REGISTRY.register("fall_fracture", key -> new DamageEffectConditionType<>(key, FallDamageEffectCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> LOGICAL = REGISTRY.register("logical", key -> new DamageEffectConditionType<>(key, LogicalFunctionDamageEffectCondition.CODEC));
 }
