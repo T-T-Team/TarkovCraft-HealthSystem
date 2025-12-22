@@ -1,0 +1,28 @@
+{
+  "context_type": "on_hurt",
+  "conditions": [
+    {
+      "type": "medsystem:is_limb",
+      "limb": ["leg"]
+    },
+    {
+      "type": "medsystem:is_damage",
+      "tag": "minecraft:is_fall"
+    },
+    {
+      "type": "medsystem:fall",
+      "_detail": "chance = (x - <minFallDistance>)^2 * <modifier>",
+      "minFallDistance": 3.0,
+      "modifier": 0.005
+    }
+  ],
+  "event": {
+    "type": "medsystem:add_status_effect",
+    "effect": {
+      "template": {
+        "type": "medsystem:fracture",
+        "duration": -1
+      }
+    }
+  }
+}

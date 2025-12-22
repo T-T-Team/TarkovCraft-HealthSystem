@@ -105,6 +105,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.merger.apply(a, b);
     }
 
+    @Deprecated
     public boolean isIgnoredBodyPart(LimbType group) {
         return this.ignoredBodyParts.contains(group);
     }

@@ -8,9 +8,9 @@ import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import javax.annotation.Nullable;
 
@@ -26,9 +26,8 @@ public final class StatusEffectHelper {
         submitter.forEach(post -> addPostEffect(effects, entity, limb, post));
     }
 
-    public static void addPostEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, PostEffect postEffect) {
-        addEffect(effects, entity, limb, postEffect.delay(), postEffect.createInstance());
-        HealthSystem.synchronizeEntity(entity);
+    public static void addPostEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, StatusEffectWithDelay statusEffectWithDelay) {
+        addEffect(effects, entity, limb, statusEffectWithDelay.delay(), statusEffectWithDelay.createInstance());
     }
 
     public static void addEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, int delay, StatusEffect effect) {

@@ -141,6 +141,7 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .setPostEffects()
             .healPriority(WoundPriorities.EFFECT_MINOR)
+            .combineEffects(StatusEffect::maxDuration)
             .build()
     );
 }

@@ -1,0 +1,50 @@
+{
+  "context_type": "on_hurt",
+  "conditions": [
+    {
+      "type": "medsystem:random_chance",
+      "chance": {
+        "type": "tarkovcraft_core:config",
+        "location": "medsystem:statusEffects/playerBleedChance"
+      }
+    },
+    {
+      "type": "medsystem:damage_range",
+      "local_damage": true,
+      "from": 1.5
+    },
+    {
+      "type": "medsystem:is_damage",
+      "tag": "medsystem:bleed_causing"
+    }
+  ],
+  "event": {
+    "type": "medsystem:weighted",
+    "entries": [
+      {
+        "weight": 1,
+        "data": {
+          "type": "medsystem:add_status_effect",
+          "effect": {
+            "template": {
+              "type": "medsystem:heavy_bleed",
+              "duration": -1
+            }
+          }
+        }
+      },
+      {
+        "weight": 4,
+        "data": {
+          "type": "medsystem:add_status_effect",
+          "effect": {
+            "template": {
+              "type": "medsystem:light_bleed",
+              "duration": -1
+            }
+          }
+        }
+      }
+    ]
+  }
+}

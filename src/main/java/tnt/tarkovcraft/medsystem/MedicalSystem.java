@@ -16,9 +16,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
+import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffects;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystemEventHandler;
@@ -33,6 +35,7 @@ public final class MedicalSystem {
     public static final Marker MARKER = MarkerManager.getMarker("MedicalSystem");
 
     public static final HealthSystem HEALTH_SYSTEM = new HealthSystem();
+    public static final DamageEffects DAMAGE_EFFECTS = new DamageEffects();
 
     private static MedSystemConfig config;
 
@@ -44,6 +47,7 @@ public final class MedicalSystem {
         modEventBus.addListener(this::registerCustomWeightProviders);
         modEventBus.register(new MedicalSystemNetwork());
 
+        NeoForge.EVENT_BUS.register(new DamageHandler());
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
         NeoForge.EVENT_BUS.register(new BloodSystemEventHandler());
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
@@ -59,10 +63,10 @@ public final class MedicalSystem {
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
         MedSystemStatusEffects.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
-        MedSystemChanceFunctions.REGISTRY.register(modEventBus);
-        MedSystemHealthReactionResponses.REGISTRY.register(modEventBus);
-        MedSystemHealthReactions.REGISTRY.register(modEventBus);
         MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
+        MedSystemDamageEffectScaleFunctions.REGISTRY.register(modEventBus);
+        MedSystemDamageEffectConditions.REGISTRY.register(modEventBus);
+        MedSystemDamageEffectEvents.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -73,14 +77,15 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.TRANSFORM_CONDITION);
         event.register(MedSystemRegistries.TRANSFORM);
         event.register(MedSystemRegistries.STATUS_EFFECT);
-        event.register(MedSystemRegistries.HEALTH_REACTION);
-        event.register(MedSystemRegistries.HEALTH_REACTION_RESPONSE);
-        event.register(MedSystemRegistries.CHANCE_FUNCTION);
         event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
+        event.register(MedSystemRegistries.DAMAGE_EFFECT_CONDITION);
+        event.register(MedSystemRegistries.DAMAGE_EFFECT_FUNCTION);
+        event.register(MedSystemRegistries.DAMAGE_EFFECT_EVENT);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(HEALTH_SYSTEM);
+        event.addListener(DAMAGE_EFFECTS);
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

@@ -9,9 +9,9 @@ import java.util.function.Consumer;
 
 public class ListStatusEffectSubmitter implements StatusEffectSubmitter {
 
-    private final Lazy<List<PostEffect>> effects;
+    private final Lazy<List<StatusEffectWithDelay>> effects;
 
-    ListStatusEffectSubmitter(List<PostEffect> effects) {
+    ListStatusEffectSubmitter(List<StatusEffectWithDelay> effects) {
         this.effects = Lazy.of(effects);
     }
 
@@ -21,10 +21,10 @@ public class ListStatusEffectSubmitter implements StatusEffectSubmitter {
 
     @Override
     public void submit(int delay, StatusEffect template) {
-        this.effects.get().add(new PostEffect(delay, template));
+        this.effects.get().add(new StatusEffectWithDelay(delay, template));
     }
 
-    public void forEach(Consumer<PostEffect> consumer) {
+    public void forEach(Consumer<StatusEffectWithDelay> consumer) {
         this.effects.ifPresent(effects -> effects.forEach(consumer));
     }
 }

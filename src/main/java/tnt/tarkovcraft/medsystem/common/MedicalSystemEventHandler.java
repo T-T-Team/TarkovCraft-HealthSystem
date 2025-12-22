@@ -3,10 +3,8 @@ package tnt.tarkovcraft.medsystem.common;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,45 +15,37 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityEvent;
-import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.*;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
-import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
-import tnt.tarkovcraft.core.common.energy.EnergySystem;
-import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.event.WoundStatusEffectApplyEvent;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
-import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.WoundStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.*;
-import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
-import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
-import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public final class MedicalSystemEventHandler {
@@ -88,150 +78,6 @@ public final class MedicalSystemEventHandler {
                 event.setAmount(amount - leftover);
             }
             HealthSystem.synchronizeEntity(entity);
-        }
-    }
-
-    // Hitbox collision detection
-    @SubscribeEvent
-    private void onInvulnerabilityCheck(EntityInvulnerabilityCheckEvent event) {
-        if (event.isInvulnerable())
-            return;
-
-        Entity entity = event.getEntity();
-        if (!(entity instanceof LivingEntity livingEntity))
-            return;
-        if (!HealthSystem.hasCustomHealth(livingEntity))
-            return;
-
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        DamageSource source = event.getSource();
-
-        // no in-block damage when unconscious
-        if (BloodSystem.isEntityUnconscious(livingEntity) && source.is(DamageTypes.IN_WALL)) {
-            event.setInvulnerable(true);
-            return;
-        }
-
-        HitCalculator hitCalculator = HealthSystem.getHitCalculator(livingEntity, source, container);
-        List<HitResult> hits = hitCalculator.calculateHits(livingEntity, source, container);
-        if (hits == null || hits.isEmpty()) {
-            event.setInvulnerable(true);
-        } else {
-            DamageContext context = new DamageContext(livingEntity, source);
-            context.setHits(hits);
-            context.setHitCalculator(hitCalculator);
-            context.setSideEffects(SideEffectHolder.fromDamage(source));
-            container.setDamageContext(context);
-        }
-    }
-
-    // Armor damaging
-    @SubscribeEvent
-    private void onArmorHit(ArmorHurtEvent event) {
-        if (event.isCanceled())
-            return;
-        LivingEntity entity = event.getEntity();
-        if (!HealthSystem.hasCustomHealth(entity))
-            return;
-        MedSystemConfig config = MedicalSystem.getConfig();
-        ArmorSystem system = config.armorSystem;
-        ArmorComponent component = system.getComponent();
-        component.applyItemDamage(event);
-    }
-
-    // Entity armor damage recalculation
-    @SubscribeEvent
-    private void onLivingDamage(LivingIncomingDamageEvent event) {
-        // calculate correct damage for armor and so on
-        LivingEntity entity = event.getEntity();
-        DamageSource source = event.getSource();
-        if (!HealthSystem.hasCustomHealth(entity) || source.is(DamageTypeTags.BYPASSES_ARMOR))
-            return;
-        if (entity.level().isClientSide())
-            return;
-        ArmorSystem armorSystem = MedicalSystem.getConfig().armorSystem;
-        ArmorComponent component = armorSystem.getComponent();
-        component.applyDamageReduction(event);
-
-        float armorReduction = event.getContainer().getReduction(DamageContainer.Reduction.ARMOR);
-        if (armorReduction > 0.0F) {
-            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, armorReduction);
-        }
-    }
-
-    // Entity damage application
-    @SubscribeEvent
-    private void onLivingApplyDamage(LivingDamageEvent.Post event) {
-        LivingEntity entity = event.getEntity();
-        if (!HealthSystem.hasCustomHealth(entity))
-            return;
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        DamageSource source = event.getSource();
-        DamageContext context = container.getDamageContext();
-        DamageDistributor damageDistributor = context.getDamageDistributor(container);
-        Map<Limb, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
-        List<Limb> lostLimbs = new ArrayList<>();
-        SideEffectHolder sideEffects = context.getSideEffects();
-
-        // apply health container damage
-        container.hurt(context, distributedDamage, sideEffects, lostLimbs::add);
-
-        // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
-        // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
-        float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
-        if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
-        }
-
-        // Apply wound status effect
-        int duration = Mth.floor(totalDamage / 4.0F); // 4 hp damage = 1 s of wound status effect
-        WoundStatusEffectApplyEvent applyEvent = NeoForge.EVENT_BUS.post(new WoundStatusEffectApplyEvent(entity, context, totalDamage, duration));
-        if (applyEvent.shouldApplyEffect()) {
-            StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, 1, new WoundStatusEffect(applyEvent.getDurationSeconds() * 20));
-        }
-
-        // Clean data and apply
-        container.clearDamageContext();
-        container.updateHealth(entity);
-
-        // Death processing
-        HealthSystem.synchronizeEntity(entity); // send status to a client before death or further processing so that a client knows which body part caused death
-        if (container.shouldDie()) {
-            entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
-            return;
-        }
-
-        // Unconscious state processing
-        if (BloodSystem.hasBloodDataIntegration(entity) && !entity.level().isClientSide()) {
-            RandomSource random = entity.getRandom();
-            BloodData bloodData = BloodSystem.getBloodData(entity);
-            MedSystemConfig config = MedicalSystem.getConfig();
-            int limbLostCount = lostLimbs.size();
-            if (!bloodData.isUnconscious() && config.allowUnconsciousOnLimbLost && limbLostCount > 0) {
-                float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F);
-                if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
-                    int unconsciousDuration = limbLostCount * Duration.seconds(10).tickValue();
-                    bloodData.setOrExtendedUnconsciousTime(unconsciousDuration, BloodData.UnconsciousInfo.PAIN);
-                    UnconsciousTimeRange timeRange = config.unconsciousOnLimbLoss;
-                    int unconsciousTime = 0;
-                    for (int i = 0; i < limbLostCount; i++) {
-                        unconsciousTime += timeRange.getDurationInSeconds(random);
-                    }
-                    if (unconsciousTime > 0) {
-                        bloodData.setOrExtendedUnconsciousTime(unconsciousTime, BloodData.UnconsciousInfo.PAIN);
-                    }
-                }
-            }
-
-            // TODO melee/projectile damage unconscious state after armor api rework
-
-            bloodData.sync(entity);
-        }
-
-        // disable sprinting if an entity can no longer sprint
-        MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
-        if (entity.isSprinting() && !component.canSprint(entity)) {
-            entity.setSprinting(false);
         }
     }
 
@@ -363,8 +209,8 @@ public final class MedicalSystemEventHandler {
             if (!HealthSystem.hasCustomHealth(targetEntity))
                 return;
             HealthContainer container = HealthSystem.getHealthData(targetEntity);
-            Limb part = container.getLimb(targetLimb);
-            holder.apply(targetEntity, container, part);
+            Limb part = container.getLimbByCode(targetLimb);
+            holder.onConsume(targetEntity, container, part);
         }
     }
 

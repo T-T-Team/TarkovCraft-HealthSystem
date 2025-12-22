@@ -63,7 +63,7 @@ public class HealthLayer implements LayeredDraw.Layer {
         HealthContainerDefinition definition = container.getDefinition();
         List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
         for (BodyPartDisplay display : displays) {
-            Limb health = container.getLimb(display.source());
+            Limb health = container.getLimbByCode(display.source());
             if (health == null)
                 return;
             Vector4f pos = display.getPosition(scale, center);
