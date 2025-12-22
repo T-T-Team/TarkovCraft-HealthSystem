@@ -22,7 +22,7 @@ public class PoisonDamageDistributor implements DamageDistributor {
                     if (limb.isVital()) {
                         return limb.getHealth() > vitalDmgCutoff;
                     }
-                    return !limb.isDead();
+                    return limb.isAlive();
                 })
                 .toList();
         float perLimb = damage / limbs.size();
