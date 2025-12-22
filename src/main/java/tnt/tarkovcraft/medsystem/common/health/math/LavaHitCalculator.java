@@ -22,13 +22,13 @@ public class LavaHitCalculator implements HitCalculator {
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> hits = new ArrayList<>();
-        container.acceptHitboxes(
+        container.iterateHitboxes(
                 (hitbox, part) -> isInFluid(entity.level(), hitbox.getLevelPositionedAABB(entity)),
                 (hitbox, bodyPart) -> hits.add(new HitResult(hitbox, bodyPart))
         );
         if (hits.isEmpty()) {
             // nothing is apparently in fluid, add leg hitboxes
-            container.acceptHitboxes(
+            container.iterateHitboxes(
                     (hitbox, part) -> part.getType() == LimbType.LEG,
                     (hitbox, part) -> hits.add(new HitResult(hitbox, part))
             );

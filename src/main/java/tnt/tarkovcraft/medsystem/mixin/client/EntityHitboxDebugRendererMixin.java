@@ -29,7 +29,7 @@ public abstract class EntityHitboxDebugRendererMixin {
                 LimbDefinition limbTemplate = template.getLimbConfiguration(partHitbox.getOwner());
                 if (limbTemplate == null)
                     continue;
-                LimbType limbType = limbTemplate.getLimbType();
+                LimbType limbType = limbTemplate.type();
                 int color = applyColor ? limbType.getHitboxColor() : 0xFFFFFFFF;
                 Vec3 positionVec = entity.position();
                 Vec3 interpolatedPosition = entity.getPosition(renderTickDelta).subtract(positionVec);

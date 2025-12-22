@@ -127,12 +127,12 @@ public class HealingItem extends InteractableItem {
                         itemStack.consume(1, origin);
                     }
                 }
-                float leftover = container.heal(target, amount, part);
+                float leftover = container.heal(amount, part);
                 if (leftover == amount) {
                     origin.useItemRemaining = 0;
                 }
-                if (leftover > 0 && container.canHeal(null, false)) {
-                    container.heal(target, amount, null);
+                if (leftover > 0 && container.canHeal()) {
+                    container.heal(amount, null);
                 }
                 // rescue logic
                 if (!interaction.self() && target instanceof Player player) {

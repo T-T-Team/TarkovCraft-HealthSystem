@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,6 +32,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public final class HealthContainer {
@@ -45,9 +47,6 @@ public final class HealthContainer {
 
     private final HealthContainerDefinition definition;
     private final Map<String, Limb> limbs;
-    private final Map<Limb, Limb> limbLinks;
-    private final List<Limb> vitalLimbs;
-    private final String rootLimbCode;
     private final Queue<QueuedStatusEffect> effectQueue;
     private boolean invalidated;
 
@@ -59,29 +58,16 @@ public final class HealthContainer {
         this.effectQueue = new PriorityQueue<>();
         ImmutableMap.Builder<String, Limb> builder = ImmutableMap.builder();
         if (this.definition != null) {
-            for (Map.Entry<String, LimbDefinition> entry : this.definition.getLimbDefinitionMap().entrySet()) {
-                String key = entry.getKey();
-                LimbDefinition partDefinition = entry.getValue();
-                builder.put(key, partDefinition.createLimbInstance(key));
-            }
+            this.definition.limbConfiguration().buildLimbInstances(builder::put);
             this.limbs = builder.build();
-            this.limbLinks = new IdentityHashMap<>();
-            this.vitalLimbs = new ArrayList<>();
-            this.rootLimbCode = this.resolveBodyParts(this.definition, this.limbLinks, this.vitalLimbs);
         } else {
             this.limbs = Collections.emptyMap();
-            this.limbLinks = Collections.emptyMap();
-            this.vitalLimbs = Collections.emptyList();
-            this.rootLimbCode = "";
         }
     }
 
     private HealthContainer(HealthContainerDefinition definition, Map<String, Limb> limbs, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
         this.definition = definition;
         this.limbs = limbs;
-        this.limbLinks = new IdentityHashMap<>();
-        this.vitalLimbs = new ArrayList<>();
-        this.rootLimbCode = this.resolveBodyParts(this.definition, this.limbLinks, this.vitalLimbs);
         this.effectQueue = new PriorityQueue<>(effectQueue);
         this.invalidated = invalidated;
     }
@@ -142,19 +128,23 @@ public final class HealthContainer {
     }
 
     public Limb getLimbByCode(@Nullable String code) {
-        return this.limbs.get(code != null ? code : this.rootLimbCode);
+        return this.limbs.get(code != null ? code : this.getRootLimbCode());
     }
 
     public Limb getRootLimb() {
         return this.getLimbByCode(null);
     }
 
-    public Collection<Limb> getLimbs() {
-        return this.limbs.values();
+    public String getRootLimbCode() {
+        return this.definition.getRootLimbCode();
     }
 
     public Stream<Limb> getLimbsAsStream() {
         return this.limbs.values().stream();
+    }
+
+    public Collection<Limb> getVitalLimbs() {
+        return this.getLimbsAsStream().filter(Limb::isVital).toList();
     }
 
     public Stream<StatusEffect> getStatusEffectStream() {
@@ -228,39 +218,15 @@ public final class HealthContainer {
         for (Map.Entry<Limb, Float> entry : distributedDamage.entrySet()) {
             Limb limb = entry.getKey();
             float amount = entry.getValue();
-            this.hurt(context, amount, limb, onLimbDeath);
+            this.hurtInternal(context, amount, limb, onLimbDeath);
         }
     }
 
-    public void hurt(DamageContext context, float amount, Limb part, Consumer<Limb> onLimbLoss) {
-        float damage = Math.min(part.getHealth(), amount * part.getDamageScale());
-        float leftover = amount - damage;
-        boolean wasDead = part.isDead();
-        LivingEntity entity = context.getEntity();
-        DamageSource source = context.getSource();
-        part.hurt(damage);
-        if (!part.isVital() && part.isDead() != wasDead) {
-            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
-            onLimbLoss.accept(part);
-        }
-        // no need to redistribute damage from vital parts
-        if (!part.isVital() && leftover > 0) {
-            Limb parent = this.limbLinks.get(part);
-            if (parent != null) {
-                float scale = parent.getParentDamageScale();
-                this.hurt(context, leftover * scale, parent, onLimbLoss);
-            }
-        }
+    public boolean canHeal() {
+        return this.getPartToHeal() != null;
     }
 
-    public boolean canHeal(@Nullable Limb part, boolean allowDead) {
-        if (part != null) {
-            return (part.isDead() && allowDead) || part.getMaxHealAmount() > 0;
-        }
-        return this.getPartToHeal(allowDead) != null;
-    }
-
-    public float heal(LivingEntity entity, float amount, @Nullable Limb targetPart) {
+    public float heal(float amount, @Nullable Limb targetPart) {
         if (targetPart != null && !targetPart.isDead()) {
             // Heal specific body part only
             float healAmount = Math.min(amount, targetPart.getMaxHealAmount());
@@ -269,7 +235,7 @@ public final class HealthContainer {
         } else {
             // Heal body parts, prioritize vitals, then according to health
             Limb part;
-            while (amount > 0.0F && (part = this.getPartToHeal(false)) != null) {
+            while (amount > 0.0F && (part = this.getPartToHeal()) != null) {
                 float healAmount = Math.min(amount, part.getMaxHealAmount());
                 part.heal(healAmount);
                 amount -= healAmount;
@@ -279,21 +245,19 @@ public final class HealthContainer {
     }
 
     public boolean shouldDie() {
-        float health = 0.0F;
-        for (Limb part : this.limbs.values()) {
-            health += part.getHealth();
-            if (part.shouldOwnerDie()) {
+        for (Limb limb : this.limbs.values()) {
+            if (limb.isVital() && limb.isDead()) {
                 return true;
             }
         }
-        return health <= 0.0F;
+        return false;
     }
 
-    public void acceptHitboxes(BiConsumer<BodyPartHitbox, Limb> consumer) {
-        this.acceptHitboxes((hb, p) -> true, consumer);
+    public void iterateHitboxes(BiConsumer<BodyPartHitbox, Limb> consumer) {
+        this.iterateHitboxes((hb, p) -> true, consumer);
     }
 
-    public void acceptHitboxes(BiPredicate<BodyPartHitbox, Limb> filter, BiConsumer<BodyPartHitbox, Limb> consumer) {
+    public void iterateHitboxes(BiPredicate<BodyPartHitbox, Limb> filter, BiConsumer<BodyPartHitbox, Limb> consumer) {
         for (BodyPartHitbox hitbox : this.definition.getHitboxes()) {
             Limb part = this.limbs.get(hitbox.getOwner());
             if (part == null)
@@ -304,13 +268,13 @@ public final class HealthContainer {
         }
     }
 
-    public Limb getPartToHeal(boolean allowDead) {
+    public Limb getPartToHeal() {
         Limb targetPart = null;
         float targetPercentage = 1.0F;
         MedSystemConfig config = MedicalSystem.getConfig();
         if (config.prioritizeVitalHealing) {
-            for (Limb vitalPart : this.vitalLimbs) {
-                if (vitalPart.isDead() && !allowDead)
+            for (Limb vitalPart : this.getVitalLimbs()) {
+                if (vitalPart.isDead())
                     continue;
                 float percentage = vitalPart.getHealthPercent();
                 if (percentage < config.vitalBodyPartHealthTrigger && percentage < targetPercentage) {
@@ -324,7 +288,7 @@ public final class HealthContainer {
         }
         Limb target = null;
         for (Limb part : this.limbs.values()) {
-            if (part.isDead() && !allowDead)
+            if (part.isDead())
                 continue;
             float percentage = part.getHealthPercent();
             if (percentage < 1.0F && percentage < targetPercentage) {
@@ -337,26 +301,6 @@ public final class HealthContainer {
 
     public void markStatusEffectAdded(LivingEntity entity) {
         this.tickStatusEffectCheck(entity, 0, true);
-    }
-
-    private String resolveBodyParts(HealthContainerDefinition definition, Map<Limb, Limb> links, List<Limb> vitalParts) {
-        String root = null;
-        for (Map.Entry<String, LimbDefinition> health : definition.getLimbDefinitionMap().entrySet()) {
-            String part = health.getKey();
-            String parent = health.getValue().getParent();
-            Limb limb = this.limbs.get(part);
-            if (parent == null) {
-                root = part;
-            } else {
-                links.put(limb, this.limbs.get(parent));
-            }
-            LimbDefinition healthDef = health.getValue();
-            if (healthDef.isVital()) {
-                vitalParts.add(limb);
-            }
-            limb.setDefinition(healthDef);
-        }
-        return root;
     }
 
     private void tickEffectQueue(LivingEntity entity) {
@@ -389,6 +333,30 @@ public final class HealthContainer {
         if ((forcedTick || time % 20 == 0) && !this.getGlobalStatusEffects().hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
             // delay cannot be bigger than 20 as otherwise it will schedule multiple pain effects
             StatusEffectHelper.addEffect(this.getGlobalStatusEffects(), entity, null, painDelay, new PainStatusEffect(-1));
+        }
+    }
+
+    private void hurtInternal(DamageContext context, float amount, Limb limb, Consumer<Limb> onLimbLoss) {
+        float damage = Math.min(limb.getHealth(), limb.getScaledDamage(amount));
+        float leftover = amount - damage;
+        boolean wasDead = limb.isDead();
+        LivingEntity entity = context.getEntity();
+        limb.hurt(damage);
+        if (!limb.isVital() && limb.isDead() != wasDead) {
+            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
+            onLimbLoss.accept(limb);
+        }
+        // no need to redistribute damage from vital parts
+        if (!limb.isVital() && leftover > 0) {
+            Collection<Limb> aliveLimbs = this.getLimbsAsStream().filter(Limb::isAlive).toList();
+            if (aliveLimbs.isEmpty()) {
+                return;
+            }
+            DamageSource source = context.getSource();
+            float pooledDamage = (source.is(DamageTypeTags.BYPASSES_ARMOR) ? leftover : limb.getScaledTransferDamage(leftover)) / aliveLimbs.size();
+            for (Limb liveLimb : aliveLimbs) {
+                this.hurtInternal(context, pooledDamage, liveLimb, onLimbLoss);
+            }
         }
     }
 }

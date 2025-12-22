@@ -29,10 +29,6 @@ public record AddStatusEffectDamageEffectEvent(StatusEffectWithDelay effect, Lis
         StatusEffect statusEffect = this.effect.createInstance();
         int duration = DamageEffectFunctionType.applyFunctions(statusEffect.getDuration(), context, this.durationModifiers);
         statusEffect.setDuration(duration);
-        if (duration <= 0) {
-            return;
-        }
-
         boolean isGlobalEffect = statusEffect.getType().isGlobalEffect();
         Limb targetLimb = isGlobalEffect ? null : context.limb();
         int delay = DamageEffectFunctionType.applyFunctions(this.effect.delay(), context, this.delayModifiers);

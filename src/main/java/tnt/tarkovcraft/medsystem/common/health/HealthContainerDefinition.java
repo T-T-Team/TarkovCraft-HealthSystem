@@ -13,35 +13,22 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-public final class HealthContainerDefinition {
+public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
 
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets", Collections.emptyList()).forGetter(t -> t.targets),
-            Codec.unboundedMap(Codec.STRING, LimbDefinition.CODEC).optionalFieldOf("health", Collections.emptyMap()).forGetter(t -> t.limbs),
+            LimbConfiguration.CODEC.fieldOf("limb_configuration").forGetter(HealthContainerDefinition::limbConfiguration),
             BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
             BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
 
-    private final List<EntityType<?>> targets;
-    private final Map<String, LimbDefinition> limbs;
-    private final List<BodyPartHitbox> hitboxes;
-    private final List<BodyPartDisplay> display;
-
-    HealthContainerDefinition(List<EntityType<?>> targets, Map<String, LimbDefinition> limbs, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
-        this.targets = targets;
-        this.limbs = limbs;
-        this.hitboxes = hitboxes;
-        this.display = display;
+    public String getRootLimbCode() {
+        return this.limbConfiguration.rootLimb();
     }
 
     public LimbDefinition getLimbConfiguration(String code) {
-        return limbs.get(code);
-    }
-
-    public Map<String, LimbDefinition> getLimbDefinitionMap() {
-        return limbs;
+        return this.limbConfiguration.getLimbDefinition(code);
     }
 
     public List<BodyPartHitbox> getHitboxes() {
@@ -58,7 +45,7 @@ public final class HealthContainerDefinition {
         }
 
         HealthContainer container = new HealthContainer(entity);
-        float containerMaxHealth = this.getMaxHealth();
+        float containerMaxHealth = this.limbConfiguration.getMaxHealth();
         float entityMaxHealth = entity.getMaxHealth();
         float diff = containerMaxHealth - entityMaxHealth;
         AttributeModifier modifier = new AttributeModifier(HealthSystem.IDENTIFIER, diff, AttributeModifier.Operation.ADD_VALUE);
@@ -66,14 +53,6 @@ public final class HealthContainerDefinition {
         instance.addOrReplacePermanentModifier(modifier);
         container.updateHealth(entity);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
-    }
-
-    public float getMaxHealth() {
-        float value = 0.0F;
-        for (LimbDefinition definition : this.limbs.values()) {
-            value += definition.getMaxHealth();
-        }
-        return value;
     }
 
     public List<BodyPartDisplay> getDisplayConfiguration() {

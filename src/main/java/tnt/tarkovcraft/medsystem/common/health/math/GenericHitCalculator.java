@@ -15,7 +15,7 @@ public class GenericHitCalculator implements HitCalculator {
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> result = new ArrayList<>();
-        container.acceptHitboxes(
+        container.iterateHitboxes(
                 (hitbox, part) -> true,
                 (hitbox, part) -> result.add(new HitResult(hitbox, part))
         );

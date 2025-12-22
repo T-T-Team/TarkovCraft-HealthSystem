@@ -1,47 +1,56 @@
 {
   "targets": "minecraft:player",
-  "health": {
-    "head": {
-      "parent": "body",
-      "damageScale": 0.75,
-      "health": 6.0,
-      "vital": true,
-      "group": "HEAD"
-    },
-    "body": {
-      "health": 10.0,
-      "vital": true,
-      "group": "TORSO"
-    },
-    "stomach": {
-      "parent": "body",
-      "parentDamageScale": 0.5,
-      "health": 8.0,
-      "group": "STOMACH"
-    },
-    "rightArm": {
-      "parent": "body",
-      "parentDamageScale": 0.4,
-      "health": 6.0,
-      "group": "ARM"
-    },
-    "leftArm": {
-      "parent": "body",
-      "parentDamageScale": 0.4,
-      "health": 6.0,
-      "group": "ARM"
-    },
-    "rightLeg": {
-      "parent": "stomach",
-      "parentDamageScale": 0.5,
-      "health": 7.0,
-      "group": "LEG"
-    },
-    "leftLeg": {
-      "parent": "stomach",
-      "parentDamageScale": 0.5,
-      "health": 7.0,
-      "group": "LEG"
+  "limb_configuration": {
+    "root_limb": "head",
+    "limbs": {
+      "head": {
+        "type": "head",
+        "vital": true,
+        "base_health": 6.0,
+        "damage_configuration": {
+          "scale": 0.75
+        }
+      },
+      "body": {
+        "type": "torso",
+        "vital": true,
+        "base_health": 10.0
+      },
+      "stomach": {
+        "type": "stomach",
+        "base_health": 8.0,
+        "damage_configuration": {
+          "transfer_scale": 0.7
+        }
+      },
+      "right_arm": {
+        "type": "arm",
+        "base_health": 6.0,
+        "damage_configuration": {
+          "transfer_scale": 0.4
+        }
+      },
+      "left_arm": {
+        "type": "arm",
+        "base_health": 6.0,
+        "damage_configuration": {
+          "transfer_scale": 0.4
+        }
+      },
+      "right_leg": {
+        "type": "leg",
+        "base_health": 7.0,
+        "damage_configuration": {
+          "transfer_scale": 0.4
+        }
+      },
+      "left_leg": {
+        "type": "leg",
+        "base_health": 7.0,
+        "damage_configuration": {
+          "transfer_scale": 0.4
+        }
+      }
     }
   },
   "hitboxes": [
@@ -204,7 +213,7 @@
       "size": [ 0.3, 0.1 ]
     },
     {
-      "owner": "rightArm",
+      "owner": "right_arm",
       "transforms": [
         {
           "if": {
@@ -250,7 +259,7 @@
       "size": [ 0.15, 0.35 ]
     },
     {
-      "owner": "leftArm",
+      "owner": "left_arm",
       "transforms": [
         {
           "if": {
@@ -296,7 +305,7 @@
       "size": [ 0.15, 0.35 ]
     },
     {
-      "owner": "rightLeg",
+      "owner": "right_leg",
       "transforms": [
         {
           "if": {
@@ -363,7 +372,7 @@
       "size": [ 0.15, 0.375 ]
     },
     {
-      "owner": "leftLeg",
+      "owner": "left_leg",
       "transforms": [
         {
           "if": {
@@ -442,12 +451,12 @@
       "size": [ 24, 28 ]
     },
     {
-      "source": "rightArm",
+      "source": "right_arm",
       "pos": [ -18, -24 ],
       "size": [ 12, 38 ]
     },
     {
-      "source": "leftArm",
+      "source": "left_arm",
       "pos": [ 18, -24 ],
       "size": [ 12, 38 ]
     },
@@ -457,12 +466,12 @@
       "size": [ 24, 12 ]
     },
     {
-      "source": "rightLeg",
+      "source": "right_leg",
       "pos": [ -6, 16 ],
       "size": [ 12, 38 ]
     },
     {
-      "source": "leftLeg",
+      "source": "left_leg",
       "pos": [ 6, 16 ],
       "size": [ 12, 38 ]
     }

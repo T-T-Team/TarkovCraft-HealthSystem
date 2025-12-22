@@ -8,24 +8,29 @@
     "minecraft:stray",
     "minecraft:bogged"
   ],
-  "health": {
-    "head": {
-      "group": "HEAD",
-      "vital": true,
-      "parent": "body",
-      "damageScale": 0.75,
-      "health": 8.0
-    },
-    "body": {
-      "group": "TORSO",
-      "vital": true,
-      "health": 18.0
-    },
-    "legs": {
-      "group": "LEG",
-      "parent": "body",
-      "health": 10.0,
-      "parentDamageScale": 0.7
+  "limb_configuration": {
+    "root_limb": "head",
+    "limbs": {
+      "head": {
+        "type": "head",
+        "vital": true,
+        "base_health": 8.0,
+        "damage_configuration": {
+          "scale": 0.75
+        }
+      },
+      "body": {
+        "type": "torso",
+        "vital": true,
+        "base_health": 18.0
+      },
+      "legs": {
+        "type": "leg",
+        "base_health": 10.0,
+        "damage_configuration": {
+          "transfer_scale": 0.7
+        }
+      }
     }
   },
   "hitboxes": [
