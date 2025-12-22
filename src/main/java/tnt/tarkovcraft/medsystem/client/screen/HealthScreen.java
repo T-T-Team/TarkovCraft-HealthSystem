@@ -87,13 +87,6 @@ public class HealthScreen extends CharacterSubScreen {
             bodyPartWidget.setScale(3);
             // status effects
             Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
-            // add global effects to root body part
-            if (this.healthContainer.getRootLimb().getLimbCode().equals(part.getLimbCode())) {
-                stream = Stream.concat(
-                        this.healthContainer.getGlobalStatusEffects().getEffectsStream(),
-                        stream
-                );
-            }
             List<StatusEffect> effects = stream.filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
                     .toList();
             int healthWidth = 80;

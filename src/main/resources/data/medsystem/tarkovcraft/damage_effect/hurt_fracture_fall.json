@@ -10,7 +10,7 @@
       "tag": "minecraft:is_fall"
     },
     {
-      "type": "medsystem:fall",
+      "type": "medsystem:fall_fracture",
       "_detail": "chance = (x - <minFallDistance>)^2 * <modifier>",
       "minFallDistance": 3.0,
       "modifier": 0.005

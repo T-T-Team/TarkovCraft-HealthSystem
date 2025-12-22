@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.damage_effect.condition;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.ExtraCodecs;
@@ -9,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffect;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContext;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageEffectConditions;
 
 public record FallDamageEffectCondition(float minFallDistance, float modifier) implements DamageEffectCondition {
 
@@ -31,7 +31,7 @@ public record FallDamageEffectCondition(float minFallDistance, float modifier) i
 
     @Override
     public DamageEffectConditionType<?> getType() {
-        return null;
+        return MedSystemDamageEffectConditions.FALL_FRACTURE.value();
     }
 
     @Override

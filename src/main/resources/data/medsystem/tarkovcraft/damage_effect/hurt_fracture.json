@@ -9,7 +9,7 @@
       "type": "medsystem:random_chance",
       "chance": {
         "type": "tarkovcraft_core:config",
-        "location": "medsystem:damageEffects/playerFractureChance"
+        "location": "medsystem:statusEffects/playerFractureChance"
       }
     },
     {
