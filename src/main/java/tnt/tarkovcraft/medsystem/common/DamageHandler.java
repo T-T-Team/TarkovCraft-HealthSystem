@@ -119,11 +119,14 @@ public final class DamageHandler {
         // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
         // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
-        if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+        if (totalDamage > 0.0F) {
+            if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+            }
+            // apply post-damage effects
+            MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_HURT, effect -> effect.applyDamageEvent(entity, container, context, totalDamage, distributedDamage, lostLimbs));
         }
-        // apply post-damage effects
-        MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_HURT, effect -> effect.applyDamageEvent(entity, container, context, totalDamage, distributedDamage, lostLimbs));
+
 
         // Clean data and apply
         clearDamageContext(entity);
