@@ -16,7 +16,7 @@ public class FallDamageHitCalculator implements HitCalculator {
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> results = new ArrayList<>();
-        container.acceptHitboxes(
+        container.iterateHitboxes(
                 (hitbox, part) -> part.getType() == LimbType.LEG,
                 (hitbox, part) -> results.add(new HitResult(hitbox, part))
         );

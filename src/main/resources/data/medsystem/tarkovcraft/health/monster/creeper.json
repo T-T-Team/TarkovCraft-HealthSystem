@@ -1,23 +1,28 @@
 {
   "targets": "minecraft:creeper",
-  "health": {
-    "head": {
-      "parent": "body",
-      "damageScale": 0.75,
-      "health": 6.0,
-      "vital": true,
-      "group": "HEAD"
-    },
-    "body": {
-      "health": 15.0,
-      "vital": true,
-      "group": "TORSO"
-    },
-    "legs": {
-      "parent": "body",
-      "parentDamageScale": 0.7,
-      "health": 10.0,
-      "group": "LEG"
+  "limb_configuration": {
+    "root_limb": "head",
+    "limbs": {
+      "head": {
+        "type": "head",
+        "vital": true,
+        "base_health": 6.0,
+        "damage_configuration": {
+          "scale": 0.75
+        }
+      },
+      "body": {
+        "type": "torso",
+        "vital": true,
+        "base_health": 15.0
+      },
+      "legs": {
+        "type": "leg",
+        "base_health": 10.0,
+        "damage_configuration": {
+          "transfer_scale": 0.7
+        }
+      }
     }
   },
   "hitboxes": [

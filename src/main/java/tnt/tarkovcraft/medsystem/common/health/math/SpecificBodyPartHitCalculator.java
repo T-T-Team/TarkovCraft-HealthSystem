@@ -33,7 +33,7 @@ public class SpecificBodyPartHitCalculator implements HitCalculator {
             }
         }
         if (hits.isEmpty()) {
-            container.acceptHitboxes(
+            container.iterateHitboxes(
                     (hitbox, part) -> this.allowDeadBodyParts || !part.isDead(),
                     (hitbox, part) -> hits.add(new HitResult(hitbox, part))
             );

@@ -27,7 +27,7 @@ public class MeleeHitCalculator implements HitCalculator {
         Vec3 from = attacker.getType() == EntityType.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
         Vec3 to = from.add(attacker.getLookAngle().scale(5.0));
         // Try to find directly hit body part
-        container.acceptHitboxes(
+        container.iterateHitboxes(
                 (hitbox, part) -> {
                     AABB aabb = hitbox.getLevelPositionedAABB(entity);
                     PositionedAABB.tryIntersect(aabb, from, to).ifPresent(hit -> hits.add(new HitResult(hitbox, part, aabb, hit)));

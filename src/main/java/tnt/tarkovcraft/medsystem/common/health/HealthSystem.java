@@ -139,7 +139,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
 
     public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<BodyPartHitbox, Limb> filter) {
         List<HitResult> results = new ArrayList<>();
-        container.acceptHitboxes(
+        container.iterateHitboxes(
                 filter,
                 (hitbox, part) -> {
                     AABB aabb = hitbox.getLevelPositionedAABB(entity);

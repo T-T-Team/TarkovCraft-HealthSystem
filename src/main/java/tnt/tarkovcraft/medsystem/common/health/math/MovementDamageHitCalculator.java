@@ -16,7 +16,7 @@ public class MovementDamageHitCalculator implements HitCalculator {
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> hits = new ArrayList<>();
-        container.acceptHitboxes(
+        container.iterateHitboxes(
                 (hitbox, part) -> HealthSystem.isMovementRestrictingPart(part),
                 (hitbox, part) -> hits.add(new HitResult(hitbox, part))
         );

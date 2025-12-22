@@ -28,7 +28,7 @@ public class ExplosionHitCalculator implements HitCalculator {
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         Vec3 explosionPosition = source.getSourcePosition();
         List<HitResult> hits = new ArrayList<>();
-        container.acceptHitboxes(
+        container.iterateHitboxes(
                 (hitbox, part) -> isVisible(hitbox.getLevelPositionedAABB(entity), explosionPosition, entity.level(), entity),
                 (hitbox, part) -> hits.add(new HitResult(hitbox, part))
         );

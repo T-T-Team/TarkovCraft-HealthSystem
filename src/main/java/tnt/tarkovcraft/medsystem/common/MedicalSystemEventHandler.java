@@ -73,7 +73,7 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         if (amount > 0.0F && HealthSystem.hasCustomHealth(entity)) {
-            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(entity, amount, null);
+            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(amount, null);
             if (leftover > 0.0F) {
                 event.setAmount(amount - leftover);
             }
