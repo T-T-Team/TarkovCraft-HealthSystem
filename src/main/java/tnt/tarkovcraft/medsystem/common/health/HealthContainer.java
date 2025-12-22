@@ -38,7 +38,6 @@ public final class HealthContainer {
     public static final MapCodec<HealthContainer> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
             Codec.unboundedMap(Codec.STRING, Limb.CODEC).fieldOf("bodyParts").forGetter(t -> t.limbs),
-            StatusEffectMap.CODEC.fieldOf("effects").forGetter(t -> t.statusEffects),
             Codecs.collection(QueuedStatusEffect.CODEC, list -> (Queue<QueuedStatusEffect>) new PriorityQueue<>(list), ArrayList::new).optionalFieldOf("effectQueue", new PriorityQueue<>()).forGetter(t -> t.effectQueue),
             Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
     ).apply(instance, HealthContainer::new));
@@ -49,8 +48,6 @@ public final class HealthContainer {
     private final Map<Limb, Limb> limbLinks;
     private final List<Limb> vitalLimbs;
     private final String rootLimbCode;
-    @Deprecated
-    private final StatusEffectMap statusEffects;
     private final Queue<QueuedStatusEffect> effectQueue;
     private boolean invalidated;
 
@@ -59,7 +56,6 @@ public final class HealthContainer {
             throw new IllegalArgumentException("Holder must be an instance of LivingEntity");
         }
         this.definition = MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).orElse(null);
-        this.statusEffects = new StatusEffectMap();
         this.effectQueue = new PriorityQueue<>();
         ImmutableMap.Builder<String, Limb> builder = ImmutableMap.builder();
         if (this.definition != null) {
@@ -80,13 +76,12 @@ public final class HealthContainer {
         }
     }
 
-    private HealthContainer(HealthContainerDefinition definition, Map<String, Limb> limbs, StatusEffectMap statusEffects, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
+    private HealthContainer(HealthContainerDefinition definition, Map<String, Limb> limbs, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
         this.definition = definition;
         this.limbs = limbs;
         this.limbLinks = new IdentityHashMap<>();
         this.vitalLimbs = new ArrayList<>();
         this.rootLimbCode = this.resolveBodyParts(this.definition, this.limbLinks, this.vitalLimbs);
-        this.statusEffects = statusEffects;
         this.effectQueue = new PriorityQueue<>(effectQueue);
         this.invalidated = invalidated;
     }
@@ -100,7 +95,6 @@ public final class HealthContainer {
         float previousHealth = this.getHealth();
         this.tickEffectQueue(entity);
         this.tickStatusEffectCheck(entity, 20, false);
-        this.statusEffects.tick(this, entity, null);
         for (Limb limb : this.limbs.values()) {
             limb.tick(this, entity);
         }
@@ -111,10 +105,6 @@ public final class HealthContainer {
     }
 
     public void clearBoundData(LivingEntity entity) {
-        if (!this.statusEffects.isEmpty()) {
-            this.statusEffects.removeAll(StatusEffectSubmitter.NOOP, this, entity, null);
-        }
-
         for (Limb part : this.limbs.values()) {
             StatusEffectMap map = part.getStatusEffects();
             if (!map.isEmpty())
@@ -132,8 +122,7 @@ public final class HealthContainer {
     }
 
     public StatusEffectMap getGlobalStatusEffects() {
-        // TODO pull effects from root limb
-        return this.statusEffects;
+        return this.getRootLimb().getStatusEffects();
     }
 
     public void invalidate() {
@@ -169,10 +158,8 @@ public final class HealthContainer {
     }
 
     public Stream<StatusEffect> getStatusEffectStream() {
-        return Stream.concat(
-                this.statusEffects.getEffectsStream(),
-                this.limbs.values().stream().flatMap(part -> part.getStatusEffects().getEffectsStream())
-        );
+        return this.limbs.values().stream()
+                .flatMap(limb -> limb.getStatusEffects().getEffectsStream());
     }
 
     public boolean hasMatchingStatusEffect(TagKey<StatusEffectType<?>> tag) {
@@ -180,8 +167,7 @@ public final class HealthContainer {
     }
 
     public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, LivingEntity entity) {
-        // could be probably used to add post effects
-        boolean modified = this.statusEffects.removeMatching(StatusEffectSubmitter.NOOP, tag, this, entity, null);
+        boolean modified = false;
         for (Limb part : this.limbs.values()) {
             modified |= part.getStatusEffects().removeMatching(StatusEffectSubmitter.NOOP, tag, this, entity, part);
         }
@@ -381,7 +367,7 @@ public final class HealthContainer {
             this.effectQueue.poll();
             String limbCode = effect.limb();
 
-            StatusEffectMap map = this.statusEffects;
+            StatusEffectMap map = this.getGlobalStatusEffects();
             Limb part = null;
             if (!limbCode.isBlank()) {
                 part = this.limbs.get(limbCode);
@@ -400,9 +386,9 @@ public final class HealthContainer {
 
     private void tickStatusEffectCheck(LivingEntity entity, int painDelay, boolean forcedTick) {
         long time = entity.level().getGameTime();
-        if ((forcedTick || time % 20 == 0) && !this.statusEffects.hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
+        if ((forcedTick || time % 20 == 0) && !this.getGlobalStatusEffects().hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
             // delay cannot be bigger than 20 as otherwise it will schedule multiple pain effects
-            StatusEffectHelper.addEffect(this.statusEffects, entity, null, painDelay, new PainStatusEffect(-1));
+            StatusEffectHelper.addEffect(this.getGlobalStatusEffects(), entity, null, painDelay, new PainStatusEffect(-1));
         }
     }
 }
