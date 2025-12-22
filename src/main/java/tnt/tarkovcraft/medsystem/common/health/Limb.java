@@ -4,9 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 
 import java.util.Objects;
@@ -131,13 +132,11 @@ public final class Limb {
         return this.statusEffects;
     }
 
-    public void trigger(HealthContainer container, LivingEntity entity, DamageSource source) {
-        this.definition.getReactions().forEach(def -> def.react(container, entity, source, this));
-    }
-
     public void tick(HealthContainer container, LivingEntity entity) {
         this.statusEffects.tick(container, entity, this);
-        this.definition.getReactions().forEach(def -> def.react(container, entity, null, this));
+        if (entity.level().getGameTime() % 20 == 0) {
+            MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_UPDATE, effect -> effect.applyUpdateEvent(entity, container, this));
+        }
     }
 
     @Override

@@ -20,7 +20,7 @@ public interface StatusEffectSubmitter {
         submit(0, template);
     }
 
-    static ListStatusEffectSubmitter list(List<PostEffect> list) {
+    static ListStatusEffectSubmitter list(List<StatusEffectWithDelay> list) {
         return new ListStatusEffectSubmitter(list);
     }
 

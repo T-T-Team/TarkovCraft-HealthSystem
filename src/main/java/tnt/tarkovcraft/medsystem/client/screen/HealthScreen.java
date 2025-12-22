@@ -74,7 +74,7 @@ public class HealthScreen extends CharacterSubScreen {
         float scale = (this.width / 256.0F);
         for (BodyPartDisplay display : displays) {
             String name = display.source();
-            Limb part = this.healthContainer.getLimb(name);
+            Limb part = this.healthContainer.getLimbByCode(name);
             if (part == null)
                 continue;
             Vector4i pos = display.getPositionForGui(scale, center);

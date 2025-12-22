@@ -207,7 +207,7 @@ public final class TarkovCraftCommand {
             if (!container.hasLimb(bodyPartId)) {
                 continue;
             }
-            Limb limb = container.getLimb(bodyPartId);
+            Limb limb = container.getLimbByCode(bodyPartId);
             StatusEffectMap map = limb.getStatusEffects();
             addEffect(map, livingEntity, limb, container, reference, duration, delay);
             HealthSystem.synchronizeEntity(livingEntity);
@@ -259,7 +259,7 @@ public final class TarkovCraftCommand {
             if (!container.hasLimb(bodyPartId)) {
                 continue;
             }
-            Limb limb = container.getLimb(bodyPartId);
+            Limb limb = container.getLimbByCode(bodyPartId);
             StatusEffectMap map = limb.getStatusEffects();
             StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, livingEntity, limb, container, type);
             HealthSystem.synchronizeEntity(livingEntity);

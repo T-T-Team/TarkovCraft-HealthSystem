@@ -212,8 +212,8 @@ public final class MedicalSystemEventHandler {
             if (!HealthSystem.hasCustomHealth(targetEntity))
                 return;
             HealthContainer container = HealthSystem.getHealthData(targetEntity);
-            Limb part = container.getLimb(targetLimb);
-            holder.apply(targetEntity, container, part);
+            Limb part = container.getLimbByCode(targetLimb);
+            holder.onConsume(targetEntity, container, part);
         }
     }
 

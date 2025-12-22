@@ -1,0 +1,27 @@
+{
+  "context_type": "on_hurt",
+  "conditions": [
+    {
+      "type": "medsystem:damage_range",
+      "from": 4.0,
+      "local_damage": false
+    }
+  ],
+  "event": {
+    "type": "medsystem:add_status_effect",
+    "durationModifiers": [
+      {
+        "type": "medsystem:damage_scale",
+        "local_damage": false,
+        "scale": 0.25
+      }
+    ],
+    "effect": {
+      "delay": 0,
+      "template": {
+        "type": "medsystem:wound",
+        "duration": 20
+      }
+    }
+  }
+}

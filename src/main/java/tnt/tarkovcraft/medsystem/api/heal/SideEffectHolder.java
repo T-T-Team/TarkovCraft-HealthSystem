@@ -54,16 +54,16 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         return builder().title(USAGE_TITLE);
     }
 
-    public void apply(LivingEntity target, HealthContainer container, @Nullable Limb part) {
-        this.applyFromDamage(target, null, container, part);
+    public void onConsume(LivingEntity target, HealthContainer container, @Nullable Limb part) {
+        this.apply(target, null, container, part);
     }
 
-    public void applyFromDamage(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable Limb part) {
+    public void apply(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable Limb part) {
         MedSystemConfig config = MedicalSystem.getConfig();
         if (!config.statusEffects.enableItemDamageStatusEffects)
             return;
         for (SideEffect effect : sideEffects) {
-            effect.applyFromDamage(target, source, container, part);
+            effect.apply(target, source, container, part);
         }
     }
 

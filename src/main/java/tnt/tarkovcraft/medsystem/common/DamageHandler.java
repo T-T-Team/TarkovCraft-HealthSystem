@@ -1,14 +1,12 @@
 package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
@@ -20,13 +18,11 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.event.WoundStatusEffectApplyEvent;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.effect.WoundStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
+import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
@@ -40,7 +36,7 @@ import java.util.*;
 
 public final class DamageHandler {
 
-    // FIXME make sure trackers are removed also for disconnected players, forcefully removed entities to prevent memory leaks
+    // FIXME make sure trackers are removed also for disconnected players, forcefully removed entities to prevent memory leaks - add as a data attachment?
     private static final Map<UUID, DamageContext> ACTIVE_DAMAGE_TRACKERS = new HashMap<>();
 
     // Hitbox collision detection
@@ -116,10 +112,9 @@ public final class DamageHandler {
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
         Map<Limb, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
         List<Limb> lostLimbs = new ArrayList<>();
-        SideEffectHolder sideEffects = context.getSideEffects();
 
         // apply health container damage
-        container.hurt(context, distributedDamage, sideEffects, lostLimbs::add);
+        container.hurt(context, distributedDamage, lostLimbs::add);
 
         // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
         // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
@@ -127,13 +122,8 @@ public final class DamageHandler {
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
         }
-
-        // Apply wound status effect
-        int duration = Mth.floor(totalDamage / 4.0F); // 4 hp damage = 1 s of wound status effect
-        WoundStatusEffectApplyEvent applyEvent = NeoForge.EVENT_BUS.post(new WoundStatusEffectApplyEvent(entity, context, totalDamage, duration));
-        if (applyEvent.shouldApplyEffect()) {
-            StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, 1, new WoundStatusEffect(applyEvent.getDurationSeconds() * 20));
-        }
+        // apply post-damage effects
+        MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_HURT, effect -> effect.applyDamageEvent(entity, container, context, totalDamage, distributedDamage, lostLimbs));
 
         // Clean data and apply
         clearDamageContext(entity);

@@ -116,7 +116,7 @@ public class HealingItem extends InteractableItem {
                 HealthContainer container = HealthSystem.getHealthData(target);
                 InteractionTarget activeInteraction = this.getActiveInteraction(itemStack);
                 Limb part = activeInteraction != null && TextHelper.isNotBlank(activeInteraction.limbCode()) && container.hasLimb(activeInteraction.limbCode())
-                        ? container.getLimb(activeInteraction.limbCode())
+                        ? container.getLimbByCode(activeInteraction.limbCode())
                         : null;
 
                 if (level instanceof ServerLevel serverLevel) {
@@ -164,7 +164,7 @@ public class HealingItem extends InteractableItem {
         }
 
         HealthContainer container = HealthSystem.getHealthData(target);
-        Limb part = container.hasLimb(targetLimb) ? container.getLimb(targetLimb) : null;
+        Limb part = container.hasLimb(targetLimb) ? container.getLimbByCode(targetLimb) : null;
         int consume = 0;
         // dead limb recovery
         if (attributes.isSurgeryItem()) {

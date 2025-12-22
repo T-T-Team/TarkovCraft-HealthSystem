@@ -96,7 +96,7 @@ public class SelectBodyPartScreen extends Screen {
         float scale = (this.width / 256.0F);
         List<BodyPartHealthWidget> healthWidgets = new ArrayList<>();
         for (BodyPartDisplay display : displays) {
-            Limb part = container.getLimb(display.source());
+            Limb part = container.getLimbByCode(display.source());
             if (part == null)
                 continue;
             Vector4i rect = display.getPositionForGui(scale, center);

@@ -15,7 +15,6 @@ import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.PainStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -50,6 +49,7 @@ public final class HealthContainer {
     private final Map<Limb, Limb> limbLinks;
     private final List<Limb> vitalLimbs;
     private final String rootLimbCode;
+    @Deprecated
     private final StatusEffectMap statusEffects;
     private final Queue<QueuedStatusEffect> effectQueue;
     private boolean invalidated;
@@ -94,18 +94,19 @@ public final class HealthContainer {
     public void tick(LivingEntity entity) {
         if (this.invalidated) {
             this.clearBoundData(entity);
-        } else {
-            float previousHealth = this.getHealth();
-            this.tickEffectQueue(entity);
-            this.tickStatusEffectCheck(entity, 20, false);
-            this.statusEffects.tick(this, entity, null);
-            for (Limb part : this.limbs.values()) {
-                part.tick(this, entity);
-            }
-            float health = this.getHealth();
-            if (health != previousHealth) {
-                updateHealth(entity);
-            }
+            return;
+        }
+
+        float previousHealth = this.getHealth();
+        this.tickEffectQueue(entity);
+        this.tickStatusEffectCheck(entity, 20, false);
+        this.statusEffects.tick(this, entity, null);
+        for (Limb limb : this.limbs.values()) {
+            limb.tick(this, entity);
+        }
+        float health = this.getHealth();
+        if (health != previousHealth) {
+            updateHealth(entity);
         }
     }
 
@@ -131,6 +132,7 @@ public final class HealthContainer {
     }
 
     public StatusEffectMap getGlobalStatusEffects() {
+        // TODO pull effects from root limb
         return this.statusEffects;
     }
 
@@ -150,12 +152,12 @@ public final class HealthContainer {
         return this.limbs.containsKey(code);
     }
 
-    public Limb getLimb(@Nullable String code) {
+    public Limb getLimbByCode(@Nullable String code) {
         return this.limbs.get(code != null ? code : this.rootLimbCode);
     }
 
     public Limb getRootLimb() {
-        return this.getLimb(null);
+        return this.getLimbByCode(null);
     }
 
     public Collection<Limb> getLimbs() {
@@ -236,14 +238,11 @@ public final class HealthContainer {
         entity.setHealth(health);
     }
 
-    public void hurt(DamageContext context, Map<Limb, Float> distributedDamage, @Nullable SideEffectHolder effects, Consumer<Limb> onLimbDeath) {
+    public void hurt(DamageContext context, Map<Limb, Float> distributedDamage, Consumer<Limb> onLimbDeath) {
         for (Map.Entry<Limb, Float> entry : distributedDamage.entrySet()) {
             Limb limb = entry.getKey();
             float amount = entry.getValue();
             this.hurt(context, amount, limb, onLimbDeath);
-            if (effects != null) {
-                effects.applyFromDamage(context.getEntity(), context.getSource(), this, limb);
-            }
         }
     }
 
@@ -254,7 +253,6 @@ public final class HealthContainer {
         LivingEntity entity = context.getEntity();
         DamageSource source = context.getSource();
         part.hurt(damage);
-        part.trigger(this, entity, source);
         if (!part.isVital() && part.isDead() != wasDead) {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
             onLimbLoss.accept(part);
@@ -281,7 +279,6 @@ public final class HealthContainer {
             // Heal specific body part only
             float healAmount = Math.min(amount, targetPart.getMaxHealAmount());
             targetPart.heal(healAmount);
-            targetPart.trigger(this, entity, null);
             return amount - healAmount;
         } else {
             // Heal body parts, prioritize vitals, then according to health
@@ -289,7 +286,6 @@ public final class HealthContainer {
             while (amount > 0.0F && (part = this.getPartToHeal(false)) != null) {
                 float healAmount = Math.min(amount, part.getMaxHealAmount());
                 part.heal(healAmount);
-                part.trigger(this, entity, null);
                 amount -= healAmount;
             }
         }

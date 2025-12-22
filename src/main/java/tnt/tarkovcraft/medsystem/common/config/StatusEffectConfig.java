@@ -31,7 +31,6 @@ public final class StatusEffectConfig {
     @Configurable.Comment("Blood loss per minute for heavy bleeds")
     public float heavyBleedAmount = 1.0F;
 
-    // used in player.json data
     @SuppressWarnings("unused")
     @Configurable
     @Configurable.Comment("Base chance for getting any type of bleed from '#medsystem:bleed_causing' damage type")
@@ -40,7 +39,6 @@ public final class StatusEffectConfig {
     @Configurable.Gui.Slider
     public float playerBleedChance = 0.025F;
 
-    // used in player.json data
     @SuppressWarnings("unused")
     @Configurable
     @Configurable.Comment("Base chance for getting fracture from '#medsystem:fracture' damage type")
@@ -48,24 +46,6 @@ public final class StatusEffectConfig {
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Gui.Slider
     public float playerFractureChance = 0.03F;
-
-    // used in player.json data
-    @SuppressWarnings("unused")
-    @Configurable
-    @Configurable.Comment("Base chance for getting fracture from '#minecraft:is_fall' damage type")
-    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
-    @Configurable.Gui.NumberFormat("0.0##")
-    @Configurable.Gui.Slider
-    public float playerFractureFallChance = 0.035F;
-
-    // used in player.json data
-    @SuppressWarnings("unused")
-    @Configurable
-    @Configurable.Comment({
-            "Scaling function for 'Fall fracture chance' value",
-            "Formula: (SCALE * fallDistance) * baseChance"
-    })
-    public float playerFractureFallDistanceScale = 0.75F;
 
     @Configurable
     public ItemStatusEffectConfig swordStatusEffects = new ItemStatusEffectConfig(0.10F, 0.04F, 0.0F);

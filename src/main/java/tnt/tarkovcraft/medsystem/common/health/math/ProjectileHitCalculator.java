@@ -30,7 +30,7 @@ public class ProjectileHitCalculator implements HitCalculator {
         for (BodyPartHitbox hitbox : hitboxes) {
             AABB axisAlignedBB = PositionedAABB.inflate(hitbox.getLevelPositionedAABB(entity), this.aabbInflate);
             Optional<Vec3> intersect = PositionedAABB.tryIntersect(axisAlignedBB, position, destPosition);
-            intersect.ifPresent(hit -> hits.add(new HitResult(hitbox, container.getLimb(hitbox.getOwner()), axisAlignedBB, hit)));
+            intersect.ifPresent(hit -> hits.add(new HitResult(hitbox, container.getLimbByCode(hitbox.getOwner()), axisAlignedBB, hit)));
         }
         hits.sort(Comparator.comparingDouble(res -> res.aabb().distanceToSqr(position)));
         if (!hits.isEmpty()) {

@@ -2,13 +2,11 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.util.ExtraCodecs;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.medsystem.common.health.reaction.ReactionDefinition;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Optional;
 
 public final class LimbDefinition {
 
@@ -18,8 +16,7 @@ public final class LimbDefinition {
             Codec.floatRange(0.0F, 10.0F).optionalFieldOf("parentDamageScale", 1.0F).forGetter(t -> t.parentDamageScale),
             Codec.floatRange(0.0F, 10.0F).optionalFieldOf("damageScale", 1.0F).forGetter(t -> t.damageScale),
             ExtraCodecs.POSITIVE_FLOAT.fieldOf("health").forGetter(t -> t.maxHealth),
-            Codecs.enumCodec(LimbType.class).optionalFieldOf("group", LimbType.OTHER).forGetter(t -> t.limbType),
-            Codec.unboundedMap(UUIDUtil.STRING_CODEC, ReactionDefinition.CODEC).optionalFieldOf("reactions", Collections.emptyMap()).forGetter(t -> t.reactions)
+            Codecs.enumCodec(LimbType.class).optionalFieldOf("group", LimbType.OTHER).forGetter(t -> t.limbType)
     ).apply(instance, LimbDefinition::new));
 
     private final boolean vital;
@@ -29,16 +26,14 @@ public final class LimbDefinition {
     private final float damageScale;
     private final float maxHealth;
     private final LimbType limbType;
-    private final Map<UUID, ReactionDefinition> reactions;
 
-    public LimbDefinition(boolean vital, Optional<String> parent, float parentDamageScale, float damageScale, float maxHealth, LimbType limbType, Map<UUID, ReactionDefinition> reactions) {
+    public LimbDefinition(boolean vital, Optional<String> parent, float parentDamageScale, float damageScale, float maxHealth, LimbType limbType) {
         this.vital = vital;
         this.parent = parent.orElse(null);
         this.parentDamageScale = parentDamageScale;
         this.damageScale = damageScale;
         this.maxHealth = maxHealth;
         this.limbType = limbType;
-        this.reactions = reactions;
     }
 
     @Nullable
@@ -66,14 +61,6 @@ public final class LimbDefinition {
         Limb part = new Limb(code, this.vital, this.maxHealth, this.parentDamageScale, this.damageScale, this.limbType);
         part.setDefinition(this);
         return part;
-    }
-
-    public Collection<ReactionDefinition> getReactions() {
-        return reactions.values();
-    }
-
-    Map<UUID, ReactionDefinition> getReactionMap() {
-        return reactions;
     }
 
     public LimbType getLimbType() {

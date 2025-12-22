@@ -24,9 +24,9 @@ public class SpecificBodyPartHitCalculator implements HitCalculator {
         List<HitResult> hits = new ArrayList<>();
         for (String bodyPartId : this.bodyParts) {
             if (container.hasLimb(bodyPartId)) {
-                Limb part = container.getLimb(bodyPartId);
+                Limb part = container.getLimbByCode(bodyPartId);
                 if (!part.isDead() || this.allowDeadBodyParts) {
-                    HitResult result = new HitResult(null, container.getLimb(bodyPartId));
+                    HitResult result = new HitResult(null, container.getLimbByCode(bodyPartId));
                     hits.add(result);
                 }
 
