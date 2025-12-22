@@ -166,6 +166,10 @@ public final class HealthContainer {
         return this.limbs.values();
     }
 
+    public List<Limb> getVitalLimbs() {
+        return vitalLimbs;
+    }
+
     public Stream<Limb> getLimbsAsStream() {
         return this.limbs.values().stream();
     }

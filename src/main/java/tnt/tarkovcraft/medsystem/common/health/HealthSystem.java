@@ -11,6 +11,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -90,6 +92,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         }
     }
 
+    // TODO refactor
     public static HitCalculator getHitCalculator(LivingEntity entity, DamageSource source, HealthContainer container) {
         HitCalculator eventCalculator = NeoForge.EVENT_BUS.post(new HitCalculatorResolveEvent(entity, source, container)).getCalculator();
         if (eventCalculator != null) {
@@ -109,6 +112,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         }
         if (source.is(MedSystemTags.DamageTypes.IS_MOVEMENT_RESTRICTED)) {
             return MovementDamageHitCalculator.INSTANCE;
+        }
+        if (source.is(NeoForgeMod.POISON_DAMAGE)) {
+            return new DelegateHitCalculator(GenericHitCalculator.INSTANCE, PoisonDamageDistributor.INSTANCE);
         }
         Entity sourceEntity = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
         if (sourceEntity == null || source.is(MedSystemTags.DamageTypes.IS_GENERIC)) {
