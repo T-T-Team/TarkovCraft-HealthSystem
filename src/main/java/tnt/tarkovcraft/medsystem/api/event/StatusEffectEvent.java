@@ -2,11 +2,10 @@ package tnt.tarkovcraft.medsystem.api.event;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.Event;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-
-import javax.annotation.Nullable;
 
 public abstract class StatusEffectEvent extends Event {
 

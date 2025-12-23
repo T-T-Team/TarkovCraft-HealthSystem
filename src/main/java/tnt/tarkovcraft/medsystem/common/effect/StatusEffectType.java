@@ -6,6 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
@@ -13,7 +14,6 @@ import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BinaryOperator;
 

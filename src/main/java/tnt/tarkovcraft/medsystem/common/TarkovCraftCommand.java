@@ -21,6 +21,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.api.BodyPartDamageSource;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -35,7 +36,6 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;

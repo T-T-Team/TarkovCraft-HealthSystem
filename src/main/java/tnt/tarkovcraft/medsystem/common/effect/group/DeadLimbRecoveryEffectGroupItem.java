@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -12,7 +13,6 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 

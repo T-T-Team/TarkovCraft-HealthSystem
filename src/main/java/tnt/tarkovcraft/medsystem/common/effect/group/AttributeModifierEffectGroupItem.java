@@ -9,6 +9,7 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.attribute.Attribute;
 import tnt.tarkovcraft.core.common.attribute.AttributeInstance;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
@@ -24,7 +25,6 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class AttributeModifierEffectGroupItem implements EffectGroupItem {

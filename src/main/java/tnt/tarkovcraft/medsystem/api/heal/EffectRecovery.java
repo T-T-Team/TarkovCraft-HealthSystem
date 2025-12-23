@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.ListStatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
@@ -21,7 +22,6 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect, boolean extendedTooltip) implements TooltipProvider {

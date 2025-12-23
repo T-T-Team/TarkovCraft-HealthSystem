@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -16,7 +17,6 @@ import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {

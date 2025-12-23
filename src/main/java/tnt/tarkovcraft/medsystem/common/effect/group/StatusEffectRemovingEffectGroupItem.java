@@ -8,6 +8,7 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -19,7 +20,6 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class StatusEffectRemovingEffectGroupItem implements EffectGroupItem {

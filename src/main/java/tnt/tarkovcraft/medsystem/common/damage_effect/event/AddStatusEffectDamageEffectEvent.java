@@ -7,9 +7,9 @@ import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 import tnt.tarkovcraft.medsystem.common.damage_effect.function.DamageEffectFunction;
 import tnt.tarkovcraft.medsystem.common.damage_effect.function.DamageEffectFunctionType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectWithDelay;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectWithDelay;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageEffectEvents;
 

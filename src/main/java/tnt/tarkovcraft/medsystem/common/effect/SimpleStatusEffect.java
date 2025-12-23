@@ -1,11 +1,10 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-
-import javax.annotation.Nullable;
 
 public abstract class SimpleStatusEffect extends StatusEffect {
 

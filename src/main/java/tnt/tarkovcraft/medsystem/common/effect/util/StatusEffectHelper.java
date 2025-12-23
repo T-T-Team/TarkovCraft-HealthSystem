@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect.util;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -11,8 +12,6 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-
-import javax.annotation.Nullable;
 
 public final class StatusEffectHelper {
 

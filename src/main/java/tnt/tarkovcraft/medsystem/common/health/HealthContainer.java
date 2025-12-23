@@ -7,12 +7,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -27,12 +30,10 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public final class HealthContainer {
@@ -357,6 +358,24 @@ public final class HealthContainer {
             for (Limb liveLimb : aliveLimbs) {
                 this.hurtInternal(context, pooledDamage, liveLimb, onLimbLoss);
             }
+        }
+    }
+
+    public static final class SyncHandler implements AttachmentSyncHandler<HealthContainer> {
+
+        @Override
+        public boolean sendToPlayer(IAttachmentHolder holder, ServerPlayer to) {
+            return AttachmentSyncHandler.super.sendToPlayer(holder, to);
+        }
+
+        @Override
+        public void write(RegistryFriendlyByteBuf buf, HealthContainer attachment, boolean initialSync) {
+
+        }
+
+        @Override
+        public @Nullable HealthContainer read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable HealthContainer previousValue) {
+            return null;
         }
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
@@ -17,7 +18,6 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
-import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.function.Consumer;
 
