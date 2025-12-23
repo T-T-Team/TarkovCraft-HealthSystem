@@ -5,6 +5,8 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.rules.HitCalculatorRule;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,10 @@ import java.util.List;
 public class MovementDamageHitCalculator implements HitCalculator {
 
     public static final MovementDamageHitCalculator INSTANCE = new MovementDamageHitCalculator();
+
+    public static boolean canApply(HitCalculatorRule.Context context) {
+        return context.source().is(MedSystemTags.DamageTypes.IS_MOVEMENT_RESTRICTED);
+    }
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {

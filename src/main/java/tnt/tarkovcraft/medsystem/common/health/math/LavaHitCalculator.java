@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.health.math;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.health.rules.HitCalculatorRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,10 @@ import java.util.List;
 public class LavaHitCalculator implements HitCalculator {
 
     public static final LavaHitCalculator INSTANCE = new LavaHitCalculator();
+
+    public static boolean canApply(HitCalculatorRule.Context context) {
+        return context.source() == context.target().damageSources().lava();
+    }
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {

@@ -11,6 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.rules.HitCalculatorRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,8 @@ public class ExplosionHitCalculator implements HitCalculator {
 
     public static final ExplosionHitCalculator INSTANCE = new ExplosionHitCalculator();
 
-    public static boolean isValidExplosionSource(DamageSource source) {
+    public static boolean canApply(HitCalculatorRule.Context ctx) {
+        DamageSource source = ctx.source();
         Vec3 sourcePosition = source.getSourcePosition();
         return source.is(DamageTypeTags.IS_EXPLOSION) && !Vec3.ZERO.equals(sourcePosition);
     }

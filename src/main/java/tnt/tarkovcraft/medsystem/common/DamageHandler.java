@@ -60,7 +60,7 @@ public final class DamageHandler {
             return;
         }
 
-        HitCalculator hitCalculator = HealthSystem.getHitCalculator(livingEntity, source, container);
+        HitCalculator hitCalculator = MedicalSystem.HEALTH_SYSTEM.getHitCalculator(livingEntity, source, container);
         List<HitResult> hits = hitCalculator.calculateHits(livingEntity, source, container);
         if (hits == null || hits.isEmpty()) {
             event.setInvulnerable(true);
