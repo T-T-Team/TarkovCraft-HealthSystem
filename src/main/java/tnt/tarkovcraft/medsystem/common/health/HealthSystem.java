@@ -8,7 +8,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -24,11 +23,10 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
-import tnt.tarkovcraft.medsystem.api.event.HitCalculatorResolveEvent;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
+import tnt.tarkovcraft.medsystem.common.health.rules.HitCalculatorRule;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
@@ -42,9 +40,25 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
     public static final Marker MARKER = MarkerManager.getMarker("HealthSystemManager");
     public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_system");
     private final Map<EntityType<?>, HealthContainerDefinition> healthContainers = new HashMap<>();
+    private final List<HitCalculatorRule> rules = new ArrayList<>();
 
     public HealthSystem() {
         super(new Gson(), "tarkovcraft/health");
+
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.SPECIFIC_PART, SpecificBodyPartHitCalculator::canApply, SpecificBodyPartHitCalculator::createInstance));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, FallDamageHitCalculator::isFall, ctx -> FallDamageHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, ExplosionHitCalculator::canApply, ctx -> ExplosionHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, LavaHitCalculator::canApply, ctx -> LavaHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, MovementDamageHitCalculator::canApply, ctx -> MovementDamageHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, ctx -> ctx.source().is(NeoForgeMod.POISON_DAMAGE), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, PoisonDamageDistributor.INSTANCE)));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.GENERIC, ctx -> ctx.getSourceEntity() == null && ctx.source().is(MedSystemTags.DamageTypes.IS_GENERIC), ctx -> GenericHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.MELEE, ctx -> ctx.source().getEntity() != null && ctx.source().isDirect(), ctx -> MeleeHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.PROJECTILE, ctx -> ctx.source().getDirectEntity() != null, ctx -> ProjectileHitCalculator.INSTANCE));
+    }
+
+    public synchronized void registerHitCalculatorRule(HitCalculatorRule rule) {
+        this.rules.add(rule);
+        this.rules.sort(Comparator.comparingInt(HitCalculatorRule::priority));
     }
 
     public static boolean hasCustomHealth(Entity entity) {
@@ -92,41 +106,14 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         }
     }
 
-    // TODO refactor
-    public static HitCalculator getHitCalculator(LivingEntity entity, DamageSource source, HealthContainer container) {
-        HitCalculator eventCalculator = NeoForge.EVENT_BUS.post(new HitCalculatorResolveEvent(entity, source, container)).getCalculator();
-        if (eventCalculator != null) {
-            return eventCalculator;
+    public HitCalculator getHitCalculator(LivingEntity entity, DamageSource source, HealthContainer container) {
+        HitCalculatorRule.Context context = new HitCalculatorRule.Context(source, entity, container);
+        for (HitCalculatorRule rule : this.rules) {
+            if (rule.validate(context)) {
+                return rule.createCalculator(context);
+            }
         }
-        if (source instanceof SpecificBodyPartDamage bodyPartDamage) {
-            return new SpecificBodyPartHitCalculator(bodyPartDamage.getBodyParts(), bodyPartDamage.allowDeadBodyPartDamage());
-        }
-        if (source.is(DamageTypeTags.IS_FALL)) {
-            return FallDamageHitCalculator.INSTANCE;
-        }
-        if (ExplosionHitCalculator.isValidExplosionSource(source)) {
-            return ExplosionHitCalculator.INSTANCE;
-        }
-        if (source == entity.damageSources().lava()) {
-            return LavaHitCalculator.INSTANCE;
-        }
-        if (source.is(MedSystemTags.DamageTypes.IS_MOVEMENT_RESTRICTED)) {
-            return MovementDamageHitCalculator.INSTANCE;
-        }
-        if (source.is(NeoForgeMod.POISON_DAMAGE)) {
-            return new DelegateHitCalculator(GenericHitCalculator.INSTANCE, PoisonDamageDistributor.INSTANCE);
-        }
-        Entity sourceEntity = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
-        if (sourceEntity == null || source.is(MedSystemTags.DamageTypes.IS_GENERIC)) {
-            return GenericHitCalculator.INSTANCE;
-        }
-        if (source.isDirect()) {
-            return MeleeHitCalculator.INSTANCE;
-        } else if (source.getDirectEntity() != null) {
-            return ProjectileHitCalculator.INSTANCE;
-        } else {
-            return GenericHitCalculator.INSTANCE;
-        }
+        return GenericHitCalculator.INSTANCE;
     }
 
     public static int getProjectilePiercing(LivingEntity entity, DamageSource source, HealthContainer container, Entity projectile) {

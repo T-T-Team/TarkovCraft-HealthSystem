@@ -2,9 +2,11 @@ package tnt.tarkovcraft.medsystem.common.health.math;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.rules.HitCalculatorRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,15 @@ public class SpecificBodyPartHitCalculator implements HitCalculator {
     public SpecificBodyPartHitCalculator(String[] bodyParts, boolean allowDeadBodyParts) {
         this.bodyParts = bodyParts;
         this.allowDeadBodyParts = allowDeadBodyParts;
+    }
+
+    public static boolean canApply(HitCalculatorRule.Context ctx) {
+        return ctx.source() instanceof SpecificBodyPartDamage;
+    }
+
+    public static SpecificBodyPartHitCalculator createInstance(HitCalculatorRule.Context ctx) {
+        SpecificBodyPartDamage source = (SpecificBodyPartDamage) ctx.source();
+        return new SpecificBodyPartHitCalculator(source.getBodyParts(), source.allowDeadBodyPartDamage());
     }
 
     @Override
