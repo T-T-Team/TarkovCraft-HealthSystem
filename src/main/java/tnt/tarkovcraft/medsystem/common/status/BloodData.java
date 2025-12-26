@@ -25,6 +25,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
+import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
 import tnt.tarkovcraft.medsystem.common.effect.MildBloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.ModerateBloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -236,7 +237,11 @@ public final class BloodData {
         float chance = AttributeSystem.getFloatValue(entity, MedSystemAttributes.RANDOM_BLACKOUT_CHANCE, 0.05F);
         RandomSource random = level.getRandom();
         if (!this.isUnconscious() && chance > 0.0F && random.nextFloat() < chance) {
-            this.setOrExtendedUnconsciousTime(100 + random.nextInt(200), UnconsciousInfo.RANDOM_UNCONSCIOUSNESS);
+            UnconsciousTimeRange timeRange = MedicalSystem.getConfig().unconsciousOnBloodLoss;
+            int duration = timeRange.getDurationInSeconds(random);
+            if (duration > 0) {
+                this.setOrExtendedUnconsciousTime(duration, UnconsciousInfo.RANDOM_UNCONSCIOUSNESS);
+            }
         }
 
         AttributeMap map = entity.getAttributes();

@@ -64,6 +64,14 @@ public final class MedSystemConfig {
     public boolean allowUnconsciousOnLimbLost = true;
 
     @Configurable
+    @Configurable.Comment("Unconscious duration interval on unconsciousness due to limb loss")
+    public UnconsciousTimeRange unconsciousOnLimbLoss = new UnconsciousTimeRange(7, 15);
+
+    @Configurable
+    @Configurable.Comment("Unconscious duration interval on unconsciousness due to blood loss")
+    public UnconsciousTimeRange unconsciousOnBloodLoss = new UnconsciousTimeRange(5, 10);
+
+    @Configurable
     @Configurable.DecimalRange(min = 0.0, max = 1.0)
     @Configurable.Gui.NumberFormat("0.00")
     @Configurable.Gui.Slider
