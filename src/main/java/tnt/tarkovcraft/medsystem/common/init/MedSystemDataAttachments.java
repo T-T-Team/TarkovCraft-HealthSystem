@@ -19,7 +19,7 @@ public final class MedSystemDataAttachments {
 
     public static final Supplier<AttachmentType<HealthContainer>> HEALTH_CONTAINER = REGISTRY.register("health_container", () -> AttachmentType.builder(HealthContainer::new)
             .serialize(HealthContainer.MAP_CODEC)
-            .sync(HealthContainer.STREAM_CODEC)
+            .sync(new HealthContainer.SyncHandler())
             .build()
     );
     public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Optional.empty(), Collections.emptyList(), false))

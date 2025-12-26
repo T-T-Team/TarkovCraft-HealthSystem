@@ -19,6 +19,7 @@ import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.PainStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -365,17 +366,19 @@ public final class HealthContainer {
 
         @Override
         public boolean sendToPlayer(IAttachmentHolder holder, ServerPlayer to) {
-            return AttachmentSyncHandler.super.sendToPlayer(holder, to);
+            return true;
         }
 
         @Override
         public void write(RegistryFriendlyByteBuf buf, HealthContainer attachment, boolean initialSync) {
-
+            STREAM_CODEC.encode(buf, attachment);
         }
 
         @Override
         public @Nullable HealthContainer read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable HealthContainer previousValue) {
-            return null;
+            HealthContainer container = STREAM_CODEC.decode(buf);
+            MedicalSystemClient.onHealthContainerUpdated(holder, container);
+            return container;
         }
     }
 }

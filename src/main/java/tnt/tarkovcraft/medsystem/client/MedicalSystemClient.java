@@ -14,6 +14,7 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -33,7 +34,9 @@ import tnt.tarkovcraft.medsystem.client.model.properties.BloodVolumeItemModelPro
 import tnt.tarkovcraft.medsystem.client.model.properties.IsEmptyBloodContainerItemModelProperty;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
+import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
@@ -84,6 +87,14 @@ public final class MedicalSystemClient {
 
     public static MedSystemClientConfig getConfig() {
         return config;
+    }
+
+    public static void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Screen screen = minecraft.screen;
+        if (screen instanceof HealthContainerScreen healthContainerScreen) {
+            healthContainerScreen.onHealthContainerUpdated(holder, container);
+        }
     }
 
     @SuppressWarnings({"unchecked", "RedundantCast"})
