@@ -31,7 +31,7 @@ public abstract class EntityRenderDispatcherMixin implements ResourceManagerRelo
                 LimbDefinition healthTpl = container.getLimbConfiguration(hitbox.getOwner());
                 if (healthTpl == null)
                     continue;
-                LimbType group = healthTpl.getLimbType();
+                LimbType group = healthTpl.type();
                 int color = group.getHitboxColor();
                 float red = ARGB.redFloat(color);
                 float green = ARGB.greenFloat(color);

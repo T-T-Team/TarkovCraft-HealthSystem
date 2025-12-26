@@ -1,7 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.health.math;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
