@@ -23,6 +23,11 @@
             "name": "Samples",
             "type": "int",
             "value": 8
+          },
+          {
+            "name": "Strength",
+            "type": "float",
+            "value": 0.035
           }
         ]
       },
