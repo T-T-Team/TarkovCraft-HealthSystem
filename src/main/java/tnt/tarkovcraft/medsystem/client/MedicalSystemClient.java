@@ -15,6 +15,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
@@ -31,7 +32,9 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
+import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItems;
 import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
@@ -82,6 +85,14 @@ public final class MedicalSystemClient {
 
     public static MedSystemClientConfig getConfig() {
         return config;
+    }
+
+    public static void notifyHealthContainerUpdate(IAttachmentHolder holder, HealthContainer container) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Screen screen = minecraft.screen;
+        if (screen instanceof HealthContainerScreen healthContainerScreen) {
+            healthContainerScreen.onHealthContainerUpdated(holder, container);
+        }
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {

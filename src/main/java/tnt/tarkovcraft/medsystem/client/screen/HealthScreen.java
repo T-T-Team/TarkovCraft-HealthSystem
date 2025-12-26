@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
@@ -21,10 +22,10 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class HealthScreen extends CharacterSubScreen {
+public class HealthScreen extends CharacterSubScreen implements HealthContainerScreen {
 
     public static final ResourceLocation HEALTH_ICON = MedicalSystem.resource("textures/icons/health.png");
     public static final float UNIT_SCALE = 10.0F;
@@ -41,6 +42,11 @@ public class HealthScreen extends CharacterSubScreen {
 
     public HealthScreen(Screen parent, UUID userId) {
         super(userId, MedicalSystemClient.HEALTH);
+    }
+
+    @Override
+    public void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
+        this.init(this.minecraft, this.width, this.height);
     }
 
     @Override

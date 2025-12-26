@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class SelectBodyPartScreen extends Screen {
+public class SelectBodyPartScreen extends Screen implements HealthContainerScreen {
 
     public static final Component TITLE = TextHelper.createScreenTitle(MedicalSystem.MOD_ID, "select_body_part").withStyle(ChatFormatting.BOLD).withColor(ColorPalette.TEXT_COLOR);
     public static final Component LABEL_ERROR = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.invalid_item");
@@ -51,6 +52,15 @@ public class SelectBodyPartScreen extends Screen {
         super(TITLE);
         this.selfHealing = selfHealing;
         this.entityId = entityID;
+    }
+
+    @Override
+    public void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
+        if (!(holder instanceof LivingEntity entity))
+            return;
+        if (entity.getId() == this.entityId) {
+            this.init(this.minecraft, this.width, this.height);
+        }
     }
 
     @Override

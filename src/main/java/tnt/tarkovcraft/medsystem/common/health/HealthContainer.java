@@ -17,6 +17,7 @@ import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.ShaderHelper;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.PainStatusEffect;
@@ -447,6 +448,7 @@ public final class HealthContainer {
         public @org.jetbrains.annotations.Nullable HealthContainer read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @org.jetbrains.annotations.Nullable HealthContainer previousValue) {
             HealthContainer container = STREAM_CODEC.decode(buf);
             ShaderHelper.notifyUpdate(container, holder);
+            MedicalSystemClient.notifyHealthContainerUpdate(holder, container);
             return container;
         }
     }
