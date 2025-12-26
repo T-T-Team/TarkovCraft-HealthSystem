@@ -116,6 +116,7 @@ public final class MedSystemStatusEffects {
             .setPostEffectsWithBlocking(MedicalSystem.createIdentifier("pain_relief"))
             .build()
     );
+    @Deprecated
     public static final Holder<StatusEffectType<?>> MODERATE_BLOODLOSS = REGISTRY.register("moderate_bloodloss", key -> StatusEffectType.builder(key, duration -> new ModerateBloodLossStatusEffect())
             .persist(ModerateBloodLossStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)

@@ -18,11 +18,13 @@ import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.client.pipeline.RegisterPipelineModifiersEvent;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 import org.lwjgl.glfw.GLFW;
 import tnt.tarkovcraft.core.api.event.client.RegisterOnScreenHintEvent;
+import tnt.tarkovcraft.core.api.event.client.RegisterPostShaderProgramsEvent;
 import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
@@ -36,6 +38,7 @@ import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.client.shader.PainEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
@@ -75,12 +78,13 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerKeyBinds);
         modEventBus.addListener(this::registerOnScreenHints);
         modEventBus.addListener(this::registerRenderStateExtensions);
+        modEventBus.addListener(this::registerShaderPrograms);
+        modEventBus.addListener(this::registerPipelineModifiers);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
-        NeoForge.EVENT_BUS.addListener(ShaderHelper::updateActiveEffects);
 
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
     }
@@ -152,6 +156,14 @@ public final class MedicalSystemClient {
 
     private void onMouseWheelInput(InputEvent.MouseScrollingEvent event) {
         this.cancelInputEventIfUnconscious(event);
+    }
+
+    private void registerShaderPrograms(RegisterPostShaderProgramsEvent event) {
+        event.register(new PainEffectShaderProgram());
+    }
+
+    private void registerPipelineModifiers(RegisterPipelineModifiersEvent event) {
+        event.register(PainEffectShaderProgram.Modifier.MODIFIER_KEY, new PainEffectShaderProgram.Modifier());
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {

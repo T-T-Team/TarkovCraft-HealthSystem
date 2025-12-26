@@ -19,6 +19,7 @@ import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.function.Consumer;
 
+@Deprecated
 public class ModerateBloodLossStatusEffect extends IntervalAppliedStatusEffect {
 
     public static final MapCodec<ModerateBloodLossStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(

@@ -15,7 +15,6 @@
     "client.CameraMixin",
     "client.LocalPlayerMixin",
     "client.MouseHandlerMixin",
-    "client.GameRendererMixin",
     "client.PlayerModelMixin",
     "client.EntityHitboxDebugRendererMixin"
   ]

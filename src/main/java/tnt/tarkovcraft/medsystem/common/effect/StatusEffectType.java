@@ -32,6 +32,7 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
     private final int healingPriority;
+    @Deprecated
     private final Collection<Identifier> blockedPostEffects;
     private final Identifier icon;
     private final Component displayName;
@@ -118,10 +119,12 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.healingPriority;
     }
 
+    @Deprecated
     public boolean hasPostShader() {
         return this.blockedPostEffects != null;
     }
 
+    @Deprecated
     public Collection<Identifier> getBlockedPostEffects() {
         return this.blockedPostEffects;
     }
@@ -150,6 +153,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         private final Identifier identifier;
         private final Factory<S> factory;
         private final Set<LimbType> limbTypes = EnumSet.noneOf(LimbType.class);
+        @Deprecated
         private Identifier[] blockedPostEffects;
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
@@ -199,10 +203,12 @@ public final class StatusEffectType<S extends StatusEffect> {
             return this;
         }
 
+        @Deprecated
         public Builder<S> setPostEffects() {
             return this.setPostEffectsWithBlocking();
         }
 
+        @Deprecated
         public Builder<S> setPostEffectsWithBlocking(Identifier... blocking) {
             this.blockedPostEffects = blocking;
             return this;
