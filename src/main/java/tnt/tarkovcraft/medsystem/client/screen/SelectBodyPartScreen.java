@@ -56,7 +56,12 @@ public class SelectBodyPartScreen extends Screen implements HealthContainerScree
 
     @Override
     public void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
-        this.init(this.width, this.height);
+        if (!(holder instanceof LivingEntity entity)) {
+            return;
+        }
+        if (this.entityId == entity.getId()) {
+            this.init(this.width, this.height);
+        }
     }
 
     @Override
