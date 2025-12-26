@@ -14,11 +14,11 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.client.pipeline.RegisterPipelineModifiersEvent;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
@@ -29,6 +29,7 @@ import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
 import tnt.tarkovcraft.core.client.screen.navigation.OptionalNavigationEntry;
+import tnt.tarkovcraft.core.client.shader.DynamicTransformsPipelineModifier;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
@@ -72,6 +73,7 @@ public final class MedicalSystemClient {
     public MedicalSystemClient(IEventBus modEventBus, ModContainer container) {
         config = Configuration.registerSimpleYmlConfig(MedSystemClientConfig.class);
 
+        modEventBus.addListener(this::setup);
         modEventBus.addListener(this::registerGuiLayer);
         modEventBus.addListener(this::registerConditionalItemModelProperties);
         modEventBus.addListener(this::registerRangeSelectItemModelProperties);
@@ -79,7 +81,6 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerOnScreenHints);
         modEventBus.addListener(this::registerRenderStateExtensions);
         modEventBus.addListener(this::registerShaderPrograms);
-        modEventBus.addListener(this::registerPipelineModifiers);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
@@ -99,6 +100,10 @@ public final class MedicalSystemClient {
         if (screen instanceof HealthContainerScreen healthContainerScreen) {
             healthContainerScreen.onHealthContainerUpdated(holder, container);
         }
+    }
+
+    private void setup(FMLClientSetupEvent event) {
+        DynamicTransformsPipelineModifier.addTargetPipeline(PainEffectShaderProgram.PIPELINE);
     }
 
     @SuppressWarnings({"unchecked", "RedundantCast"})
@@ -160,10 +165,6 @@ public final class MedicalSystemClient {
 
     private void registerShaderPrograms(RegisterPostShaderProgramsEvent event) {
         event.register(new PainEffectShaderProgram());
-    }
-
-    private void registerPipelineModifiers(RegisterPipelineModifiersEvent event) {
-        event.register(PainEffectShaderProgram.Modifier.MODIFIER_KEY, new PainEffectShaderProgram.Modifier());
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {
