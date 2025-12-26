@@ -5,7 +5,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.LivingEntity;
@@ -73,14 +72,9 @@ public class PainEffectShaderProgram implements PostEffectShaderProgram {
         @Override
         public RenderPipeline apply(RenderPipeline pipeline, Identifier name) {
             if (PIPELINE_ID.equals(pipeline.getLocation())) {
-                return RenderPipeline.builder(RenderPipelines.POST_PROCESSING_SNIPPET)
+                return pipeline.toBuilder()
                         .withLocation(name)
-                        .withVertexShader("core/screenquad")
-                        .withFragmentShader(MedicalSystem.createIdentifier("post/pain_pulse_blur"))
-                        .withSampler("InSampler")
-                        .withUniform("SamplerInfo", UniformType.UNIFORM_BUFFER)
                         .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
-                        .withUniform("BlurSettings", UniformType.UNIFORM_BUFFER)
                         .build();
             }
             return pipeline;
