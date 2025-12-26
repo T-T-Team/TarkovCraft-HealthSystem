@@ -22,6 +22,7 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
@@ -146,8 +147,14 @@ public final class DamageHandler {
             if (!bloodData.isUnconscious() && config.allowUnconsciousOnLimbLost && limbLostCount > 0) {
                 float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F);
                 if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
-                    int unconsciousDuration = limbLostCount * Duration.seconds(10).tickValue();
-                    bloodData.setOrExtendedUnconsciousTime(unconsciousDuration, BloodData.UnconsciousInfo.PAIN);
+                    UnconsciousTimeRange timeRange = config.unconsciousOnLimbLoss;
+                    int unconsciousTime = 0;
+                    for (int i = 0; i < limbLostCount; i++) {
+                        unconsciousTime += timeRange.getDurationInSeconds(random);
+                    }
+                    if (unconsciousTime > 0) {
+                        bloodData.setOrExtendedUnconsciousTime(unconsciousTime, BloodData.UnconsciousInfo.PAIN);
+                    }
                 }
             }
 
