@@ -30,7 +30,7 @@ void main() {
         float t = float(i) / float(Replicas);
         float len = length(uv - 0.5);
         float radius = Radius * t + 0.03 * len * t;
-        float replicaBlur = (rand(uv * (Time + float(i))) - 0.5) * ReplicaBlur;
+        float replicaBlur = (rand(uv * (Time + float(i))) - 0.5) * ReplicaBlur * ColorModulator.a;
         vec2 offset = ColorModulator.a * dir * radius + replicaBlur;
         accum += texture(InSampler, uv + offset).rgb;
     }

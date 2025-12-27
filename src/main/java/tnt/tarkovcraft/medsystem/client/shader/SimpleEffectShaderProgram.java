@@ -41,6 +41,7 @@ public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgr
 
     @Override
     public final void tickProgram(Minecraft minecraft, LivingEntity livingEntity) {
+        this.lastStrength = this.strength;
         if (!HealthSystem.hasCustomHealth(livingEntity))
             return;
         HealthContainer container = HealthSystem.getHealthData(livingEntity);
@@ -50,7 +51,6 @@ public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgr
         } else if (this.strength > 0.0F) {
             this.strength = Math.max(0.0F, this.strength - this.getStrengthDecay());
         }
-        this.lastStrength = this.strength;
     }
 
     @Override

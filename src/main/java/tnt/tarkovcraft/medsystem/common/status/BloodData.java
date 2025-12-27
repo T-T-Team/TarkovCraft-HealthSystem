@@ -27,8 +27,7 @@ import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
 import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
-import tnt.tarkovcraft.medsystem.common.effect.MildBloodLossStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.ModerateBloodLossStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.BloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -219,12 +218,12 @@ public final class BloodData {
         } else {
             entity.hurtServer(level, MedSystemDamageTypes.causeBleedDamage(access, Optional.empty()), 4.0F);
         }
-        this.addBloodLossStatusEffect(container, entity, false);
+        this.addBloodLossStatusEffect(container, entity, BloodLossStatusEffect.Stage.SEVERE);
         this.setOrExtendedUnconsciousTime(300, UnconsciousInfo.LOW_BLOOD_LEVEL);
     }
 
     public void onUnconsciousBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
-        this.addBloodLossStatusEffect(container, entity, false);
+        this.addBloodLossStatusEffect(container, entity, BloodLossStatusEffect.Stage.SEVERE);
         this.setOrExtendedUnconsciousTime(100, UnconsciousInfo.LOW_BLOOD_LEVEL);
 
         MedSystemConfig config = MedicalSystem.getConfig();
@@ -235,7 +234,7 @@ public final class BloodData {
     }
 
     public void onRandomBlackoutBloodLevel(LivingEntity entity, ServerLevel level, HealthContainer container) {
-        this.addBloodLossStatusEffect(container, entity, false);
+        this.addBloodLossStatusEffect(container, entity, BloodLossStatusEffect.Stage.SEVERE);
         float chance = AttributeSystem.getFloatValue(entity, MedSystemAttributes.RANDOM_BLACKOUT_CHANCE, 0.05F);
         RandomSource random = level.getRandom();
         if (!this.isUnconscious() && chance > 0.0F && random.nextFloat() < chance) {
@@ -253,7 +252,7 @@ public final class BloodData {
     }
 
     public void onModerateBloodLoss(LivingEntity entity, ServerLevel level, HealthContainer container) {
-        this.addBloodLossStatusEffect(container, entity, false);
+        this.addBloodLossStatusEffect(container, entity, BloodLossStatusEffect.Stage.MODERATE);
 
         AttributeMap map = entity.getAttributes();
         this.addModifier(map, Attributes.MOVEMENT_SPEED, ATTR_DEBUFF, -0.2F, true);
@@ -262,7 +261,7 @@ public final class BloodData {
     }
 
     public void onMildBloodLoss(LivingEntity entity, ServerLevel level, HealthContainer container) {
-        this.addBloodLossStatusEffect(container, entity, true);
+        this.addBloodLossStatusEffect(container, entity, BloodLossStatusEffect.Stage.MILD);
 
         AttributeMap map = entity.getAttributes();
         this.addModifier(map, Attributes.MOVEMENT_SPEED, ATTR_DEBUFF, -0.1F, true);
@@ -277,8 +276,8 @@ public final class BloodData {
         AttributeSystem.removeModifier(entity, CoreAttributes.WEIGHT_LIMIT, UUID_DEBUFF);
     }
 
-    private void addBloodLossStatusEffect(HealthContainer container, LivingEntity entity, boolean mild) {
-        StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, mild ? new MildBloodLossStatusEffect() : new ModerateBloodLossStatusEffect());
+    private void addBloodLossStatusEffect(HealthContainer container, LivingEntity entity, BloodLossStatusEffect.Stage stage) {
+        StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, BloodLossStatusEffect.createTemplate(stage));
         HealthSystem.synchronizeEntity(entity);
     }
 

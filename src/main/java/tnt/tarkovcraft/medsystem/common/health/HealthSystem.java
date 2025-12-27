@@ -20,11 +20,15 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
+import tnt.tarkovcraft.medsystem.api.event.PainCheckEvent;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.math.*;
 import tnt.tarkovcraft.medsystem.common.health.rules.HitCalculatorRule;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
+import tnt.tarkovcraft.medsystem.common.status.BloodData;
+import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
+import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
 
 import java.util.*;
@@ -73,8 +77,19 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
     }
 
     public static boolean isInPain(LivingEntity entity) {
-        return hasCustomHealth(entity) && !hasPainRelief(entity) && getHealthData(entity).getStatusEffectStream()
-                .anyMatch(effect -> effect.getType().is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING));
+        if (!hasCustomHealth(entity) || hasPainRelief(entity))
+            return false;
+        HealthContainer container = getHealthData(entity);
+        boolean inPain = container.getStatusEffectStream().anyMatch(effect -> effect.getType().is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING));
+        if (BloodSystem.hasBloodDataIntegration(entity)) {
+            BloodData data = BloodSystem.getBloodData(entity);
+            BloodStatus status = BloodStatus.fromBloodLevelPercentage(data.getBloodVolumePercentage());
+            if (status.isSameOrBelow(BloodStatus.MODERATE_BLOOD_LOSS)) {
+                inPain = true;
+            }
+        }
+        PainCheckEvent event = NeoForge.EVENT_BUS.post(new PainCheckEvent(entity, container, inPain));
+        return event.isInPain();
     }
 
     public static boolean isMovementRestricted(LivingEntity entity) {

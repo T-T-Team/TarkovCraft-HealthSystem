@@ -106,31 +106,20 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .build()
     );
-    public static final Holder<StatusEffectType<?>> MILD_BLOODLOSS = REGISTRY.register("mild_bloodloss", key -> StatusEffectType.builder(key, duration -> new MildBloodLossStatusEffect())
-            .persist(MildBloodLossStatusEffect.CODEC)
-            .type(EffectType.NEGATIVE)
-            .setGlobal()
-            .combineEffects(StatusEffect::keep)
-            .setSpecial()
-            .setPostEffectsWithBlocking(MedicalSystem.createIdentifier("pain_relief"))
-            .build()
-    );
-    @Deprecated
-    public static final Holder<StatusEffectType<?>> MODERATE_BLOODLOSS = REGISTRY.register("moderate_bloodloss", key -> StatusEffectType.builder(key, duration -> new ModerateBloodLossStatusEffect())
-            .persist(ModerateBloodLossStatusEffect.CODEC)
-            .type(EffectType.NEGATIVE)
-            .setGlobal()
-            .combineEffects(StatusEffect::keep)
-            .setSpecial()
-            .setPostEffectsWithBlocking(MedicalSystem.createIdentifier("pain_relief"))
-            .build()
-    );
     public static final Holder<StatusEffectType<?>> CONCUSSION = REGISTRY.register("concussion", key -> StatusEffectType.builder(key, ConcussionStatusEffect::new)
             .persist(ConcussionStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .setGlobal()
             .healPriority(WoundPriorities.EFFECT_MINOR)
             .combineEffects(StatusEffect::maxDuration)
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> BLOODLOSS = REGISTRY.register("bloodloss", key -> StatusEffectType.builder(key, BloodLossStatusEffect::new)
+            .persist(BloodLossStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .setSpecial()
+            .combineEffects(StatusEffect::replace)
             .build()
     );
 }
