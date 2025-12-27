@@ -41,6 +41,7 @@ import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.client.shader.ConcussionEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.client.shader.PainEffectShaderProgram;
+import tnt.tarkovcraft.medsystem.client.shader.UnconsciousEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
@@ -168,6 +169,7 @@ public final class MedicalSystemClient {
     private void registerShaderPrograms(RegisterPostShaderProgramsEvent event) {
         event.register(new PainEffectShaderProgram());
         event.register(new ConcussionEffectShaderProgram());
+        event.register(new UnconsciousEffectShaderProgram());
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {

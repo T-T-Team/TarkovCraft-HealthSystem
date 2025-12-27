@@ -30,13 +30,14 @@ import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
 import tnt.tarkovcraft.medsystem.common.effect.MildBloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.ModerateBloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.UnconsciousStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.network.message.S2C_RefreshEntityDimensions;
 
 import java.util.Optional;
@@ -299,9 +300,6 @@ public final class BloodData {
             this.addUnconsciousModifier(attributeMap, Attributes.ATTACK_SPEED);
             this.addUnconsciousModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
             this.addUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
-            if (!effects.hasEffect(MedSystemStatusEffects.UNCONSCIOUS)) {
-                StatusEffectHelper.addEffect(effects, entity, null, new UnconsciousStatusEffect());
-            }
             if (entity.isUsingItem())
                 entity.stopUsingItem();
         } else {
@@ -311,7 +309,6 @@ public final class BloodData {
             this.removeUnconsciousModifier(attributeMap, Attributes.ATTACK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_BREAK_SPEED);
             this.removeUnconsciousModifier(attributeMap, Attributes.BLOCK_INTERACTION_RANGE);
-            StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, effects, entity, null, container, MedSystemStatusEffects.UNCONSCIOUS);
         }
     }
 
