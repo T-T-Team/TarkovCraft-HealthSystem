@@ -2,9 +2,10 @@ package tnt.tarkovcraft.medsystem.common.effect;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+
+import javax.annotation.Nullable;
 
 public abstract class IntervalAppliedStatusEffect extends StatusEffect {
 

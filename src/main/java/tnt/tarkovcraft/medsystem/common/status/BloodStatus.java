@@ -21,6 +21,10 @@ public enum BloodStatus {
         this.effect = effect;
     }
 
+    public float getAmount() {
+        return this.percentage;
+    }
+
     public boolean isInRange(float percentage) {
         return percentage < this.percentage;
     }

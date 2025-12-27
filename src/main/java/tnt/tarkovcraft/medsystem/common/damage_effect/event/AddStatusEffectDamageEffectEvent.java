@@ -31,7 +31,8 @@ public record AddStatusEffectDamageEffectEvent(StatusEffectWithDelay effect, Lis
         statusEffect.setDuration(duration);
         boolean isGlobalEffect = statusEffect.getType().isGlobalEffect();
         Limb targetLimb = isGlobalEffect ? null : context.limb();
-        int delay = DamageEffectFunctionType.applyFunctions(this.effect.delay(), context, this.delayModifiers);
+        // at least 1 tick delay is required to prevent CMEs while ticking
+        int delay = Math.max(1, DamageEffectFunctionType.applyFunctions(this.effect.delay(), context, this.delayModifiers));
         StatusEffectMap effects = isGlobalEffect ? context.health().getGlobalStatusEffects() : targetLimb.getStatusEffects();
         StatusEffectHelper.addEffect(effects, context.target(), targetLimb, delay, statusEffect);
     }

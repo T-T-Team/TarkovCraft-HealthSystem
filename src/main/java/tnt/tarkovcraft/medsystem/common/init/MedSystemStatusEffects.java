@@ -107,24 +107,6 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .build()
     );
-    public static final Holder<StatusEffectType<?>> MILD_BLOODLOSS = REGISTRY.register("mild_bloodloss", key -> StatusEffectType.builder(key, duration -> new MildBloodLossStatusEffect())
-            .persist(MildBloodLossStatusEffect.CODEC)
-            .type(EffectType.NEGATIVE)
-            .setGlobal()
-            .combineEffects(StatusEffect::keep)
-            .setSpecial()
-            .setPostEffectsWithBlocking(MedicalSystem.resource("pain_relief"))
-            .build()
-    );
-    public static final Holder<StatusEffectType<?>> MODERATE_BLOODLOSS = REGISTRY.register("moderate_bloodloss", key -> StatusEffectType.builder(key, duration -> new ModerateBloodLossStatusEffect())
-            .persist(ModerateBloodLossStatusEffect.CODEC)
-            .type(EffectType.NEGATIVE)
-            .setGlobal()
-            .combineEffects(StatusEffect::keep)
-            .setSpecial()
-            .setPostEffectsWithBlocking(MedicalSystem.resource("pain_relief"))
-            .build()
-    );
     public static final Holder<StatusEffectType<?>> UNCONSCIOUS = REGISTRY.register("unconscious", key -> StatusEffectType.builder(key, duration -> new UnconsciousStatusEffect())
             .persist(UnconsciousStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
@@ -139,9 +121,17 @@ public final class MedSystemStatusEffects {
             .persist(ConcussionStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .setGlobal()
-            .setPostEffects()
             .healPriority(WoundPriorities.EFFECT_MINOR)
             .combineEffects(StatusEffect::maxDuration)
+            .build()
+    );
+    public static final Holder<StatusEffectType<?>> BLOODLOSS = REGISTRY.register("bloodloss", key -> StatusEffectType.builder(key, BloodLossStatusEffect::new)
+            .persist(BloodLossStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .setGlobal()
+            .setSpecial()
+            .combineEffects(StatusEffect::replace)
+            .setPostEffects()
             .build()
     );
 }
