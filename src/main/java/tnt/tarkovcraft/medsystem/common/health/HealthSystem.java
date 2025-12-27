@@ -106,6 +106,13 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         if (map.hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING)) {
             return true;
         }
+        if (BloodSystem.hasBloodDataIntegration(entity)) {
+            BloodData data = BloodSystem.getBloodData(entity);
+            BloodStatus status = BloodStatus.fromBloodLevelPercentage(data.getBloodVolumePercentage());
+            if (status.isSameOrBelow(BloodStatus.MODERATE_BLOOD_LOSS)) {
+                return true;
+            }
+        }
         Stream<Limb> parts = healthContainer.getLimbsAsStream();
         return parts.anyMatch(HealthSystem::isMovementRestrictingPart);
     }
