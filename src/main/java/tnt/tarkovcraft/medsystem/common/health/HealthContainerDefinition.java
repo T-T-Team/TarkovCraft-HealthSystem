@@ -9,19 +9,24 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.medsystem.common.health.state.StateFilter;
+import tnt.tarkovcraft.medsystem.common.health.state.StateFilterType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
+public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, Map<String, StateFilter> customStateDefinitions, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
 
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets", Collections.emptyList()).forGetter(t -> t.targets),
             LimbConfiguration.CODEC.fieldOf("limb_configuration").forGetter(HealthContainerDefinition::limbConfiguration),
+            Codec.unboundedMap(Codec.string(1, 64), StateFilterType.CODEC).optionalFieldOf("custom_state_definitions", Collections.emptyMap()).forGetter(HealthContainerDefinition::customStateDefinitions),
             BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
             BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
+    public static final String DEFAULT_ENTITY_STATE = "default";
 
     public String getRootLimbCode() {
         return this.limbConfiguration.rootLimb();
@@ -29,6 +34,16 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
 
     public LimbDefinition getLimbConfiguration(String code) {
         return this.limbConfiguration.getLimbDefinition(code);
+    }
+
+    public String getCurrentEntityState(LivingEntity entity) {
+        for (Map.Entry<String, StateFilter> entry : this.customStateDefinitions.entrySet()) {
+            StateFilter filter = entry.getValue();
+            if (filter.matches(entity)) {
+                return entry.getKey();
+            }
+        }
+        return DEFAULT_ENTITY_STATE;
     }
 
     public List<BodyPartHitbox> getHitboxes() {
