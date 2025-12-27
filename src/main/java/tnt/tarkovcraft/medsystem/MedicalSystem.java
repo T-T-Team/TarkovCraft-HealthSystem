@@ -67,6 +67,7 @@ public final class MedicalSystem {
         MedSystemDamageEffectScaleFunctions.REGISTRY.register(modEventBus);
         MedSystemDamageEffectConditions.REGISTRY.register(modEventBus);
         MedSystemDamageEffectEvents.REGISTRY.register(modEventBus);
+        MedSystemStateFilters.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -81,6 +82,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.DAMAGE_EFFECT_CONDITION);
         event.register(MedSystemRegistries.DAMAGE_EFFECT_FUNCTION);
         event.register(MedSystemRegistries.DAMAGE_EFFECT_EVENT);
+        event.register(MedSystemRegistries.STATE_FILTER);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {

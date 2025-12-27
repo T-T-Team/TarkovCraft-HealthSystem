@@ -53,6 +53,25 @@
       }
     }
   },
+  "custom_state_definitions": {
+    "crouching": {
+      "type": "medsystem:pose",
+      "targets": "CROUCHING"
+    },
+    "laying": {
+      "type": "medsystem:logical",
+      "operator": "or",
+      "values": [
+        {
+          "type": "medsystem:pose",
+          "targets": "SWIMMING"
+        },
+        {
+          "type": "medsystem:unconscious"
+        }
+      ]
+    }
+  },
   "hitboxes": [
     {
       "owner": "head",

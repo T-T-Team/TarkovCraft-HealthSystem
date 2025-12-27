@@ -7,6 +7,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Objects;
 
+@Deprecated
 public record TransformConditionType<C extends TransformCondition>(ResourceLocation identifier, MapCodec<C> codec) {
 
     public static final Codec<TransformCondition> CODEC = MedSystemRegistries.TRANSFORM_CONDITION.byNameCodec().dispatch(TransformCondition::getType, TransformConditionType::codec);

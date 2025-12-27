@@ -7,6 +7,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Objects;
 
+@Deprecated
 public record EntityHitboxTransformType<T extends EntityHitboxTransform>(ResourceLocation identifier, MapCodec<T> codec) {
 
     public static final Codec<EntityHitboxTransform> CODEC = MedSystemRegistries.TRANSFORM.byNameCodec().dispatch(EntityHitboxTransform::getType, EntityHitboxTransformType::codec);
