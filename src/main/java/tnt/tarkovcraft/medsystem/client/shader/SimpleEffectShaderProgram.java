@@ -2,8 +2,10 @@ package tnt.tarkovcraft.medsystem.client.shader;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -18,6 +20,8 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgram {
 
     private float strength;
+    private float lastStrength;
+    private float smoothStrength;
 
     public abstract Holder<StatusEffectType<?>> getEffect();
 
@@ -31,6 +35,11 @@ public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgr
     }
 
     @Override
+    public final void onRender(DeltaTracker deltaTracker) {
+        this.smoothStrength = this.applySmoothing(this.lastStrength, this.strength, deltaTracker.getGameTimeDeltaTicks());
+    }
+
+    @Override
     public final void tickProgram(Minecraft minecraft, LivingEntity livingEntity) {
         if (!HealthSystem.hasCustomHealth(livingEntity))
             return;
@@ -41,16 +50,21 @@ public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgr
         } else if (this.strength > 0.0F) {
             this.strength = Math.max(0.0F, this.strength - this.getStrengthDecay());
         }
+        this.lastStrength = this.strength;
     }
 
     @Override
     public final @Nullable GpuBufferSlice getDynamicUniformBuffer() {
         return RenderSystem.getDynamicUniforms().writeTransform(
-                RenderSystem.getModelViewMatrix(), new Vector4f(0.0F, 0.0F, 0.0F, this.strength), new Vector3f(), new Matrix4f()
+                RenderSystem.getModelViewMatrix(), new Vector4f(0.0F, 0.0F, 0.0F, this.smoothStrength), new Vector3f(), new Matrix4f()
         );
     }
 
     protected boolean canApply(LivingEntity entity, HealthContainer container, StatusEffectMap map) {
         return true;
+    }
+
+    protected float applySmoothing(float start, float end, float delta) {
+        return Mth.lerp(delta, start, end);
     }
 }

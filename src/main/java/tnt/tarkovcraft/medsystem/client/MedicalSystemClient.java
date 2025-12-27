@@ -39,6 +39,7 @@ import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.client.shader.ConcussionEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.client.shader.PainEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
@@ -104,6 +105,7 @@ public final class MedicalSystemClient {
 
     private void setup(FMLClientSetupEvent event) {
         DynamicTransformsPipelineModifier.addTargetPipeline(PainEffectShaderProgram.PIPELINE);
+        DynamicTransformsPipelineModifier.addTargetPipeline(ConcussionEffectShaderProgram.PIPELINE);
     }
 
     @SuppressWarnings({"unchecked", "RedundantCast"})
@@ -165,6 +167,7 @@ public final class MedicalSystemClient {
 
     private void registerShaderPrograms(RegisterPostShaderProgramsEvent event) {
         event.register(new PainEffectShaderProgram());
+        event.register(new ConcussionEffectShaderProgram());
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {
