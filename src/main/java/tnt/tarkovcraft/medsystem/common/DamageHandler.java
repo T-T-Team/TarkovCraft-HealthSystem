@@ -24,10 +24,13 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
-import tnt.tarkovcraft.medsystem.common.health.*;
+import tnt.tarkovcraft.medsystem.common.health.DamageContext;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
@@ -35,12 +38,11 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public final class DamageHandler {
-
-    // FIXME make sure trackers are removed also for disconnected players, forcefully removed entities to prevent memory leaks - add as a data attachment?
-    private static final Map<UUID, DamageContext> ACTIVE_DAMAGE_TRACKERS = new HashMap<>();
 
     // Hitbox collision detection
     @SubscribeEvent
@@ -77,7 +79,7 @@ public final class DamageHandler {
                 context.setHits(hits);
                 context.setHitCalculator(hitCalculator);
                 context.setSideEffects(SideEffectHolder.fromDamage(source));
-                ACTIVE_DAMAGE_TRACKERS.put(livingEntity.getUUID(), context);
+                livingEntity.setData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT, context);
             }
         }
     }
@@ -94,7 +96,7 @@ public final class DamageHandler {
             return;
         ArmorSystem armorSystem = MedicalSystem.getConfig().armorSystem;
         ArmorComponent component = armorSystem.getComponent();
-        getDamageContext(entity).ifPresent(context -> {
+        entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT).ifPresent(context -> {
             component.applyDamageReduction(event, context);
             float armorReduction = event.getContainer().getReduction(DamageContainer.Reduction.ARMOR);
             if (armorReduction > 0.0F) {
@@ -111,7 +113,8 @@ public final class DamageHandler {
             return;
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageSource source = event.getSource();
-        DamageContext context = ACTIVE_DAMAGE_TRACKERS.get(entity.getUUID());
+        DamageContext context = entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT)
+                .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
         DamageDistributor damageDistributor = context.getDamageDistributor(container);
         Map<Limb, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
         List<Limb> lostLimbs = new ArrayList<>();
@@ -130,7 +133,7 @@ public final class DamageHandler {
         }
 
         // Clean data and apply
-        clearDamageContext(entity);
+        entity.removeData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT);
         container.updateHealth(entity);
 
         // Death processing
@@ -187,16 +190,7 @@ public final class DamageHandler {
         MedSystemConfig config = MedicalSystem.getConfig();
         ArmorSystem system = config.armorSystem;
         ArmorComponent component = system.getComponent();
-        getDamageContext(entity)
+        entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT)
                 .ifPresent(context -> component.applyItemDamage(event, context));
-    }
-
-    private static Optional<DamageContext> getDamageContext(LivingEntity entity) {
-        return Optional.ofNullable(ACTIVE_DAMAGE_TRACKERS.get(entity.getUUID()));
-    }
-
-    private static void clearDamageContext(LivingEntity entity) {
-        if (entity != null)
-            ACTIVE_DAMAGE_TRACKERS.remove(entity.getUUID());
     }
 }
