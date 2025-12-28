@@ -223,5 +223,8 @@
   "config.medsystem-client.option.x": "X axis offset",
   "config.medsystem-client.option.x.comment.0": "Set x axis offset for the overlay",
   "config.medsystem-client.option.y": "Y axis offset",
-  "config.medsystem-client.option.y.comment.0": "Set y axis offset for the overlay"
+  "config.medsystem-client.option.y.comment.0": "Set y axis offset for the overlay",
+  "config.medsystem-client.option.healthDisplayType": "Health display type",
+  "config.medsystem-client.option.healthDisplayType.comment.0": "Set limb health detail render mode",
+  "config.medsystem-client.option.numericHealthScale": "Numeric health scale"
 }

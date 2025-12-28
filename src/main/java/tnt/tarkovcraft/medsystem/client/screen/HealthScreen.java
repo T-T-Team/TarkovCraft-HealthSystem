@@ -17,6 +17,8 @@ import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.client.RegisterHealthScreenLabelsEvent;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.client.config.HealthDisplayType;
+import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.client.screen.widget.LimbHealthWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.LimbWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -35,7 +37,6 @@ import java.util.UUID;
 public class HealthScreen extends CharacterSubScreen implements HealthContainerScreen {
 
     public static final ResourceLocation HEALTH_ICON = MedicalSystem.resource("textures/icons/health.png");
-    public static final float UNIT_SCALE = 10.0F;
 
     private HealthContainer healthContainer;
 
@@ -58,9 +59,12 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
 
         // label registration
         List<IconWithLabel> list = new ArrayList<>();
+        MedSystemClientConfig config = MedicalSystemClient.getConfig();
+        float healthScale = config.healthDisplayType == HealthDisplayType.HEARTS
+                ? 0.5F : (float) Math.pow(10, config.numericHealthScale);
         list.add(new IconWithLabel(
                         HEALTH_ICON,
-                        () -> Component.literal(Mth.floor(healthContainer.getHealth() * UNIT_SCALE) + "/" + Mth.floor(healthContainer.getMaxHealth() * UNIT_SCALE)),
+                        () -> Component.literal(Mth.floor(healthContainer.getHealth() * healthScale) + "/" + Mth.floor(healthContainer.getMaxHealth() * healthScale)),
                         0xFF55FF55, 0xFF55FF55
                 )
         );
@@ -74,7 +78,7 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
 
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
         List<LimbHealthWidget> healthWidgets = new ArrayList<>();
-        float scale = (this.width / 256.0F);
+        float scale = (this.height / 256.0F) * 2.0F;
         HealthContainerDisplay display = definition.display();
         display.accept((limbCode, data) -> {
             Limb limb = this.healthContainer.getLimbByCode(limbCode);
@@ -94,7 +98,6 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
             int healthX = getHealthLabelWidgetX(xOffset, x, healthWidth, width);
             int healthY = y + (height - healthHeight) / 2;
             LimbHealthWidget healthWidget = new LimbHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, limb, this);
-            healthWidget.setHealthUnitScale(UNIT_SCALE);
             healthWidget.setEffects(effects);
             healthWidget.setTextHoverColor(ColorPalette.WHITE);
 

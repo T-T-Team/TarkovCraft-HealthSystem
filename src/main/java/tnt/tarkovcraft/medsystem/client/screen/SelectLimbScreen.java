@@ -128,7 +128,6 @@ public class SelectLimbScreen extends Screen implements HealthContainerScreen {
             int healthX = HealthScreen.getHealthLabelWidgetX(xOffset, rect.x, healthWidth, rect.z);
             int healthY = rect.y + (rect.w - healthHeight) / 2;
             LimbHealthWidget healthWidget = new LimbHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, limb, this);
-            healthWidget.setHealthUnitScale(HealthScreen.UNIT_SCALE);
             healthWidget.setEffects(effects);
             healthWidget.setFrameColor(isLimbHealable ? widget.getColor() : 0xFF << 24);
             healthWidget.setFrameHoverColor(isLimbHealable ? ColorPalette.YELLOW : 0xFF << 24);
