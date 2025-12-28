@@ -12,15 +12,9 @@ import tnt.tarkovcraft.medsystem.common.health.distributor.DecayingDamageDistrib
 
 import java.util.*;
 
-public class ProjectileHitCalculator implements HitCalculator {
+public record ProjectileHitCalculator(double aabbInflate) implements HitCalculator {
 
-    public static final ProjectileHitCalculator INSTANCE = new ProjectileHitCalculator(0.3);
-
-    private final double aabbInflate;
-
-    public ProjectileHitCalculator(double aabbInflate) {
-        this.aabbInflate = aabbInflate;
-    }
+    public static final ProjectileHitCalculator DEFAULT = new ProjectileHitCalculator(0.3);
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {

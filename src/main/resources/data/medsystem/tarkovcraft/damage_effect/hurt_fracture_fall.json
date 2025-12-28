@@ -11,8 +11,7 @@
     },
     {
       "type": "medsystem:fall_fracture",
-      "_detail": "chance = (x - <minFallDistance>)^2 * <modifier>",
-      "minFallDistance": 3.0,
+      "min_fall_distance": 4.0,
       "modifier": 0.005
     }
   ],

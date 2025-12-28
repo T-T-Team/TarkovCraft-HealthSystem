@@ -9,9 +9,12 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovementDamageHitCalculator implements HitCalculator {
+public final class MovementDamageHitCalculator implements HitCalculator {
 
     public static final MovementDamageHitCalculator INSTANCE = new MovementDamageHitCalculator();
+
+    private MovementDamageHitCalculator() {
+    }
 
     public static boolean canApply(HitCalculatorRule.Context context) {
         return context.source().is(MedSystemTags.DamageTypes.IS_MOVEMENT_RESTRICTED);

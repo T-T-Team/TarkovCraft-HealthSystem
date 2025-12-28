@@ -11,9 +11,12 @@ import tnt.tarkovcraft.medsystem.common.health.distributor.ScaledDamageDistribut
 import java.util.ArrayList;
 import java.util.List;
 
-public class FallDamageHitCalculator implements HitCalculator {
+public final class FallDamageHitCalculator implements HitCalculator {
 
     public static final FallDamageHitCalculator INSTANCE = new FallDamageHitCalculator();
+
+    private FallDamageHitCalculator() {
+    }
 
     public static boolean isFall(HitCalculatorRule.Context context) {
         return context.source().is(DamageTypeTags.IS_FALL);

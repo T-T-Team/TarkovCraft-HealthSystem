@@ -12,20 +12,20 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.medsystem.common.health.state.StateFilter;
-import tnt.tarkovcraft.medsystem.common.health.state.StateFilterType;
+import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcher;
+import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcherType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, Map<String, StateFilter> customStateDefinitions, EntityHitboxContainer hitboxContainer, HealthContainerDisplay display) {
+public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, Map<String, EntityStateMatcher> customStateDefinitions, EntityHitboxContainer hitboxContainer, HealthContainerDisplay display) {
 
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).fieldOf("targets").forGetter(HealthContainerDefinition::targets),
             LimbConfiguration.CODEC.fieldOf("limb_configuration").forGetter(HealthContainerDefinition::limbConfiguration),
-            Codec.unboundedMap(Codec.string(1, 64), StateFilterType.CODEC).optionalFieldOf("custom_state_definitions", Collections.emptyMap()).forGetter(HealthContainerDefinition::customStateDefinitions),
+            Codec.unboundedMap(Codec.string(1, 64), EntityStateMatcherType.CODEC).optionalFieldOf("custom_state_definitions", Collections.emptyMap()).forGetter(HealthContainerDefinition::customStateDefinitions),
             EntityHitboxContainer.CODEC.fieldOf("hitbox_container").forGetter(HealthContainerDefinition::hitboxContainer),
             HealthContainerDisplay.CODEC.fieldOf("display_configuration").forGetter(HealthContainerDefinition::display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
@@ -41,9 +41,9 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
     }
 
     public String getCurrentEntityState(LivingEntity entity) {
-        for (Map.Entry<String, StateFilter> entry : this.customStateDefinitions.entrySet()) {
-            StateFilter filter = entry.getValue();
-            if (filter.matches(entity)) {
+        for (Map.Entry<String, EntityStateMatcher> entry : this.customStateDefinitions.entrySet()) {
+            EntityStateMatcher matcher = entry.getValue();
+            if (matcher.matches(entity)) {
                 return entry.getKey();
             }
         }

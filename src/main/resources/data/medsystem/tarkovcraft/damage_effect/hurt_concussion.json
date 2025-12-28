@@ -33,7 +33,7 @@
       "delay": 0,
       "template": {
         "type": "medsystem:concussion",
-        "duration": 10
+        "duration": 15
       }
     }
   }

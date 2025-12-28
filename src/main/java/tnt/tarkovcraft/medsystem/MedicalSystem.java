@@ -78,7 +78,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.DAMAGE_EFFECT_CONDITION);
         event.register(MedSystemRegistries.DAMAGE_EFFECT_FUNCTION);
         event.register(MedSystemRegistries.DAMAGE_EFFECT_EVENT);
-        event.register(MedSystemRegistries.STATE_FILTER);
+        event.register(MedSystemRegistries.STATE_MATCHER);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {
