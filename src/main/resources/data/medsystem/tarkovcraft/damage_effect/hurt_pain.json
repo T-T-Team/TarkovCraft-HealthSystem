@@ -9,7 +9,7 @@
   ],
   "event": {
     "type": "medsystem:add_status_effect",
-    "durationModifiers": [
+    "duration_modifiers": [
       {
         "type": "medsystem:damage_scale",
         "local_damage": false,
