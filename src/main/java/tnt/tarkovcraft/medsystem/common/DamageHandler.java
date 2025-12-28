@@ -16,6 +16,7 @@ import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
+import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
@@ -30,6 +31,7 @@ import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
@@ -136,6 +138,12 @@ public final class DamageHandler {
         if (container.shouldDie()) {
             entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
             return;
+        }
+
+        // limbs lost statistic - after death processing to avoid counting lost limbs on entity death
+        int lostLimbCount = lostLimbs.size();
+        if (lostLimbCount > 0) {
+            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST, lostLimbCount);
         }
 
         // Unconscious state processing

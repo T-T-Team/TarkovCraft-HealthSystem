@@ -16,7 +16,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import org.jspecify.annotations.Nullable;
-import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -28,7 +27,6 @@ import tnt.tarkovcraft.medsystem.common.effect.util.QueuedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.*;
@@ -343,10 +341,8 @@ public final class HealthContainer {
         float damage = Math.min(limb.getHealth(), limb.getScaledDamage(amount));
         float leftover = amount - damage;
         boolean wasDead = limb.isDead();
-        LivingEntity entity = context.getEntity();
         limb.hurt(damage);
         if (!limb.isVital() && limb.isDead() != wasDead) {
-            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
             onLimbLoss.accept(limb);
         }
         // no need to redistribute damage from vital parts
