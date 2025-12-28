@@ -26,7 +26,6 @@ import tnt.tarkovcraft.medsystem.common.effect.util.QueuedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import javax.annotation.Nullable;
@@ -342,10 +341,8 @@ public final class HealthContainer {
         float damage = Math.min(limb.getHealth(), limb.getScaledDamage(amount));
         float leftover = amount - damage;
         boolean wasDead = limb.isDead();
-        LivingEntity entity = context.getEntity();
         limb.hurt(damage);
         if (!limb.isVital() && limb.isDead() != wasDead) {
-            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST);
             onLimbLoss.accept(limb);
         }
         // no need to redistribute damage from vital parts
