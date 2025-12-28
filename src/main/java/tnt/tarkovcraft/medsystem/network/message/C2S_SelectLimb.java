@@ -19,13 +19,13 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
-public record C2S_SelectBodyPart(InteractionTarget target) implements CustomPacketPayload {
+public record C2S_SelectLimb(InteractionTarget target) implements CustomPacketPayload {
 
-    public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(C2S_SelectBodyPart.class);
-    public static final Type<C2S_SelectBodyPart> TYPE = new Type<>(PACKET_ID);
-    public static final StreamCodec<ByteBuf, C2S_SelectBodyPart> CODEC = StreamCodec.composite(
-            InteractionTarget.STREAM_CODEC, C2S_SelectBodyPart::target,
-            C2S_SelectBodyPart::new
+    public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(C2S_SelectLimb.class);
+    public static final Type<C2S_SelectLimb> TYPE = new Type<>(PACKET_ID);
+    public static final StreamCodec<ByteBuf, C2S_SelectLimb> CODEC = StreamCodec.composite(
+            InteractionTarget.STREAM_CODEC, C2S_SelectLimb::target,
+            C2S_SelectLimb::new
     );
 
     @Override
@@ -47,8 +47,8 @@ public record C2S_SelectBodyPart(InteractionTarget target) implements CustomPack
             return;
         }
         HealthContainer container = HealthSystem.getHealthData(targetEntity);
-        Limb part = container.getLimbByCode(this.target.limbCode());
-        if (attributes != null && attributes.canUseOnPart(part, stack, container, this.target.self(), targetEntity)) {
+        Limb limb = container.getLimbByCode(this.target.limbCode());
+        if (attributes != null && attributes.canUseOnLimb(limb, stack, container, this.target.self(), targetEntity)) {
             stack.set(MedSystemItemComponents.INTERACTION_TARGET, this.target);
         }
     }

@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.ToIntFunction;
 
-public class BodyPartWidget extends AbstractWidget {
+public class LimbWidget extends AbstractWidget {
 
     private final Screen parent;
-    private final Limb part;
+    private final Limb limb;
     private final Font font;
 
     private int scale = 2;
@@ -30,14 +30,14 @@ public class BodyPartWidget extends AbstractWidget {
 
     private List<Component> customTooltip = new ArrayList<>();
 
-    public BodyPartWidget(int x, int y, int width, int height, Limb part, Font font, Screen parent) {
-        super(x, y, width, height, part.getDisplayName());
+    public LimbWidget(int x, int y, int width, int height, Limb limb, Font font, Screen parent) {
+        super(x, y, width, height, limb.getDisplayName());
         this.parent = parent;
-        this.part = part;
+        this.limb = limb;
         this.font = font;
-        this.colorProvider = bodypart -> {
+        this.colorProvider = selectedLimb -> {
             HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
-            return HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, bodypart) | 0xFF << 24;
+            return HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, selectedLimb) | 0xFF << 24;
         };
     }
 
@@ -53,7 +53,7 @@ public class BodyPartWidget extends AbstractWidget {
     }
 
     public int getColor() {
-        return this.colorProvider.applyAsInt(this.part);
+        return this.colorProvider.applyAsInt(this.limb);
     }
 
     @Override

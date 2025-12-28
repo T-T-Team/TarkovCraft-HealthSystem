@@ -89,8 +89,8 @@ public class HealthLayer implements LayeredDraw.Layer {
         }
     }
 
-    public static int getColor(String deadLimbColor, String[] colorSchema, Limb part) {
-        if (part.isDead()) {
+    public static int getColor(String deadLimbColor, String[] colorSchema, Limb limb) {
+        if (limb.isDead()) {
             return Integer.decode(deadLimbColor);
         }
         if (colorSchema.length == 0) {
@@ -99,7 +99,7 @@ public class HealthLayer implements LayeredDraw.Layer {
         if (colorSchema.length == 1) {
             return Integer.decode(colorSchema[0]);
         }
-        float percent = 1.0F - part.getHealthPercent();
+        float percent = 1.0F - limb.getHealthPercent();
         if (percent <= 0.0F) {
             return Integer.decode(colorSchema[0]);
         } else if (percent >= 1.0F) {

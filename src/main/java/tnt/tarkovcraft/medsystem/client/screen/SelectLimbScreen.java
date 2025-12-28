@@ -20,8 +20,8 @@ import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
-import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
-import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
+import tnt.tarkovcraft.medsystem.client.screen.widget.LimbHealthWidget;
+import tnt.tarkovcraft.medsystem.client.screen.widget.LimbWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
@@ -32,12 +32,12 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
-import tnt.tarkovcraft.medsystem.network.message.C2S_SelectBodyPart;
+import tnt.tarkovcraft.medsystem.network.message.C2S_SelectLimb;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectBodyPartScreen extends Screen implements HealthContainerScreen {
+public class SelectLimbScreen extends Screen implements HealthContainerScreen {
 
     public static final Component TITLE = TextHelper.createScreenTitle(MedicalSystem.MOD_ID, "select_body_part").withStyle(ChatFormatting.BOLD).withColor(ColorPalette.TEXT_COLOR);
     public static final Component LABEL_ERROR = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.invalid_item");
@@ -47,7 +47,7 @@ public class SelectBodyPartScreen extends Screen implements HealthContainerScree
     private final boolean selfHealing;
     private final int entityId;
 
-    public SelectBodyPartScreen(boolean selfHealing, int entityID) {
+    public SelectLimbScreen(boolean selfHealing, int entityID) {
         super(TITLE);
         this.selfHealing = selfHealing;
         this.entityId = entityID;
@@ -103,21 +103,21 @@ public class SelectBodyPartScreen extends Screen implements HealthContainerScree
         HealthContainerDisplay display = definition.display();
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
         float scale = (this.width / 256.0F);
-        List<BodyPartHealthWidget> healthWidgets = new ArrayList<>();
+        List<LimbHealthWidget> healthWidgets = new ArrayList<>();
         display.accept((limbCode, data) -> {
             Limb limb = container.getLimbByCode(limbCode);
             Vector4i rect = data.getGuiPos(scale, center);
-            boolean isPartHealable = attributes.canUseOnPart(limb, itemStack, container, selfHealing, target);
-            BodyPartWidget widget = this.addRenderableWidget(new BodyPartWidget(rect.x, rect.y, rect.z, rect.w, limb, this.font, this));
+            boolean isLimbHealable = attributes.canUseOnLimb(limb, itemStack, container, selfHealing, target);
+            LimbWidget widget = this.addRenderableWidget(new LimbWidget(rect.x, rect.y, rect.z, rect.w, limb, this.font, this));
             widget.setScale(3);
             widget.setColorProvider(value -> {
                 HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
-                if (isPartHealable) {
+                if (isLimbHealable) {
                     return HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, value) | 0xFF << 24;
                 }
                 return Integer.decode(overlay.deadLimbColor) | 0xFF << 24;
             });
-            widget.addTooltip(limb.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isPartHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
+            widget.addTooltip(limb.getDisplayName().copy().withStyle(ChatFormatting.BOLD, isLimbHealable ? ChatFormatting.GREEN : ChatFormatting.RED));
 
             List<StatusEffect> effects = limb.getStatusEffects().getEffectsStream()
                     .filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
@@ -127,19 +127,19 @@ public class SelectBodyPartScreen extends Screen implements HealthContainerScree
             int xOffset = (int) ((rect.x + rect.z / 2f) - center.x);
             int healthX = HealthScreen.getHealthLabelWidgetX(xOffset, rect.x, healthWidth, rect.z);
             int healthY = rect.y + (rect.w - healthHeight) / 2;
-            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, limb, this);
+            LimbHealthWidget healthWidget = new LimbHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, limb, this);
             healthWidget.setHealthUnitScale(HealthScreen.UNIT_SCALE);
             healthWidget.setEffects(effects);
-            healthWidget.setFrameColor(isPartHealable ? widget.getColor() : 0xFF << 24);
-            healthWidget.setFrameHoverColor(isPartHealable ? ColorPalette.YELLOW : 0xFF << 24);
-            healthWidget.setTextColor(isPartHealable ? widget.getColor() : 0xFF444444);
+            healthWidget.setFrameColor(isLimbHealable ? widget.getColor() : 0xFF << 24);
+            healthWidget.setFrameHoverColor(isLimbHealable ? ColorPalette.YELLOW : 0xFF << 24);
+            healthWidget.setTextColor(isLimbHealable ? widget.getColor() : 0xFF444444);
             healthWidget.setEffectDetail(false);
-            healthWidget.setTextHoverColor(isPartHealable ? ColorPalette.YELLOW : 0xFF999999);
-            healthWidget.setClickListener(() -> this.bodyPartClicked(limb));
+            healthWidget.setTextHoverColor(isLimbHealable ? ColorPalette.YELLOW : 0xFF999999);
+            healthWidget.setClickListener(() -> this.limbClicked(limb));
             healthWidgets.add(healthWidget);
 
-            if (isPartHealable) {
-                widget.setOnClick(() -> this.bodyPartClicked(limb));
+            if (isLimbHealable) {
+                widget.setOnClick(() -> this.limbClicked(limb));
                 widget.addTooltip(LABEL_CLICK_TO_SELECT);
             } else {
                 widget.addTooltip(LABEL_NOT_HEALABLE);
@@ -153,9 +153,9 @@ public class SelectBodyPartScreen extends Screen implements HealthContainerScree
         return false;
     }
 
-    private void bodyPartClicked(Limb part) {
+    private void limbClicked(Limb part) {
         InteractionTarget target = new InteractionTarget(this.selfHealing, this.entityId, part.getLimbCode());
-        PacketDistributor.sendToServer(new C2S_SelectBodyPart(target));
+        PacketDistributor.sendToServer(new C2S_SelectLimb(target));
         this.minecraft.setScreen(null);
     }
 

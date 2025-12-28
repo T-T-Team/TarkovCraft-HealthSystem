@@ -17,8 +17,8 @@ import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.client.RegisterHealthScreenLabelsEvent;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
-import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartHealthWidget;
-import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
+import tnt.tarkovcraft.medsystem.client.screen.widget.LimbHealthWidget;
+import tnt.tarkovcraft.medsystem.client.screen.widget.LimbWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
@@ -73,7 +73,7 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
         }
 
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
-        List<BodyPartHealthWidget> healthWidgets = new ArrayList<>();
+        List<LimbHealthWidget> healthWidgets = new ArrayList<>();
         float scale = (this.width / 256.0F);
         HealthContainerDisplay display = definition.display();
         display.accept((limbCode, data) -> {
@@ -84,8 +84,8 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
             int width = pos.z;
             int height = pos.w;
             int xOffset = (int) ((pos.x + width / 2f) - center.x);
-            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, limb, this.font, this));
-            bodyPartWidget.setScale(3);
+            LimbWidget limbWidget = this.addRenderableOnly(new LimbWidget(x, y, width, height, limb, this.font, this));
+            limbWidget.setScale(3);
             // status effects
             List<StatusEffect> effects = limb.getStatusEffects().getEffectsStream().filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
                     .toList();
@@ -93,7 +93,7 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
             int healthHeight = effects.isEmpty() ? 20 : 33;
             int healthX = getHealthLabelWidgetX(xOffset, x, healthWidth, width);
             int healthY = y + (height - healthHeight) / 2;
-            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, limb, this);
+            LimbHealthWidget healthWidget = new LimbHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, limb, this);
             healthWidget.setHealthUnitScale(UNIT_SCALE);
             healthWidget.setEffects(effects);
             healthWidget.setTextHoverColor(ColorPalette.WHITE);

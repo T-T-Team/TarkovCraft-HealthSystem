@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health.calc;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.api.SpecificBodyPartDamage;
+import tnt.tarkovcraft.medsystem.api.SpecificLimbDamage;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 
@@ -20,12 +20,12 @@ public class SpecificBodyPartHitCalculator implements HitCalculator {
     }
 
     public static boolean canApply(HitCalculatorRule.Context ctx) {
-        return ctx.source() instanceof SpecificBodyPartDamage;
+        return ctx.source() instanceof SpecificLimbDamage;
     }
 
     public static SpecificBodyPartHitCalculator createInstance(HitCalculatorRule.Context ctx) {
-        SpecificBodyPartDamage source = (SpecificBodyPartDamage) ctx.source();
-        return new SpecificBodyPartHitCalculator(source.getBodyParts(), source.allowDeadBodyPartDamage());
+        SpecificLimbDamage source = (SpecificLimbDamage) ctx.source();
+        return new SpecificBodyPartHitCalculator(source.getLimbs(), source.canDamageDeadLimbs());
     }
 
     @Override

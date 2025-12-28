@@ -29,7 +29,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
-import tnt.tarkovcraft.medsystem.network.message.S2C_OpenBodyPartSelectScreen;
+import tnt.tarkovcraft.medsystem.network.message.S2C_OpenLimbSelectScreen;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -86,7 +86,7 @@ public class HealingItem extends InteractableItem {
                 setActiveInteraction(itemStack, interaction.toImmutable());
                 return InteractionResult.SUCCESS;
             } else if (!level.isClientSide()) {
-                PacketDistributor.sendToPlayer((ServerPlayer) origin, new S2C_OpenBodyPartSelectScreen(interaction));
+                PacketDistributor.sendToPlayer((ServerPlayer) origin, new S2C_OpenLimbSelectScreen(interaction));
             }
             return InteractionResult.CONSUME;
         }
@@ -141,7 +141,7 @@ public class HealingItem extends InteractableItem {
                     }
                 }
                 container.updateHealth(target);
-                if (cycleIndex + 1 > cycleLimit || (part != null && !attributes.canUseOnPart(part, itemStack, container, interaction.self(), target))) {
+                if (cycleIndex + 1 > cycleLimit || (part != null && !attributes.canUseOnLimb(part, itemStack, container, interaction.self(), target))) {
                     origin.useItemRemaining = 0;
                 } else {
                     HealthSystem.synchronizeEntity(target);

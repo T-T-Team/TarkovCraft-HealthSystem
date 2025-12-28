@@ -24,11 +24,11 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BodyPartHealthWidget extends AbstractWidget {
+public class LimbHealthWidget extends AbstractWidget {
 
     private final Screen parent;
     private final Font font;
-    private final Limb part;
+    private final Limb limb;
 
     private int frameSize = 1;
     private int frameColor = ColorPalette.WHITE;
@@ -42,11 +42,11 @@ public class BodyPartHealthWidget extends AbstractWidget {
     private List<StatusEffect> effects;
     private boolean effectDetail = true;
 
-    public BodyPartHealthWidget(int x, int y, int width, int height, Font font, Limb part, Screen parent) {
+    public LimbHealthWidget(int x, int y, int width, int height, Font font, Limb limb, Screen parent) {
         super(x, y, width, height, CommonComponents.EMPTY);
         this.parent = parent;
         this.font = font;
-        this.part = part;
+        this.limb = limb;
     }
 
     public void setEffects(List<StatusEffect> effects) {
@@ -117,15 +117,15 @@ public class BodyPartHealthWidget extends AbstractWidget {
         // Health status %{currHealth}/${maxHealth} or hovered shows part name
         Component status = this.getStatusTitle();
         int statusWidth = this.font.width(status);
-        int textColor = this.part.isDead() ? 0xFFFF0000 : this.isHovered ? this.textHoverColor : this.textColor;
+        int textColor = this.limb.isDead() ? 0xFFFF0000 : this.isHovered ? this.textHoverColor : this.textColor;
         graphics.drawString(this.font, status, this.getX() + (this.width - statusWidth) / 2, this.getY() + 3 + this.frameSize, textColor);
         // Health bar setup
         HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
         int background = Integer.decode(overlay.deadLimbColor) | 0xFF << 24;
         int secondaryBackground = ARGB.scaleRGB(background, 0.8F);
-        int color = HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, this.part) | 0xFF << 24;
+        int color = HealthLayer.getColor(overlay.deadLimbColor, overlay.colorSchema, this.limb) | 0xFF << 24;
         int secondaryColor = ARGB.scaleRGB(color, 0.8F);
-        float f = this.part.getHealthPercent();
+        float f = this.limb.getHealthPercent();
         // Health bar background
         graphics.fillGradient(this.getX() + this.frameSize + 1, this.getY() + this.frameSize + 13, this.getRight() - this.frameSize - 1, this.getY() + this.frameSize + 17, background, secondaryBackground);
         // Health bar foreground - current health
@@ -166,7 +166,7 @@ public class BodyPartHealthWidget extends AbstractWidget {
 
     private Component getStatusTitle() {
         return this.isHovered
-                ? this.part.getDisplayName()
-                : Component.literal(Mth.floor(this.part.getHealth() * this.healthScale) + "/" + Mth.floor(this.part.getMaxHealth() * this.healthScale));
+                ? this.limb.getDisplayName()
+                : Component.literal(Mth.floor(this.limb.getHealth() * this.healthScale) + "/" + Mth.floor(this.limb.getMaxHealth() * this.healthScale));
     }
 }

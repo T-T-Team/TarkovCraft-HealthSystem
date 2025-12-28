@@ -7,32 +7,32 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class BodyPartDamageSource extends DamageSource implements SpecificBodyPartDamage {
+public class LimbDamageSource extends DamageSource implements SpecificLimbDamage {
 
     private final String[] bodyParts;
     private boolean allowDeadBodyPartDamage = true;
 
-    public BodyPartDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, @Nullable Vec3 damageSourcePosition, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, @Nullable Vec3 damageSourcePosition, String... bodyParts) {
         super(type, directEntity, causingEntity, damageSourcePosition);
         this.bodyParts = bodyParts;
     }
 
-    public BodyPartDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, String... bodyParts) {
         super(type, directEntity, causingEntity);
         this.bodyParts = bodyParts;
     }
 
-    public BodyPartDamageSource(Holder<DamageType> type, Vec3 damageSourcePosition, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, Vec3 damageSourcePosition, String... bodyParts) {
         super(type, damageSourcePosition);
         this.bodyParts = bodyParts;
     }
 
-    public BodyPartDamageSource(Holder<DamageType> type, @Nullable Entity entity, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity entity, String... bodyParts) {
         super(type, entity);
         this.bodyParts = bodyParts;
     }
 
-    public BodyPartDamageSource(Holder<DamageType> type, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, String... bodyParts) {
         super(type);
         this.bodyParts = bodyParts;
     }
@@ -42,12 +42,12 @@ public class BodyPartDamageSource extends DamageSource implements SpecificBodyPa
     }
 
     @Override
-    public String[] getBodyParts() {
+    public String[] getLimbs() {
         return bodyParts;
     }
 
     @Override
-    public boolean allowDeadBodyPartDamage() {
+    public boolean canDamageDeadLimbs() {
         return this.allowDeadBodyPartDamage;
     }
 }
