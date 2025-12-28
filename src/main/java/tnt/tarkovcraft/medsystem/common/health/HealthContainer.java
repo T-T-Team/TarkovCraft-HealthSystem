@@ -254,17 +254,18 @@ public final class HealthContainer {
         return false;
     }
 
-    public void iterateHitboxes(BiConsumer<BodyPartHitbox, Limb> consumer) {
-        this.iterateHitboxes((hb, p) -> true, consumer);
+    public void iterateHitboxes(LivingEntity entity, BiConsumer<EntityHitboxContainer.LimbHitbox, Limb> consumer) {
+        this.iterateHitboxes(entity, (hitbox, limb) -> true, consumer);
     }
 
-    public void iterateHitboxes(BiPredicate<BodyPartHitbox, Limb> filter, BiConsumer<BodyPartHitbox, Limb> consumer) {
-        for (BodyPartHitbox hitbox : this.definition.getHitboxes()) {
-            Limb part = this.limbs.get(hitbox.getOwner());
-            if (part == null)
-                continue;
-            if (filter.test(hitbox, part)) {
-                consumer.accept(hitbox, part);
+    public void iterateHitboxes(LivingEntity entity, BiPredicate<EntityHitboxContainer.LimbHitbox, Limb> filter, BiConsumer<EntityHitboxContainer.LimbHitbox, Limb> consumer) {
+        String state = this.definition.getCurrentEntityState(entity);
+        EntityHitboxContainer hitboxContainer = this.definition.hitboxContainer();
+        for (Limb limb : this.limbs.values()) {
+            String limbCode = limb.getLimbCode();
+            EntityHitboxContainer.LimbHitbox hitbox = hitboxContainer.getLimbHitbox(limbCode, state);
+            if (filter.test(hitbox, limb)) {
+                consumer.accept(hitbox, limb);
             }
         }
     }

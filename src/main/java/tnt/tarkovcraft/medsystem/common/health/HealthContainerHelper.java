@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.DataResult;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,21 +10,31 @@ public final class HealthContainerHelper {
 
     public static DataResult<HealthContainerDefinition> validate(HealthContainerDefinition container) {
         // validation of hitbox links
-        Set<String> hitboxOwners = container.getHitboxes().stream().map(BodyPartHitbox::getOwner).collect(Collectors.toSet());
         LimbConfiguration limbConfiguration = container.limbConfiguration();
-        if (hitboxOwners.size() != limbConfiguration.getLimbCount()) {
-            return DataResult.error(() -> "Mismatched hitbox count. Got " + hitboxOwners.size() + ", expected " + limbConfiguration.getLimbCount());
-        }
-        for (String owner : limbConfiguration.limbs().keySet()) {
-            if (!hitboxOwners.contains(owner)) {
-                return DataResult.error(() -> "Missing hitbox definition for body part " + owner);
+        Set<String> limbs = limbConfiguration.limbs().keySet();
+        EntityHitboxContainer hitboxContainer = container.hitboxContainer();
+        Map<String, EntityHitboxContainer.LimbHitboxContainer> hitboxMap = hitboxContainer.definitions();
+        HealthContainerDisplay display = container.display();
+        for (String limbCode : limbs) {
+            if (!hitboxMap.containsKey(limbCode)) {
+                return DataResult.error(() -> "Missing hitbox definition for limb " + limbCode);
+            }
+            if (!display.displayDataMap().containsKey(limbCode)) {
+                return DataResult.error(() -> "Missing display data for limb " + limbCode);
             }
         }
-        // Validation of display links
-        Set<String> displaySources = container.getDisplayConfiguration().stream().map(BodyPartDisplay::source).collect(Collectors.toSet());
-        for (String source : displaySources) {
-            if (!limbConfiguration.limbs().containsKey(source)) {
-                return DataResult.error(() -> "Missing body part for source " + source);
+        // unknown limbs in hitboxes validation
+        Set<String> hitboxLimbs = hitboxMap.keySet();
+        for (String limbCode : hitboxLimbs) {
+            if (!limbs.contains(limbCode)) {
+                return DataResult.error(() -> "Unknown hitbox limb " + limbCode);
+            }
+        }
+        // unknown limbs in display configuration
+        Set<String> displayLimbs = display.displayDataMap().keySet();
+        for (String limbCode : displayLimbs) {
+            if (!limbs.contains(limbCode)) {
+                return DataResult.error(() -> "Unknown display limb " + limbCode);
             }
         }
         return DataResult.success(container);

@@ -13,9 +13,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.core.util.helper.ARGB;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartHitbox;
-import tnt.tarkovcraft.medsystem.common.health.LimbDefinition;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 
 @Mixin(EntityRenderDispatcher.class)
@@ -26,19 +25,18 @@ public abstract class EntityRenderDispatcherMixin implements ResourceManagerRelo
             at = @At("HEAD")
     )
     private static void medsystem$renderHitbox(PoseStack poseStack, VertexConsumer buffer, Entity entity, float delta, float f0, float f1, float f2, CallbackInfo ci) {
-        MedicalSystem.HEALTH_SYSTEM.getHealthContainer(entity.getType()).ifPresent(container -> {
-            for (BodyPartHitbox hitbox : container.getHitboxes()) {
-                LimbDefinition healthTpl = container.getLimbConfiguration(hitbox.getOwner());
-                if (healthTpl == null)
-                    continue;
-                LimbType group = healthTpl.type();
-                int color = group.getHitboxColor();
-                float red = ARGB.redFloat(color);
-                float green = ARGB.greenFloat(color);
-                float blue = ARGB.blueFloat(color);
-                AABB aabb = hitbox.transform((LivingEntity) entity).aabb();
-                LevelRenderer.renderLineBox(poseStack, buffer, aabb, red, green, blue, 1.0F);
-            }
+        if (!HealthSystem.hasCustomHealth(entity))
+            return;
+        LivingEntity livingEntity = (LivingEntity) entity;
+        HealthContainer container = HealthSystem.getHealthData(livingEntity);
+        container.iterateHitboxes(livingEntity, (hitbox, limb) -> {
+            LimbType group = limb.getType();
+            int color = group.getHitboxColor();
+            float red = ARGB.redFloat(color);
+            float green = ARGB.greenFloat(color);
+            float blue = ARGB.blueFloat(color);
+            AABB aabb = hitbox.toWorldSpaceHitbox(livingEntity);
+            LevelRenderer.renderLineBox(poseStack, buffer, aabb, red, green, blue, 1.0F);
         });
     }
 }

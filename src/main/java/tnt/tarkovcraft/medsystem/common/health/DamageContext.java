@@ -5,9 +5,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.common.health.math.DamageDistributor;
-import tnt.tarkovcraft.medsystem.common.health.math.EvenDamageDistributor;
-import tnt.tarkovcraft.medsystem.common.health.math.HitCalculator;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
+import tnt.tarkovcraft.medsystem.common.health.distributor.EvenDamageDistributor;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 
 import java.util.List;
 

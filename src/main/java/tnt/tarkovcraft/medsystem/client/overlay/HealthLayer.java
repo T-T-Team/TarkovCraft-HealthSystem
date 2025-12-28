@@ -61,17 +61,14 @@ public class HealthLayer implements LayeredDraw.Layer {
         Vector2f center = new Vector2f(overlayPos.x + overlayWidth / 2.0F, overlayPos.y + overlayHeight / 2.0F);
         HealthContainer container = camera.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         HealthContainerDefinition definition = container.getDefinition();
-        List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
-        for (BodyPartDisplay display : displays) {
-            Limb health = container.getLimbByCode(display.source());
-            if (health == null)
-                return;
-            Vector4f pos = display.getPosition(scale, center);
-            int color = overlay.transparency << 24 | getColor(overlay.deadLimbColor, overlay.colorSchema, health);
-            RenderUtils.fill(graphics, pos.x, pos.y, pos.x + pos.z, pos.y + pos.w, ARGB.scaleRGB(color, 0.8F));
-            RenderUtils.fill(graphics, pos.x + 2, pos.y + 2, pos.x + pos.z - 2, pos.y + pos.w - 2, color);
-        }
-
+        HealthContainerDisplay display = definition.display();
+        display.accept((limbCode, data) -> {
+            Limb limb = container.getLimbByCode(limbCode);
+            Vector4f position = data.getPos(scale, center);
+            int color = overlay.transparency << 24 | getColor(overlay.deadLimbColor, overlay.colorSchema, limb);
+            RenderUtils.fill(graphics, position.x, position.y, position.x + position.z, position.y + position.w, ARGB.scaleRGB(color, 0.8F));
+            RenderUtils.fill(graphics, position.x + 2, position.y + 2, position.x + position.z - 2, position.y + position.w - 2, color);
+        });
         Stream<StatusEffect> effectStream = container.getStatusEffectStream().filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.ALWAYS));
         Map<StatusEffectType<?>, List<StatusEffect>> effects = effectStream.collect(Collectors.groupingBy(StatusEffect::getType, LinkedHashMap::new, Collectors.toList()));
         int index = 0;

@@ -198,13 +198,6 @@ public class HealingItem extends InteractableItem {
     }
 
     @Override
-    protected boolean canInteractWithEntity(ItemStack stack, LivingEntity entity, LivingEntity origin) {
-        HealthContainer container = HealthSystem.getHealthData(entity);
-        HealthContainerDefinition definition = container.getDefinition();
-        return !definition.getDisplayConfiguration().isEmpty();
-    }
-
-    @Override
     protected boolean shouldClearInteractionDataOnCancellation(ItemStack itemStack, LivingEntity entity, int count) {
         InteractionTarget interaction = this.getActiveInteraction(itemStack);
         return interaction != null && !interaction.self();

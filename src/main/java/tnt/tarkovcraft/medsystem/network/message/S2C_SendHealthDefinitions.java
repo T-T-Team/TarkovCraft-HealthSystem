@@ -18,6 +18,7 @@ import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO use stream codecs
 public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefinition> definitionMap) implements CustomPacketPayload {
 
     public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(S2C_SendHealthDefinitions.class);
