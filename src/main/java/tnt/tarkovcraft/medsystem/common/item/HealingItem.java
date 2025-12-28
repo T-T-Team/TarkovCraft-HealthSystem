@@ -17,7 +17,7 @@ import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecovery;

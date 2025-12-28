@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect.util;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 
@@ -24,7 +24,7 @@ public record QueuedStatusEffect(long target, String limb, StatusEffect data) im
     }
 
     @Override
-    public int compareTo(@NotNull QueuedStatusEffect o) {
+    public int compareTo(@NonNull QueuedStatusEffect o) {
         return Long.compare(this.target(), o.target());
     }
 }

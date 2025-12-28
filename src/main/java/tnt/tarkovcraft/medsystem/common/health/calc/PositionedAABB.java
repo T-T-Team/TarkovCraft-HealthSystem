@@ -2,11 +2,9 @@ package tnt.tarkovcraft.medsystem.common.health.calc;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import tnt.tarkovcraft.medsystem.common.health.transform.EntityHitboxTransform;
 
 import java.util.Optional;
 
@@ -109,10 +107,6 @@ public final class PositionedAABB {
 
     public AABB aabb() {
         return this.aabb;
-    }
-
-    public PositionedAABB transform(EntityHitboxTransform transform, LivingEntity context) {
-        return transform.apply(this, context);
     }
 
     public static AABB inflateOutward(AABB aabb, double amount) {

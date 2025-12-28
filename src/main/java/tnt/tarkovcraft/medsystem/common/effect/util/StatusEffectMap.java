@@ -5,7 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -144,7 +144,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     }
 
     @Override
-    public @NotNull Iterator<StatusEffect> iterator() {
+    public @NonNull Iterator<StatusEffect> iterator() {
         return this.listEffects().iterator();
     }
 }

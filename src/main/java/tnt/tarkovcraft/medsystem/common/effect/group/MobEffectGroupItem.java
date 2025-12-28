@@ -12,7 +12,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
