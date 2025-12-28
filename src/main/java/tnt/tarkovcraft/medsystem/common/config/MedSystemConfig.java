@@ -21,13 +21,6 @@ public final class MedSystemConfig {
     public ArmorSystem armorSystem = ArmorSystem.SIMULATED;
 
     @Configurable
-    @Configurable.DecimalRange(min = 0.15, max = 3.0)
-    @Configurable.Gui.Slider
-    @Configurable.Gui.NumberFormat("0.00#")
-    @Configurable.Comment("Damage scale for explosions")
-    public float explosionDamageScale = 0.6F;
-
-    @Configurable
     @Configurable.Comment("Health will be primarily recovered into vital parts")
     public boolean prioritizeVitalHealing = true;
 

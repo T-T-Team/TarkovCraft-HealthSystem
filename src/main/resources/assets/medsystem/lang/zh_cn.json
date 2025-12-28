@@ -76,8 +76,6 @@
     "death.attack.medsystem.fracture": "%s因骨折而死",
     "death.attack.medsystem.fracture.player": "%s在与%s的战斗中因骨折而死",
     "config.screen.medsystem": "MedSystem",
-    "config.medsystem.option.explosionDamageScale": "爆炸伤害大小",
-    "config.medsystem.option.explosionDamageScale.comment.0": "爆炸伤害等级",
     "config.medsystem.option.prioritizeVitalHealing": "重要部位优先治疗",
     "config.medsystem.option.prioritizeVitalHealing.comment.0": "先治疗重要部位",
     "config.medsystem.option.vitalBodyPartHealthTrigger": "重要部位愈合优先值",

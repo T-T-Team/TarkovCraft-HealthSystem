@@ -1,14 +1,16 @@
 package tnt.tarkovcraft.medsystem.network.message;
 
+import com.mojang.serialization.DataResult;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
@@ -16,7 +18,6 @@ import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO use stream codecs
 public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefinition> definitionMap) implements CustomPacketPayload {
 
     public static final Identifier PACKET_ID = MedicalSystemNetwork.createId(S2C_SendHealthDefinitions.class);
@@ -36,7 +37,9 @@ public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefini
         buf.writeInt(pairs);
         for (Map.Entry<EntityType<?>, HealthContainerDefinition> entry : this.definitionMap.entrySet()) {
             buf.writeIdentifier(BuiltInRegistries.ENTITY_TYPE.getKey(entry.getKey()));
-            CompoundTag tag = Codecs.serializeNbtCompound(HealthContainerDefinition.CODEC, entry.getValue());
+            DataResult<Tag> result = HealthContainerDefinition.CODEC.encodeStart(NbtOps.INSTANCE, entry.getValue());
+            CompoundTag tag = new CompoundTag();
+            tag.put("data", result.getOrThrow());
             buf.writeNbt(tag);
         }
     }
@@ -48,7 +51,8 @@ public record S2C_SendHealthDefinitions(Map<EntityType<?>, HealthContainerDefini
             Identifier id = buf.readIdentifier();
             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(id);
             CompoundTag tag = buf.readNbt();
-            HealthContainerDefinition definition = Codecs.deserializeNbtCompound(HealthContainerDefinition.CODEC, tag);
+            DataResult<HealthContainerDefinition> result = HealthContainerDefinition.CODEC.parse(NbtOps.INSTANCE, tag.get("data"));
+            HealthContainerDefinition definition = result.getOrThrow();
             map.put(type, definition);
         }
         return new S2C_SendHealthDefinitions(map);

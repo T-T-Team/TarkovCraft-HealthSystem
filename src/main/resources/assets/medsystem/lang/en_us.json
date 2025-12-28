@@ -149,8 +149,6 @@
   "config.medsystem.option.armorSystem.comment.2": "MODULAR - modular armor - getting hit in head damages only helmet",
   "config.medsystem.option.armorSystem.comment.3": "MODULAR_BOOSTED - same as above, but each armor piece has 150% additional protection",
   "config.medsystem.option.armorSystem.comment.4": "VANILLA - vanilla armor calculation, full armor is used for any damage calculations",
-  "config.medsystem.option.explosionDamageScale": "Explosion damage scale",
-  "config.medsystem.option.explosionDamageScale.comment.0": "Damage scale for explosions",
   "config.medsystem.option.prioritizeVitalHealing": "Vital part heal priority",
   "config.medsystem.option.prioritizeVitalHealing.comment.0": "Health will be primarily recovered into vital parts",
   "config.medsystem.option.vitalBodyPartHealthTrigger": "Vital part heal priority threshold",
