@@ -10,15 +10,9 @@ import tnt.tarkovcraft.medsystem.common.damage_effect.function.DamageEffectFunct
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupItemType;
 import tnt.tarkovcraft.medsystem.common.health.state.StateFilterType;
-import tnt.tarkovcraft.medsystem.common.health.transform.EntityHitboxTransformType;
-import tnt.tarkovcraft.medsystem.common.health.transform.TransformConditionType;
 
 public final class MedSystemRegistries {
 
-    @Deprecated
-    public static final Registry<TransformConditionType<?>> TRANSFORM_CONDITION = new RegistryBuilder<>(Keys.TRANSFORM_CONDITION).create();
-    @Deprecated
-    public static final Registry<EntityHitboxTransformType<?>> TRANSFORM = new RegistryBuilder<>(Keys.TRANSFORM).create();
     public static final Registry<StatusEffectType<?>> STATUS_EFFECT = new RegistryBuilder<>(Keys.STATUS_EFFECT).withIntrusiveHolders().create();
     public static final Registry<EffectGroupItemType<?>> EFFECT_GROUP_ITEM = new RegistryBuilder<>(Keys.EFFECT_GROUP_ITEM).create();
     public static final Registry<DamageEffectConditionType<?>> DAMAGE_EFFECT_CONDITION = new RegistryBuilder<>(Keys.DAMAGE_EFFECT_CONDITION).create();
@@ -28,10 +22,6 @@ public final class MedSystemRegistries {
 
     public static final class Keys {
 
-        @Deprecated
-        public static final ResourceKey<Registry<TransformConditionType<?>>> TRANSFORM_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("transform/condition"));
-        @Deprecated
-        public static final ResourceKey<Registry<EntityHitboxTransformType<?>>> TRANSFORM = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("transform/transformer"));
         public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("status_effect"));
         public static final ResourceKey<Registry<EffectGroupItemType<?>>> EFFECT_GROUP_ITEM = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("status_effect_group_item"));
         public static final ResourceKey<Registry<DamageEffectConditionType<?>>> DAMAGE_EFFECT_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("damage_effect/condition"));

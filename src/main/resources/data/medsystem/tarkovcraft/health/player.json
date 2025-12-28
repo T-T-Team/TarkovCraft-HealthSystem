@@ -56,7 +56,7 @@
   "custom_state_definitions": {
     "crouching": {
       "type": "medsystem:pose",
-      "targets": "CROUCHING"
+      "targets": "crouching"
     },
     "laying": {
       "type": "medsystem:logical",
@@ -64,435 +64,222 @@
       "values": [
         {
           "type": "medsystem:pose",
-          "targets": "SWIMMING"
+          "targets": "swimming"
         },
         {
           "type": "medsystem:unconscious"
         }
       ]
+    },
+    "sitting": {
+      "type": "medsystem:sitting_passenger"
     }
   },
-  "hitboxes": [
-    {
-      "owner": "head",
-      "transforms": [
-        {
-          "if": {
-            "type": "medsystem:pose",
-            "allow": "CROUCHING"
-          },
-          "apply": {
-            "type": "medsystem:move",
-            "pos": [ 0.0, -0.4, 0.0 ]
-          }
-        },
-        {
-          "if": {
-            "type": "medsystem:or",
-            "values": [
-              {
-                "type": "medsystem:pose",
-                "allow": "SWIMMING"
-              },
-              {
-                "type": "medsystem:unconscious"
-              }
-            ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -1.3, 0.6 ]
-            },
-            {
-              "type": "medsystem:entity_body_yaw"
-            }
-          ]
-        },
-        {
-          "if": {
-            "type": "medsystem:not",
-            "child": {
-              "type": "medsystem:or",
-              "values": [
-                {
-                  "type": "medsystem:pose",
-                  "allow": "SWIMMING"
-                },
-                {
-                  "type": "medsystem:unconscious"
-                }
-              ]
-            }
-          },
-          "apply": {
-            "type": "medsystem:entity_head_rotation"
-          }
+  "hitbox_container": {
+    "head": {
+      "default": {
+        "pitch": "pitch_view",
+        "yaw": "yaw_view",
+        "aabb": {
+          "pos": [ 0, 1.7, 0 ],
+          "size": [ 0.25, 0.25 ]
         }
-      ],
-      "pos": [ 0, 1.7, 0 ],
-      "size": [ 0.25, 0.25 ]
+      },
+      "crouching": {
+        "pitch": "pitch_view",
+        "yaw": "yaw_view",
+        "aabb": {
+          "pos": [ 0, 1.3, 0 ],
+          "size": [ 0.25, 0.25 ]
+        }
+      },
+      "laying": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.1, 0.7 ],
+          "size": [ 0.25, 0.2 ]
+        }
+      }
     },
-    {
-      "owner": "body",
-      "transforms": [
-        {
-          "if": {
-            "type": "medsystem:pose",
-            "allow": "CROUCHING"
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.25, -0.1 ]
-            },
-            {
-              "type": "medsystem:entity_body_yaw"
-            }
-          ]
-        },
-        {
-          "if": {
-            "type": "medsystem:or",
-            "values": [
-              {
-                "type": "medsystem:pose",
-                "allow": "SWIMMING"
-              },
-              {
-                "type": "medsystem:unconscious"
-              }
-            ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.85, 0.1 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.25, 0.25 ]
-            },
-            {
-              "type": "medsystem:entity_body_yaw"
-            }
-          ]
+    "body": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 1.2, 0 ],
+          "size": [ 0.3, 0.25 ]
         }
-      ],
-      "pos": [ 0, 1.2, 0 ],
-      "size": [ 0.3, 0.25 ]
+      },
+      "crouching": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.95, -0.1 ],
+          "size": [ 0.3, 0.25 ]
+        }
+      },
+      "laying": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.1, 0.3 ],
+          "size": [ 0.25, 0.2 ]
+        }
+      }
     },
-    {
-      "owner": "stomach",
-      "transforms": [
-        {
-          "if": {
-            "type": "medsystem:pose",
-            "allow": "CROUCHING"
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.25, -0.15 ]
-            },
-            {
-              "type": "medsystem:entity_body_yaw"
-            }
-          ]
-        },
-        {
-          "if": {
-            "type": "medsystem:or",
-            "values": [
-              {
-                "type": "medsystem:pose",
-                "allow": "SWIMMING"
-              },
-              {
-                "type": "medsystem:unconscious"
-              }
-            ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.5, -0.3 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.2, 0.2 ]
-            },
-            {
-              "type": "medsystem:entity_body_yaw"
-            }
-          ]
+    "stomach": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 0.85, 0 ],
+          "size": [ 0.3, 0.1 ]
         }
-      ],
-      "pos": [ 0, 0.85, 0 ],
-      "size": [ 0.3, 0.1 ]
+      },
+      "crouching": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.6, -0.15 ],
+          "size": [ 0.3, 0.1 ]
+        }
+      },
+      "laying": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.1, -0.1 ],
+          "size": [ 0.2, 0.2 ]
+        }
+      }
     },
-    {
-      "owner": "right_arm",
-      "transforms": [
-        {
-          "if": {
-            "type": "medsystem:pose",
-            "allow": "CROUCHING"
-          },
-          "apply": {
-            "type": "medsystem:move",
-            "pos": [ 0.0, -0.25, -0.1 ]
-          }
-        },
-        {
-          "if": {
-            "type": "medsystem:or",
-            "values": [
-              {
-                "type": "medsystem:pose",
-                "allow": "SWIMMING"
-              },
-              {
-                "type": "medsystem:unconscious"
-              }
-            ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ -0.2, -0.75, 0.25 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.25, 0.25 ]
-            }
-          ]
-        },
-        {
-          "apply": {
-            "type": "medsystem:entity_body_yaw"
-          }
+    "right_arm": {
+      "default": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.4, 1.1, 0 ],
+          "size": [ 0.15, 0.35 ]
         }
-      ],
-      "pos": [ -0.4, 1.1, 0 ],
-      "size": [ 0.15, 0.35 ]
+      },
+      "crouching": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.4, 0.85, -0.1 ],
+          "size": [ 0.15, 0.35 ]
+        }
+      },
+      "laying": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.4, 0.1, 0.15 ],
+          "size": [ 0.25, 0.2 ]
+        }
+      }
     },
-    {
-      "owner": "left_arm",
-      "transforms": [
-        {
-          "if": {
-            "type": "medsystem:pose",
-            "allow": "CROUCHING"
-          },
-          "apply": {
-            "type": "medsystem:move",
-            "pos": [ 0.0, -0.25, -0.1 ]
-          }
-        },
-        {
-          "if": {
-            "type": "medsystem:or",
-            "values": [
-              {
-                "type": "medsystem:pose",
-                "allow": "SWIMMING"
-              },
-              {
-                "type": "medsystem:unconscious"
-              }
-            ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.2, -0.75, 0.25 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.25, 0.25 ]
-            }
-          ]
-        },
-        {
-          "apply": {
-            "type": "medsystem:entity_body_yaw"
-          }
+    "left_arm": {
+      "default": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.4, 1.1, 0 ],
+          "size": [ 0.15, 0.35 ]
         }
-      ],
-      "pos": [ 0.4, 1.1, 0 ],
-      "size": [ 0.15, 0.35 ]
+      },
+      "crouching": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.4, 0.85, -0.1 ],
+          "size": [ 0.15, 0.35 ]
+        }
+      },
+      "laying": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.4, 0.1, 0.15 ],
+          "size": [ 0.25, 0.2 ]
+        }
+      }
     },
-    {
-      "owner": "right_leg",
-      "transforms": [
-        {
-          "if": {
-            "type": "medsystem:pose",
-            "allow": [ "CROUCHING" ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.175, -0.2 ]
-            },
-            {
-              "type": "medsystem:scale",
-              "scale": [ 1.0, 0.75 ]
-            }
-          ]
-        },
-        {
-          "if": {
-            "type": "medsystem:or",
-            "values": [
-              {
-                "type": "medsystem:pose",
-                "allow": "SWIMMING"
-              },
-              {
-                "type": "medsystem:unconscious"
-              }
-            ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.05, -0.7 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.2, 0.2 ]
-            }
-          ]
-        },
-        {
-          "if": {
-            "type": "medsystem:is_sitting"
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ -0.15, 0.2, 0.5 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.375, 0.15 ]
-            }
-          ]
-        },
-        {
-          "apply": {
-            "type": "medsystem:entity_body_yaw"
-          }
+    "right_leg": {
+      "default": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.15, 0.375, 0 ],
+          "size": [ 0.15, 0.375 ]
         }
-      ],
-      "pos": [ -0.15, 0.375, 0 ],
-      "size": [ 0.15, 0.375 ]
+      },
+      "crouching": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.15, 0.2, -0.2 ],
+          "size": [ 0.15, 0.28125 ]
+        }
+      },
+      "laying": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.15, 0.1, -0.5 ],
+          "size": [ 0.25, 0.2 ]
+        }
+      },
+      "sitting": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.3, 0.575, 0.5 ],
+          "size": [ 0.3, 0.15 ]
+        }
+      }
     },
-    {
-      "owner": "left_leg",
-      "transforms": [
-        {
-          "if": {
-            "type": "medsystem:pose",
-            "allow": "CROUCHING"
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.175, -0.2 ]
-            },
-            {
-              "type": "medsystem:scale",
-              "scale": [ 1.0, 0.75 ]
-            }
-          ]
-        },
-        {
-          "if": {
-            "type": "medsystem:or",
-            "values": [
-              {
-                "type": "medsystem:pose",
-                "allow": "SWIMMING"
-              },
-              {
-                "type": "medsystem:unconscious"
-              }
-            ]
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.0, -0.05, -0.7 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.2, 0.2 ]
-            }
-          ]
-        },
-        {
-          "if": {
-            "type": "medsystem:is_sitting"
-          },
-          "apply": [
-            {
-              "type": "medsystem:move",
-              "pos": [ 0.15, 0.2, 0.5 ]
-            },
-            {
-              "type": "medsystem:resize",
-              "size": [ 0.375, 0.15 ]
-            }
-          ]
-        },
-        {
-          "apply": {
-            "type": "medsystem:entity_body_yaw"
-          }
+    "left_leg": {
+      "default": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.15, 0.375, 0 ],
+          "size": [ 0.15, 0.375 ]
         }
-      ],
-      "pos": [ 0.15, 0.375, 0 ],
-      "size": [ 0.15, 0.375 ]
+      },
+      "crouching": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.15, 0.2, -0.2 ],
+          "size": [ 0.15, 0.28125 ]
+        }
+      },
+      "laying": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.15, 0.1, -0.5 ],
+          "size": [ 0.25, 0.2 ]
+        }
+      },
+      "sitting": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.3, 0.575, 0.5 ],
+          "size": [ 0.3, 0.15 ]
+        }
+      }
     }
-  ],
-  "hud": [
-    {
-      "source": "head",
+  },
+  "display_configuration": {
+    "head": {
       "pos": [ 0, -48 ],
       "size": [ 24, 24 ]
     },
-    {
-      "source": "body",
+    "body": {
       "pos": [ 0, -24 ],
       "size": [ 24, 28 ]
     },
-    {
-      "source": "right_arm",
-      "pos": [ -18, -24 ],
-      "size": [ 12, 38 ]
-    },
-    {
-      "source": "left_arm",
-      "pos": [ 18, -24 ],
-      "size": [ 12, 38 ]
-    },
-    {
-      "source": "stomach",
+    "stomach": {
       "pos": [ 0, 4 ],
       "size": [ 24, 12 ]
     },
-    {
-      "source": "right_leg",
+    "right_arm": {
+      "pos": [ -18, -24 ],
+      "size": [ 12, 38 ]
+    },
+    "left_arm": {
+      "pos": [ 18, -24 ],
+      "size": [ 12, 38 ]
+    },
+    "right_leg": {
       "pos": [ -6, 16 ],
       "size": [ 12, 38 ]
     },
-    {
-      "source": "left_leg",
+    "left_leg": {
       "pos": [ 6, 16 ],
       "size": [ 12, 38 ]
     }
-  ]
+  }
 }

@@ -25,31 +25,47 @@
       }
     }
   },
-  "hitboxes": [
-    {
-      "owner": "head",
-      "pos": [ 0, 0.4, 0.35 ],
-      "size": [ 0.2, 0.2 ],
-      "transforms": {
-        "apply": {
-          "type": "medsystem:entity_head_rotation"
+  "hitbox_container": {
+    "head": {
+      "default": {
+        "pitch": "pitch_view",
+        "yaw": "yaw_view",
+        "aabb": {
+          "pos": [ 0, 0.4, 0.35 ],
+          "size": [ 0.2, 0.2 ]
         }
       }
     },
-    {
-      "owner": "body",
-      "pos": [ 0, 0.475, -0.15 ],
-      "size": [ 0.4, 0.1 ],
-      "transforms": {
-        "apply": {
-          "type": "medsystem:entity_body_yaw"
+    "body": {
+      "default": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.475, -0.15 ],
+          "size": [ 0.4, 0.1 ]
         }
       }
     },
-    {
-      "owner": "legs",
-      "pos": [ 0, 0.2, 0 ],
-      "size": [ 0.5, 0.2 ]
+    "legs": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 0.2, 0 ],
+          "size": [ 0.5, 0.2 ]
+        }
+      }
     }
-  ]
+  },
+  "display_configuration": {
+    "head": {
+      "pos": [ -24, -24 ],
+      "size": [ 32, 32 ]
+    },
+    "body": {
+      "pos": [ 16, -12 ],
+      "size": [ 48, 24 ]
+    },
+    "legs": {
+      "pos": [ 16, 12 ],
+      "size": [ 64, 24 ]
+    }
+  }
 }

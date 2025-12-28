@@ -25,38 +25,44 @@
       }
     }
   },
-  "hitboxes": [
-    {
-      "owner": "head",
-      "pos": [ 0, 1.4, 0 ],
-      "size": [ 0.25, 0.25 ]
+  "hitbox_container": {
+    "head": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 1.4, 0 ],
+          "size": [ 0.25, 0.25 ]
+        }
+      }
     },
-    {
-      "owner": "body",
-      "pos": [ 0, 0.775, 0 ],
-      "size": [ 0.3, 0.35 ]
+    "body": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 0.775, 0 ],
+          "size": [ 0.3, 0.35 ]
+        }
+      }
     },
-    {
-      "owner": "legs",
-      "pos": [ 0, 0.2, 0 ],
-      "size": [ 0.4, 0.2 ]
+    "legs": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 0.2, 0 ],
+          "size": [ 0.4, 0.2 ]
+        }
+      }
     }
-  ],
-  "hud": [
-    {
-      "source": "head",
+  },
+  "display_configuration": {
+    "head": {
       "pos": [ 0, -48 ],
       "size": [ 24, 24 ]
     },
-    {
-      "source": "body",
+    "body": {
       "pos": [ 0, -24 ],
       "size": [ 24, 36 ]
     },
-    {
-      "source": "legs",
+    "legs": {
       "pos": [ 0, 12 ],
       "size": [ 32, 16 ]
     }
-  ]
+  }
 }

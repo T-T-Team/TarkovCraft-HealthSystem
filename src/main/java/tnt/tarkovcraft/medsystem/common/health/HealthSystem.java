@@ -22,8 +22,8 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.api.event.PainCheckEvent;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.math.*;
-import tnt.tarkovcraft.medsystem.common.health.rules.HitCalculatorRule;
+import tnt.tarkovcraft.medsystem.common.health.calc.*;
+import tnt.tarkovcraft.medsystem.common.health.distributor.PoisonDamageDistributor;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
@@ -111,10 +111,10 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
             }
         }
         Stream<Limb> parts = healthContainer.getLimbsAsStream();
-        return parts.anyMatch(HealthSystem::isMovementRestrictingPart);
+        return parts.anyMatch(HealthSystem::isMovementRestrictedOnLimb);
     }
 
-    public static boolean isMovementRestrictingPart(Limb part) {
+    public static boolean isMovementRestrictedOnLimb(Limb part) {
         return part.getType() == LimbType.LEG && (part.isDead() || part.getStatusEffects().hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING));
     }
 
@@ -142,12 +142,13 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         return NeoForge.EVENT_BUS.post(new HitboxPiercingEvent(entity, source, container, projectile, pierceLevel)).getPiercing();
     }
 
-    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<BodyPartHitbox, Limb> filter) {
+    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<EntityHitboxContainer.LimbHitbox, Limb> filter) {
         List<HitResult> results = new ArrayList<>();
         container.iterateHitboxes(
+                entity,
                 filter,
                 (hitbox, part) -> {
-                    AABB aabb = hitbox.getLevelPositionedAABB(entity);
+                    AABB aabb = hitbox.toWorldSpaceHitbox(entity);
                     Vec3 aabbCenter = aabb.getCenter();
                     results.add(new HitResult(hitbox, part, aabb, aabbCenter));
                 }
@@ -182,7 +183,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         MedicalSystem.LOGGER.debug(MARKER, "Loading custom entity health containers");
         this.healthContainers.clear();
         for (HealthContainerDefinition definition : map.values()) {
-            List<EntityType<?>> targets = definition.getTargets();
+            List<EntityType<?>> targets = definition.targets();
             targets.forEach(type -> {
                 if (this.healthContainers.put(type, definition) != null) {
                     MedicalSystem.LOGGER.warn(MARKER, "Detected health container override for entity {}", EntityType.getKey(type));

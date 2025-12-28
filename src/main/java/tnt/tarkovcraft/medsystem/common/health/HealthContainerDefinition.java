@@ -3,6 +3,9 @@ package tnt.tarkovcraft.medsystem.common.health;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -17,15 +20,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, Map<String, StateFilter> customStateDefinitions, List<BodyPartHitbox> hitboxes, List<BodyPartDisplay> display) {
+public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, Map<String, StateFilter> customStateDefinitions, EntityHitboxContainer hitboxContainer, HealthContainerDisplay display) {
 
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
-            Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).optionalFieldOf("targets", Collections.emptyList()).forGetter(t -> t.targets),
+            Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).fieldOf("targets").forGetter(HealthContainerDefinition::targets),
             LimbConfiguration.CODEC.fieldOf("limb_configuration").forGetter(HealthContainerDefinition::limbConfiguration),
             Codec.unboundedMap(Codec.string(1, 64), StateFilterType.CODEC).optionalFieldOf("custom_state_definitions", Collections.emptyMap()).forGetter(HealthContainerDefinition::customStateDefinitions),
-            BodyPartHitbox.CODEC.listOf().optionalFieldOf("hitboxes", Collections.emptyList()).forGetter(t -> t.hitboxes),
-            BodyPartDisplay.CODEC.listOf().optionalFieldOf("hud", Collections.emptyList()).forGetter(t -> t.display)
+            EntityHitboxContainer.CODEC.fieldOf("hitbox_container").forGetter(HealthContainerDefinition::hitboxContainer),
+            HealthContainerDisplay.CODEC.fieldOf("display_configuration").forGetter(HealthContainerDefinition::display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
+    public static final StreamCodec<RegistryFriendlyByteBuf, HealthContainerDefinition> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
     public static final String DEFAULT_ENTITY_STATE = "default";
 
     public String getRootLimbCode() {
@@ -46,10 +50,6 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
         return DEFAULT_ENTITY_STATE;
     }
 
-    public List<BodyPartHitbox> getHitboxes() {
-        return hitboxes;
-    }
-
     public void bind(LivingEntity entity) {
         // bind new container only to entities without existing health container or with invalid health data
         HealthContainer data = HealthSystem.hasCustomHealth(entity) ? HealthSystem.getHealthData(entity) : null;
@@ -68,13 +68,5 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
         instance.addOrReplacePermanentModifier(modifier);
         container.updateHealth(entity);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
-    }
-
-    public List<BodyPartDisplay> getDisplayConfiguration() {
-        return display;
-    }
-
-    List<EntityType<?>> getTargets() {
-        return targets;
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.health.*;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;

@@ -55,8 +55,6 @@ public final class MedicalSystem {
         MedSystemAttributes.REGISTRY.register(modEventBus);
         MedSystemItems.REGISTRY.register(modEventBus);
         MedSystemDataAttachments.REGISTRY.register(modEventBus);
-        MedSystemTransformConditions.REGISTRY.register(modEventBus);
-        MedSystemHitboxTransforms.REGISTRY.register(modEventBus);
         MedSystemItemComponents.REGISTRY.register(modEventBus);
         MedSystemStats.REGISTRY.register(modEventBus);
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
@@ -74,8 +72,6 @@ public final class MedicalSystem {
     }
 
     private void createRegistries(NewRegistryEvent event) {
-        event.register(MedSystemRegistries.TRANSFORM_CONDITION);
-        event.register(MedSystemRegistries.TRANSFORM);
         event.register(MedSystemRegistries.STATUS_EFFECT);
         event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
         event.register(MedSystemRegistries.DAMAGE_EFFECT_CONDITION);

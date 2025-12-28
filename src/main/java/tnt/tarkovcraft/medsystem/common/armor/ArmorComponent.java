@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
-import tnt.tarkovcraft.medsystem.common.health.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 
 import java.util.List;
 

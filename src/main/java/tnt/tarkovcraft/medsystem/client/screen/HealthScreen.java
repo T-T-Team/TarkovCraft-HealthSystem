@@ -22,16 +22,15 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.BodyPartWidget;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.BodyPartDisplay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainerDisplay;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public class HealthScreen extends CharacterSubScreen implements HealthContainerScreen {
 
@@ -73,39 +72,34 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
             renderable.setHorizontalTextOffset(5);
         }
 
-        List<BodyPartDisplay> displays = definition.getDisplayConfiguration();
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);
-
         List<BodyPartHealthWidget> healthWidgets = new ArrayList<>();
         float scale = (this.width / 256.0F);
-        for (BodyPartDisplay display : displays) {
-            String name = display.source();
-            Limb part = this.healthContainer.getLimbByCode(name);
-            if (part == null)
-                continue;
-            Vector4i pos = display.getPositionForGui(scale, center);
+        HealthContainerDisplay display = definition.display();
+        display.accept((limbCode, data) -> {
+            Limb limb = this.healthContainer.getLimbByCode(limbCode);
+            Vector4i pos = data.getGuiPos(scale, center);
             int x = pos.x;
             int y = pos.y;
             int width = pos.z;
             int height = pos.w;
             int xOffset = (int) ((pos.x + width / 2f) - center.x);
-            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, part, this.font));
+            BodyPartWidget bodyPartWidget = this.addRenderableOnly(new BodyPartWidget(x, y, width, height, limb, this.font));
             bodyPartWidget.setScale(3);
             // status effects
-            Stream<StatusEffect> stream = part.getStatusEffects().getEffectsStream();
-            List<StatusEffect> effects = stream.filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
+            List<StatusEffect> effects = limb.getStatusEffects().getEffectsStream().filter(ef -> StatusEffectType.isVisible(ef, EffectVisibility.UI))
                     .toList();
             int healthWidth = 80;
             int healthHeight = effects.isEmpty() ? 20 : 33;
             int healthX = getHealthLabelWidgetX(xOffset, x, healthWidth, width);
             int healthY = y + (height - healthHeight) / 2;
-            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, part);
+            BodyPartHealthWidget healthWidget = new BodyPartHealthWidget(healthX, healthY, healthWidth, healthHeight, this.font, limb);
             healthWidget.setHealthUnitScale(UNIT_SCALE);
             healthWidget.setEffects(effects);
             healthWidget.setTextHoverColor(ColorPalette.WHITE);
 
             healthWidgets.add(healthWidget); // add to list for later addition so it can be rendered on top
-        }
+        });
 
         healthWidgets.forEach(this::addRenderableOnly);
     }
