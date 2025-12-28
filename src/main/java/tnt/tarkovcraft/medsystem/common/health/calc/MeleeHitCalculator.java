@@ -1,9 +1,12 @@
 package tnt.tarkovcraft.medsystem.common.health.calc;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.AttackRange;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -22,8 +25,14 @@ public class MeleeHitCalculator implements HitCalculator {
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> hits = new ArrayList<>();
         Entity attacker = source.getEntity();
+        float reachRange = 6.0F;
+        ItemStack attackWeaponItem = source.getWeaponItem();
+        if (attackWeaponItem != null && attackWeaponItem.has(DataComponents.ATTACK_RANGE)) {
+            AttackRange attackRange = attackWeaponItem.get(DataComponents.ATTACK_RANGE);
+            reachRange = attackRange.maxCreativeRange() * 1.2F;
+        }
         Vec3 from = attacker.getType() == EntityType.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
-        Vec3 to = from.add(attacker.getLookAngle().scale(5.0));
+        Vec3 to = from.add(attacker.getHeadLookAngle().scale(reachRange));
         // Try to find directly hit limb
         container.iterateHitboxes(
                 entity,
