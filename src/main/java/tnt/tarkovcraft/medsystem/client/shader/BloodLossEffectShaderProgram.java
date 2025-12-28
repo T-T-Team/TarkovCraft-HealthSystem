@@ -45,7 +45,7 @@ public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
     }
 
     private void adjustTowards(float target) {
-        float change = 0.5F;
+        float change = 0.025F;
         if (target < this.strength) {
             this.strength = Math.max(target, this.strength - change);
         } else if (target > this.strength) {

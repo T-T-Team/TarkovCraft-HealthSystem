@@ -21,7 +21,7 @@ public class PainReliefEffectShaderProgram extends SimpleEffectShaderProgram {
 
     @Override
     public float getStrengthGain() {
-        return 0.015F;
+        return 0.005F;
     }
 
     @Override
