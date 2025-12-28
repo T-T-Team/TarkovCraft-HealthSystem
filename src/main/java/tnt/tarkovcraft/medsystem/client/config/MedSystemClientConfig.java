@@ -15,4 +15,14 @@ public final class MedSystemClientConfig {
     @Configurable
     @Configurable.Comment("Allows you to toggle default health HUD overlay")
     public boolean renderHealth = true;
+
+    @Configurable
+    @Configurable.Comment("Set limb health detail render mode")
+    public HealthDisplayType healthDisplayType = HealthDisplayType.HEARTS;
+
+    @Configurable
+    @Configurable.Range(min = 0, max = 2)
+    @Configurable.DependsOn(configValues = @Configurable.DependsOn.ConfigValue(location = "medsystem-client:healthDisplayType", accepts = "NUMERIC"))
+    @Configurable.Gui.Slider
+    public int numericHealthScale = 1;
 }
