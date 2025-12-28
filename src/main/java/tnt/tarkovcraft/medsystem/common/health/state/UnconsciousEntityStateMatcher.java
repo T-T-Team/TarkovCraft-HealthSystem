@@ -5,12 +5,12 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
-public final class UnconsciousStateFilter implements StateFilter {
+public final class UnconsciousEntityStateMatcher implements EntityStateMatcher {
 
-    public static final UnconsciousStateFilter INSTANCE = new UnconsciousStateFilter();
-    public static final MapCodec<UnconsciousStateFilter> CODEC = MapCodec.unit(INSTANCE);
+    public static final UnconsciousEntityStateMatcher INSTANCE = new UnconsciousEntityStateMatcher();
+    public static final MapCodec<UnconsciousEntityStateMatcher> CODEC = MapCodec.unit(INSTANCE);
 
-    private UnconsciousStateFilter() {
+    private UnconsciousEntityStateMatcher() {
     }
 
     @Override
@@ -21,7 +21,7 @@ public final class UnconsciousStateFilter implements StateFilter {
     }
 
     @Override
-    public StateFilterType<?> getType() {
+    public EntityStateMatcherType<?> getType() {
         return MedSystemStateFilters.UNCONSCIOUS.value();
     }
 }

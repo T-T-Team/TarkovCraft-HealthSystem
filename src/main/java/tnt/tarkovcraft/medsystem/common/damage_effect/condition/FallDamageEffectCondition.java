@@ -17,6 +17,7 @@ public record FallDamageEffectCondition(float minFallDistance, float modifier) i
             ExtraCodecs.NON_NEGATIVE_FLOAT.optionalFieldOf("modifier", 1.0F).forGetter(FallDamageEffectCondition::modifier)
     ).apply(instance, FallDamageEffectCondition::new));
 
+    // chance = (fallDist - minFallDist)^2 * modifier
     @Override
     public boolean matches(DamageEffectContext context) {
         LivingEntity entity = context.target();

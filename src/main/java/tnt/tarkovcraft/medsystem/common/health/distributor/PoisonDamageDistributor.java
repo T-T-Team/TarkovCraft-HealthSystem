@@ -9,9 +9,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PoisonDamageDistributor implements DamageDistributor {
+public final class PoisonDamageDistributor implements DamageDistributor {
 
     public static final PoisonDamageDistributor INSTANCE = new PoisonDamageDistributor();
+
+    private PoisonDamageDistributor() {
+    }
 
     @Override
     public Map<Limb, Float> distribute(DamageContext context, HealthContainer container, float damage) {

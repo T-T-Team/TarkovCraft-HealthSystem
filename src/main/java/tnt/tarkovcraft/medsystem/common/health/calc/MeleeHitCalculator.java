@@ -17,9 +17,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class MeleeHitCalculator implements HitCalculator {
+public final class MeleeHitCalculator implements HitCalculator {
 
     public static final MeleeHitCalculator INSTANCE = new MeleeHitCalculator();
+
+    private MeleeHitCalculator() {
+    }
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {

@@ -5,6 +5,7 @@ import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -24,6 +25,7 @@ import tnt.tarkovcraft.medsystem.api.event.PainCheckEvent;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.health.distributor.PoisonDamageDistributor;
+import tnt.tarkovcraft.medsystem.common.health.distributor.ScaledDamageDistributor;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
@@ -47,13 +49,13 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
 
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.SPECIFIC_PART, SpecificBodyPartHitCalculator::canApply, SpecificBodyPartHitCalculator::createInstance));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, FallDamageHitCalculator::isFall, ctx -> FallDamageHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, ExplosionHitCalculator::canApply, ctx -> ExplosionHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, ctx -> ctx.source().is(DamageTypeTags.IS_EXPLOSION) && !Vec3.ZERO.equals(ctx.source().getSourcePosition()), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, new ScaledDamageDistributor(2.5F))));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, LavaHitCalculator::canApply, ctx -> LavaHitCalculator.INSTANCE));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, MovementDamageHitCalculator::canApply, ctx -> MovementDamageHitCalculator.INSTANCE));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, ctx -> ctx.source().is(NeoForgeMod.POISON_DAMAGE), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, PoisonDamageDistributor.INSTANCE)));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.GENERIC, ctx -> ctx.getSourceEntity() == null && ctx.source().is(MedSystemTags.DamageTypes.IS_GENERIC), ctx -> GenericHitCalculator.INSTANCE));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.MELEE, ctx -> ctx.source().getEntity() != null && ctx.source().isDirect(), ctx -> MeleeHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.PROJECTILE, ctx -> ctx.source().getDirectEntity() != null, ctx -> ProjectileHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.PROJECTILE, ctx -> ctx.source().getDirectEntity() != null, ctx -> ProjectileHitCalculator.DEFAULT));
     }
 
     public synchronized void registerHitCalculatorRule(HitCalculatorRule rule) {

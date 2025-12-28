@@ -8,10 +8,10 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 
 import java.util.Set;
 
-public record PoseStateFilter(Set<Pose> targets) implements StateFilter {
+public record PoseEntityStateMatcher(Set<Pose> targets) implements EntityStateMatcher {
 
-    public static final MapCodec<PoseStateFilter> CODEC = Codecs.enumSet(Pose.CODEC)
-            .xmap(PoseStateFilter::new, PoseStateFilter::targets).fieldOf("targets");
+    public static final MapCodec<PoseEntityStateMatcher> CODEC = Codecs.enumSet(Pose.CODEC)
+            .xmap(PoseEntityStateMatcher::new, PoseEntityStateMatcher::targets).fieldOf("targets");
 
     @Override
     public boolean matches(LivingEntity entity) {
@@ -20,7 +20,7 @@ public record PoseStateFilter(Set<Pose> targets) implements StateFilter {
     }
 
     @Override
-    public StateFilterType<?> getType() {
+    public EntityStateMatcherType<?> getType() {
         return MedSystemStateFilters.POSE.value();
     }
 }

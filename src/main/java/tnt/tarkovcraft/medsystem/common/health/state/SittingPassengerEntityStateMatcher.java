@@ -5,12 +5,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 
-public final class SittingPassengerStateFilter implements StateFilter {
+public final class SittingPassengerEntityStateMatcher implements EntityStateMatcher {
 
-    public static final SittingPassengerStateFilter INSTANCE = new SittingPassengerStateFilter();
-    public static final MapCodec<SittingPassengerStateFilter> CODEC = MapCodec.unit(INSTANCE);
+    public static final SittingPassengerEntityStateMatcher INSTANCE = new SittingPassengerEntityStateMatcher();
+    public static final MapCodec<SittingPassengerEntityStateMatcher> CODEC = MapCodec.unit(INSTANCE);
 
-    private SittingPassengerStateFilter() {
+    private SittingPassengerEntityStateMatcher() {
     }
 
     @Override
@@ -20,7 +20,7 @@ public final class SittingPassengerStateFilter implements StateFilter {
     }
 
     @Override
-    public StateFilterType<?> getType() {
+    public EntityStateMatcherType<?> getType() {
         return MedSystemStateFilters.SITTING_PASSENGER.value();
     }
 }

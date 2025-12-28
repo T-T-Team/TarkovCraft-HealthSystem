@@ -8,9 +8,12 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FullDamageDistributor implements DamageDistributor {
+public final class FullDamageDistributor implements DamageDistributor {
 
     public static final FullDamageDistributor INSTANCE = new FullDamageDistributor();
+
+    private FullDamageDistributor() {
+    }
 
     @Override
     public Map<Limb, Float> distribute(DamageContext context, HealthContainer container, float damage) {

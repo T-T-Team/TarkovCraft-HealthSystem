@@ -9,15 +9,7 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpecificBodyPartHitCalculator implements HitCalculator {
-
-    private final String[] bodyParts;
-    private final boolean allowDeadBodyParts;
-
-    public SpecificBodyPartHitCalculator(String[] bodyParts, boolean allowDeadBodyParts) {
-        this.bodyParts = bodyParts;
-        this.allowDeadBodyParts = allowDeadBodyParts;
-    }
+public record SpecificBodyPartHitCalculator(SpecificLimbDamage damage) implements HitCalculator {
 
     public static boolean canApply(HitCalculatorRule.Context ctx) {
         return ctx.source() instanceof SpecificLimbDamage;
@@ -25,17 +17,17 @@ public class SpecificBodyPartHitCalculator implements HitCalculator {
 
     public static SpecificBodyPartHitCalculator createInstance(HitCalculatorRule.Context ctx) {
         SpecificLimbDamage source = (SpecificLimbDamage) ctx.source();
-        return new SpecificBodyPartHitCalculator(source.getLimbs(), source.canDamageDeadLimbs());
+        return new SpecificBodyPartHitCalculator(source);
     }
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> hits = new ArrayList<>();
-        for (String bodyPartId : this.bodyParts) {
-            if (container.hasLimb(bodyPartId)) {
-                Limb part = container.getLimbByCode(bodyPartId);
-                if (!part.isDead() || this.allowDeadBodyParts) {
-                    HitResult result = new HitResult(null, container.getLimbByCode(bodyPartId));
+        for (String limbCode : this.damage.getLimbs()) {
+            if (container.hasLimb(limbCode)) {
+                Limb part = container.getLimbByCode(limbCode);
+                if (!part.isDead() || this.damage.canDamageDeadLimbs()) {
+                    HitResult result = new HitResult(null, container.getLimbByCode(limbCode));
                     hits.add(result);
                 }
 
@@ -44,7 +36,7 @@ public class SpecificBodyPartHitCalculator implements HitCalculator {
         if (hits.isEmpty()) {
             container.iterateHitboxes(
                     entity,
-                    (hitbox, limb) -> this.allowDeadBodyParts || !limb.isDead(),
+                    (hitbox, limb) -> this.damage.canDamageDeadLimbs() || !limb.isDead(),
                     (hitbox, limb) -> hits.add(new HitResult(hitbox, limb))
             );
         }

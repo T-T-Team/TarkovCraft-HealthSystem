@@ -7,9 +7,12 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericHitCalculator implements HitCalculator {
+public final class GenericHitCalculator implements HitCalculator {
 
     public static final GenericHitCalculator INSTANCE = new GenericHitCalculator();
+
+    private GenericHitCalculator() {
+    }
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {

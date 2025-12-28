@@ -7,13 +7,13 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Objects;
 
-public record StateFilterType<F extends StateFilter>(Identifier identifier, MapCodec<F> codec) {
+public record EntityStateMatcherType<F extends EntityStateMatcher>(Identifier identifier, MapCodec<F> codec) {
 
-    public static final Codec<StateFilter> CODEC = MedSystemRegistries.STATE_FILTER.byNameCodec().dispatch(StateFilter::getType, StateFilterType::codec);
+    public static final Codec<EntityStateMatcher> CODEC = MedSystemRegistries.STATE_MATCHER.byNameCodec().dispatch(EntityStateMatcher::getType, EntityStateMatcherType::codec);
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof StateFilterType<?> that)) return false;
+        if (!(o instanceof EntityStateMatcherType<?> that)) return false;
         return Objects.equals(identifier, that.identifier);
     }
 

@@ -7,14 +7,10 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScaledDamageDistributor implements DamageDistributor {
+public record ScaledDamageDistributor(float scale, DamageDistributor source) implements DamageDistributor {
 
-    private final float scale;
-    private final DamageDistributor source;
-
-    public ScaledDamageDistributor(float scale, DamageDistributor source) {
-        this.scale = scale;
-        this.source = source;
+    public ScaledDamageDistributor(float scale) {
+        this(scale, EvenDamageDistributor.INSTANCE);
     }
 
     @Override

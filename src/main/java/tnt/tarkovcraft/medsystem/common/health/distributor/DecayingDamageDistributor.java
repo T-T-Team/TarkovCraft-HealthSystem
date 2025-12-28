@@ -4,21 +4,15 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 
 import java.util.List;
 import java.util.Map;
 
-public class DecayingDamageDistributor implements DamageDistributor {
+public record DecayingDamageDistributor(float decayFactor) implements DamageDistributor {
 
     public static final DecayingDamageDistributor PROJECTILE = new DecayingDamageDistributor(0.5F);
-
-    private final float decayFactor;
-
-    public DecayingDamageDistributor(float decayFactor) {
-        this.decayFactor = decayFactor;
-    }
 
     @Override
     public Map<Limb, Float> distribute(DamageContext context, HealthContainer container, float damage) {

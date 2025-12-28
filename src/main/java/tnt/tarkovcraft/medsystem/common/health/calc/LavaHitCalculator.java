@@ -16,9 +16,12 @@ import tnt.tarkovcraft.medsystem.common.health.distributor.ScaledDamageDistribut
 import java.util.ArrayList;
 import java.util.List;
 
-public class LavaHitCalculator implements HitCalculator {
+public final class LavaHitCalculator implements HitCalculator {
 
     public static final LavaHitCalculator INSTANCE = new LavaHitCalculator();
+
+    private LavaHitCalculator() {
+    }
 
     public static boolean canApply(HitCalculatorRule.Context context) {
         return context.source() == context.target().damageSources().lava();
