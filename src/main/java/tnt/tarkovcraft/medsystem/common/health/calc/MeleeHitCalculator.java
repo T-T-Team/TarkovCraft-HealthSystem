@@ -22,8 +22,9 @@ public class MeleeHitCalculator implements HitCalculator {
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> hits = new ArrayList<>();
         Entity attacker = source.getEntity();
+        float reachRange = 6.0F;
         Vec3 from = attacker.getType() == EntityType.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
-        Vec3 to = from.add(attacker.getLookAngle().scale(5.0));
+        Vec3 to = from.add(attacker.getLookAngle().scale(reachRange));
         // Try to find directly hit limb
         container.iterateHitboxes(
                 entity,
