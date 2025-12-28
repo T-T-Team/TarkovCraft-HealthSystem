@@ -25,7 +25,6 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
 import javax.annotation.Nullable;
@@ -40,13 +39,11 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
             StatusEffectType.CODEC.fieldOf("template").forGetter(t -> t.template)
     ).apply(instance, SideEffect::new));
 
-    public void apply(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable Limb part) {
+    public void apply(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable Limb limb) {
         // Skip ignored effect body parts
-        // TODO remove?
         StatusEffectType<?> type = this.template.getType();
-        if (part != null && !type.isGlobalEffect()) {
-            LimbType group = part.getType();
-            if (type.isIgnoredBodyPart(group)) {
+        if (limb != null && !type.isGlobalEffect()) {
+            if (!limb.canApplyStatusEffect(type)) {
                 return;
             }
         }
@@ -55,11 +52,11 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
         Holder<Attribute> chanceAttribute = this.chance < 1.0F ? type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_CHANCE, MedSystemAttributes.NEGATIVE_EFFECT_CHANCE, null) : null;
         float effectChance = chanceAttribute != null ? this.chance * AttributeSystem.getFloatValue(entity, chanceAttribute, 1.0F) : this.chance;
         if (effectChance >= 1.0F || source.nextFloat() < effectChance) {
-            if (!type.isGlobalEffect() && part == null) {
+            if (!type.isGlobalEffect() && limb == null) {
                 MedicalSystem.LOGGER.error(MedicalSystem.MARKER, "Failed to apply side effect {} as effect is not set as global, but target body part was not provided", type);
                 return;
             }
-            StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
+            StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : limb.getStatusEffects();
             StatusEffect statusEffect = this.template.copy();
             if (!this.template.isInfinite()) {
                 Holder<Attribute> durationAttribute = type.getEffectType().byValue(MedSystemAttributes.POSITIVE_EFFECT_DURATION, MedSystemAttributes.NEGATIVE_EFFECT_DURATION, null);
@@ -72,7 +69,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
                     statusEffect.setCausingEntity(cause.getUUID());
                 }
             }
-            StatusEffectHelper.addEffect(effects, entity, part, this.delay, statusEffect);
+            StatusEffectHelper.addEffect(effects, entity, limb, this.delay, statusEffect);
         }
     }
 

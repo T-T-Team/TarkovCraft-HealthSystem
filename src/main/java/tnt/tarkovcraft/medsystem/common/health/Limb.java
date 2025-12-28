@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 
 import java.util.Objects;
@@ -132,6 +133,10 @@ public final class Limb {
         if (entity.level().getGameTime() % 20 == 0) {
             MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_UPDATE, effect -> effect.applyUpdateEvent(entity, container, this));
         }
+    }
+
+    public boolean canApplyStatusEffect(StatusEffectType<?> statusEffect) {
+        return this.definition.damageConfiguration().isStatusEffectAllowed(statusEffect);
     }
 
     @Override

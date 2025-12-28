@@ -8,19 +8,24 @@
         "vital": true,
         "base_health": 6.0,
         "damage_configuration": {
-          "scale": 0.75
+          "scale": 0.75,
+          "excluded_status_effects": "medsystem:is_fracture"
         }
       },
       "body": {
         "type": "torso",
         "vital": true,
-        "base_health": 10.0
+        "base_health": 10.0,
+        "damage_configuration": {
+          "excluded_status_effects": "medsystem:is_fracture"
+        }
       },
       "stomach": {
         "type": "stomach",
         "base_health": 8.0,
         "damage_configuration": {
-          "transfer_scale": 0.7
+          "transfer_scale": 0.7,
+          "excluded_status_effects": "medsystem:is_fracture"
         }
       },
       "right_arm": {
