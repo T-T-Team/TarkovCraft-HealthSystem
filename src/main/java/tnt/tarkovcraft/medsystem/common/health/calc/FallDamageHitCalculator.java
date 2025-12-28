@@ -5,6 +5,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
+import tnt.tarkovcraft.medsystem.common.health.distributor.ScaledDamageDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,5 +28,10 @@ public class FallDamageHitCalculator implements HitCalculator {
                 (hitbox, limb) -> results.add(new HitResult(hitbox, limb))
         );
         return results;
+    }
+
+    @Override
+    public DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
+        return new ScaledDamageDistributor(1.7F, original);
     }
 }
