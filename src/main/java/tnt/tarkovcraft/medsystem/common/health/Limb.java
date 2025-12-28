@@ -151,6 +151,6 @@ public final class Limb {
     }
 
     public static Component getDisplayName(String code) {
-        return Component.translatable("medsystem.bodypart." + code);
+        return Component.translatable("medsystem.limb." + code);
     }
 }
