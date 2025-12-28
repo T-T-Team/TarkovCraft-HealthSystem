@@ -20,7 +20,6 @@ public final class MedSystemStatusEffects {
             .type(EffectType.POSITIVE)
             .setGlobal()
             .combineEffects(StatusEffect::maxDuration)
-            .setPostEffects()
             .build()
     );
     public static final Holder<StatusEffectType<?>> PAIN = REGISTRY.register("pain", key -> StatusEffectType.builder(key, PainStatusEffect::new)

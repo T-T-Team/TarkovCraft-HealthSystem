@@ -14,7 +14,10 @@ import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 
 public final class StatusEffectType<S extends StatusEffect> {
@@ -32,8 +35,6 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
     private final int healingPriority;
-    @Deprecated
-    private final Collection<Identifier> blockedPostEffects;
     private final Identifier icon;
     private final Component displayName;
 
@@ -48,7 +49,6 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.isGlobalEffect = builder.globalEffect;
         this.isSpecial = builder.special;
         this.healingPriority = builder.healingPriority;
-        this.blockedPostEffects = builder.blockedPostEffects != null ? Arrays.asList(builder.blockedPostEffects) : null;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
     }
@@ -119,16 +119,6 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.healingPriority;
     }
 
-    @Deprecated
-    public boolean hasPostShader() {
-        return this.blockedPostEffects != null;
-    }
-
-    @Deprecated
-    public Collection<Identifier> getBlockedPostEffects() {
-        return this.blockedPostEffects;
-    }
-
     public Identifier getIdentifier() {
         return identifier;
     }
@@ -153,8 +143,6 @@ public final class StatusEffectType<S extends StatusEffect> {
         private final Identifier identifier;
         private final Factory<S> factory;
         private final Set<LimbType> limbTypes = EnumSet.noneOf(LimbType.class);
-        @Deprecated
-        private Identifier[] blockedPostEffects;
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
         private EffectVisibility visibility = EffectVisibility.ALWAYS;
@@ -193,6 +181,7 @@ public final class StatusEffectType<S extends StatusEffect> {
             return this;
         }
 
+        @Deprecated
         public Builder<S> ignoresBodyParts(LimbType... groups) {
             this.limbTypes.addAll(Arrays.asList(groups));
             return this;
@@ -200,17 +189,6 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         public Builder<S> setSpecial() {
             this.special = true;
-            return this;
-        }
-
-        @Deprecated
-        public Builder<S> setPostEffects() {
-            return this.setPostEffectsWithBlocking();
-        }
-
-        @Deprecated
-        public Builder<S> setPostEffectsWithBlocking(Identifier... blocking) {
-            this.blockedPostEffects = blocking;
             return this;
         }
 
@@ -226,10 +204,6 @@ public final class StatusEffectType<S extends StatusEffect> {
             Objects.requireNonNull(this.merger, "Merge function is required");
             Objects.requireNonNull(this.effectType, "Effect type is required");
             Objects.requireNonNull(this.visibility, "Effect visibility is required");
-            if (!this.globalEffect && this.blockedPostEffects != null) {
-                throw new IllegalArgumentException("Post effect shaders are only supported for global status effects");
-            }
-
             return new StatusEffectType<>(this);
         }
     }
