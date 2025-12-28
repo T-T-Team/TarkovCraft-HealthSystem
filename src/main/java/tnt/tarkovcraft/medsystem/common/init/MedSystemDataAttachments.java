@@ -5,6 +5,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 
@@ -28,6 +29,9 @@ public final class MedSystemDataAttachments {
     public static final Supplier<AttachmentType<BloodData>> BLOOD_DATA = REGISTRY.register("blood_data", () -> AttachmentType.builder(() -> new BloodData(5.0F))
             .serialize(BloodData.CODEC)
             .sync(BloodData.STREAM_CODEC)
+            .build()
+    );
+    public static final Supplier<AttachmentType<DamageContext>> ACTIVE_DAMAGE_CONTEXT = REGISTRY.register("active_damage_context", () -> AttachmentType.builder(() -> new DamageContext(null, null))
             .build()
     );
 }

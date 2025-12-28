@@ -5,10 +5,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.ApiStatus;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.distributor.EvenDamageDistributor;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 
 import java.util.List;
 
@@ -16,7 +16,6 @@ public final class DamageContext {
 
     private final LivingEntity entity;
     private final DamageSource source;
-    private final long id;
     private List<HitResult> hits;
     private List<EquipmentSlot> affectedSlots;
     private HitCalculator hitCalculator;
@@ -26,7 +25,6 @@ public final class DamageContext {
     public DamageContext(LivingEntity entity, DamageSource source) {
         this.entity = entity;
         this.source = source;
-        this.id = entity.level().getGameTime();
     }
 
     @ApiStatus.Internal
@@ -56,10 +54,6 @@ public final class DamageContext {
 
     public SideEffectHolder getSideEffects() {
         return sideEffects;
-    }
-
-    public long getId() {
-        return id;
     }
 
     public LivingEntity getEntity() {
