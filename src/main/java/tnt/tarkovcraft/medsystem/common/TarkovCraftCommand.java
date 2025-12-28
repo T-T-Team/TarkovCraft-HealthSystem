@@ -23,7 +23,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
-import tnt.tarkovcraft.medsystem.api.BodyPartDamageSource;
+import tnt.tarkovcraft.medsystem.api.LimbDamageSource;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
@@ -278,7 +278,7 @@ public final class TarkovCraftCommand {
         Holder<DamageType> damageTypeHolder = ResourceArgument.getResource(ctx, "damage_type", Registries.DAMAGE_TYPE);
         String limb = StringArgumentType.getString(ctx, "limb");
         float amount = FloatArgumentType.getFloat(ctx, "amount");
-        DamageSource damageSource = new BodyPartDamageSource(damageTypeHolder, projectile, source, limb);
+        DamageSource damageSource = new LimbDamageSource(damageTypeHolder, projectile, source, limb);
         for (LivingEntity entity : entities) {
             entity.hurtServer((ServerLevel) entity.level(), damageSource, amount);
         }

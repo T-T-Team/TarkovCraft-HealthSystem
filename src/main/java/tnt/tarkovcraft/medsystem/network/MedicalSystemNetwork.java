@@ -29,10 +29,10 @@ public final class MedicalSystemNetwork {
     private void onRegistration(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registry = event.registrar(NETWORK_ID).executesOn(HandlerThread.MAIN);
 
-        registry.playToClient(S2C_OpenBodyPartSelectScreen.TYPE, S2C_OpenBodyPartSelectScreen.CODEC, S2C_OpenBodyPartSelectScreen::handleMessage);
+        registry.playToClient(S2C_OpenLimbSelectScreen.TYPE, S2C_OpenLimbSelectScreen.CODEC, S2C_OpenLimbSelectScreen::handleMessage);
         registry.playToClient(S2C_RefreshEntityDimensions.TYPE, S2C_RefreshEntityDimensions.CODEC, S2C_RefreshEntityDimensions::handleMessage);
 
-        registry.playToServer(C2S_SelectBodyPart.TYPE, C2S_SelectBodyPart.CODEC, C2S_SelectBodyPart::handleMessage);
+        registry.playToServer(C2S_SelectLimb.TYPE, C2S_SelectLimb.CODEC, C2S_SelectLimb::handleMessage);
         registry.playToServer(C2S_RequestGiveUp.TYPE, C2S_RequestGiveUp.CODEC, C2S_RequestGiveUp::handleMessage);
 
         registry.configurationToClient(S2C_SendHealthDefinitions.TYPE, S2C_SendHealthDefinitions.CODEC, S2C_SendHealthDefinitions::handleMessage);

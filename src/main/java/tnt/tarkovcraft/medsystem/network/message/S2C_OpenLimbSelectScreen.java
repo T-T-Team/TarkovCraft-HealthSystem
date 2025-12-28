@@ -12,17 +12,17 @@ import tnt.tarkovcraft.medsystem.client.ClientNetworkHandler;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
-public record S2C_OpenBodyPartSelectScreen(boolean selfHealing, int entityId) implements CustomPacketPayload {
+public record S2C_OpenLimbSelectScreen(boolean selfHealing, int entityId) implements CustomPacketPayload {
 
-    public static final Identifier PACKET_ID = MedicalSystemNetwork.createId(S2C_OpenBodyPartSelectScreen.class);
-    public static final Type<S2C_OpenBodyPartSelectScreen> TYPE = new Type<>(PACKET_ID);
-    public static final StreamCodec<ByteBuf, S2C_OpenBodyPartSelectScreen> CODEC = StreamCodec.composite(
-            ByteBufCodecs.BOOL, S2C_OpenBodyPartSelectScreen::selfHealing,
-            ByteBufCodecs.INT, S2C_OpenBodyPartSelectScreen::entityId,
-            S2C_OpenBodyPartSelectScreen::new
+    public static final Identifier PACKET_ID = MedicalSystemNetwork.createId(S2C_OpenLimbSelectScreen.class);
+    public static final Type<S2C_OpenLimbSelectScreen> TYPE = new Type<>(PACKET_ID);
+    public static final StreamCodec<ByteBuf, S2C_OpenLimbSelectScreen> CODEC = StreamCodec.composite(
+            ByteBufCodecs.BOOL, S2C_OpenLimbSelectScreen::selfHealing,
+            ByteBufCodecs.INT, S2C_OpenLimbSelectScreen::entityId,
+            S2C_OpenLimbSelectScreen::new
     );
 
-    public S2C_OpenBodyPartSelectScreen(InteractionTarget.Mutable interaction) {
+    public S2C_OpenLimbSelectScreen(InteractionTarget.Mutable interaction) {
         this(interaction.isSelf(), interaction.getEntityId());
     }
 
@@ -35,7 +35,7 @@ public record S2C_OpenBodyPartSelectScreen(boolean selfHealing, int entityId) im
         Player player = context.player();
         ItemStack stack = player.getMainHandItem();
         if (!stack.isEmpty() && player.level().isClientSide()) {
-            ClientNetworkHandler.openBodyPartSelectionScreen(this.selfHealing, this.entityId);
+            ClientNetworkHandler.openLimbSelectionScreen(this.selfHealing, this.entityId);
         }
     }
 }

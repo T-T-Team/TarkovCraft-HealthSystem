@@ -98,27 +98,27 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         return false;
     }
 
-    public boolean canUseOnPart(Limb part, ItemStack stack, HealthContainer container, boolean selfHealing, LivingEntity target) {
+    public boolean canUseOnLimb(Limb limb, ItemStack stack, HealthContainer container, boolean selfHealing, LivingEntity target) {
         if (this.alwaysConsumable) {
             return true;
         }
         if (!this.recoveries.isEmpty()) {
             for (EffectRecovery recovery : this.recoveries) {
                 StatusEffectType<?> type = recovery.effect().value();
-                StatusEffectMap map = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
+                StatusEffectMap map = type.isGlobalEffect() ? container.getGlobalStatusEffects() : limb.getStatusEffects();
                 if (HealingItem.checkDurability(stack, recovery.consumption()) && map.hasEffect(recovery.effect())) {
                     return true;
                 }
             }
         }
-        if (this.isSurgeryItem() && part.isDead()) {
+        if (this.isSurgeryItem() && limb.isDead()) {
             return true;
         }
         if (this.health != null) {
-            if (!part.isDead() && part.getHealth() < part.getMaxHealth()) {
+            if (!limb.isDead() && limb.getHealth() < limb.getMaxHealth()) {
                 return true;
             }
-            if (!selfHealing && target instanceof Player player && container.getRootLimb().getLimbCode().equals(part.getLimbCode())) {
+            if (!selfHealing && target instanceof Player player && container.getRootLimb().getLimbCode().equals(limb.getLimbCode())) {
                 BloodData bloodData = BloodSystem.getBloodData(player);
                 BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
                 return bloodData.isUnconscious() && info.causesDeath();
