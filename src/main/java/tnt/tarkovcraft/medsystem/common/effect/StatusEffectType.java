@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 
+// TODO properly handle the #disabled tag
 public final class StatusEffectType<S extends StatusEffect> {
 
     public static final Codec<StatusEffect> CODEC = MedSystemRegistries.STATUS_EFFECT.byNameCodec().dispatch(StatusEffect::getType, t -> t.codec);

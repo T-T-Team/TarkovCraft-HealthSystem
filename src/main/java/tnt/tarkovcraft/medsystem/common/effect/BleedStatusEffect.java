@@ -15,6 +15,8 @@ import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import java.util.Optional;
 import java.util.UUID;
 
+// TODO refactor to be single status effect with configurable properties such as interval, bleed amount and possibly more
+// TODO will require additional refactor of healing items to allow better filtering
 public abstract class BleedStatusEffect extends EntityCausedStatusEffect {
 
     public BleedStatusEffect(int duration, Optional<UUID> owner) {
