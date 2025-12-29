@@ -67,13 +67,16 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     }
 
     public <T extends StatusEffect> void addEffect(T effect) {
-        StatusEffectType<T> type = (StatusEffectType<T>) Objects.requireNonNull(effect.getType());
-        this.effects.merge(type, effect, (a, b) -> type.merge((T) a, (T) b));
+        StatusEffectType<T> type = (StatusEffectType<T>) effect.getType();
+        if (!type.isDisabled()) {
+            this.effects.merge(type, effect, (a, b) -> type.merge((T) a, (T) b));
+        }
     }
 
     @Nullable
     public <T extends StatusEffect> T replace(T effect) {
-        return (T) this.effects.put(effect.getType(), effect);
+        StatusEffectType<T> type = (StatusEffectType<T>) effect.getType();
+        return type.isDisabled() ? null : (T) this.effects.put(type, effect);
     }
 
     public <T extends StatusEffect> boolean hasEffect(StatusEffectType<T> type) {
