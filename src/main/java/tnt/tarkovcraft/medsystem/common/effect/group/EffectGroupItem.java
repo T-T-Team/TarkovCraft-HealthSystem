@@ -18,7 +18,7 @@ public interface EffectGroupItem {
 
     void addInformation(EffectGroupHolder holder, Consumer<Component> tooltip, boolean isItemTooltip);
 
-    default boolean isVisible() {
+    default boolean visible() {
         return true;
     }
 

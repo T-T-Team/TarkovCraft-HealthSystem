@@ -3,10 +3,10 @@
     "translate": "skill.medsystem.resilience"
   },
   "leveling": {
-    "maxLevel": 100,
-    "baseExperience": 10.0,
-    "additionalExperience": 5.0,
-    "maxExperience": 100.0
+    "max_level": 100,
+    "base_exp": 10.0,
+    "additional_exp": 5.0,
+    "max_exp": 100.0
   },
   "trackers": [
     {
@@ -24,7 +24,7 @@
         "name": {
           "translate": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss"
         },
-        "descriptionKey": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss.description",
+        "description_key": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss.description",
         "icon": "medsystem:textures/icons/skill/bonus/unconscious_on_limb_loss.png"
       },
       "conditions": [
@@ -37,9 +37,9 @@
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:unconscious_on_limb_loss_chance",
         "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
-        "levelValue": -0.0015,
-        "displayUnitFormat": {
-          "decimalPlaces": 2,
+        "per_level_value": -0.0015,
+        "display_format": {
+          "decimal_places": 2,
           "multiplier": -100,
           "suffix": "%"
         }
@@ -50,7 +50,7 @@
         "name": {
           "translate": "skill.medsystem.resilience.bonus.blood_regeneration"
         },
-        "descriptionKey": "skill.medsystem.resilience.bonus.blood_regeneration.description",
+        "description_key": "skill.medsystem.resilience.bonus.blood_regeneration.description",
         "icon": "medsystem:textures/icons/skill/bonus/blood_regeneration.png"
       },
       "conditions": [
@@ -62,10 +62,10 @@
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:blood_regeneration_amount",
         "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
-        "levelValue": 0.00025,
+        "per_level_value": 0.00025,
         "constant": true,
-        "displayUnitFormat": {
-          "decimalPlaces": 2,
+        "display_format": {
+          "decimal_places": 2,
           "multiplier": 1200,
           "suffix": {
             "translate": "label.medsystem.unit.liter_per_day.suffix"

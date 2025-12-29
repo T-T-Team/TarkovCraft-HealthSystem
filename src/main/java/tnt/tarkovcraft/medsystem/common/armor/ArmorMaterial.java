@@ -16,7 +16,7 @@ public record ArmorMaterial(Component title, float deflectionChance) implements 
 
     public static final Codec<ArmorMaterial> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ComponentSerialization.CODEC.optionalFieldOf("title", CommonComponents.EMPTY).forGetter(ArmorMaterial::title),
-            Codec.FLOAT.fieldOf("deflectionChance").forGetter(ArmorMaterial::deflectionChance)
+            Codec.FLOAT.fieldOf("deflection_chance").forGetter(ArmorMaterial::deflectionChance)
     ).apply(instance, ArmorMaterial::new));
 
     @Override

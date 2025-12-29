@@ -17,7 +17,6 @@ import tnt.tarkovcraft.core.common.attribute.EntityAttributeData;
 import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier;
 import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifierType;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
-import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
@@ -27,26 +26,16 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.function.Consumer;
 
-public class AttributeModifierEffectGroupItem implements EffectGroupItem {
+public record AttributeModifierEffectGroupItem(Holder<Attribute> attribute, AttributeModifier modifier,
+                                               EffectType classification,
+                                               Component valueLabel) implements EffectGroupItem {
 
     public static final MapCodec<AttributeModifierEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             CoreRegistries.ATTRIBUTE.holderByNameCodec().fieldOf("attribute").forGetter(t -> t.attribute),
             AttributeModifierType.ID_CODEC.fieldOf("modifier").forGetter(t -> t.modifier),
-            Codecs.enumCodec(EffectType.class).fieldOf("classification").forGetter(t -> t.classification),
-            ComponentSerialization.CODEC.fieldOf("valueLabel").forGetter(t -> t.valueLabel)
+            EffectType.CODEC.fieldOf("classification").forGetter(t -> t.classification),
+            ComponentSerialization.CODEC.fieldOf("label").forGetter(t -> t.valueLabel)
     ).apply(instance, AttributeModifierEffectGroupItem::new));
-
-    private final Holder<Attribute> attribute;
-    private final AttributeModifier modifier;
-    private final EffectType classification;
-    private final Component valueLabel;
-
-    public AttributeModifierEffectGroupItem(Holder<Attribute> attribute, AttributeModifier modifier, EffectType classification, Component valueLabel) {
-        this.attribute = attribute;
-        this.modifier = modifier;
-        this.classification = classification;
-        this.valueLabel = valueLabel;
-    }
 
     @Override
     public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
@@ -81,7 +70,7 @@ public class AttributeModifierEffectGroupItem implements EffectGroupItem {
         } else {
             // [attributeDisplayName] (<valueLabel>) <duration>
             MutableComponent component = this.attribute.value().getDisplayName().copy()
-                            .append(" (").append(this.valueLabel).append(") ").append(StatusEffect.getDurationLabel(holder.getDuration()));
+                    .append(" (").append(this.valueLabel).append(") ").append(StatusEffect.getDurationLabel(holder.getDuration()));
             tooltip.accept(component.withStyle(ChatFormatting.DARK_GRAY));
         }
     }

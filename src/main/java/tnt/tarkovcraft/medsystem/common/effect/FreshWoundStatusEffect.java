@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class FreshWoundStatusEffect extends StatusEffect {
 
     public static final MapCodec<FreshWoundStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(
-            Codec.FLOAT.optionalFieldOf("bleedChance", 0.0F).forGetter(t -> t.bleedChance)
+            Codec.FLOAT.optionalFieldOf("bleed_chance", 0.0F).forGetter(t -> t.bleedChance)
     ).apply(instance, FreshWoundStatusEffect::new));
     private static final Component INFO = Component.translatable("status_effect.medsystem.fresh_wound.info").withStyle(ChatFormatting.DARK_GRAY);
 

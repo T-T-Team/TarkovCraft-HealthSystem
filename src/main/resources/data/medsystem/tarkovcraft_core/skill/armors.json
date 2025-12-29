@@ -3,10 +3,10 @@
     "translate": "skill.medsystem.armors"
   },
   "leveling": {
-    "maxLevel": 100,
-    "baseExperience": 10.0,
-    "additionalExperience": 5.0,
-    "maxExperience": 100.0
+    "max_level": 100,
+    "base_exp": 10.0,
+    "additional_exp": 5.0,
+    "max_exp": 100.0
   },
   "trackers": [
     {
@@ -24,7 +24,7 @@
         "name": {
           "translate": "skill.medsystem.armors.bonus.armor_durability"
         },
-        "descriptionKey": "skill.medsystem.armors.bonus.armor_durability.description",
+        "description_key": "skill.medsystem.armors.bonus.armor_durability.description",
         "icon": "medsystem:textures/icons/skill/bonus/armor_durability.png"
       },
       "conditions": [
@@ -37,9 +37,9 @@
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:armor_durability",
         "id": "dee47603-d508-4b0d-85f7-0cc22e41df12",
-        "levelValue": -0.005,
-        "displayUnitFormat": {
-          "decimalPlaces": 2,
+        "per_level_value": -0.005,
+        "display_format": {
+          "decimal_places": 2,
           "multiplier": -100,
           "suffix": "%"
         }

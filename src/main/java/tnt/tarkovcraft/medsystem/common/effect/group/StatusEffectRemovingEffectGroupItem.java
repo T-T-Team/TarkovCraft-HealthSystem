@@ -9,7 +9,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
-import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
@@ -22,23 +21,14 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.function.Consumer;
 
-public class StatusEffectRemovingEffectGroupItem implements EffectGroupItem {
+public record StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> tag, EffectType classification,
+                                                  Component label) implements EffectGroupItem {
 
     public static final MapCodec<StatusEffectRemovingEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             TagKey.codec(MedSystemRegistries.Keys.STATUS_EFFECT).fieldOf("tag").forGetter(t -> t.tag),
-            Codecs.simpleEnumCodec(EffectType.class).fieldOf("classification").forGetter(t -> t.classification),
+            EffectType.CODEC.fieldOf("classification").forGetter(t -> t.classification),
             ComponentSerialization.CODEC.fieldOf("label").forGetter(t -> t.label)
     ).apply(instance, StatusEffectRemovingEffectGroupItem::new));
-
-    private final TagKey<StatusEffectType<?>> tag;
-    private final EffectType classification;
-    private final Component label;
-
-    public StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> tag, EffectType classification, Component label) {
-        this.tag = tag;
-        this.classification = classification;
-        this.label = label;
-    }
 
     @Override
     public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {

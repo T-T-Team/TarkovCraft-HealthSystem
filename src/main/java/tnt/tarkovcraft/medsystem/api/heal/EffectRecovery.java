@@ -29,7 +29,7 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
     public static final Codec<EffectRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ExtraCodecs.POSITIVE_INT.optionalFieldOf("consumption", 1).forGetter(EffectRecovery::consumption),
             MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(EffectRecovery::effect),
-            Codec.BOOL.optionalFieldOf("extendedTooltip", true).forGetter(EffectRecovery::extendedTooltip)
+            Codec.BOOL.optionalFieldOf("extended_tooltip", true).forGetter(EffectRecovery::extendedTooltip)
     ).apply(instance, EffectRecovery::new));
 
     public boolean canRecover(HealthContainer container, @Nullable Limb part) {
