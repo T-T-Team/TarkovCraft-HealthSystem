@@ -13,6 +13,7 @@ import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -20,7 +21,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 
-// TODO properly handle the #disabled tag
 public final class StatusEffectType<S extends StatusEffect> {
 
     public static final Codec<StatusEffect> CODEC = MedSystemRegistries.STATUS_EFFECT.byNameCodec().dispatch(StatusEffect::getType, t -> t.codec);
@@ -60,6 +60,10 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public boolean is(TagKey<StatusEffectType<?>> tag) {
         return this.intrusiveHolder.is(tag);
+    }
+
+    public boolean isDisabled() {
+        return this.is(MedSystemTags.StatusEffects.DISABLED);
     }
 
     public Identifier getIcon(@Nullable StatusEffect instance) {
