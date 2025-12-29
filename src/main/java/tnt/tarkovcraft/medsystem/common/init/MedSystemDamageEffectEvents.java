@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.damage_effect.event.*;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 public final class MedSystemDamageEffectEvents {
 
-    public static final DeferredRegister<DamageEffectEventType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.DAMAGE_EFFECT_EVENT, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<DamageEffectEventType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.DAMAGE_EFFECT_EVENT, MedSystemConstants.MOD_ID);
 
     public static final Holder<DamageEffectEventType<?>> NONE = REGISTRY.register("none", key -> new DamageEffectEventType<>(key, NoDamageEffectEvent.CODEC));
     public static final Holder<DamageEffectEventType<?>> ADD_STATUS_EFFECT = REGISTRY.register("add_status_effect", key -> new DamageEffectEventType<>(key, AddStatusEffectDamageEffectEvent.CODEC));

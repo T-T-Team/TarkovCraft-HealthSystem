@@ -9,45 +9,45 @@ import org.jetbrains.annotations.Nullable;
 
 public class LimbDamageSource extends DamageSource implements SpecificLimbDamage {
 
-    private final String[] bodyParts;
-    private boolean allowDeadBodyPartDamage = true;
+    private final String[] limbs;
+    private boolean damageDeadLimbs = true;
 
-    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, @Nullable Vec3 damageSourcePosition, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, @Nullable Vec3 damageSourcePosition, String... limbs) {
         super(type, directEntity, causingEntity, damageSourcePosition);
-        this.bodyParts = bodyParts;
+        this.limbs = limbs;
     }
 
-    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity directEntity, @Nullable Entity causingEntity, String... limbs) {
         super(type, directEntity, causingEntity);
-        this.bodyParts = bodyParts;
+        this.limbs = limbs;
     }
 
-    public LimbDamageSource(Holder<DamageType> type, Vec3 damageSourcePosition, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, Vec3 damageSourcePosition, String... limbs) {
         super(type, damageSourcePosition);
-        this.bodyParts = bodyParts;
+        this.limbs = limbs;
     }
 
-    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity entity, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, @Nullable Entity entity, String... limbs) {
         super(type, entity);
-        this.bodyParts = bodyParts;
+        this.limbs = limbs;
     }
 
-    public LimbDamageSource(Holder<DamageType> type, String... bodyParts) {
+    public LimbDamageSource(Holder<DamageType> type, String... limbs) {
         super(type);
-        this.bodyParts = bodyParts;
+        this.limbs = limbs;
     }
 
-    public void setAllowDeadBodyPartDamage(boolean allowDeadBodyPartDamage) {
-        this.allowDeadBodyPartDamage = allowDeadBodyPartDamage;
+    public void setDamageDeadLimbs(boolean damageDeadLimbs) {
+        this.damageDeadLimbs = damageDeadLimbs;
     }
 
     @Override
     public String[] getLimbs() {
-        return bodyParts;
+        return limbs;
     }
 
     @Override
     public boolean canDamageDeadLimbs() {
-        return this.allowDeadBodyPartDamage;
+        return this.damageDeadLimbs;
     }
 }

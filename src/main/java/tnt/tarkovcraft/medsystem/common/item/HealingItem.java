@@ -24,15 +24,18 @@ import tnt.tarkovcraft.medsystem.api.heal.HealthRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.Surgery;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenLimbSelectScreen;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 public class HealingItem extends InteractableItem {
 
@@ -248,7 +251,7 @@ public class HealingItem extends InteractableItem {
         HealthContainer container = HealthSystem.getHealthData(entity);
         HealItemAttributes attributes = this.getHealingAttributes(itemStack);
         List<BodyPartWithPriority> bodyParts = container.getLimbsAsStream()
-                .map(part -> new BodyPartWithPriority(part, part.isVital() ? WoundPriorities.VITAL_PART_MULTIPLIER : 1.0F))
+                .map(part -> new BodyPartWithPriority(part, part.isVital() ? MedSystemConstants.HEAL_VITAL_PART_MULTIPLIER : 1.0F))
                 .toList();
 
         if (attributes.isSurgeryItem()) {
@@ -270,25 +273,25 @@ public class HealingItem extends InteractableItem {
     private void addSurgeryHealingPriorities(BodyPartWithPriority part) {
         if (part.limb.isDead()) {
             LimbType group = part.limb.getType();
-            part.add(WoundPriorities.SURGERY_BASE + group.getSurgeryHealingPriority());
+            part.add(MedSystemConstants.HEAL_SURGERY_BASE + group.getSurgeryHealingPriority());
         }
     }
 
     private void addStatusEffectHealingPriorities(BodyPartWithPriority part, List<EffectRecovery> recoveries, HealthContainer container) {
         Limb limb = part.limb;
-        Collection<StatusEffect> statusEffects = new ArrayList<>(limb.getStatusEffects().listEffects());
-        if (limb == container.getRootLimb()) {
-            statusEffects.addAll(container.getGlobalStatusEffects().listEffects());
-        }
-        Set<StatusEffectType<?>> uniqueTypes = statusEffects.stream()
-                .map(StatusEffect::getType)
-                .collect(Collectors.toSet());
-        // TODO dynamic priorities based on status effect data?
-        if (!uniqueTypes.isEmpty()) {
+        StatusEffectMap statusEffects = limb.getStatusEffects();
+        if (statusEffects.isEmpty())
+            return;
+
+
+        Map<StatusEffectType<?>, StatusEffect> map = statusEffects.getEffects();
+        for (Map.Entry<StatusEffectType<?>, StatusEffect> entry : map.entrySet()) {
+            StatusEffectType<?> type = entry.getKey();
+            StatusEffect effect = entry.getValue();
             for (EffectRecovery recovery : recoveries) {
-                StatusEffectType<?> type = recovery.effect().value();
-                if (uniqueTypes.contains(type)) {
-                    part.add(type.getHealingPriority());
+                if (recovery.effect().value() == type && recovery.predicate().test(effect)) {
+                    int healPriority = type.getHealingPriority(effect);
+                    part.add(healPriority);
                 }
             }
         }
@@ -298,7 +301,7 @@ public class HealingItem extends InteractableItem {
         Limb limb = part.limb;
         float missingAmount = limb.getMaxHealAmount();
         if (!limb.isDead() && missingAmount > 0) {
-            part.add(Mth.ceil(WoundPriorities.HEALTH_UNIT * missingAmount));
+            part.add(Mth.ceil(MedSystemConstants.HEAL_HEALTH_UNIT * missingAmount));
         }
     }
 

@@ -3,9 +3,6 @@ package tnt.tarkovcraft.medsystem.common.health;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -15,6 +12,7 @@ import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcher;
 import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcherType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +27,6 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
             EntityHitboxContainer.CODEC.fieldOf("hitbox_container").forGetter(HealthContainerDefinition::hitboxContainer),
             HealthContainerDisplay.CODEC.fieldOf("display_configuration").forGetter(HealthContainerDefinition::display)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
-    public static final StreamCodec<RegistryFriendlyByteBuf, HealthContainerDefinition> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
-    public static final String DEFAULT_ENTITY_STATE = "default";
 
     public String getRootLimbCode() {
         return this.limbConfiguration.rootLimb();
@@ -47,7 +43,7 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
                 return entry.getKey();
             }
         }
-        return DEFAULT_ENTITY_STATE;
+        return MedSystemConstants.DEFAULT_ENTITY_STATE;
     }
 
     public void bind(LivingEntity entity) {

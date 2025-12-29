@@ -20,6 +20,7 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -116,6 +117,11 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
     @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.BLEED.value();
+    }
+
+    @Override
+    protected @Nullable Integer getCustomHealingPriority() {
+        return isHeavyBleed(this) ? MedSystemConstants.HEAL_EFFECT_MAJOR : MedSystemConstants.HEAL_EFFECT_MINOR;
     }
 
     public static boolean isHeavyBleed(BleedStatusEffect effect) {

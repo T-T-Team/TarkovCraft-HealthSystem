@@ -38,14 +38,14 @@ public final class StatusEffectHelper {
             return;
         if (delay > 0) {
             StatusEffectEvent.Schedule event = NeoForge.EVENT_BUS.post(new StatusEffectEvent.Schedule(entity, effect, limb, delay));
-            if (event.isCancelled())
+            if (event.isCanceled())
                 return;
             HealthContainer container = HealthSystem.getHealthData(entity);
             container.scheduleStatusEffect(entity, event.getDelay(), limb, effect);
             return;
         }
         StatusEffectEvent.Add event = NeoForge.EVENT_BUS.post(new StatusEffectEvent.Add(entity, effect, limb));
-        if (event.isCancelled())
+        if (event.isCanceled())
             return;
         effects.addEffect(effect);
         HealthContainer container = HealthSystem.getHealthData(entity);

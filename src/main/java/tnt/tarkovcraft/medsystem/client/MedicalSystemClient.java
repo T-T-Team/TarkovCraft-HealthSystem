@@ -44,15 +44,16 @@ import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.UUID;
 
-@Mod(value = MedicalSystem.MOD_ID, dist = Dist.CLIENT)
+@Mod(value = MedSystemConstants.MOD_ID, dist = Dist.CLIENT)
 public final class MedicalSystemClient {
 
     public static final String KEYMAPPING_CATEGORY = "key.category.medsystem.keymap";
     public static final KeyMapping KEY_GIVE_UP = new KeyMapping(
-            TextHelper.createKeybindName(MedicalSystem.MOD_ID, "give_up"),
+            TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "give_up"),
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_X,
@@ -61,7 +62,7 @@ public final class MedicalSystemClient {
     private static MedSystemClientConfig config;
 
     public static final NavigationEntry HEALTH = new OptionalNavigationEntry(
-            TextHelper.createScreenTitle(MedicalSystem.MOD_ID, "health"),
+            TextHelper.createScreenTitle(MedSystemConstants.MOD_ID, "health"),
             (parent, userId) -> {
                 UUID clientId = Minecraft.getInstance().player.getUUID();
                 return userId.equals(clientId);

@@ -5,7 +5,8 @@
       "type": "medsystem:random_chance",
       "chance": {
         "type": "tarkovcraft_core:config",
-        "location": "medsystem:statusEffects/playerBleedChance"
+        "config": "medsystem",
+        "field": "statusEffects.playerBleedChance"
       }
     },
     {
