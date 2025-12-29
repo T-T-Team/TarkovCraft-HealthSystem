@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class HealthLayer implements GuiLayer {
 
@@ -69,18 +68,18 @@ public class HealthLayer implements GuiLayer {
             RenderUtils.fill(graphics, position.x, position.y, position.x + position.z, position.y + position.w, ARGB.scaleRGB(color, 0.8F));
             RenderUtils.fill(graphics, position.x + 2, position.y + 2, position.x + position.z - 2, position.y + position.w - 2, color);
         });
-        Stream<StatusEffect> effectStream = container.getStatusEffectStream().filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.ALWAYS));
-        Map<StatusEffectType<?>, List<StatusEffect>> effects = effectStream.collect(Collectors.groupingBy(StatusEffect::getType, LinkedHashMap::new, Collectors.toList()));
-        int index = 0;
+
         HorizontalAlignment overlayAlignment = overlay.horizontalAlignment;
-        for (Map.Entry<StatusEffectType<?>, List<StatusEffect>> entry : effects.entrySet()) {
-            StatusEffectType<?> type = entry.getKey();
+        Map<Identifier, List<StatusEffect>> effects = container.getStatusEffectStream()
+                .filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.ALWAYS))
+                .collect(Collectors.groupingBy(effect -> effect.getType().getIcon(effect), LinkedHashMap::new, Collectors.toList()));
+        int index = 0;
+        for (Map.Entry<Identifier, List<StatusEffect>> entry : effects.entrySet()) {
             List<StatusEffect> effectList = entry.getValue();
-            Identifier icon = type.getIcon(effectList.getFirst());
             int x = overlayAlignment != HorizontalAlignment.RIGHT ? (int) (overlayPos.x() + overlayWidth) : (int) (overlayPos.x() - 12);
             int y = (int) (overlayPos.y() + index++ * 12);
 
-            RenderUtils.blitFull(graphics, icon, x, y, x + 12, y + 12, -1);
+            RenderUtils.blitFull(graphics, entry.getKey(), x, y, x + 12, y + 12, -1);
             int count = effectList.size();
             if (count > 1) {
                 String text = String.valueOf(count);
