@@ -4,6 +4,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicateType;
 import tnt.tarkovcraft.medsystem.common.damage_effect.condition.DamageEffectConditionType;
 import tnt.tarkovcraft.medsystem.common.damage_effect.event.DamageEffectEventType;
 import tnt.tarkovcraft.medsystem.common.damage_effect.function.DamageEffectFunctionType;
@@ -19,14 +20,16 @@ public final class MedSystemRegistries {
     public static final Registry<DamageEffectFunctionType<?>> DAMAGE_EFFECT_FUNCTION = new RegistryBuilder<>(Keys.DAMAGE_EFFECT_FUNCTION).create();
     public static final Registry<DamageEffectEventType<?>> DAMAGE_EFFECT_EVENT = new RegistryBuilder<>(Keys.DAMAGE_EFFECT_EVENT).create();
     public static final Registry<EntityStateMatcherType<?>> STATE_MATCHER = new RegistryBuilder<>(Keys.STATE_MATCHER).create();
+    public static final Registry<StatusEffectPredicateType<?>> STATUS_EFFECT_PREDICATE = new RegistryBuilder<>(Keys.STATUS_EFFECT_PREDICATE).create();
 
     public static final class Keys {
 
         public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect"));
-        public static final ResourceKey<Registry<EffectGroupItemType<?>>> EFFECT_GROUP_ITEM = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect_group_item"));
+        public static final ResourceKey<Registry<EffectGroupItemType<?>>> EFFECT_GROUP_ITEM = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect/effect_group"));
         public static final ResourceKey<Registry<DamageEffectConditionType<?>>> DAMAGE_EFFECT_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.resource("damage_effect/condition"));
         public static final ResourceKey<Registry<DamageEffectFunctionType<?>>> DAMAGE_EFFECT_FUNCTION = ResourceKey.createRegistryKey(MedicalSystem.resource("damage_effect/function"));
         public static final ResourceKey<Registry<DamageEffectEventType<?>>> DAMAGE_EFFECT_EVENT = ResourceKey.createRegistryKey(MedicalSystem.resource("damage_effect/event"));
         public static final ResourceKey<Registry<EntityStateMatcherType<?>>> STATE_MATCHER = ResourceKey.createRegistryKey(MedicalSystem.resource("health/state_matcher"));
+        public static final ResourceKey<Registry<StatusEffectPredicateType<?>>> STATUS_EFFECT_PREDICATE = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect/predicate"));
     }
 }

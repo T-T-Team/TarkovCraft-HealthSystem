@@ -7,9 +7,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
-import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.distributor.ScaledDamageDistributor;
 

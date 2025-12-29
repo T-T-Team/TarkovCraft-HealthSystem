@@ -10,6 +10,7 @@ import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health.WoundPriorities;
 
 import java.util.Collections;
+import java.util.Optional;
 
 public final class MedSystemStatusEffects {
 
@@ -48,16 +49,11 @@ public final class MedSystemStatusEffects {
             .healPriority(WoundPriorities.EFFECT_MINOR)
             .build()
     );
-    public static final Holder<StatusEffectType<?>> LIGHT_BLEED = REGISTRY.register("light_bleed", key -> StatusEffectType.builder(key, LightBleedStatusEffect::new)
-            .persist(LightBleedStatusEffect.CODEC)
-            .type(EffectType.NEGATIVE)
-            .healPriority(WoundPriorities.EFFECT_MINOR)
-            .build()
-    );
-    public static final Holder<StatusEffectType<?>> HEAVY_BLEED = REGISTRY.register("heavy_bleed", key -> StatusEffectType.builder(key, HeavyBleedStatusEffect::new)
-            .persist(HeavyBleedStatusEffect.CODEC)
+    public static final Holder<StatusEffectType<?>> BLEED = REGISTRY.register("bleed", key -> StatusEffectType.builder(key, duration -> BleedStatusEffect.defaultLightBleed(duration, Optional.empty()))
+            .persist(BleedStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .healPriority(WoundPriorities.EFFECT_CRITICAL)
+            .combineEffects(BleedStatusEffect::withHighestDamage)
             .build()
     );
     public static final Holder<StatusEffectType<?>> FRESH_WOUND = REGISTRY.register("fresh_wound", key -> StatusEffectType.builder(key, FreshWoundStatusEffect::new)

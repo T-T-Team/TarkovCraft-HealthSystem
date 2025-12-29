@@ -39,9 +39,9 @@ public abstract class StatusEffect {
 
     public abstract StatusEffect copy();
 
-    public void setCausingEntity(UUID owner) {}
+    public void setCausingEntity(@Nullable UUID owner) {}
 
-    public UUID getCausingEntity() {
+    public @Nullable UUID getCausingEntity() {
         return null;
     }
 

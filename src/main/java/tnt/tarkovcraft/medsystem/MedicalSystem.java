@@ -60,6 +60,7 @@ public final class MedicalSystem {
         MedSystemStats.REGISTRY.register(modEventBus);
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
         MedSystemStatusEffects.REGISTRY.register(modEventBus);
+        MedSystemStatusEffectPredicates.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
         MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
         MedSystemDamageEffectScaleFunctions.REGISTRY.register(modEventBus);
@@ -79,6 +80,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.DAMAGE_EFFECT_FUNCTION);
         event.register(MedSystemRegistries.DAMAGE_EFFECT_EVENT);
         event.register(MedSystemRegistries.STATE_MATCHER);
+        event.register(MedSystemRegistries.STATUS_EFFECT_PREDICATE);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -12,8 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
+import tnt.tarkovcraft.medsystem.api.heal.predicate.AnyEffectPredicate;
+import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicate;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
@@ -101,9 +103,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         }
         if (!this.recoveries.isEmpty()) {
             for (EffectRecovery recovery : this.recoveries) {
-                StatusEffectType<?> type = recovery.effect().value();
-                StatusEffectMap map = type.isGlobalEffect() ? container.getGlobalStatusEffects() : limb.getStatusEffects();
-                if (HealingItem.checkDurability(stack, recovery.consumption()) && map.hasEffect(recovery.effect())) {
+                if (HealingItem.checkDurability(stack, recovery.consumption()) && recovery.canRecover(container, limb)) {
                     return true;
                 }
             }
@@ -209,17 +209,25 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             return this.unrestrictedHealing(duration.tickValue(), health);
         }
 
-        public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect, boolean extendedTooltip) {
-            this.recoveries.add(new EffectRecovery(cost, effect, extendedTooltip));
+        public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect, StatusEffectPredicate predicate, Component displayName, boolean extendedTooltip) {
+            this.recoveries.add(new EffectRecovery(cost, effect, predicate, displayName, extendedTooltip));
             return this;
         }
 
+        public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect, StatusEffectPredicate predicate, Component displayName) {
+            return this.removesEffect(cost, effect, predicate, displayName, true);
+        }
+
         public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect) {
-            return this.removesEffect(cost, effect, true);
+            return this.removesEffect(cost, effect, AnyEffectPredicate.INSTANCE, CommonComponents.EMPTY, true);
+        }
+
+        public Builder removesEffect(Holder<StatusEffectType<?>> effect, StatusEffectPredicate predicate, Component displayName) {
+            return this.removesEffect(1, effect, predicate, displayName, false);
         }
 
         public Builder removesEffect(Holder<StatusEffectType<?>> effect) {
-            return this.removesEffect(1, effect, false);
+            return this.removesEffect(effect, AnyEffectPredicate.INSTANCE, CommonComponents.EMPTY);
         }
 
         public HealItemAttributes build() {

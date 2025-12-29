@@ -8,7 +8,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
@@ -64,10 +63,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
                 statusEffect.setDuration(duration);
             }
             if (damageSource != null) {
-                Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
-                if (cause != null) {
-                    statusEffect.setCausingEntity(cause.getUUID());
-                }
+                StatusEffectHelper.setCausingEntityFromSource(statusEffect, damageSource);
             }
             StatusEffectHelper.addEffect(effects, entity, limb, this.delay, statusEffect);
         }

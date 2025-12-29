@@ -27,8 +27,11 @@
           "type": "medsystem:add_status_effect",
           "effect": {
             "template": {
-              "type": "medsystem:heavy_bleed",
-              "duration": -1
+              "type": "medsystem:bleed",
+              "duration": -1,
+              "amount": 0.025,
+              "interval": 30,
+              "wound_duration": 6000
             }
           }
         }
@@ -39,8 +42,10 @@
           "type": "medsystem:add_status_effect",
           "effect": {
             "template": {
-              "type": "medsystem:light_bleed",
-              "duration": -1
+              "type": "medsystem:bleed",
+              "duration": -1,
+              "amount": 0.005,
+              "interval": 60
             }
           }
         }

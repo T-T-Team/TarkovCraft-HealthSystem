@@ -177,7 +177,7 @@ public class HealingItem extends InteractableItem {
         List<EffectRecovery> recoveries = attributes.recoveries();
         for (EffectRecovery recovery : recoveries) {
             if (recovery.canRecover(container, part) && checkDurability(itemStack, consume + recovery.consumption())) {
-                recovery.recover(target, container, part);
+                recovery.recover(container, part);
                 consume += recovery.consumption();
             }
         }
@@ -283,6 +283,7 @@ public class HealingItem extends InteractableItem {
         Set<StatusEffectType<?>> uniqueTypes = statusEffects.stream()
                 .map(StatusEffect::getType)
                 .collect(Collectors.toSet());
+        // TODO dynamic priorities based on status effect data?
         if (!uniqueTypes.isEmpty()) {
             for (EffectRecovery recovery : recoveries) {
                 StatusEffectType<?> type = recovery.effect().value();

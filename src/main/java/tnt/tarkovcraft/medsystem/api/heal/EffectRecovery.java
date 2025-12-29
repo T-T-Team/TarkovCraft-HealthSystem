@@ -4,30 +4,35 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
+import tnt.tarkovcraft.medsystem.api.heal.predicate.AnyEffectPredicate;
+import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicate;
+import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicateType;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.effect.util.ListStatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Consumer;
 
-public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect, boolean extendedTooltip) implements TooltipProvider {
+public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect, StatusEffectPredicate predicate, Component displayName, boolean extendedTooltip) implements TooltipProvider {
 
     public static final Codec<EffectRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ExtraCodecs.POSITIVE_INT.optionalFieldOf("consumption", 1).forGetter(EffectRecovery::consumption),
             MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(EffectRecovery::effect),
+            StatusEffectPredicateType.CODEC.optionalFieldOf("predicate", AnyEffectPredicate.INSTANCE).forGetter(EffectRecovery::predicate),
+            ComponentSerialization.CODEC.optionalFieldOf("display_name", CommonComponents.EMPTY).forGetter(EffectRecovery::displayName),
             Codec.BOOL.optionalFieldOf("extended_tooltip", true).forGetter(EffectRecovery::extendedTooltip)
     ).apply(instance, EffectRecovery::new));
 
@@ -37,23 +42,28 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
             return false;
         }
         StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-        return effects.hasEffect(this.effect);
+        return this.findEffect(effects).isPresent();
     }
 
     public boolean canUse(HealthContainer container) {
         StatusEffectType<?> type = this.effect.value();
         if (type.isGlobalEffect()) {
-            return container.getGlobalStatusEffects().hasEffect(this.effect);
+            return this.findEffect(container.getGlobalStatusEffects()).isPresent();
         }
-        return container.getLimbsAsStream().anyMatch(part -> part.getStatusEffects().hasEffect(this.effect));
+        return container.getLimbsAsStream().anyMatch(part -> this.findEffect(part.getStatusEffects()).isPresent());
     }
 
-    public void recover(LivingEntity entity, HealthContainer container, @Nullable Limb part) {
+    public void recover(HealthContainer container, @Nullable Limb part) {
         StatusEffectType<?> type = this.effect.value();
         StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-        ListStatusEffectSubmitter submitter = StatusEffectSubmitter.list();
-        StatusEffectHelper.removeEffect(submitter, effects, entity, part, container, type);
-        StatusEffectHelper.handleSubmittedEffects(effects, entity, part, submitter);
+        this.findEffect(effects)
+                .ifPresent(StatusEffect::markForRemoval);
+    }
+
+    @Nullable
+    public Optional<StatusEffect> findEffect(StatusEffectMap map) {
+        Optional<StatusEffect> holder = map.getEffect(this.effect);
+        return holder.filter(this.predicate);
     }
 
     @Override
@@ -63,7 +73,8 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
         if (this.extendedTooltip) {
             recoveryLabel.append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption))).append(" - ");
         }
-        recoveryLabel.append(type.getDisplayName()).withStyle(ChatFormatting.DARK_GRAY);
+        Component displayName = this.displayName != CommonComponents.EMPTY ? this.displayName : type.getDisplayName();
+        recoveryLabel.append(displayName).withStyle(ChatFormatting.DARK_GRAY);
         tooltipAdder.accept(recoveryLabel);
     }
 }

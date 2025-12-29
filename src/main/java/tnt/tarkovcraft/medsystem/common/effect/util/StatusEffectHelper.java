@@ -1,6 +1,8 @@
 package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import net.minecraft.core.Holder;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -59,5 +61,12 @@ public final class StatusEffectHelper {
             NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, effect, limb));
             effects.remove(submitter, type, container, entity, limb);
         });
+    }
+
+    public static void setCausingEntityFromSource(StatusEffect target, DamageSource source) {
+        Entity cause = source.isDirect() ? source.getDirectEntity() : source.getEntity();
+        if (cause != null) {
+            target.setCausingEntity(cause.getUUID());
+        }
     }
 }

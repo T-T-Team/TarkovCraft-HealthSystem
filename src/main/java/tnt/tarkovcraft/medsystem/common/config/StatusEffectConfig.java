@@ -19,18 +19,6 @@ public final class StatusEffectConfig {
     @Configurable.Comment("Default duration of item/projectile side effects")
     public int itemStatusEffectDuration = Duration.minutes(2).tickValue();
 
-    @Configurable
-    @Configurable.Synchronized
-    @Configurable.DecimalRange(min = 0.001F)
-    @Configurable.Comment("Blood loss per minute for light bleeds")
-    public float lightBleedAmount = 0.1F;
-
-    @Configurable
-    @Configurable.Synchronized
-    @Configurable.DecimalRange(min = 0.001F)
-    @Configurable.Comment("Blood loss per minute for heavy bleeds")
-    public float heavyBleedAmount = 1.0F;
-
     @SuppressWarnings("unused")
     @Configurable
     @Configurable.Comment("Base chance for getting any type of bleed from '#medsystem:bleed_causing' damage type")

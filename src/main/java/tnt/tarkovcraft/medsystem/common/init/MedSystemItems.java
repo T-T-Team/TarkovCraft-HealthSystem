@@ -9,6 +9,8 @@ import tnt.tarkovcraft.core.common.init.CoreItemDataComponents;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.api.heal.predicate.IsBleedPredicate;
+import tnt.tarkovcraft.medsystem.common.effect.BleedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
 import tnt.tarkovcraft.medsystem.common.effect.group.HealthEffectGroupItem;
@@ -46,7 +48,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 150)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
-                                    .removesEffect(MedSystemStatusEffects.LIGHT_BLEED)
+                                    .removesEffect(MedSystemStatusEffects.BLEED, new IsBleedPredicate(false), BleedStatusEffect.LIGHT_BLEED)
                                     .build()
                             )
             )
@@ -58,7 +60,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 250)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
-                                    .removesEffect(MedSystemStatusEffects.HEAVY_BLEED)
+                                    .removesEffect(MedSystemStatusEffects.BLEED, new IsBleedPredicate(true), BleedStatusEffect.HEAVY_BLEED)
                                     .build()
                             )
             )
@@ -94,7 +96,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 750)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .unrestrictedHealing(20, 2)
-                                    .removesEffect(4, MedSystemStatusEffects.LIGHT_BLEED)
+                                    .removesEffect(4, MedSystemStatusEffects.BLEED, new IsBleedPredicate(false), BleedStatusEffect.LIGHT_BLEED)
                                     .build()
                             )
             )

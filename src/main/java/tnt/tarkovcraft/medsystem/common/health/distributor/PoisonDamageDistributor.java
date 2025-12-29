@@ -2,8 +2,8 @@ package tnt.tarkovcraft.medsystem.common.health.distributor;
 
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 
 import java.util.HashMap;
 import java.util.List;

@@ -29,6 +29,7 @@ public record AddStatusEffectDamageEffectEvent(StatusEffectWithDelay effect, Lis
         StatusEffect statusEffect = this.effect.createInstance();
         int duration = DamageEffectFunctionType.applyFunctions(statusEffect.getDuration(), context, this.durationModifiers);
         statusEffect.setDuration(duration);
+        StatusEffectHelper.setCausingEntityFromSource(statusEffect, context.damageContext().getSource());
         boolean isGlobalEffect = statusEffect.getType().isGlobalEffect();
         Limb targetLimb = isGlobalEffect ? null : context.limb();
         // at least 1 tick delay is required to prevent CMEs while ticking

@@ -17,9 +17,9 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
 import java.util.*;

@@ -7,7 +7,6 @@ import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 import tnt.tarkovcraft.medsystem.util.MedsystemCodecs;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
 
