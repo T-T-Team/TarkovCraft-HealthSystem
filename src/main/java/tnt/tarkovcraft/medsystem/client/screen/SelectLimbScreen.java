@@ -15,7 +15,6 @@ import tnt.tarkovcraft.core.client.screen.renderable.LabelRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
@@ -33,16 +32,17 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SelectLimb;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SelectLimbScreen extends Screen implements HealthContainerScreen {
 
-    public static final Component TITLE = TextHelper.createScreenTitle(MedicalSystem.MOD_ID, "select_body_part").withStyle(ChatFormatting.BOLD).withColor(ColorPalette.TEXT_COLOR);
-    public static final Component LABEL_ERROR = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.invalid_item");
-    public static final Component LABEL_NOT_HEALABLE = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "error.not_healable").withStyle(ChatFormatting.RED);
-    public static final Component LABEL_CLICK_TO_SELECT = TextHelper.createScreenComponent(MedicalSystem.MOD_ID, "select_body_part", "text.click_to_select").withStyle(ChatFormatting.GREEN);
+    public static final Component TITLE = TextHelper.createScreenTitle(MedSystemConstants.MOD_ID, "select_body_part").withStyle(ChatFormatting.BOLD).withColor(ColorPalette.TEXT_COLOR);
+    public static final Component LABEL_ERROR = TextHelper.createScreenComponent(MedSystemConstants.MOD_ID, "select_body_part", "error.invalid_item");
+    public static final Component LABEL_NOT_HEALABLE = TextHelper.createScreenComponent(MedSystemConstants.MOD_ID, "select_body_part", "error.not_healable").withStyle(ChatFormatting.RED);
+    public static final Component LABEL_CLICK_TO_SELECT = TextHelper.createScreenComponent(MedSystemConstants.MOD_ID, "select_body_part", "text.click_to_select").withStyle(ChatFormatting.GREEN);
 
     private final boolean selfHealing;
     private final int entityId;

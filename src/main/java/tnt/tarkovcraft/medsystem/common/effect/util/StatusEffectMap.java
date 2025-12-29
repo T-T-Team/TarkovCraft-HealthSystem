@@ -134,6 +134,10 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         });
     }
 
+    public Map<StatusEffectType<?>, StatusEffect> getEffects() {
+        return Collections.unmodifiableMap(this.effects);
+    }
+
     public Collection<StatusEffect> listEffects() {
         return this.effects.values();
     }

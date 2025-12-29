@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.damage_effect.condition.*;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 public final class MedSystemDamageEffectConditions {
 
-    public static final DeferredRegister<DamageEffectConditionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.DAMAGE_EFFECT_CONDITION, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<DamageEffectConditionType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.DAMAGE_EFFECT_CONDITION, MedSystemConstants.MOD_ID);
 
     public static final Holder<DamageEffectConditionType<?>> DAMAGE_RANGE = REGISTRY.register("damage_range", key -> new DamageEffectConditionType<>(key, DamageRangeCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> IS_LIMB = REGISTRY.register("is_limb", key -> new DamageEffectConditionType<>(key, IsLimbTypeDamageEffectCondition.CODEC));

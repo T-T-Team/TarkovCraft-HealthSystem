@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.api.event;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -33,10 +34,9 @@ public abstract class StatusEffectEvent extends Event {
         return limb;
     }
 
-    public static class Schedule extends StatusEffectEvent {
+    public static class Schedule extends StatusEffectEvent implements ICancellableEvent {
 
         private int delay;
-        private boolean cancelled;
 
         public Schedule(LivingEntity entity, StatusEffect statusEffect, @Nullable Limb limb, int delay) {
             super(entity, statusEffect, limb);
@@ -54,30 +54,12 @@ public abstract class StatusEffectEvent extends Event {
         public void setDelay(TickValue delay) {
             this.setDelay(delay.tickValue());
         }
-
-        public void setCancelled(boolean cancelled) {
-            this.cancelled = cancelled;
-        }
-
-        public boolean isCancelled() {
-            return cancelled;
-        }
     }
 
-    public static class Add extends StatusEffectEvent {
-
-        private boolean cancelled;
+    public static class Add extends StatusEffectEvent implements ICancellableEvent {
 
         public Add(LivingEntity entity, StatusEffect statusEffect, @Nullable Limb limb) {
             super(entity, statusEffect, limb);
-        }
-
-        public void setCancelled() {
-            this.cancelled = true;
-        }
-
-        public boolean isCancelled() {
-            return cancelled;
         }
     }
 

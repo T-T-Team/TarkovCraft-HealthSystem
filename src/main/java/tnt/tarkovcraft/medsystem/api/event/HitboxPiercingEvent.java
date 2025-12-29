@@ -6,6 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.Event;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
+@Deprecated
 public class HitboxPiercingEvent extends Event {
 
     private final LivingEntity entity;

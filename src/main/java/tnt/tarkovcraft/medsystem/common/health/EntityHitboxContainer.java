@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.calc.PositionedAABB;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.Map;
 
@@ -25,14 +26,14 @@ public record EntityHitboxContainer(Map<String, LimbHitboxContainer> definitions
 
         public static final Codec<LimbHitboxContainer> CODEC = Codec.unboundedMap(Codec.STRING, LimbHitbox.CODEC)
                 .xmap(LimbHitboxContainer::new, LimbHitboxContainer::hitboxMap).validate(container -> {
-                    if (!container.hitboxMap.containsKey(HealthContainerDefinition.DEFAULT_ENTITY_STATE)) {
+                    if (!container.hitboxMap.containsKey(MedSystemConstants.DEFAULT_ENTITY_STATE)) {
                         return DataResult.error(() -> "No default hitbox defined");
                     }
                     return DataResult.success(container);
                 });
 
         public LimbHitbox getByStateOrDefault(String state) {
-            return this.hitboxMap.getOrDefault(state, this.hitboxMap.get(HealthContainerDefinition.DEFAULT_ENTITY_STATE));
+            return this.hitboxMap.getOrDefault(state, this.hitboxMap.get(MedSystemConstants.DEFAULT_ENTITY_STATE));
         }
     }
 

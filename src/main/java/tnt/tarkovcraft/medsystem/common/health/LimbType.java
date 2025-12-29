@@ -6,6 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.EquipmentSlot;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -16,9 +17,9 @@ public enum LimbType implements StringRepresentable {
 
     HEAD("head", 0, 0xFF0000, EquipmentSlot.HEAD),
     TORSO("torso", 0, 0xFFFF00, EquipmentSlot.CHEST),
-    STOMACH("stomach", WoundPriorities.SURGERY_HEALTH, 0xFF00, EquipmentSlot.CHEST),
-    ARM("arm", WoundPriorities.SURGERY_OTHER, 0xFFFF),
-    LEG("leg", WoundPriorities.SURGERY_MOVEMENT, 0xFF, EquipmentSlot.LEGS, EquipmentSlot.FEET),
+    STOMACH("stomach", MedSystemConstants.HEAL_SURGERY_HEALTH, 0xFF00, EquipmentSlot.CHEST),
+    ARM("arm", MedSystemConstants.HEAL_SURGERY_OTHER, 0xFFFF),
+    LEG("leg", MedSystemConstants.HEAL_SURGERY_MOVEMENT, 0xFF, EquipmentSlot.LEGS, EquipmentSlot.FEET),
     ANIMAL("animal", 0, 0x00FF00, EquipmentSlot.BODY),
     OTHER("other", 0, 0x444444);
 

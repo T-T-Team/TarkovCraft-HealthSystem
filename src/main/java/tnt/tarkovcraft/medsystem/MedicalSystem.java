@@ -25,11 +25,11 @@ import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystemEventHandler;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
-@Mod(MedicalSystem.MOD_ID)
+@Mod(MedSystemConstants.MOD_ID)
 public final class MedicalSystem {
 
-    public static final String MOD_ID = "medsystem";
     public static final Logger LOGGER = LogManager.getLogger("TarkovCraftMedicalSystem");
     public static final Marker MARKER = MarkerManager.getMarker("MedicalSystem");
 
@@ -101,6 +101,6 @@ public final class MedicalSystem {
     }
 
     public static Identifier createIdentifier(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+        return Identifier.fromNamespaceAndPath(MedSystemConstants.MOD_ID, path);
     }
 }

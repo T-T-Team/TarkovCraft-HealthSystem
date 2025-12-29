@@ -5,11 +5,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 public final class MedSystemCreativeTabs {
 
-    public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MedSystemConstants.MOD_ID);
 
     public static final Holder<CreativeModeTab> MEDICAL_TAB = REGISTRY.register("medical", key -> CreativeModeTab.builder()
             .title(Component.translatable(key.toLanguageKey("itemGroup")))

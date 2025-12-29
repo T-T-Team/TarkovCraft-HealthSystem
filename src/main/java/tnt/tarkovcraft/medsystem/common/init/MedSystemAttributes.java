@@ -4,11 +4,11 @@ import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.attribute.Attribute;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 public final class MedSystemAttributes {
 
-    public static final DeferredRegister<Attribute> REGISTRY = DeferredRegister.create(CoreRegistries.Keys.ATTRIBUTE, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<Attribute> REGISTRY = DeferredRegister.create(CoreRegistries.Keys.ATTRIBUTE, MedSystemConstants.MOD_ID);
 
     public static final Holder<Attribute> ARMOR_DURABILITY = REGISTRY.register("armor_durability", key -> Attribute.create(key, 1.0));
     public static final Holder<Attribute> POSITIVE_EFFECT_DURATION = REGISTRY.register("positive_effect_duration", key -> Attribute.create(key, 1.0));

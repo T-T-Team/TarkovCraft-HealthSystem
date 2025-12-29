@@ -11,14 +11,10 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
-import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BinaryOperator;
 
 public final class StatusEffectType<S extends StatusEffect> {
@@ -32,7 +28,6 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final BinaryOperator<S> merger;
     private final EffectType effectType;
     private final EffectVisibility visibility;
-    private final Set<LimbType> ignoredBodyParts;
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
     private final int healingPriority;
@@ -46,7 +41,6 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.merger = builder.merger;
         this.effectType = builder.effectType;
         this.visibility = builder.visibility;
-        this.ignoredBodyParts = builder.limbTypes;
         this.isGlobalEffect = builder.globalEffect;
         this.isSpecial = builder.special;
         this.healingPriority = builder.healingPriority;
@@ -111,17 +105,13 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.merger.apply(a, b);
     }
 
-    @Deprecated
-    public boolean isIgnoredBodyPart(LimbType group) {
-        return this.ignoredBodyParts.contains(group);
-    }
-
     public boolean isSpecialStatusEffect() {
         return this.isSpecial;
     }
 
-    public int getHealingPriority() {
-        return this.healingPriority;
+    public int getHealingPriority(StatusEffect effect) {
+        Integer priority = effect.getCustomHealingPriority();
+        return priority != null ? priority : this.healingPriority;
     }
 
     public Identifier getIdentifier() {
@@ -147,7 +137,6 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         private final Identifier identifier;
         private final Factory<S> factory;
-        private final Set<LimbType> limbTypes = EnumSet.noneOf(LimbType.class);
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
         private EffectVisibility visibility = EffectVisibility.ALWAYS;
@@ -183,12 +172,6 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         public Builder<S> combineEffects(BinaryOperator<S> merger) {
             this.merger = merger;
-            return this;
-        }
-
-        @Deprecated
-        public Builder<S> ignoresBodyParts(LimbType... groups) {
-            this.limbTypes.addAll(Arrays.asList(groups));
             return this;
         }
 

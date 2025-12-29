@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.health.state.*;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 public final class MedSystemStateFilters {
 
-    public static final DeferredRegister<EntityStateMatcherType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.STATE_MATCHER, MedicalSystem.MOD_ID);
+    public static final DeferredRegister<EntityStateMatcherType<?>> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.STATE_MATCHER, MedSystemConstants.MOD_ID);
 
     public static final Holder<EntityStateMatcherType<?>> POSE = REGISTRY.register("pose", key -> new EntityStateMatcherType<>(key, PoseEntityStateMatcher.CODEC));
     public static final Holder<EntityStateMatcherType<?>> UNCONSCIOUS = REGISTRY.register("unconscious", key -> new EntityStateMatcherType<>(key, UnconsciousEntityStateMatcher.CODEC));

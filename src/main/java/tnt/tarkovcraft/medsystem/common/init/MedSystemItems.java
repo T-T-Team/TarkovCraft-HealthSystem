@@ -7,7 +7,6 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.init.CoreItemDataComponents;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.IsBleedPredicate;
@@ -20,10 +19,11 @@ import tnt.tarkovcraft.medsystem.common.item.BloodBagItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 import tnt.tarkovcraft.medsystem.common.item.SimpleHealingItem;
 import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 public final class MedSystemItems {
 
-    public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(MedicalSystem.MOD_ID);
+    public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(MedSystemConstants.MOD_ID);
 
     public static final DeferredItem<HealingItem> EMERGENCY_SURGERY_KIT = REGISTRY.registerItem(
             "emergency_surgery_kit",

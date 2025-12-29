@@ -118,6 +118,10 @@ public abstract class StatusEffect {
         return null;
     }
 
+    protected @Nullable Integer getCustomHealingPriority() {
+        return null;
+    }
+
     public static <T extends StatusEffect> Products.P1<RecordCodecBuilder.Mu<T>, Integer> common(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(
                 Codec.INT.optionalFieldOf("duration", 600).forGetter(StatusEffect::getDuration)
