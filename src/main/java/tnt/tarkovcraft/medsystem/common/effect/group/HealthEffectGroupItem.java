@@ -24,17 +24,13 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class HealthEffectGroupItem implements EffectGroupItem {
+public record HealthEffectGroupItem(UUID effectId, float amount, int interval) implements EffectGroupItem {
 
     public static final MapCodec<HealthEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            UUIDUtil.CODEC.fieldOf("effectId").forGetter(t -> t.effectId),
+            UUIDUtil.CODEC.fieldOf("effect_id").forGetter(t -> t.effectId),
             Codec.FLOAT.fieldOf("amount").forGetter(t -> t.amount),
             Codec.INT.fieldOf("interval").forGetter(t -> t.interval)
     ).apply(instance, HealthEffectGroupItem::new));
-
-    private final UUID effectId;
-    private final float amount;
-    private final int interval;
 
     public HealthEffectGroupItem(String uuid, float amount) {
         this(UUID.fromString(uuid), amount);
@@ -46,12 +42,6 @@ public class HealthEffectGroupItem implements EffectGroupItem {
 
     public HealthEffectGroupItem(String uuid, float amount, int interval) {
         this(UUID.fromString(uuid), amount, interval);
-    }
-
-    public HealthEffectGroupItem(UUID effectId, float amount, int interval) {
-        this.effectId = effectId;
-        this.amount = amount;
-        this.interval = interval;
     }
 
     @Override

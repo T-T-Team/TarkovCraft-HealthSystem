@@ -16,17 +16,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
+public record DeadLimbRecoveryEffectGroupItem(float health) implements EffectGroupItem {
 
     public static final MapCodec<DeadLimbRecoveryEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("health", 1.0F).forGetter(t -> t.health)
     ).apply(instance, DeadLimbRecoveryEffectGroupItem::new));
-
-    private final float health;
-
-    public DeadLimbRecoveryEffectGroupItem(float health) {
-        this.health = health;
-    }
 
     @Override
     public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
@@ -66,7 +60,7 @@ public class DeadLimbRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public boolean isVisible() {
+    public boolean visible() {
         return false;
     }
 

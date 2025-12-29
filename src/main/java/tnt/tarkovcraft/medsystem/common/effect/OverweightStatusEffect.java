@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class OverweightStatusEffect extends SimpleStatusEffect {
 
     public static final MapCodec<OverweightStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.BOOL.optionalFieldOf("limitExceeded", false).forGetter(t -> t.limitExceeded)
+            Codec.BOOL.optionalFieldOf("limit_exceeded", false).forGetter(t -> t.limitExceeded)
     ).apply(instance, OverweightStatusEffect::new));
     private static final Component HINT = Component.translatable("status_effect.medsystem.overweight.info").withStyle(ChatFormatting.DARK_GRAY);
     private static final Component HINT_MAX = Component.translatable("status_effect.medsystem.max_overweight.info").withStyle(ChatFormatting.DARK_GRAY);

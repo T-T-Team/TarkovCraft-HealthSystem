@@ -2,14 +2,14 @@
   "values": [
     "#minecraft:is_projectile",
     "#minecraft:is_explosion",
-    "#neoforge:is_physical",
-
-    "minecraft:fall"
+    "#minecraft:is_fall",
+    "#neoforge:is_physical"
   ],
   "remove": [
     "minecraft:sweet_berry_bush",
     "minecraft:cactus",
     "minecraft:sting",
-    "minecraft:in_wall"
+    "minecraft:in_wall",
+    "minecraft:ender_pearl"
   ]
 }

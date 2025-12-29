@@ -40,7 +40,7 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
     public static final Codec<SideEffectHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ComponentSerialization.CODEC.optionalFieldOf("title").forGetter(t -> t.title),
             SideEffect.CODEC.listOf().fieldOf("effects").forGetter(t -> t.sideEffects),
-            Codec.BOOL.optionalFieldOf("hideTooltip", false).forGetter(t -> t.hideTooltip)
+            Codec.BOOL.optionalFieldOf("hide_tooltip", false).forGetter(t -> t.hideTooltip)
     ).apply(instance, SideEffectHolder::new));
 
     public static Builder builder() {

@@ -21,23 +21,14 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public class StatusEffectRemovingEffectGroupItem implements EffectGroupItem {
+public record StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> tag, EffectType classification,
+                                                  Component label) implements EffectGroupItem {
 
     public static final MapCodec<StatusEffectRemovingEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             TagKey.codec(MedSystemRegistries.Keys.STATUS_EFFECT).fieldOf("tag").forGetter(t -> t.tag),
             EffectType.CODEC.fieldOf("classification").forGetter(t -> t.classification),
             ComponentSerialization.CODEC.fieldOf("label").forGetter(t -> t.label)
     ).apply(instance, StatusEffectRemovingEffectGroupItem::new));
-
-    private final TagKey<StatusEffectType<?>> tag;
-    private final EffectType classification;
-    private final Component label;
-
-    public StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> tag, EffectType classification, Component label) {
-        this.tag = tag;
-        this.classification = classification;
-        this.label = label;
-    }
 
     @Override
     public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {

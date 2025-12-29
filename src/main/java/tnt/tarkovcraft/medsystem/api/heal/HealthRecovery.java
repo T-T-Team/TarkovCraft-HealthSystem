@@ -16,7 +16,11 @@ import java.util.function.Consumer;
 
 public record HealthRecovery(int cycleDuration, float healthPerCycle, int maxCycles) implements TooltipProvider {
 
-    public static final Codec<HealthRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(ExtraCodecs.POSITIVE_INT.optionalFieldOf("cycleTime", 20).forGetter(HealthRecovery::cycleDuration), ExtraCodecs.POSITIVE_FLOAT.fieldOf("healAmount").forGetter(HealthRecovery::healthPerCycle), Codecs.NON_NEGATIVE_INT.optionalFieldOf("maxCycles", 1).forGetter(HealthRecovery::maxCycles)).apply(instance, HealthRecovery::new));
+    public static final Codec<HealthRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ExtraCodecs.POSITIVE_INT.optionalFieldOf("duration", 20).forGetter(HealthRecovery::cycleDuration),
+            ExtraCodecs.POSITIVE_FLOAT.fieldOf("amount").forGetter(HealthRecovery::healthPerCycle),
+            Codecs.NON_NEGATIVE_INT.optionalFieldOf("max_cycles", 1).forGetter(HealthRecovery::maxCycles)
+    ).apply(instance, HealthRecovery::new));
 
     public int getMaxUseDuration(int itemLimit) {
         return this.maxCycles > 0 ? this.maxCycles * this.cycleDuration : itemLimit;

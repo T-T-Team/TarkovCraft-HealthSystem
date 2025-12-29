@@ -4,10 +4,10 @@
     "translate": "skill.medsystem.surgery"
   },
   "leveling": {
-    "maxLevel": 100,
-    "baseExperience": 10.0,
-    "additionalExperience": 5.0,
-    "maxExperience": 100.0
+    "max_level": 100,
+    "base_exp": 10.0,
+    "additional_exp": 5.0,
+    "max_exp": 100.0
   },
   "trackers": [
     {
@@ -25,7 +25,7 @@
         "name": {
           "translate": "skill.medsystem.surgery.bonus.injury_duration"
         },
-        "descriptionKey": "skill.medsystem.surgery.bonus.injury_duration.description",
+        "description_key": "skill.medsystem.surgery.bonus.injury_duration.description",
         "icon": "medsystem:textures/icons/skill/bonus/injury_duration.png"
       },
       "conditions": [
@@ -38,9 +38,9 @@
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:injury_recovery_duration",
         "id": "0581d391-3c53-4d59-93e8-a56479769035",
-        "levelValue": -0.005,
-        "displayUnitFormat": {
-          "decimalPlaces": 2,
+        "per_level_value": -0.005,
+        "display_format": {
+          "decimal_places": 2,
           "multiplier": -100,
           "suffix": "%"
         }
@@ -51,7 +51,7 @@
         "name": {
           "translate": "skill.medsystem.surgery.bonus.injury_scale"
         },
-        "descriptionKey": "skill.medsystem.surgery.bonus.injury_scale.description",
+        "description_key": "skill.medsystem.surgery.bonus.injury_scale.description",
         "icon": "medsystem:textures/icons/skill/bonus/injury_amount.png"
       },
       "conditions": [
@@ -64,9 +64,9 @@
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:injury_amount",
         "id": "f694346f-dd40-49bd-b02c-cea106d0dc6f",
-        "levelValue": -0.0075,
-        "displayUnitFormat": {
-          "decimalPlaces": 2,
+        "per_level_value": -0.0075,
+        "display_format": {
+          "decimal_places": 2,
           "multiplier": -100,
           "suffix": "%"
         }

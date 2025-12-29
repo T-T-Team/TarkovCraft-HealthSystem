@@ -2,7 +2,6 @@ package tnt.tarkovcraft.medsystem.common.effect.group;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -21,17 +20,10 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-public class BloodRecoveryEffectGroupItem implements EffectGroupItem {
+public record BloodRecoveryEffectGroupItem(float amount) implements EffectGroupItem {
 
-    public static final MapCodec<BloodRecoveryEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codec.FLOAT.fieldOf("amount").forGetter(t -> t.amount)
-    ).apply(instance, BloodRecoveryEffectGroupItem::new));
-
-    private final float amount;
-
-    public BloodRecoveryEffectGroupItem(float amount) {
-        this.amount = amount;
-    }
+    public static final MapCodec<BloodRecoveryEffectGroupItem> CODEC = Codec.FLOAT
+            .xmap(BloodRecoveryEffectGroupItem::new, BloodRecoveryEffectGroupItem::amount).fieldOf("amount");
 
     @Override
     public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
@@ -67,7 +59,7 @@ public class BloodRecoveryEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public boolean isVisible() {
+    public boolean visible() {
         return this.amount != 0.0F;
     }
 

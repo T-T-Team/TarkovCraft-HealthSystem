@@ -31,10 +31,10 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
                                  HealthRecovery health, List<EffectRecovery> recoveries) implements TooltipProvider {
 
     public static final Codec<HealItemAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.BOOL.optionalFieldOf("applyGlobally", true).forGetter(HealItemAttributes::applyGlobally),
-            Codec.BOOL.optionalFieldOf("alwaysConsumable", false).forGetter(HealItemAttributes::alwaysConsumable),
-            Codec.INT.optionalFieldOf("minUseTime", 20).forGetter(HealItemAttributes::minUseTime),
-            Surgery.CODEC.optionalFieldOf("deadLimbHeal").forGetter(t -> Optional.ofNullable(t.surgery)),
+            Codec.BOOL.optionalFieldOf("apply_globally", true).forGetter(HealItemAttributes::applyGlobally),
+            Codec.BOOL.optionalFieldOf("always_consumable", false).forGetter(HealItemAttributes::alwaysConsumable),
+            Codec.INT.optionalFieldOf("min_use_time", 20).forGetter(HealItemAttributes::minUseTime),
+            Surgery.CODEC.optionalFieldOf("surgery").forGetter(t -> Optional.ofNullable(t.surgery)),
             HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)),
             EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealItemAttributes::recoveries)
     ).apply(instance, HealItemAttributes::new));

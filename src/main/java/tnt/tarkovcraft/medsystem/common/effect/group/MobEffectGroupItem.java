@@ -21,7 +21,8 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.function.Consumer;
 
-public class MobEffectGroupItem implements EffectGroupItem {
+public record MobEffectGroupItem(Holder<MobEffect> effect, int amplifier, boolean ambient, boolean visible,
+                                 boolean showIcon) implements EffectGroupItem {
 
     public static final MapCodec<MobEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BuiltInRegistries.MOB_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(t -> t.effect),
@@ -30,20 +31,6 @@ public class MobEffectGroupItem implements EffectGroupItem {
             Codec.BOOL.optionalFieldOf("visible", true).forGetter(t -> t.visible),
             Codec.BOOL.optionalFieldOf("showIcon", true).forGetter(t -> t.showIcon)
     ).apply(instance, MobEffectGroupItem::new));
-
-    private final Holder<MobEffect> effect;
-    private final int amplifier;
-    private final boolean ambient;
-    private final boolean visible;
-    private final boolean showIcon;
-
-    public MobEffectGroupItem(Holder<MobEffect> effect, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
-        this.effect = effect;
-        this.amplifier = amplifier;
-        this.ambient = ambient;
-        this.visible = visible;
-        this.showIcon = showIcon;
-    }
 
     public MobEffectGroupItem(Holder<MobEffect> effect, int amplifier, boolean ambient, boolean visible) {
         this(effect, amplifier, ambient, visible, true);
@@ -102,7 +89,7 @@ public class MobEffectGroupItem implements EffectGroupItem {
     }
 
     @Override
-    public boolean isVisible() {
+    public boolean visible() {
         return false;
     }
 
