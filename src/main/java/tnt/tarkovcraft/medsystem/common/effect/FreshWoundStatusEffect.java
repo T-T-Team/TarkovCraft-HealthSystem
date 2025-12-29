@@ -13,6 +13,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class FreshWoundStatusEffect extends StatusEffect {
@@ -51,7 +52,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
     public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
         RandomSource source = entity.getRandom();
         if (source.nextFloat() < this.bleedChance) {
-            submitter.submitImmediate(new LightBleedStatusEffect(-1));
+            submitter.submitImmediate(BleedStatusEffect.defaultLightBleed(-1, Optional.empty()));
         }
     }
 

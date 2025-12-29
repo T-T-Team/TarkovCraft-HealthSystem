@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.UUIDUtil;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -21,12 +22,12 @@ public abstract class EntityCausedStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void setCausingEntity(UUID owner) {
+    public void setCausingEntity(@Nullable UUID owner) {
         this.owner = owner;
     }
 
     @Override
-    public UUID getCausingEntity() {
+    public @Nullable UUID getCausingEntity() {
         return this.owner;
     }
 

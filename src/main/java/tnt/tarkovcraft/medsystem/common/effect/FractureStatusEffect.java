@@ -34,7 +34,7 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
 
     @Override
     public StatusEffect copy() {
-        return new FractureStatusEffect(this.getDuration());
+        return new FractureStatusEffect(this.getDuration(), Optional.ofNullable(this.getCausingEntity()));
     }
 
     @Override

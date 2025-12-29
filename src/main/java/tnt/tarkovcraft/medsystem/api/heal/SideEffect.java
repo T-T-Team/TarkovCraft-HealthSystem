@@ -65,10 +65,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
                 statusEffect.setDuration(duration);
             }
             if (damageSource != null) {
-                Entity cause = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
-                if (cause != null) {
-                    statusEffect.setCausingEntity(cause.getUUID());
-                }
+                StatusEffectHelper.setCausingEntityFromSource(statusEffect, damageSource);
             }
             StatusEffectHelper.addEffect(effects, entity, limb, this.delay, statusEffect);
         }
