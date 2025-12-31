@@ -1,24 +1,30 @@
 package tnt.tarkovcraft.medsystem.common;
 
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
+import tnt.tarkovcraft.core.network.message.S2C_MakeParticles;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -31,10 +37,7 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
+import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
@@ -125,6 +128,8 @@ public final class DamageHandler {
             }
             // apply post-damage effects
             MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_HURT, effect -> effect.applyDamageEvent(entity, container, context, totalDamage, distributedDamage, lostLimbs));
+            // blood decals
+            this.addBloodParticles(entity, source, Math.min(totalDamage, entity.getHealth()));
         }
 
 
@@ -188,5 +193,34 @@ public final class DamageHandler {
         ArmorComponent component = system.getComponent();
         entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT)
                 .ifPresent(context -> component.applyItemDamage(event, context));
+    }
+
+    private void addBloodParticles(LivingEntity entity, DamageSource source, float damage) {
+        BloodDecalConfig config = MedicalSystemClient.getConfig().bloodDecals;
+        if (!config.enableBloodDecals || !config.enableBloodDecalsOnDamage)
+            return;
+        int particleCount = Math.min(Mth.floor(damage / config.damageDecalScale), 5);
+        if (particleCount <= 0)
+            return;
+        Vec3 origin = source.getSourcePosition();
+        Vec3 direction;
+        if (origin != null) {
+            direction = entity.position().subtract(origin);
+        } else {
+            direction = entity.position();
+        }
+        double length = direction.horizontalDistance();
+        double scale = config.damageMotionScale;
+        RandomSource random = entity.getRandom();
+        direction = new Vec3(direction.x / length * scale, 0.0, direction.z / length * scale);
+        Vec3 pos = entity.getBoundingBox().getCenter();
+        List<Vec3> directions = new ArrayList<>();
+        float deviateAmount = 0.05F;
+        for (int i = 0; i < particleCount; i++) {
+            double deviateX = random.nextFloat() * (deviateAmount * 2.0F) - deviateAmount;
+            double deviateZ = random.nextFloat() * (deviateAmount * 2.0F) - deviateAmount;
+            directions.add(new Vec3(direction.x + deviateX, 0.05F, direction.z + deviateZ));
+        }
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(MedSystemParticleTypes.BLOOD_DRIP.get(), pos.x, pos.y, pos.z, true, true, directions));
     }
 }

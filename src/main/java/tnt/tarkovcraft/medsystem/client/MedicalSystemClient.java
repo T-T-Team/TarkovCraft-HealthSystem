@@ -16,10 +16,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
@@ -32,19 +29,22 @@ import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
 import tnt.tarkovcraft.core.client.screen.navigation.OptionalNavigationEntry;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItems;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.UUID;
 
@@ -74,10 +74,11 @@ public final class MedicalSystemClient {
     public MedicalSystemClient(IEventBus modEventBus, ModContainer container) {
         config = Configuration.registerConfig(MedSystemClientConfig.class, ConfigFormats.YAML).getConfigInstance();
 
-        modEventBus.addListener(this::onClientSetup);
+        modEventBus.addListener(this::setup);
         modEventBus.addListener(this::registerGuiLayer);
         modEventBus.addListener(this::registerKeyBinds);
         modEventBus.addListener(this::registerOnScreenHints);
+        modEventBus.addListener(this::registerParticleProviders);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
@@ -99,7 +100,7 @@ public final class MedicalSystemClient {
         }
     }
 
-    private void onClientSetup(FMLClientSetupEvent event) {
+    private void setup(FMLClientSetupEvent event) {
         ItemProperties.register(MedSystemItems.BLOODBAG.asItem(), MedicalSystem.resource("blood_volume"), (itemStack, level, entity, seed) -> {
             BloodContainer container = itemStack.get(MedSystemItemComponents.BLOOD_CONTAINER);
             if (container == null) {
@@ -144,6 +145,11 @@ public final class MedicalSystemClient {
 
     private void onMouseWheelInput(InputEvent.MouseScrollingEvent event) {
         this.cancelInputEventIfUnconscious(event);
+    }
+
+    private void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DRIP.get(), BloodDripParticle.Provider::new);
+        event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DECAL.get(), BloodDecalParticle.Provider::new);
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {
