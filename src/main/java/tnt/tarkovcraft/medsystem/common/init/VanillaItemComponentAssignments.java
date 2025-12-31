@@ -21,16 +21,25 @@ public final class VanillaItemComponentAssignments {
                 .build();
         registration.accept(Items.WOODEN_SWORD, swords);
         registration.accept(Items.STONE_SWORD, swords);
+        registration.accept(Items.COPPER_SWORD, swords);
         registration.accept(Items.IRON_SWORD, swords);
         registration.accept(Items.GOLDEN_SWORD, swords);
         registration.accept(Items.DIAMOND_SWORD, swords);
         registration.accept(Items.NETHERITE_SWORD, swords);
+        registration.accept(Items.WOODEN_SPEAR, swords);
+        registration.accept(Items.STONE_SPEAR, swords);
+        registration.accept(Items.COPPER_SPEAR, swords);
+        registration.accept(Items.IRON_SPEAR, swords);
+        registration.accept(Items.GOLDEN_SPEAR, swords);
+        registration.accept(Items.DIAMOND_SPEAR, swords);
+        registration.accept(Items.NETHERITE_SPEAR, swords);
 
         SideEffectHolder axes = config.axeStatusEffects.apply(SideEffectHolder.builder(), effectDuration)
                 .title(SideEffectHolder.ITEM_TITLE)
                 .build();
         registration.accept(Items.WOODEN_AXE, axes);
         registration.accept(Items.STONE_AXE, axes);
+        registration.accept(Items.COPPER_AXE, axes);
         registration.accept(Items.IRON_AXE, axes);
         registration.accept(Items.GOLDEN_AXE, axes);
         registration.accept(Items.DIAMOND_AXE, axes);
@@ -41,18 +50,21 @@ public final class VanillaItemComponentAssignments {
                 .build();
         registration.accept(Items.WOODEN_SHOVEL, blunt);
         registration.accept(Items.STONE_SHOVEL, blunt);
+        registration.accept(Items.COPPER_SHOVEL, blunt);
         registration.accept(Items.IRON_SHOVEL, blunt);
         registration.accept(Items.GOLDEN_SHOVEL, blunt);
         registration.accept(Items.DIAMOND_SHOVEL, blunt);
         registration.accept(Items.NETHERITE_SHOVEL, blunt);
         registration.accept(Items.WOODEN_PICKAXE, blunt);
         registration.accept(Items.STONE_PICKAXE, blunt);
+        registration.accept(Items.COPPER_PICKAXE, blunt);
         registration.accept(Items.IRON_PICKAXE, blunt);
         registration.accept(Items.GOLDEN_PICKAXE, blunt);
         registration.accept(Items.DIAMOND_PICKAXE, blunt);
         registration.accept(Items.NETHERITE_PICKAXE, blunt);
         registration.accept(Items.WOODEN_HOE, blunt);
         registration.accept(Items.STONE_HOE, blunt);
+        registration.accept(Items.COPPER_HOE, blunt);
         registration.accept(Items.IRON_HOE, blunt);
         registration.accept(Items.GOLDEN_HOE, blunt);
         registration.accept(Items.DIAMOND_HOE, blunt);
