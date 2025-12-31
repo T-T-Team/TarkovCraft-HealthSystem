@@ -9,7 +9,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
@@ -35,9 +34,9 @@ import java.util.function.Consumer;
 public record SideEffect(float chance, int delay, StatusEffect template) implements TooltipProvider {
 
     public static final Codec<SideEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(t -> t.chance),
-            Codec.INT.optionalFieldOf("delay", 0).forGetter(t -> t.delay),
-            StatusEffectType.CODEC.fieldOf("template").forGetter(t -> t.template)
+            Codec.floatRange(0.0F, 1.0F).optionalFieldOf("chance", 1.0F).forGetter(SideEffect::chance),
+            Codec.INT.optionalFieldOf("delay", 0).forGetter(SideEffect::delay),
+            StatusEffectType.CODEC.fieldOf("template").forGetter(SideEffect::template)
     ).apply(instance, SideEffect::new));
 
     public void apply(LivingEntity entity, @Nullable DamageSource damageSource, HealthContainer container, @Nullable Limb limb) {
@@ -78,7 +77,8 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
         } else {
             StatusEffectType<?> type = this.template.getType();
             EffectType effectType = type.getEffectType();
-            tooltipAdder.accept(createDescriptionComponent(effectType, type.getDisplayName(), this.chance, this.template.getDuration(), this.delay));
+            Component title = type.getDisplayName(this.template);
+            tooltipAdder.accept(createDescriptionComponent(effectType, title, this.chance, this.template.getDuration(), this.delay));
         }
     }
 

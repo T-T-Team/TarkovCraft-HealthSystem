@@ -31,7 +31,6 @@ jobs:
         uses: Toma1O6/file-read-action@v1
         with:
           file: "CHANGELOG.md"
-          max-lines: '60'
           max-chars: '4096'
 
       - name: Trigger discord webhook
