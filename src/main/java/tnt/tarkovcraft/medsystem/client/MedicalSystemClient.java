@@ -32,7 +32,10 @@ import tnt.tarkovcraft.core.client.screen.navigation.OptionalNavigationEntry;
 import tnt.tarkovcraft.core.client.shader.DynamicTransformsPipelineModifier;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.model.properties.BloodVolumeItemModelProperty;
 import tnt.tarkovcraft.medsystem.client.model.properties.IsEmptyBloodContainerItemModelProperty;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
@@ -41,10 +44,10 @@ import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.UUID;
 
@@ -82,6 +85,7 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerOnScreenHints);
         modEventBus.addListener(this::registerRenderStateExtensions);
         modEventBus.addListener(this::registerShaderPrograms);
+        modEventBus.addListener(this::registerParticleProviders);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
@@ -175,6 +179,11 @@ public final class MedicalSystemClient {
                 new BloodLossEffectShaderProgram(),
                 new PainReliefEffectShaderProgram()
         );
+    }
+
+    private void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DRIP.get(), BloodDripParticle.Provider::new);
+        event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DECAL.get(), BloodDecalParticle.Provider::new);
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {

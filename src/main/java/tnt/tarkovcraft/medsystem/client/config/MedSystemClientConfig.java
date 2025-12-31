@@ -25,4 +25,7 @@ public final class MedSystemClientConfig {
     @Configurable.DependsOn(configValues = @Configurable.DependsOn.ConfigValue(location = "medsystem-client:healthDisplayType", accepts = "NUMERIC"))
     @Configurable.Gui.Slider
     public int numericHealthScale = 1;
+
+    @Configurable
+    public BloodDecalConfig bloodDecals = new BloodDecalConfig();
 }
