@@ -5,7 +5,7 @@ import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 
 public interface DamageEffectFunction {
 
-    int apply(int duration, DamageEffectContext context);
+    int apply(int value, DamageEffectContext context);
 
     DamageEffectFunctionType<?> getType();
 

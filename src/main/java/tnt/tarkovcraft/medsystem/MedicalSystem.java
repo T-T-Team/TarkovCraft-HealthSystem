@@ -62,7 +62,7 @@ public final class MedicalSystem {
         MedSystemStatusEffectPredicates.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
         MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
-        MedSystemDamageEffectScaleFunctions.REGISTRY.register(modEventBus);
+        MedSystemDamageEffectFunctions.REGISTRY.register(modEventBus);
         MedSystemDamageEffectConditions.REGISTRY.register(modEventBus);
         MedSystemDamageEffectEvents.REGISTRY.register(modEventBus);
         MedSystemStateFilters.REGISTRY.register(modEventBus);
