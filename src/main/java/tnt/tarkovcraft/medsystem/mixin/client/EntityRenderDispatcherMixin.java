@@ -35,7 +35,7 @@ public abstract class EntityRenderDispatcherMixin implements ResourceManagerRelo
             float red = ARGB.redFloat(color);
             float green = ARGB.greenFloat(color);
             float blue = ARGB.blueFloat(color);
-            AABB aabb = hitbox.toWorldSpaceHitbox(livingEntity);
+            AABB aabb = hitbox.getWithTransforms(livingEntity).aabb();
             LevelRenderer.renderLineBox(poseStack, buffer, aabb, red, green, blue, 1.0F);
         });
     }

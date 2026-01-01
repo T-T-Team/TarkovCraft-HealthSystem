@@ -70,15 +70,11 @@ public final class DamageHandler {
         if (hits == null || hits.isEmpty()) {
             event.setInvulnerable(true);
         } else {
-            if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
-                event.setInvulnerable(true);
-            } else {
-                DamageContext context = new DamageContext(livingEntity, source);
-                context.setHits(hits);
-                context.setHitCalculator(hitCalculator);
-                context.setSideEffects(SideEffectHolder.fromDamage(source));
-                livingEntity.setData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT, context);
-            }
+            DamageContext context = new DamageContext(livingEntity, source);
+            context.setHits(hits);
+            context.setHitCalculator(hitCalculator);
+            context.setSideEffects(SideEffectHolder.fromDamage(source));
+            livingEntity.setData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT, context);
         }
     }
 
