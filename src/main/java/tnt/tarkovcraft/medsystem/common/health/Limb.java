@@ -21,7 +21,7 @@ public final class Limb {
             Codec.FLOAT.fieldOf("originalMaxHealth").forGetter(t -> t.originalMaxHealth),
             Codec.FLOAT.fieldOf("parentDamageScale").forGetter(t -> t.parentDamageScale),
             Codec.FLOAT.fieldOf("damageScale").forGetter(t -> t.damageScale),
-            Codecs.simpleEnumCodec(LimbType.class).fieldOf("group").forGetter(t -> t.type),
+            LimbType.CODEC.fieldOf("group").forGetter(t -> t.type),
             StatusEffectMap.CODEC.fieldOf("statusEffects").forGetter(t -> t.statusEffects)
     ).apply(instance, Limb::new));
 

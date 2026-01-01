@@ -6,6 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTransformConditions;
+import tnt.tarkovcraft.medsystem.util.MedsystemCodecs;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class EntityPoseTransformCondition implements TransformCondition {
 
     public static final MapCodec<EntityPoseTransformCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Codecs.list(Codecs.simpleEnumCodec(Pose.class)).fieldOf("allow").forGetter(t -> new ArrayList<>(t.allows))
+            Codecs.list(MedsystemCodecs.POSE_CODEC).fieldOf("allow").forGetter(t -> new ArrayList<>(t.allows))
     ).apply(instance, EntityPoseTransformCondition::new));
 
     private final Set<Pose> allows;

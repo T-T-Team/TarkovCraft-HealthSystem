@@ -8,14 +8,13 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
@@ -26,7 +25,7 @@ public class StatusEffectRemovingEffectGroupItem implements EffectGroupItem {
 
     public static final MapCodec<StatusEffectRemovingEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             TagKey.codec(MedSystemRegistries.Keys.STATUS_EFFECT).fieldOf("tag").forGetter(t -> t.tag),
-            Codecs.simpleEnumCodec(EffectType.class).fieldOf("classification").forGetter(t -> t.classification),
+            EffectType.CODEC.fieldOf("classification").forGetter(t -> t.classification),
             ComponentSerialization.CODEC.fieldOf("label").forGetter(t -> t.label)
     ).apply(instance, StatusEffectRemovingEffectGroupItem::new));
 

@@ -18,7 +18,7 @@ public final class LimbDefinition {
             Codec.floatRange(0.0F, 10.0F).optionalFieldOf("parentDamageScale", 1.0F).forGetter(t -> t.parentDamageScale),
             Codec.floatRange(0.0F, 10.0F).optionalFieldOf("damageScale", 1.0F).forGetter(t -> t.damageScale),
             ExtraCodecs.POSITIVE_FLOAT.fieldOf("health").forGetter(t -> t.maxHealth),
-            Codecs.enumCodec(LimbType.class).optionalFieldOf("group", LimbType.OTHER).forGetter(t -> t.limbType),
+            LimbType.CODEC.optionalFieldOf("group", LimbType.OTHER).forGetter(t -> t.limbType),
             Codec.unboundedMap(UUIDUtil.STRING_CODEC, ReactionDefinition.CODEC).optionalFieldOf("reactions", Collections.emptyMap()).forGetter(t -> t.reactions)
     ).apply(instance, LimbDefinition::new));
 
