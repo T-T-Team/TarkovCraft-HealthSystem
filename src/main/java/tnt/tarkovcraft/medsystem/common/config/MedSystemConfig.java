@@ -25,6 +25,11 @@ public final class MedSystemConfig {
     public boolean prioritizeVitalHealing = true;
 
     @Configurable
+    @Configurable.Comment("Allows interactions (such as healing) with other entities")
+    @Configurable.Synchronized
+    public boolean allowThirdPartyEntityInteractions = true;
+
+    @Configurable
     @Configurable.DecimalRange(min = 0, max = 1.0)
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.0##")

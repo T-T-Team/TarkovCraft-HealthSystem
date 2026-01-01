@@ -151,6 +151,8 @@
   "config.medsystem.option.armorSystem.comment.4": "VANILLA - vanilla armor calculation, full armor is used for any damage calculations",
   "config.medsystem.option.prioritizeVitalHealing": "Vital part heal priority",
   "config.medsystem.option.prioritizeVitalHealing.comment.0": "Health will be primarily recovered into vital parts",
+  "config.medsystem.option.allowThirdPartyEntityInteractions": "Third party interactions",
+  "config.medsystem.option.allowThirdPartyEntityInteractions.comment.0": "Allows interactions (such as healing) with other entities",
   "config.medsystem.option.vitalBodyPartHealthTrigger": "Vital part heal priority threshold",
   "config.medsystem.option.vitalBodyPartHealthTrigger.comment.0": "Threshold for prioritized vital body part health recovery",
   "config.medsystem.option.allowInjuryRecoveryScaling": "Injury recovery effect scaling",
