@@ -3,11 +3,11 @@ package tnt.tarkovcraft.medsystem.common.init;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.function.Supplier;
 

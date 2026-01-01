@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
@@ -26,7 +27,6 @@ import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystemEventHandler;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 @Mod(MedSystemConstants.MOD_ID)
 public final class MedicalSystem {

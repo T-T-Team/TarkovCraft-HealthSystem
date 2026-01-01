@@ -2,9 +2,9 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.damage_effect.function.DamageEffectFunctionType;
 import tnt.tarkovcraft.medsystem.common.damage_effect.function.DamageScaleFunction;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 public final class MedSystemDamageEffectScaleFunctions {
 

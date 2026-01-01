@@ -18,6 +18,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.HealthRecovery;
@@ -25,17 +26,20 @@ import tnt.tarkovcraft.medsystem.api.heal.Surgery;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.*;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenLimbSelectScreen;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.function.Consumer;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class HealingItem extends InteractableItem {
 

@@ -3,8 +3,8 @@ package tnt.tarkovcraft.medsystem.common.config;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdateRestrictions;
-import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 
 @Config(id = MedSystemConstants.MOD_ID, filename = "medicalsystem")
 public final class MedSystemConfig {

@@ -9,10 +9,10 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcher;
 import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcherType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.Collections;
 import java.util.List;

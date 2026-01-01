@@ -2,8 +2,8 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import tnt.tarkovcraft.medsystem.common.damage_effect.event.*;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.common.damage_effect.event.*;
 
 public final class MedSystemDamageEffectEvents {
 

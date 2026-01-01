@@ -1,9 +1,6 @@
 package tnt.tarkovcraft.medsystem.client.config;
 
 import dev.toma.configuration.config.Configurable;
-import dev.toma.configuration.config.validate.ValidationResult;
-import dev.toma.configuration.config.value.IConfigValueReadable;
-import net.minecraft.network.chat.Component;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 
 public final class BloodDecalConfig {
