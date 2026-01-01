@@ -22,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.api.LimbDamageSource;
+import tnt.tarkovcraft.medsystem.common.argument.StatusEffectArgument;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
@@ -39,7 +40,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-@SuppressWarnings("unchecked")
 public final class TarkovCraftCommand {
 
     private static final SimpleCommandExceptionType NO_VALID_TARGET_FOUND = new SimpleCommandExceptionType(Component.literal("No health containers found for given entity selector"));
@@ -59,7 +59,7 @@ public final class TarkovCraftCommand {
                                                                         .then(
                                                                                 Commands.argument("limb", StringArgumentType.word())
                                                                                         .then(
-                                                                                                Commands.argument("type", ResourceArgument.resource(context, MedSystemRegistries.Keys.STATUS_EFFECT))
+                                                                                                Commands.argument("status_effect", StatusEffectArgument.statusEffect(context))
                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, Duration.seconds(60).tickValue(), 0))
                                                                                                         .then(
                                                                                                                 Commands.literal("infinite")
@@ -84,7 +84,7 @@ public final class TarkovCraftCommand {
                                                         .then(
                                                                 Commands.literal("addGlobal")
                                                                         .then(
-                                                                                Commands.argument("type", ResourceArgument.resource(context, MedSystemRegistries.Keys.STATUS_EFFECT))
+                                                                                Commands.argument("status_effect", StatusEffectArgument.statusEffect(context))
                                                                                         .executes(ctx -> addGlobalStatusEffect(ctx, Duration.seconds(60).tickValue(), 0))
                                                                                         .then(
                                                                                                 Commands.literal("infinite")
@@ -180,7 +180,8 @@ public final class TarkovCraftCommand {
     }
 
     private static int addGlobalStatusEffect(CommandContext<CommandSourceStack> ctx, int duration, int delay) throws CommandSyntaxException {
-        Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
+        StatusEffect template = StatusEffectArgument.getStatusEffect(ctx, "status_effect");
+        template.setDuration(duration);
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
@@ -188,39 +189,40 @@ public final class TarkovCraftCommand {
             }
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
             StatusEffectMap map = container.getGlobalStatusEffects();
-            addEffect(map, livingEntity, null, container, reference, duration, delay);
+            addEffect(map, livingEntity, null, container, template, delay);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
     }
 
     private static int addLocalStatusEffect(CommandContext<CommandSourceStack> ctx, int duration, int delay) throws CommandSyntaxException {
-        Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
-        String bodyPartId = StringArgumentType.getString(ctx, "limb");
+        StatusEffect template = StatusEffectArgument.getStatusEffect(ctx, "status_effect");
+        template.setDuration(duration);
+        String limbCode = StringArgumentType.getString(ctx, "limb");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
                 continue;
             }
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
-            if (!container.hasLimb(bodyPartId)) {
+            if (!container.hasLimb(limbCode)) {
                 continue;
             }
-            Limb limb = container.getLimbByCode(bodyPartId);
+            Limb limb = container.getLimbByCode(limbCode);
             StatusEffectMap map = limb.getStatusEffects();
-            addEffect(map, livingEntity, limb, container, reference, duration, delay);
+            addEffect(map, livingEntity, limb, container, template, delay);
             HealthSystem.synchronizeEntity(livingEntity);
         }
         return 0;
     }
 
-    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable Limb limb, HealthContainer container, Holder<StatusEffectType<?>> holder, int duration, int delay) throws CommandSyntaxException {
-        StatusEffectType<T> type = (StatusEffectType<T>) holder.value();
+    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable Limb limb, HealthContainer container, StatusEffect template, int delay) throws CommandSyntaxException {
+        StatusEffectType<?> type = template.getType();
         if (type.isSpecialStatusEffect()) {
-            throw INVALID_STATUS_EFFECT.create(holder.getKey().location());
+            throw INVALID_STATUS_EFFECT.create(MedSystemRegistries.STATUS_EFFECT.getKey(type));
         }
-        StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, entity, limb, container, holder.value());
-        StatusEffectHelper.addEffect(map, entity, limb, delay, type.createEffect(duration));
+        StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, entity, limb, container, type);
+        StatusEffectHelper.addEffect(map, entity, limb, delay, template.copy());
     }
 
     private static int removeGlobalStatusEffect(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

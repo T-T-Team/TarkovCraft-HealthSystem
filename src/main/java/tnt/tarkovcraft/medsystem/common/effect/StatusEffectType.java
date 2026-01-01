@@ -133,6 +133,10 @@ public final class StatusEffectType<S extends StatusEffect> {
         return Objects.hashCode(identifier);
     }
 
+    public MapCodec<S> mapCodec() {
+        return codec;
+    }
+
     public static final class Builder<S extends StatusEffect> {
 
         private final ResourceLocation identifier;

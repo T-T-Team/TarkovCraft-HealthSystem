@@ -68,6 +68,7 @@ public final class MedicalSystem {
         MedSystemDamageEffectEvents.REGISTRY.register(modEventBus);
         MedSystemStateFilters.REGISTRY.register(modEventBus);
         MedSystemParticleTypes.REGISTRY.register(modEventBus);
+        MedSystemArgumentTypes.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
