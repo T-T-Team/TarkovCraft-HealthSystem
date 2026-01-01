@@ -14,7 +14,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jspecify.annotations.Nullable;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.event.EntityInteractionEvent;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.util.InteractionHelper;
 
@@ -228,12 +232,22 @@ public abstract class InteractableItem extends Item {
         if (result != null && result.getType() == HitResult.Type.ENTITY) {
             entity = (LivingEntity) ((EntityHitResult) result).getEntity();
         }
-        if (entity != null && this.canUseItem(itemStack, entity, origin) && this.canInteractWithEntity(itemStack, entity, origin)) {
+        if (entity != null && this.canUseItem(itemStack, entity, origin) && this.allowExternalInteraction(itemStack, entity, origin)) {
             return entity;
         }
-        if (this.canUseItem(itemStack, origin, origin)) {
+        if (this.canUseItem(itemStack, origin, origin) && this.isEventInteractionAllowed(itemStack, origin, origin)) {
             return origin;
         }
         return null;
+    }
+
+    private boolean isEventInteractionAllowed(ItemStack itemStack, LivingEntity entity, LivingEntity origin) {
+        EntityInteractionEvent.CanInteract event = NeoForge.EVENT_BUS.post(new EntityInteractionEvent.CanInteract(itemStack, entity, origin));
+        return !event.isCanceled();
+    }
+
+    private boolean allowExternalInteraction(ItemStack itemStack, LivingEntity entity, LivingEntity origin) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        return config.allowThirdPartyEntityInteractions && this.isEventInteractionAllowed(itemStack, entity, origin) && this.canInteractWithEntity(itemStack, entity, origin);
     }
 }
