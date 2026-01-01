@@ -23,11 +23,11 @@ public final class BloodDecalConfig {
     public int bloodDecalLifetime = Duration.minutes(1).tickValue();
 
     @Configurable
-    @Configurable.DecimalRange(min = 0.15F, max = 0.35F)
+    @Configurable.DecimalRange(min = 0.10F, max = 0.35F)
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.00")
     @Configurable.Comment("Blood decal rendering scale")
-    public float bloodDecalScale = 0.20F;
+    public float bloodDecalScale = 0.15F;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
