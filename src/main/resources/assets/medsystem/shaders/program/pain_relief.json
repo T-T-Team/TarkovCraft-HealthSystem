@@ -5,7 +5,7 @@
     "dstrgb": "1-srcalpha"
   },
   "vertex": "blit",
-  "fragment": "medsystem:desaturate",
+  "fragment": "medsystem:pain_relief",
   "attributes": [
     "Position"
   ],
@@ -29,6 +29,12 @@
     },
     {
       "name": "Strength",
+      "type": "float",
+      "count": 1,
+      "values": [ 1.0 ]
+    },
+    {
+      "name": "Scale",
       "type": "float",
       "count": 1,
       "values": [ 1.0 ]

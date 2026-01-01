@@ -15,10 +15,6 @@
         {
           "name": "Brightness",
           "values": [ 0.4 ]
-        },
-        {
-          "name": "Value",
-          "values": [ 0.2 ]
         }
       ]
     },

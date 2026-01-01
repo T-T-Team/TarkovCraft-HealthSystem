@@ -3,7 +3,8 @@
 uniform sampler2D DiffuseSampler;
 uniform float Strength;
 uniform float Brightness;
-uniform float Value;
+uniform float Speed;
+uniform float GameTime;
 
 in vec2 texCoord;
 out vec4 fragColor;
@@ -19,7 +20,8 @@ void main() {
 
     float intensity = 0.5;
     float smoothness = 0.3;
-    float blended = mix(intensity, intensity * Strength, Value);
+    float pulse = sin(GameTime * 24000.0 * Speed);
+    float blended = mix(intensity, intensity * Strength, pulse);
     float vig = vignette(texCoord, blended, smoothness);
 
     color.rgb *= vig;

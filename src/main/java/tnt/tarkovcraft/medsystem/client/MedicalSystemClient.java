@@ -37,6 +37,7 @@ import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItems;
@@ -84,6 +85,7 @@ public final class MedicalSystemClient {
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
+        NeoForge.EVENT_BUS.addListener(this::clientTick);
 
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
     }
@@ -108,6 +110,12 @@ public final class MedicalSystemClient {
             }
             return container.value() / container.capacity();
         });
+
+        ShaderProcessor.INSTANCE.registerProgram(PainShaderProgram.INSTANCE);
+        ShaderProcessor.INSTANCE.registerProgram(BloodlossShaderProgram.INSTANCE);
+        ShaderProcessor.INSTANCE.registerProgram(ConcussionShaderProgram.INSTANCE);
+        ShaderProcessor.INSTANCE.registerProgram(PainReliefShaderProgram.INSTANCE);
+        ShaderProcessor.INSTANCE.registerProgram(UnconsciousShaderProgram.INSTANCE);
     }
 
     private void registerGuiLayer(RegisterGuiLayersEvent event) {
@@ -150,6 +158,10 @@ public final class MedicalSystemClient {
     private void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DRIP.get(), BloodDripParticle.Provider::new);
         event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DECAL.get(), BloodDecalParticle.Provider::new);
+    }
+
+    private void clientTick(ClientTickEvent.Post event) {
+        ShaderProcessor.INSTANCE.tick();
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {

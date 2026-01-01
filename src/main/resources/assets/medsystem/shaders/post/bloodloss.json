@@ -4,13 +4,13 @@
   ],
   "passes": [
     {
-      "name": "medsystem:desaturate",
+      "name": "medsystem:bloodloss",
       "intarget": "minecraft:main",
       "outtarget": "swap",
       "uniforms": [
         {
           "name": "Strength",
-          "values": [ 0.3 ]
+          "values": [ 0.7 ]
         }
       ]
     },

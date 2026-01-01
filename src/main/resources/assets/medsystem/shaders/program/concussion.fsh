@@ -6,6 +6,7 @@ uniform int Replicas;
 uniform float Radius;
 uniform float ReplicaBlur;
 uniform float GameTime;
+uniform float Scale;
 
 in vec2 texCoord;
 out vec4 fragColor;
@@ -25,8 +26,8 @@ void main() {
         float t = float(i) / float(Replicas);
         float len = length(uv - 0.5);
         float radius = Radius * t + 0.03 * len * t;
-        float replicaBlur = (rand(uv * (Time + float(i))) - 0.5) * ReplicaBlur;
-        vec2 offset = dir * radius + replicaBlur;
+        float replicaBlur = (rand(uv * (Time + float(i))) - 0.5) * ReplicaBlur * Scale;
+        vec2 offset = Scale * dir * radius + replicaBlur;
         accum += texture(DiffuseSampler, uv + offset).rgb;
     }
 

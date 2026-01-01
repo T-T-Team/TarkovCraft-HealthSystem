@@ -14,7 +14,6 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import javax.annotation.Nullable;
-import java.util.*;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
 
@@ -32,7 +31,6 @@ public final class StatusEffectType<S extends StatusEffect> {
     private final boolean isGlobalEffect;
     private final boolean isSpecial;
     private final int healingPriority;
-    private final Collection<ResourceLocation> blockedPostEffects;
     private final ResourceLocation icon;
     private final Component displayName;
 
@@ -46,7 +44,6 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.isGlobalEffect = builder.globalEffect;
         this.isSpecial = builder.special;
         this.healingPriority = builder.healingPriority;
-        this.blockedPostEffects = builder.blockedPostEffects != null ? Arrays.asList(builder.blockedPostEffects) : null;
         this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
     }
@@ -117,14 +114,6 @@ public final class StatusEffectType<S extends StatusEffect> {
         return priority != null ? priority : this.healingPriority;
     }
 
-    public boolean hasPostShader() {
-        return this.blockedPostEffects != null;
-    }
-
-    public Collection<ResourceLocation> getBlockedPostEffects() {
-        return this.blockedPostEffects;
-    }
-
     public ResourceLocation getIdentifier() {
         return identifier;
     }
@@ -148,7 +137,6 @@ public final class StatusEffectType<S extends StatusEffect> {
 
         private final ResourceLocation identifier;
         private final Factory<S> factory;
-        private ResourceLocation[] blockedPostEffects;
         private MapCodec<S> codec;
         private EffectType effectType = EffectType.NEUTRAL;
         private EffectVisibility visibility = EffectVisibility.ALWAYS;
@@ -192,15 +180,6 @@ public final class StatusEffectType<S extends StatusEffect> {
             return this;
         }
 
-        public Builder<S> setPostEffects() {
-            return this.setPostEffectsWithBlocking();
-        }
-
-        public Builder<S> setPostEffectsWithBlocking(ResourceLocation... blocking) {
-            this.blockedPostEffects = blocking;
-            return this;
-        }
-
         public Builder<S> healPriority(int healingPriority) {
             this.healingPriority = healingPriority;
             return this;
@@ -213,10 +192,6 @@ public final class StatusEffectType<S extends StatusEffect> {
             Objects.requireNonNull(this.merger, "Merge function is required");
             Objects.requireNonNull(this.effectType, "Effect type is required");
             Objects.requireNonNull(this.visibility, "Effect visibility is required");
-            if (!this.globalEffect && this.blockedPostEffects != null) {
-                throw new IllegalArgumentException("Post effect shaders are only supported for global status effects");
-            }
-
             return new StatusEffectType<>(this);
         }
     }

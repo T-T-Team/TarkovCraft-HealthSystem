@@ -4,7 +4,7 @@
   ],
   "passes": [
     {
-      "name": "medsystem:saturate",
+      "name": "medsystem:pain_relief",
       "intarget": "minecraft:main",
       "outtarget": "swap",
       "uniforms": [

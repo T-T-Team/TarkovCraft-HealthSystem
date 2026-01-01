@@ -2,6 +2,7 @@
 
 uniform sampler2D DiffuseSampler;
 uniform float Strength;
+uniform float Scale;
 
 in vec2 texCoord;
 out vec4 fragColor;
@@ -51,7 +52,7 @@ vec3 hsv2rgb(vec3 hsv) {
 void main() {
     vec4 color = texture(DiffuseSampler, texCoord);
     vec3 hsv = rgb2hsv(color.rgb);
-    hsv.y = clamp(hsv.y * (1.0 + Strength), 0.0, 1.0);
+    hsv.y = clamp(hsv.y * (1.0 + Strength * Scale), 0.0, 1.0);
     vec3 saturated = hsv2rgb(hsv);
 
     fragColor = vec4(saturated, color.a);

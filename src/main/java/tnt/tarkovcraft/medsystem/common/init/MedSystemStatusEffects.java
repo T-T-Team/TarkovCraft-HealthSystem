@@ -19,7 +19,6 @@ public final class MedSystemStatusEffects {
             .type(EffectType.POSITIVE)
             .setGlobal()
             .combineEffects(StatusEffect::maxDuration)
-            .setPostEffects()
             .build()
     );
     public static final Holder<StatusEffectType<?>> PAIN = REGISTRY.register("pain", key -> StatusEffectType.builder(key, PainStatusEffect::new)
@@ -28,7 +27,6 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .combineEffects(StatusEffect::replace)
             .setSpecial()
-            .setPostEffects()
             .build()
     );
     public static final Holder<StatusEffectType<?>> FRACTURE = REGISTRY.register("fracture", key -> StatusEffectType.builder(key, FractureStatusEffect::new)
@@ -107,7 +105,6 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .combineEffects(StatusEffect::replace)
             .setSpecial()
-            .setPostEffects()
             .build()
     );
     public static final Holder<StatusEffectType<?>> CONCUSSION = REGISTRY.register("concussion", key -> StatusEffectType.builder(key, ConcussionStatusEffect::new)
@@ -124,7 +121,6 @@ public final class MedSystemStatusEffects {
             .setGlobal()
             .setSpecial()
             .combineEffects(StatusEffect::replace)
-            .setPostEffects()
             .build()
     );
 }

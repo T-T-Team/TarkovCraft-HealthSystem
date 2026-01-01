@@ -40,7 +40,13 @@
       "values": [ 1.0 ]
     },
     {
-      "name": "Value",
+      "name": "Speed",
+      "type": "float",
+      "count": 1,
+      "values": [ 0.05 ]
+    },
+    {
+      "name": "GameTime",
       "type": "float",
       "count": 1,
       "values": [ 1.0 ]

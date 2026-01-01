@@ -4,7 +4,7 @@
   ],
   "passes": [
     {
-      "name": "medsystem:radial_blur",
+      "name": "medsystem:pain",
       "intarget": "minecraft:main",
       "outtarget": "swap",
       "uniforms": [
