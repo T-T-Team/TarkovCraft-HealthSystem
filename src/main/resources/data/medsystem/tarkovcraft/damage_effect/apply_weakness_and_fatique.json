@@ -1,0 +1,48 @@
+{
+  "context_type": "on_update",
+  "conditions": [
+    {
+      "type": "medsystem:is_root_limb"
+    },
+    {
+      "type": "medsystem:has_dead_limb",
+      "limb": "arm"
+    }
+  ],
+  "event": {
+    "type": "medsystem:list",
+    "items": [
+      {
+        "type": "medsystem:add_mob_effect",
+        "effect": "minecraft:weakness",
+        "duration": 25,
+        "amplifier_modifiers": [
+          {
+            "type": "medsystem:dead_limb_scale",
+            "limb": "arm",
+            "limb_operator": "add",
+            "scale": -1
+          }
+        ]
+      },
+      {
+        "type": "medsystem:add_mob_effect",
+        "effect": "minecraft:mining_fatigue",
+        "duration": 25,
+        "amplifier_modifiers": [
+          {
+            "type": "medsystem:dead_limb_scale",
+            "limb": "arm",
+            "limb_operator": "multiply",
+            "scale": 3
+          },
+          {
+            "type": "medsystem:calculation",
+            "operator": "subtract",
+            "value": 1
+          }
+        ]
+      }
+    ]
+  }
+}

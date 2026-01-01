@@ -13,6 +13,8 @@ public final class MedSystemDamageEffectConditions {
     public static final Holder<DamageEffectConditionType<?>> IS_LIMB = REGISTRY.register("is_limb", key -> new DamageEffectConditionType<>(key, IsLimbTypeDamageEffectCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> IS_DAMAGE = REGISTRY.register("is_damage", key -> new DamageEffectConditionType<>(key, IsDamageTypeDamageEffectCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> IS_DEAD_LIMB = REGISTRY.register("is_dead_limb", key -> new DamageEffectConditionType<>(key, IsDeadLimbDamageEffectCondition.CODEC));
+    public static final Holder<DamageEffectConditionType<?>> IS_ROOT_LIMB = REGISTRY.register("is_root_limb", key -> new DamageEffectConditionType<>(key, IsRootLimbDamageEffectCondition.CODEC));
+    public static final Holder<DamageEffectConditionType<?>> HAS_DEAD_LIMB = REGISTRY.register("has_dead_limb", key -> new DamageEffectConditionType<>(key, HasDeadLimbDamageEffectCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> HAS_EFFECT = REGISTRY.register("has_effect", key -> new DamageEffectConditionType<>(key, HasStatusEffectDamageCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> RANDOM_CHANCE = REGISTRY.register("random_chance", key -> new DamageEffectConditionType<>(key, RandomChanceDamageEffectCondition.CODEC));
     public static final Holder<DamageEffectConditionType<?>> FALL_FRACTURE = REGISTRY.register("fall_fracture", key -> new DamageEffectConditionType<>(key, FallDamageEffectCondition.CODEC));

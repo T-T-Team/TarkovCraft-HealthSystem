@@ -7,7 +7,7 @@ import net.minecraft.util.Mth;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffect;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContext;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageEffectScaleFunctions;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageEffectFunctions;
 
 public record DamageScaleFunction(boolean localDamage, float scale) implements DamageEffectFunction {
 
@@ -17,15 +17,15 @@ public record DamageScaleFunction(boolean localDamage, float scale) implements D
     ).apply(instance, DamageScaleFunction::new));
 
     @Override
-    public int apply(int duration, DamageEffectContext context) {
+    public int apply(int value, DamageEffectContext context) {
         float damageSrc = context.getDamage(this.localDamage);
         float amount = damageSrc * this.scale;
-        return Mth.ceil(amount * duration);
+        return Mth.ceil(amount * value);
     }
 
     @Override
     public DamageEffectFunctionType<?> getType() {
-        return MedSystemDamageEffectScaleFunctions.DAMAGE_SCALE.value();
+        return MedSystemDamageEffectFunctions.DAMAGE_SCALE.value();
     }
 
     @Override
