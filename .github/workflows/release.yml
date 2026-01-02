@@ -75,7 +75,12 @@ jobs:
                     {
                       name: "Report issue",
                       value: "[GitHub](<https://github.com/T-T-Team/TarkovCraft-HealthSystem/issues>)",
-                      inline: false
+                      inline: true
+                    },
+                    {
+                      name: "Wiki",
+                      value: [Link](<https://github.com/T-T-Team/TarkovCraft-Documentation/wiki>),
+                      inline: true
                     }
                   ],
                   footer: { text: "CurseForge file may take up to 1 hour to be published" }
