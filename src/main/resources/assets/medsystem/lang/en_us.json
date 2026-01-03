@@ -220,8 +220,6 @@
   "config.medsystem-client.option.bloodDecals": "Blood decals",
   "config.medsystem-client.option.enableBloodDecals": "Enable decals",
   "config.medsystem-client.option.enableBloodDecals.comment.0": "Toggles all blood decals",
-  "config.medsystem-client.option.enableBloodDecalsOnDamage": "Decals on damage",
-  "config.medsystem-client.option.enableBloodDecalsOnDamage.comment.0": "Toggles blood decals from regular damage (not bleeds etc)",
   "config.medsystem-client.option.bloodDecalColor": "Decal color",
   "config.medsystem-client.option.bloodDecalLifetime": "Decal lifetime",
   "config.medsystem-client.option.bloodDecalScale": "Decal render scale",
@@ -235,6 +233,9 @@
   "config.medsystem-client.option.damageDecalScale": "Decal per damage",
   "config.medsystem-client.option.damageDecalScale.comment.0": "How much damage entity needs to receive in order for decal to appear",
   "config.medsystem-client.option.damageDecalScale.comment.1": "At most 5 decals will be spawned from single attack",
+  "config.medsystem-client.option.maxDamageDecalsPerHit": "Damage decal limit",
+  "config.medsystem-client.option.maxDamageDecalsPerHit.comment.0": "Maximum amount of decals which can appear when damaging entities",
+  "config.medsystem-client.option.maxDamageDecalsPerHit.comment.1": "Set to 0 to disable damage decals",
   "config.medsystem-client.option.damageMotionScale": "Motion scale",
   "config.medsystem-client.option.damageMotionScale.comment.0": "How much motion is applied to decals on received damage"
 }

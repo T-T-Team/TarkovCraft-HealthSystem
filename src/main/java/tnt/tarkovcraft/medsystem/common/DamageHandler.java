@@ -134,7 +134,7 @@ public final class DamageHandler {
             // apply post-damage effects
             MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_HURT, effect -> effect.applyDamageEvent(entity, container, context, totalDamage, distributedDamage, lostLimbs));
             // blood decals
-            this.addBloodParticles(entity, source, Math.min(totalDamage, entity.getHealth()));
+            this.addBloodParticles(entity, source, totalDamage);
         }
 
         // Clean data and apply
@@ -201,9 +201,10 @@ public final class DamageHandler {
 
     private void addBloodParticles(LivingEntity entity, DamageSource source, float damage) {
         BloodDecalConfig config = MedicalSystemClient.getConfig().bloodDecals;
-        if (!config.enableBloodDecals || !config.enableBloodDecalsOnDamage)
+        if (!config.enableBloodDecals)
             return;
-        int particleCount = Math.min(Mth.floor(damage / config.damageDecalScale), 5);
+        int particleCount = Math.min(Mth.floor(damage / config.damageDecalScale), config.maxDamageDecalsPerHit);
+        System.out.println("Calculated blood particles: " + particleCount + "(src " + damage + ")");
         if (particleCount <= 0)
             return;
         Vec3 origin = source.getSourcePosition();
