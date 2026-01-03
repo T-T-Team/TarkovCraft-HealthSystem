@@ -26,7 +26,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
-import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
+import tnt.tarkovcraft.medsystem.common.config.TimeRange;
 import tnt.tarkovcraft.medsystem.common.effect.BloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
@@ -227,7 +227,7 @@ public final class BloodData {
         this.setOrExtendedUnconsciousTime(100, UnconsciousInfo.LOW_BLOOD_LEVEL);
 
         MedSystemConfig config = MedicalSystem.getConfig();
-        UnconsciousMode mode = config.unconsciousMode;
+        UnconsciousMode mode = config.bloodSystem.bleedOutUnconsciousness;
         if (!mode.allowsUnconsciousState(level)) {
             this.onDeathBloodLevel(entity, level, container);
         }
@@ -238,7 +238,7 @@ public final class BloodData {
         float chance = AttributeSystem.getFloatValue(entity, MedSystemAttributes.RANDOM_BLACKOUT_CHANCE, 0.05F);
         RandomSource random = level.getRandom();
         if (!this.isUnconscious() && chance > 0.0F && random.nextFloat() < chance) {
-            UnconsciousTimeRange timeRange = MedicalSystem.getConfig().unconsciousOnBloodLoss;
+            TimeRange timeRange = MedicalSystem.getConfig().bloodSystem.unconsciousOnBloodLoss;
             int duration = timeRange.getDurationInSeconds(random);
             if (duration > 0) {
                 this.setOrExtendedUnconsciousTime(duration, UnconsciousInfo.RANDOM_UNCONSCIOUSNESS);

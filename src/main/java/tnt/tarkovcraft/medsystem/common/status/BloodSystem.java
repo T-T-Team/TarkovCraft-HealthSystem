@@ -16,7 +16,7 @@ public final class BloodSystem {
 
     public static boolean isEnabled() {
         MedSystemConfig config = MedicalSystem.getConfig();
-        return config.useBloodSystem;
+        return config.bloodSystem.useBloodSystem;
     }
 
     public static boolean hasBloodDataIntegration(LivingEntity entity) {
