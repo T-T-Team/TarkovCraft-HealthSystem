@@ -72,6 +72,13 @@ public final class BloodDecalConfig {
     @Configurable.Comment("How much motion is applied to decals on received damage")
     public float damageMotionScale = 0.1F;
 
+    @Configurable
+    @Configurable.DecimalRange(min = 0.0F, max = 1.5F)
+    @Configurable.Gui.NumberFormat("0.0#")
+    @Configurable.Gui.Slider
+    @Configurable.Comment("How much motion is applied to decals on received damage from projectiles")
+    public float projectileDamageMotionScale = 0.25F;
+
     public static final class LifetimeValidator implements Validator<Integer> {
 
         private static final int WARNING_THRESHOLD = Duration.minutes(20).tickValue();

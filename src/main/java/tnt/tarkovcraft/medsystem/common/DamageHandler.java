@@ -7,6 +7,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
@@ -30,10 +31,7 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.TimeRange;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
-import tnt.tarkovcraft.medsystem.common.health.DamageContext;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
@@ -134,7 +132,7 @@ public final class DamageHandler {
             // apply post-damage effects
             MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_HURT, effect -> effect.applyDamageEvent(entity, container, context, totalDamage, distributedDamage, lostLimbs));
             // blood decals
-            this.addBloodParticles(entity, source, totalDamage);
+            this.addBloodParticles(entity, source, container, context, totalDamage);
         }
 
         // Clean data and apply
@@ -199,26 +197,32 @@ public final class DamageHandler {
                 .ifPresent(context -> component.applyItemDamage(event, context));
     }
 
-    private void addBloodParticles(LivingEntity entity, DamageSource source, float damage) {
+    private void addBloodParticles(LivingEntity entity, DamageSource source, HealthContainer container, DamageContext context, float damage) {
         BloodDecalConfig config = MedicalSystemClient.getConfig().bloodDecals;
-        if (!config.enableBloodDecals)
+        if (!config.enableBloodDecals || context.getHits().isEmpty())
             return;
         int particleCount = Math.min(Mth.floor(damage / config.damageDecalScale), config.maxDamageDecalsPerHit);
-        System.out.println("Calculated blood particles: " + particleCount + "(src " + damage + ")");
         if (particleCount <= 0)
             return;
         Vec3 origin = source.getSourcePosition();
-        Vec3 direction;
-        if (origin != null) {
-            direction = entity.position().subtract(origin);
-        } else {
-            direction = entity.position();
-        }
+        Vec3 direction = origin != null ? entity.position().subtract(origin) : entity.position();
         double length = direction.horizontalDistance();
-        double scale = config.damageMotionScale;
+        boolean projectile = source.is(DamageTypeTags.IS_PROJECTILE);
+        float motionScale = projectile ? config.projectileDamageMotionScale : config.damageMotionScale;
         RandomSource random = entity.getRandom();
-        direction = new Vec3(direction.x / length * scale, 0.0, direction.z / length * scale);
-        Vec3 pos = entity.getBoundingBox().getCenter();
+        direction = new Vec3(direction.x / length * motionScale, 0.0, direction.z / length * motionScale);
+        HitResult result = context.getHits().getFirst();
+        Limb mainDamagedLimb = result.limb();
+        HealthContainerDefinition definition = container.getDefinition();
+        EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
+        String entityState = definition.getCurrentEntityState(entity);
+        Vec3 pos;
+        if (result.hit() != null) {
+            pos = result.hit();
+        } else {
+            AABB aabb = hitboxContainer.getLimbHitbox(mainDamagedLimb.getLimbCode(), entityState).toWorldSpaceHitbox(entity);
+            pos = aabb.getCenter();
+        }
         List<Vec3> directions = new ArrayList<>();
         float deviateAmount = 0.05F;
         for (int i = 0; i < particleCount; i++) {
