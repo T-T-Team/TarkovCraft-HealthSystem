@@ -76,7 +76,7 @@ public abstract class StatusEffect {
     public final Optional<Entity> getCausingEntity(ServerLevel level) {
         UUID owner = this.getCausingEntity();
         if (owner != null) {
-            return Optional.of(level.getEntity(owner));
+            return Optional.ofNullable(level.getEntity(owner));
         }
         return Optional.empty();
     }
