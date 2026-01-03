@@ -247,5 +247,7 @@
   "config.medsystem-client.option.maxDamageDecalsPerHit.comment.0": "Maximum amount of decals which can appear when damaging entities",
   "config.medsystem-client.option.maxDamageDecalsPerHit.comment.1": "Set to 0 to disable damage decals",
   "config.medsystem-client.option.damageMotionScale": "Motion scale",
-  "config.medsystem-client.option.damageMotionScale.comment.0": "How much motion is applied to decals on received damage"
+  "config.medsystem-client.option.damageMotionScale.comment.0": "How much motion is applied to decals on received damage",
+  "config.medsystem-client.option.projectileDamageMotionScale": "Projectile motion scale",
+  "config.medsystem-client.option.projectileDamageMotionScale.comment.0": "How much motion is applied to decals on received damage from projectiles"
 }
