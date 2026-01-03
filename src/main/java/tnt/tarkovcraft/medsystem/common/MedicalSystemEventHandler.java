@@ -5,9 +5,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -46,6 +46,7 @@ import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class MedicalSystemEventHandler {
@@ -140,39 +141,46 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
         DamageSource source = event.getSource();
-        if (!event.isCanceled() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && entity instanceof Player player) {
+        if (!event.isCanceled() && BloodSystem.isEnabled() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && entity instanceof Player player) {
             BloodData bloodData = BloodSystem.getBloodData(player);
             BloodStatus status = BloodStatus.fromBloodLevelPercentage(bloodData.getBloodVolumePercentage());
             BloodData.UnconsciousInfo unconsciousInfo = bloodData.getUnconsciousInfo();
             if (status == BloodStatus.DEATH || (unconsciousInfo != null && unconsciousInfo.causesDeath()))
                 return; // no rescue on full blood loss, small workaround for immediate death
             RandomSource random = player.getRandom();
-            if (random.nextFloat() < config.unconsciousOnDeathChance) {
+            // Start unconscious mode if allowed instead of death
+            if (random.nextFloat() < config.bloodSystem.unconsciousOnDeathChance) {
                 HealthContainer container = HealthSystem.getHealthData(player);
-                if (!config.allowUnconsciousOnHeadDeath) {
-                    boolean allPartsDead = container.getLimbsAsStream()
+                // Prevent unconscious mode if head limb died and config disallows this case
+                if (config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
+                    boolean anyHeadDead = container.getLimbsAsStream()
                             .filter(part -> part.getType() == LimbType.HEAD)
-                            .allMatch(Limb::isDead);
+                            .anyMatch(Limb::isDead);
                     // no head body part alive, terminate further processing logic
-                    if (allPartsDead)
+                    if (anyHeadDead)
                         return;
                 }
                 event.setCanceled(true);
+
                 // recover vital body part health - otherwise player would immediately "die" again
-                container.getLimbsAsStream().forEach(part -> {
-                    if (part.isDead() && part.isVital()) {
-                        part.heal(1.0F);
+                container.getVitalLimbs().forEach(limb -> {
+                    if (limb.isDead()) {
+                        limb.setHealth(1.0F);
                     }
                 });
+
+                // make other mobs peaceful towards this player
+                this.clearAttackTargetsAround(player, 48.0D);
+
                 container.updateHealth(player);
                 HealthSystem.synchronizeEntity(player);
 
                 // set unconscious
-                bloodData.setUnconsciousTime(
-                        Duration.seconds(config.rescueWaitDuration).tickValue(),
-                        BloodData.UnconsciousInfo.DEATH
-                );
+                bloodData.setUnconsciousTime(config.bloodSystem.rescueWaitDuration, BloodData.UnconsciousInfo.DEATH);
                 bloodData.sync(player);
+
+                // set a short invulnerability window to prevent immediate follow-up damage
+                player.invulnerableTime = 30;
             }
         }
 
@@ -241,6 +249,25 @@ public final class MedicalSystemEventHandler {
             if (data.isUnconscious() && info.causesDeath()) {
                 event.setNewAboutToBeSetTarget(null);
             }
+        }
+    }
+
+    private void clearAttackTargetsAround(LivingEntity victim, double range) {
+        Level level = victim.level();
+        List<Mob> mobs = level.getEntitiesOfClass(Mob.class, victim.getBoundingBox().inflate(range));
+        for (Mob mob : mobs) {
+            if (mob.getTarget() == victim) {
+                mob.setTarget(null);
+                Brain<?> brain = mob.getBrain();
+                this.eraseMemory(brain, MemoryModuleType.ANGRY_AT);
+                this.eraseMemory(brain, MemoryModuleType.ATTACK_TARGET);
+            }
+        }
+    }
+
+    private void eraseMemory(Brain<?> brain, MemoryModuleType<?> type) {
+        if (brain.hasMemoryValue(type)) {
+            brain.eraseMemory(type);
         }
     }
 }

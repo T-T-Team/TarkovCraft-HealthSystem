@@ -28,7 +28,7 @@ import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.UnconsciousTimeRange;
+import tnt.tarkovcraft.medsystem.common.config.TimeRange;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -156,10 +156,10 @@ public final class DamageHandler {
             BloodData bloodData = BloodSystem.getBloodData(entity);
             MedSystemConfig config = MedicalSystem.getConfig();
             int limbLostCount = lostLimbs.size();
-            if (!bloodData.isUnconscious() && config.allowUnconsciousOnLimbLost && limbLostCount > 0) {
-                float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F);
+            if (!bloodData.isUnconscious() && config.bloodSystem.unconsciousAfterLimbLossMultiplier > 0.0F && limbLostCount > 0) {
+                float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F) * config.bloodSystem.unconsciousAfterLimbLossMultiplier;
                 if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
-                    UnconsciousTimeRange timeRange = config.unconsciousOnLimbLoss;
+                    TimeRange timeRange = config.bloodSystem.unconsciousOnLimbLoss;
                     int unconsciousTime = 0;
                     for (int i = 0; i < limbLostCount; i++) {
                         unconsciousTime += timeRange.getDurationInSeconds(random);

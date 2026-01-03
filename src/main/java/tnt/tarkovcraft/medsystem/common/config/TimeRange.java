@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.common.config;
 import dev.toma.configuration.config.Configurable;
 import net.minecraft.util.RandomSource;
 
-public final class UnconsciousTimeRange {
+public final class TimeRange {
 
     @Configurable
     @Configurable.Range(min = 0)
@@ -13,7 +13,7 @@ public final class UnconsciousTimeRange {
     @Configurable.Range(min = 0)
     public int maxDuration;
 
-    public UnconsciousTimeRange(int minDuration, int maxDuration) {
+    public TimeRange(int minDuration, int maxDuration) {
         this.minDuration = minDuration;
         this.maxDuration = maxDuration;
     }
