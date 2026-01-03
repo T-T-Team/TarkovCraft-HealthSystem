@@ -10,10 +10,6 @@ public final class BloodDecalConfig {
     public boolean enableBloodDecals = true;
 
     @Configurable
-    @Configurable.Comment("Toggles blood decals from regular damage (not bleeds etc)")
-    public boolean enableBloodDecalsOnDamage = true;
-
-    @Configurable
     @Configurable.StringPattern("^#[0-9a-fA-F]{1,6}$")
     @Configurable.Gui.ColorValue
     public String bloodDecalColor = "#B20000";
@@ -53,6 +49,15 @@ public final class BloodDecalConfig {
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Comment({"How much damage entity needs to receive in order for decal to appear", "At most 5 decals will be spawned from single attack"})
     public float damageDecalScale = 3.0F;
+
+    @Configurable
+    @Configurable.Range(min = 0, max = 15)
+    @Configurable.Gui.Slider
+    @Configurable.Comment({
+            "Maximum amount of decals which can appear when damaging entities",
+            "Set to 0 to disable damage decals"
+    })
+    public int maxDamageDecalsPerHit = 5;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.5F)
