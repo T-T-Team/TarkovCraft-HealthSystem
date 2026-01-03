@@ -31,12 +31,20 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
         model.head.yRot = 0.0F;
         model.rightArm.xRot = 0.0F;
         model.rightArm.zRot = (float) Math.toRadians(20.0F);
+        model.rightSleeve.xRot = model.rightArm.xRot;
+        model.rightSleeve.zRot = model.rightArm.zRot;
         model.leftArm.xRot = 0.0F;
         model.leftArm.zRot = (float) Math.toRadians(-40.0F);
+        model.leftSleeve.xRot = model.leftArm.xRot;
+        model.leftSleeve.zRot = model.leftArm.zRot;
         model.rightLeg.xRot = 0.0F;
         model.rightLeg.zRot = (float) Math.toRadians(10.0F);
+        model.rightPants.xRot = model.rightLeg.xRot;
+        model.rightPants.zRot = model.rightLeg.zRot;
         model.leftLeg.xRot = 0.0F;
         model.leftLeg.zRot = (float) Math.toRadians(-15.0F);
+        model.leftPants.xRot = model.leftLeg.xRot;
+        model.leftPants.zRot = model.leftLeg.zRot;
         ci.cancel();
     }
 }
