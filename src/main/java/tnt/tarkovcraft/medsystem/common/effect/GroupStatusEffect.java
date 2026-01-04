@@ -46,7 +46,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public final void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
         if (this.items.isEmpty()) {
             this.markForRemoval();
             return;

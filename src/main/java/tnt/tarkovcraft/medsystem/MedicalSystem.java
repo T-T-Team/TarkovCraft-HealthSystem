@@ -13,8 +13,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
@@ -31,8 +29,7 @@ import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 @Mod(MedSystemConstants.MOD_ID)
 public final class MedicalSystem {
 
-    public static final Logger LOGGER = LogManager.getLogger("TarkovCraftMedicalSystem");
-    public static final Marker MARKER = MarkerManager.getMarker("MedicalSystem");
+    public static final Logger LOGGER = LogManager.getLogger("MedicalSystem");
 
     public static final HealthSystem HEALTH_SYSTEM = new HealthSystem();
     public static final DamageEffects DAMAGE_EFFECTS = new DamageEffects();

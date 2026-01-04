@@ -275,8 +275,13 @@ public final class BloodData {
     }
 
     private void addBloodLossStatusEffect(HealthContainer container, LivingEntity entity, BloodLossStatusEffect.Stage stage) {
-        StatusEffectHelper.addEffect(container.getGlobalStatusEffects(), entity, null, BloodLossStatusEffect.createTemplate(stage));
-        HealthSystem.synchronizeEntity(entity);
+        StatusEffectMap map = container.getGlobalStatusEffects();
+        BloodLossStatusEffect statusEffect = (BloodLossStatusEffect) map.getEffect(MedSystemStatusEffects.BLOODLOSS)
+                .orElse(null);
+        if (statusEffect == null || statusEffect.getStage() != stage) {
+            StatusEffectHelper.addEffect(map, entity, null, BloodLossStatusEffect.createTemplate(stage));
+            HealthSystem.synchronizeEntity(entity);
+        }
     }
 
     private void updateConsciousStatus(LivingEntity entity, boolean wakeUp) {

@@ -52,7 +52,7 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
         float effectChance = chanceAttribute != null ? this.chance * AttributeSystem.getFloatValue(entity, chanceAttribute, 1.0F) : this.chance;
         if (effectChance >= 1.0F || source.nextFloat() < effectChance) {
             if (!type.isGlobalEffect() && limb == null) {
-                MedicalSystem.LOGGER.error(MedicalSystem.MARKER, "Failed to apply side effect {} as effect is not set as global, but target body part was not provided", type);
+                MedicalSystem.LOGGER.error("Failed to apply side effect {} as effect is not set as global, but target body part was not provided", type);
                 return;
             }
             StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : limb.getStatusEffects();

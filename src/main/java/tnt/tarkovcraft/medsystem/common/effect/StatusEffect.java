@@ -33,7 +33,7 @@ public abstract class StatusEffect {
 
     public abstract StatusEffectType<?> getType();
 
-    public abstract void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb);
+    public abstract void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb);
 
     public abstract void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb);
 

@@ -45,7 +45,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         boolean needsUpdate = false;
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
-            effect.apply(container, entity, limb);
+            effect.apply(container, submitter, entity, limb);
             if (!entity.isAlive())
                 break;
             if (!effect.isInfinite()) {

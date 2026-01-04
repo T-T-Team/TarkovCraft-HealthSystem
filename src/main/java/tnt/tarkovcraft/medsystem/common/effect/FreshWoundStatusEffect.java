@@ -39,7 +39,7 @@ public class FreshWoundStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
         if (entity.isSprinting()) {
             this.bleedChance += 0.00035F;
             if (this.bleedChance >= 1.0F) {

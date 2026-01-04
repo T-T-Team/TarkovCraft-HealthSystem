@@ -300,7 +300,7 @@ public final class HealthContainer {
     }
 
     public void markStatusEffectAdded(LivingEntity entity) {
-        this.tickStatusEffectCheck(entity, 0, true);
+        this.tickStatusEffectCheck(entity, 5, true);
     }
 
     private void tickEffectQueue(LivingEntity entity) {

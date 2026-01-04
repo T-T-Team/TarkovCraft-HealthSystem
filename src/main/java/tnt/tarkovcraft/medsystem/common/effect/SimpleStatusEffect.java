@@ -14,7 +14,7 @@ public abstract class SimpleStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public final void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override
