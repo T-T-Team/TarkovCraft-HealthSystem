@@ -11,23 +11,23 @@ public class HealthOverlayConfiguration extends ConfigurableOverlay {
     @Configurable.DecimalRange(min = 0.5F, max = 2.5F)
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.0#")
-    @Configurable.Comment("Health overlay scale")
+    @Configurable.Comment(value = "Health overlay scale", localize = true)
     public float scale = 1.0F;
 
     @Configurable
     @Configurable.Range(min = 0, max = 255)
     @Configurable.Gui.Slider
-    @Configurable.Comment("Health overlay transparency")
+    @Configurable.Comment(value = "Health overlay transparency", localize = true)
     public int transparency = 136;
 
     @Configurable
     @Configurable.Gui.ColorValue
-    @Configurable.Comment("Overlay color for dead body parts")
+    @Configurable.Comment(value = "Overlay color for dead body parts", localize = true)
     public String deadLimbColor = "#444444";
 
     @Configurable
     @Configurable.Gui.ColorValue
-    @Configurable.Comment("Color schema used for color blending of body part overlay based on the part health")
+    @Configurable.Comment(value = "Color schema used for color blending of body part overlay based on the part health", localize = true)
     public String[] colorSchema = { "#00FF00", "#FFFF00", "#FF0000" };
 
     public HealthOverlayConfiguration(boolean enabled, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int x, int y) {

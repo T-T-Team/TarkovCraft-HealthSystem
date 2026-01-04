@@ -10,22 +10,22 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 public final class MedSystemConfig {
 
     @Configurable
-    @Configurable.Comment({
+    @Configurable.Comment(value = {
             "Defines armor calculation logic with custom health system",
             "SIMULATED - modular armor with fully simulated logic such as deflections, blunt damage and so on",
             "MODULAR - modular armor - getting hit in head damages only helmet",
             "MODULAR_BOOSTED - same as above, but each armor piece has 150% additional protection",
             "VANILLA - vanilla armor calculation, full armor is used for any damage calculations"
-    })
+    }, localize = true)
     @Configurable.UpdateRestriction(UpdateRestrictions.MAIN_MENU)
     public ArmorSystem armorSystem = ArmorSystem.SIMULATED;
 
     @Configurable
-    @Configurable.Comment("Health will be primarily recovered into vital parts")
+    @Configurable.Comment(value = "Health will be primarily recovered into vital parts", localize = true)
     public boolean prioritizeVitalHealing = true;
 
     @Configurable
-    @Configurable.Comment("Allows interactions (such as healing) with other entities")
+    @Configurable.Comment(value = "Allows interactions (such as healing) with other entities", localize = true)
     @Configurable.Synchronized
     public boolean allowThirdPartyEntityInteractions = true;
 
@@ -33,20 +33,20 @@ public final class MedSystemConfig {
     @Configurable.DecimalRange(min = 0, max = 1.0)
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.0##")
-    @Configurable.Comment("Threshold for prioritized vital body part health recovery")
+    @Configurable.Comment(value = "Threshold for prioritized vital body part health recovery", localize = true)
     public float vitalBodyPartHealthTrigger = 0.75F;
 
     @Configurable
-    @Configurable.Comment("Allows scaling of injury recovery status effects when getting the effect repeatedly")
+    @Configurable.Comment(value = "Allows scaling of injury recovery status effects when getting the effect repeatedly", localize = true)
     public boolean allowInjuryRecoveryScaling = true;
 
     @Configurable
-    @Configurable.Comment("Vanilla tools will have chance to cause some negative effects such as bleeds or fractures")
+    @Configurable.Comment(value = "Vanilla tools will have chance to cause some negative effects such as bleeds or fractures", localize = true)
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     public boolean addHitEffectsToVanillaItems = true;
 
     @Configurable
-    @Configurable.Comment("Blood/Unconscious system related configurations")
+    @Configurable.Comment(value = "Blood/Unconscious system related configurations", localize = true)
     public BloodSystemConfig bloodSystem = new BloodSystemConfig();
 
     @Configurable

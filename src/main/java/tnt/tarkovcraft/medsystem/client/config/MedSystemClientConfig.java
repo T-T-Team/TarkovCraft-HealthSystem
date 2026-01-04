@@ -13,11 +13,11 @@ public final class MedSystemClientConfig {
     public HealthOverlayConfiguration healthOverlay = new HealthOverlayConfiguration(true, HorizontalAlignment.LEFT, VerticalAlignment.TOP, 0, 0);
 
     @Configurable
-    @Configurable.Comment("Allows you to toggle default health HUD overlay")
+    @Configurable.Comment(value = "Allows you to toggle default health HUD overlay", localize = true)
     public boolean renderHealth = true;
 
     @Configurable
-    @Configurable.Comment("Set limb health detail render mode")
+    @Configurable.Comment(value = "Set limb health detail render mode", localize = true)
     public HealthDisplayType healthDisplayType = HealthDisplayType.HEARTS;
 
     @Configurable

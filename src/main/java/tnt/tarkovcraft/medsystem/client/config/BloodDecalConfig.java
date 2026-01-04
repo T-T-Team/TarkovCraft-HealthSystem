@@ -6,7 +6,7 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 public final class BloodDecalConfig {
 
     @Configurable
-    @Configurable.Comment("Toggles all blood decals")
+    @Configurable.Comment(value = "Toggles all blood decals", localize = true)
     public boolean enableBloodDecals = true;
 
     @Configurable
@@ -22,55 +22,55 @@ public final class BloodDecalConfig {
     @Configurable.DecimalRange(min = 0.10F, max = 0.35F)
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.00")
-    @Configurable.Comment("Blood decal rendering scale")
+    @Configurable.Comment(value = "Blood decal rendering scale", localize = true)
     public float bloodDecalScale = 0.15F;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.000")
-    @Configurable.Comment("Lifetime percentage at which decals will start to fade out")
+    @Configurable.Comment(value = "Lifetime percentage at which decals will start to fade out", localize = true)
     public float bloodDecalFadeOutAt = 0.25F;
 
     @Configurable
     @Configurable.Range(min = 0, max = 5)
     @Configurable.Gui.Slider
-    @Configurable.Comment("How many decals will be spawned by each heavy bleed tick")
+    @Configurable.Comment(value = "How many decals will be spawned by each heavy bleed tick", localize = true)
     public int heavyBleedDecalCount = 3;
 
     @Configurable
     @Configurable.Range(min = 0, max = 5)
     @Configurable.Gui.Slider
-    @Configurable.Comment("How many decals will be spawned by each light bleed tick")
+    @Configurable.Comment(value = "How many decals will be spawned by each light bleed tick", localize = true)
     public int lightBleedDecalCount = 1;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.25F)
     @Configurable.Gui.NumberFormat("0.0##")
-    @Configurable.Comment({"How much damage entity needs to receive in order for decal to appear"})
+    @Configurable.Comment(value = "How much damage entity needs to receive in order for decal to appear", localize = true)
     public float damageDecalScale = 3.0F;
 
     @Configurable
     @Configurable.Range(min = 0, max = 15)
     @Configurable.Gui.Slider
-    @Configurable.Comment({
+    @Configurable.Comment(value = {
             "Maximum amount of decals which can appear when damaging entities",
             "Set to 0 to disable damage decals"
-    })
+    }, localize = true)
     public int maxDamageDecalsPerHit = 8;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.5F)
     @Configurable.Gui.NumberFormat("0.0#")
     @Configurable.Gui.Slider
-    @Configurable.Comment("How much motion is applied to decals on received damage")
+    @Configurable.Comment(value = "How much motion is applied to decals on received damage", localize = true)
     public float damageMotionScale = 0.1F;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.5F)
     @Configurable.Gui.NumberFormat("0.0#")
     @Configurable.Gui.Slider
-    @Configurable.Comment("How much motion is applied to decals on received damage from projectiles")
+    @Configurable.Comment(value = "How much motion is applied to decals on received damage from projectiles", localize = true)
     public float projectileDamageMotionScale = 0.25F;
 
 }

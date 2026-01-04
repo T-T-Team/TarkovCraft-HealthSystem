@@ -6,22 +6,22 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 public final class StatusEffectConfig {
 
     @Configurable
-    @Configurable.Comment("Enables hit effects such as bleeds, fractures and other effects")
+    @Configurable.Comment(value = "Enables hit effects such as bleeds, fractures and other effects", localize = true)
     @Configurable.Synchronized
     public boolean enableStatusEffects = true;
 
     @Configurable
-    @Configurable.Comment("Enables transferring of status effects from items/projectiles to hit entities")
+    @Configurable.Comment(value = "Enables transferring of status effects from items/projectiles to hit entities", localize = true)
     public boolean enableItemDamageStatusEffects = true;
 
     @Configurable
     @Configurable.Range(min = 200)
-    @Configurable.Comment("Default duration of item/projectile side effects")
+    @Configurable.Comment(value = "Default duration of item/projectile side effects", localize = true)
     public int itemStatusEffectDuration = Duration.minutes(2).tickValue();
 
     @SuppressWarnings("unused")
     @Configurable
-    @Configurable.Comment("Base chance for getting any type of bleed from '#medsystem:bleed_causing' damage type")
+    @Configurable.Comment(value = "Base chance for getting any type of bleed from '#medsystem:bleed_causing' damage type", localize = true)
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Gui.Slider
@@ -29,7 +29,7 @@ public final class StatusEffectConfig {
 
     @SuppressWarnings("unused")
     @Configurable
-    @Configurable.Comment("Base chance for getting fracture from '#medsystem:fracture' damage type")
+    @Configurable.Comment(value = "Base chance for getting fracture from '#medsystem:fracture' damage type", localize = true)
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Gui.Slider
