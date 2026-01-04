@@ -5,7 +5,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +28,6 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
-import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -46,7 +48,6 @@ import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class MedicalSystemEventHandler {
