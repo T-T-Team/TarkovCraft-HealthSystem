@@ -133,6 +133,11 @@ public final class StatusEffectType<S extends StatusEffect> {
         return Objects.hashCode(identifier);
     }
 
+    @Override
+    public String toString() {
+        return this.identifier.toString();
+    }
+
     public MapCodec<S> mapCodec() {
         return codec;
     }

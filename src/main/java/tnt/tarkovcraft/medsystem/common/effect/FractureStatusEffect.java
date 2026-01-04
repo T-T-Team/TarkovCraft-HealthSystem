@@ -38,7 +38,7 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
     }
 
     @Override

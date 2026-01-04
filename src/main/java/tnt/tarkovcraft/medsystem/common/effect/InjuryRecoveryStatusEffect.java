@@ -45,7 +45,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void apply(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
         if (this.reduction < 1 || limb == null) {
             this.markForRemoval();
             return;

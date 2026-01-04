@@ -40,12 +40,14 @@ public final class StatusEffectHelper {
             if (event.isCanceled())
                 return;
             HealthContainer container = HealthSystem.getHealthData(entity);
+            MedicalSystem.LOGGER.debug("Scheduling effect {} with delay of {} ticks to target limb {}", effect.getType(), event.getDelay(), limb);
             container.scheduleStatusEffect(entity, event.getDelay(), limb, effect);
             return;
         }
         StatusEffectEvent.Add event = NeoForge.EVENT_BUS.post(new StatusEffectEvent.Add(entity, effect, limb));
         if (event.isCanceled())
             return;
+        MedicalSystem.LOGGER.debug("Adding immediate status effect {} to target limb {}", effect.getType(), limb);
         effects.addEffect(effect);
         HealthContainer container = HealthSystem.getHealthData(entity);
         container.markStatusEffectAdded(entity);
@@ -58,6 +60,7 @@ public final class StatusEffectHelper {
     public static void removeEffect(StatusEffectSubmitter submitter, StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, HealthContainer container, StatusEffectType<?> type) {
         effects.getEffect(type).ifPresent(effect -> {
             NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, effect, limb));
+            MedicalSystem.LOGGER.debug("Removing status effect {} from target limb {}", type, limb);
             effects.remove(submitter, type, container, entity, limb);
         });
     }

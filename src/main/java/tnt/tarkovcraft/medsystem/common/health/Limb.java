@@ -150,6 +150,11 @@ public final class Limb {
         return Objects.hashCode(limbCode);
     }
 
+    @Override
+    public String toString() {
+        return this.limbCode;
+    }
+
     public static Component getDisplayName(String code) {
         return Component.translatable("medsystem.limb." + code);
     }

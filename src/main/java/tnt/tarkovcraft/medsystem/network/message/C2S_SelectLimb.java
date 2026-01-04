@@ -39,11 +39,11 @@ public record C2S_SelectLimb(InteractionTarget target) implements CustomPacketPa
         HealItemAttributes attributes = stack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
         LivingEntity targetEntity = this.getTargetEntity(player.level(), player);
         if (targetEntity == null) {
-            MedicalSystem.LOGGER.warn(MedicalSystem.MARKER, "Could not find target entity for healing by entity ID");
+            MedicalSystem.LOGGER.warn("Could not find target entity for healing by entity ID");
             return;
         }
         if (!HealthSystem.hasCustomHealth(targetEntity)) {
-            MedicalSystem.LOGGER.warn(MedicalSystem.MARKER, "Target entity \"{}\" does not have custom health container", targetEntity);
+            MedicalSystem.LOGGER.warn("Target entity \"{}\" does not have custom health container", targetEntity);
             return;
         }
         HealthContainer container = HealthSystem.getHealthData(targetEntity);

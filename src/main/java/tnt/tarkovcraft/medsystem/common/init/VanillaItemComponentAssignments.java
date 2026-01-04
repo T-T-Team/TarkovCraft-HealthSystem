@@ -13,7 +13,7 @@ import java.util.function.BiConsumer;
 public final class VanillaItemComponentAssignments {
 
     public static void adjustItemData(BiConsumer<ItemLike, SideEffectHolder> registration) {
-        MedicalSystem.LOGGER.debug(MedicalSystem.MARKER, "Applying consumption/hit effects to vanilla items");
+        MedicalSystem.LOGGER.debug("Applying consumption/hit effects to vanilla items");
         StatusEffectConfig config = MedicalSystem.getConfig().statusEffects;
         int effectDuration = config.itemStatusEffectDuration;
         SideEffectHolder swords = config.swordStatusEffects.apply(SideEffectHolder.builder(), effectDuration)

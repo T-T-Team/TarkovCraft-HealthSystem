@@ -95,6 +95,10 @@ public class BloodLossStatusEffect extends IntervalAppliedStatusEffect {
         return MedSystemStatusEffects.BLOODLOSS.value();
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public enum Stage implements StringRepresentable {
 
         MILD("mild", null),
