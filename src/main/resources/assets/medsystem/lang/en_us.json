@@ -232,7 +232,6 @@
   "config.medsystem-client.option.lightBleedDecalCount.comment.0": "How many decals will be spawned by each light bleed tick",
   "config.medsystem-client.option.damageDecalScale": "Decal per damage",
   "config.medsystem-client.option.damageDecalScale.comment.0": "How much damage entity needs to receive in order for decal to appear",
-  "config.medsystem-client.option.damageDecalScale.comment.1": "At most 5 decals will be spawned from single attack",
   "config.medsystem-client.option.maxDamageDecalsPerHit": "Damage decal limit",
   "config.medsystem-client.option.maxDamageDecalsPerHit.comment.0": "Maximum amount of decals which can appear when damaging entities",
   "config.medsystem-client.option.maxDamageDecalsPerHit.comment.1": "Set to 0 to disable damage decals",

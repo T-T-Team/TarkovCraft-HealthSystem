@@ -53,7 +53,7 @@ public final class BloodDecalConfig {
     @Configurable
     @Configurable.DecimalRange(min = 0.25F)
     @Configurable.Gui.NumberFormat("0.0##")
-    @Configurable.Comment({"How much damage entity needs to receive in order for decal to appear", "At most 5 decals will be spawned from single attack"})
+    @Configurable.Comment({"How much damage entity needs to receive in order for decal to appear"})
     public float damageDecalScale = 3.0F;
 
     @Configurable
@@ -63,7 +63,7 @@ public final class BloodDecalConfig {
             "Maximum amount of decals which can appear when damaging entities",
             "Set to 0 to disable damage decals"
     })
-    public int maxDamageDecalsPerHit = 5;
+    public int maxDamageDecalsPerHit = 8;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.5F)
