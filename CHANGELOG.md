@@ -1,12 +1,2 @@
-# Release 1.21.1-2.0.2
-- Improved bloodsystem/unconsciousness related configs
-  - all config options are now under blood system section
-  - added new config options, most options now support chances instead of on/off toggle for better customization
-- Blood decal config options added
-  - limit per hit - previously was hardcoded to 5, now can be configured to up to 15 decals per hit
-- Improved blood decal placement logic - it now correctly uses limb position instead of entity center position
-- Fixed issue where blood decals would sometimes not spawn on final mob hit
-- Fixed not all model parts being affected by unconscious pose
-- Fixed crash on bleedout when having active status effect by entity which got removed
-- Fixed rare crash when adding bloodloss/pain status effects to entities
-- Fixed config descriptions not being localized in game
+# Release 1.21.1-2.0.3
+- Fixed possible shader crash ([#5](<https://github.com/T-T-Team/TarkovCraft-HealthSystem/issues/5>))
