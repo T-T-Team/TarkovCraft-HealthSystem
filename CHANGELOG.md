@@ -1,28 +1,3 @@
-# Release 1.21.11-2.0.0
-- Entity health API rework
-  - separated damage effects from health configurations
-  - many optimizations
-  - damage effects are now applied globally to all supported entities instead of having to configure it per entity
-  - file structure changed completely, documentation hopefully soon
-  - status effect black list is now limb based
-- Post effect shader rework
-  - All effects should be now appearing/disappearing smoothly
-- Blood decals
-  - taking damage or having bleed status effect now causes blood decals to appear on the ground and walls around you
-  - fully configurable, can be disabled
-- Status effects
-  - added `medsystem:disabled` tag which allows you to disable specific status effects globally
-  - taking damage to head now causes concussion effect
-  - losing arms now causes weakness and fatigue effects (scales with each arm lost)
-    - adds `Weakness I` and `Fatigue III` per arm lost
-  - light/heavy bleeds were merged into single effect - which now has attributes for bleed amounts
-  - bloodloss was also merged into single status effect
-  - minor improvements to status effect displays
-- `/tarkovcraft effect` command now allows you to fully configure the given status effect
-  - example: `/tarkovcraft effect @a add stomach medsystem:bleed{amount:0.025,interval:30} infinite` - this will add heavy bleed to everyone
-- Added new config options for unconscious state durations
-- Added `allowThirdPartyEntityInteractions` config option to disable healing interactions with other entities
-- Configurable sword damage effects are now applies to all spear variants, added copper tool support for other damage effects
-- Fixed health screen not being up to date
-- Fixed damage detection for spears
-- Fixed incorrect fall damage being applied causing players to survive massive falls
+# Release 1.21.11-2.0.1
+- Fixed tooltip related crash with NeoForge versions above `21.11.23-beta`
+- Now requires NeoForge `21.11.23-beta` or above
