@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -191,10 +192,10 @@ public final class MedicalSystemEventHandler {
         TooltipFlag flag = event.getFlags();
         Consumer<Component> adder = tooltip::add;
 
-        stack.addToTooltip(MedSystemItemComponents.ARMOR_MATERIAL, context, adder, flag);
-        stack.addToTooltip(MedSystemItemComponents.ARMOR_RATING, context, adder, flag);
-        stack.addToTooltip(MedSystemItemComponents.HEAL_ATTRIBUTES, context, adder, flag);
-        stack.addToTooltip(MedSystemItemComponents.SIDE_EFFECTS, context, adder, flag);
+        stack.addToTooltip(MedSystemItemComponents.ARMOR_MATERIAL, context, TooltipDisplay.DEFAULT, adder, flag);
+        stack.addToTooltip(MedSystemItemComponents.ARMOR_RATING, context, TooltipDisplay.DEFAULT, adder, flag);
+        stack.addToTooltip(MedSystemItemComponents.HEAL_ATTRIBUTES, context, TooltipDisplay.DEFAULT, adder, flag);
+        stack.addToTooltip(MedSystemItemComponents.SIDE_EFFECTS, context, TooltipDisplay.DEFAULT, adder, flag);
     }
 
     @SubscribeEvent
