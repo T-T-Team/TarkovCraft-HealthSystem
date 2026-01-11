@@ -34,7 +34,12 @@ public final class ShaderProcessor {
     public void tick() {
         Minecraft client = Minecraft.getInstance();
         Entity cameraEntity = client.getCameraEntity();
-        if (cameraEntity == null || !cameraEntity.isAlive() || !(cameraEntity instanceof LivingEntity entity)) {
+        if (
+                client.level == null ||
+                cameraEntity == null ||
+                !cameraEntity.isAlive() ||
+                !(cameraEntity instanceof LivingEntity entity)
+        ) {
             return;
         }
         this.registeredShaders.forEach(program -> {

@@ -15,9 +15,4 @@ public interface ShaderProgram {
     boolean shouldRender();
 
     void renderTick(float delta, BiConsumer<String, Float> uniformSetter);
-
-    @FunctionalInterface
-    interface UniformRegistration {
-        void register(String name, int type, int count);
-    }
 }
