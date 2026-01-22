@@ -1,3 +1,11 @@
-# Release 1.21.11-2.0.1
-- Fixed tooltip related crash with NeoForge versions above `21.11.23-beta`
-- Now requires NeoForge `21.11.23-beta` or above
+# Release 1.21.11-2.0.2
+- Improved bloodsystem/unconsciousness related configs
+  - all config options are now under blood system section
+  - added new config options, most options now support chances instead of on/off toggle for better customization
+- Blood decal config options added
+  - limit per hit - previously was hardcoded to 5, now can be configured to up to 15 decals per hit
+- Improved blood decal placement logic - it now correctly uses limb position instead of entity center position
+- Fixed issue where blood decals would sometimes not spawn on final mob hit
+- Fixed not all model parts being affected by unconscious pose
+- Fixed crash on bleedout when having active status effect by entity which got removed
+- Fixed rare crash when adding bloodloss/pain status effects to entities
