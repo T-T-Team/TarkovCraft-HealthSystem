@@ -9,6 +9,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DecayingDamageDistributor;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.*;
 
@@ -31,6 +32,12 @@ public record ProjectileHitCalculator(double aabbInflate) implements HitCalculat
         hits.sort(Comparator.comparingDouble(res -> res.aabb().distanceToSqr(position)));
         if (!hits.isEmpty()) {
             return hits.subList(0, Math.min(hits.size(), pierceAmount));
+        }
+
+        // disable hit approximation for specific entities - relies only on the sub-hitbox collision instead of falling back to the closest possible limb
+        Entity shooter = source.getEntity();
+        if (shooter != null && shooter.getType().is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION)) {
+            return Collections.emptyList();
         }
 
         List<HitResult> closest = HealthSystem.getClosestPossibleHits(position, entity, container, (hitbox, part) -> true);

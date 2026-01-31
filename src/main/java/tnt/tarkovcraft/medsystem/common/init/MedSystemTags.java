@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.init;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.EntityType;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 
@@ -24,5 +25,10 @@ public final class MedSystemTags {
         public static final TagKey<StatusEffectType<?>> IS_PAIN_RELIEF = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.createIdentifier("is_pain_relief"));
         public static final TagKey<StatusEffectType<?>> IS_BLEED = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.createIdentifier("is_bleed"));
         public static final TagKey<StatusEffectType<?>> IS_FRACTURE = TagKey.create(MedSystemRegistries.Keys.STATUS_EFFECT, MedicalSystem.createIdentifier("is_fracture"));
+    }
+
+    public static final class Entities {
+
+        public static final TagKey<EntityType<?>> NO_LIMB_HIT_APPROXIMATION = TagKey.create(Registries.ENTITY_TYPE, MedicalSystem.createIdentifier("no_limb_hit_approximation"));
     }
 }

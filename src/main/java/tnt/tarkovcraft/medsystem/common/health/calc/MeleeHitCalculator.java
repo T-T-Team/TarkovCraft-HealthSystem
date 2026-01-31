@@ -11,6 +11,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,13 +50,17 @@ public final class MeleeHitCalculator implements HitCalculator {
             return Collections.singletonList(hits.getFirst());
         }
 
-        // No hitboxes were hit, get closest most likely hit limb
-        List<HitResult> result = HealthSystem.getClosestPossibleHits(
-                attacker.getBoundingBox().getCenter(),
-                entity,
-                container,
-                (hitbox, part) -> !part.isDead()
-        );
-        return result.isEmpty() ? Collections.emptyList() : Collections.singletonList(result.getFirst());
+        // No hitboxes were hit, get closest most likely hit limb if the entity type allows hit approximation
+        List<HitResult> result = null;
+        if (!attacker.getType().is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION)) {
+            result = HealthSystem.getClosestPossibleHits(
+                    attacker.getBoundingBox().getCenter(),
+                    entity,
+                    container,
+                    (hitbox, part) -> !part.isDead()
+            );
+        }
+
+        return result == null || result.isEmpty() ? Collections.emptyList() : Collections.singletonList(result.getFirst());
     }
 }
