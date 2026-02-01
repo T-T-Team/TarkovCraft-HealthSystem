@@ -1,11 +1,10 @@
-# Release 1.21.11-2.0.2
-- Improved bloodsystem/unconsciousness related configs
-  - all config options are now under blood system section
-  - added new config options, most options now support chances instead of on/off toggle for better customization
-- Blood decal config options added
-  - limit per hit - previously was hardcoded to 5, now can be configured to up to 15 decals per hit
-- Improved blood decal placement logic - it now correctly uses limb position instead of entity center position
-- Fixed issue where blood decals would sometimes not spawn on final mob hit
-- Fixed not all model parts being affected by unconscious pose
-- Fixed crash on bleedout when having active status effect by entity which got removed
-- Fixed rare crash when adding bloodloss/pain status effects to entities
+# Release 1.21.11-2.1.0-beta.1
+- Improvements to hit detection
+  - disabled hit approximation for players (controlled via entity tag `medsystem:no_limb_hit_approximation`)
+  - improvements to melee hit calculation
+  - improvements to projectile hit calculation
+- Forced player body rotation synchronization between server and clients
+  - vanilla had inconsistent rotation between server and clients causing inconsistencies in hit detection
+- Added new experimental config options (require you to enable configuration Advanced mode when editing via GUI)
+  - Strict player rotation synchronization: Enables player rotation synchronization. Defaults to `true`
+  - Projectile hitbox inflation: Inflates entity default bounding box by specified amount for better hit detection. Defaults to `0.2`
