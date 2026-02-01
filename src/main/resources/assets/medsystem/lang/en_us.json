@@ -143,6 +143,10 @@
   "death.attack.medsystem.toxic_side_effect.player": "%s succumbed to toxic side effects while fighting %s",
 
   "config.screen.medsystem": "Medical System",
+  "config.medsystem.option.forceEntityRotationSynchronization": "Strict player rotation synchronization",
+  "config.medsystem.option.forceEntityRotationSynchronization.comment.0": "Forces player rotation synchronization between server and clients",
+  "config.medsystem.option.defaultEntityHitboxInflation": "Projectile hitbox inflation",
+  "config.medsystem.option.defaultEntityHitboxInflation.comment.0": "Expands entity hitbox for projectile detection purposes by this amount in all directions",
   "config.medsystem.option.armorSystem": "Armor system",
   "config.medsystem.option.armorSystem.comment.0": "Defines armor calculation logic with custom health system",
   "config.medsystem.option.armorSystem.comment.1": "SIMULATED - modular armor with fully simulated logic such as deflections, blunt damage and so on",

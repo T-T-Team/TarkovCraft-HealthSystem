@@ -38,8 +38,9 @@ public final class MeleeHitCalculator implements HitCalculator {
                 }
         );
         if (!hits.isEmpty()) {
-            hits.sort(Comparator.comparingDouble(res -> res.aabb().distanceToSqr(from)));
-            return Collections.singletonList(hits.getFirst());
+            hits.sort(Comparator.comparingDouble(res -> res.hit().distanceToSqr(from)));
+            HitResult closest = hits.getFirst();
+            return Collections.singletonList(closest);
         }
 
         // No hitboxes were hit, get closest most likely hit limb if the entity type allows hit approximation

@@ -7,6 +7,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -46,6 +47,7 @@ import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
+import tnt.tarkovcraft.medsystem.network.message.C2S_SendMyRotation;
 
 import java.util.UUID;
 
@@ -162,6 +164,10 @@ public final class MedicalSystemClient {
 
     private void clientTick(ClientTickEvent.Post event) {
         ShaderProcessor.INSTANCE.tick();
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null || !MedicalSystem.getConfig().forceEntityRotationSynchronization) return;
+        float yBodyRot = Mth.wrapDegrees(client.player.yBodyRot);
+        PacketDistributor.sendToServer(new C2S_SendMyRotation(yBodyRot));
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {

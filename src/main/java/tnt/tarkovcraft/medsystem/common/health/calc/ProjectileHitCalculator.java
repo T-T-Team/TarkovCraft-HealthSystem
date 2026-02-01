@@ -13,30 +13,35 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.*;
 
-public record ProjectileHitCalculator(double aabbInflate) implements HitCalculator {
+public final class ProjectileHitCalculator implements HitCalculator {
 
-    public static final ProjectileHitCalculator DEFAULT = new ProjectileHitCalculator(0.3);
+    public static final ProjectileHitCalculator DEFAULT = new ProjectileHitCalculator();
+
+    private ProjectileHitCalculator() {
+    }
 
     @Override
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         Entity projectile = source.getDirectEntity();
-        Vec3 position = projectile.getBoundingBox().getCenter();
+        Entity shooter = source.getEntity();
+        boolean allowApproximation = shooter != null && !shooter.getType().is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION);
+        Vec3 position = projectile.getBoundingBox().getBottomCenter().subtract(projectile.getDeltaMovement());
         Vec3 destPosition = position.add(projectile.getDeltaMovement().scale(2.5D));
         int pierceAmount = HealthSystem.getProjectilePiercing(entity, source, container, projectile);
         List<HitResult> hits = new ArrayList<>();
+
         container.iterateHitboxes(entity, (hitbox, limb) -> {
-            AABB worldspaceAabb = PositionedAABB.inflateOutward(hitbox.toWorldSpaceHitbox(entity), this.aabbInflate);
+            AABB worldspaceAabb = hitbox.toWorldSpaceHitbox(entity);
             Optional<Vec3> intersect = PositionedAABB.tryIntersect(worldspaceAabb, position, destPosition);
             intersect.ifPresent(hit -> hits.add(new HitResult(hitbox, limb, worldspaceAabb, hit)));
         });
-        hits.sort(Comparator.comparingDouble(res -> res.aabb().distanceToSqr(position)));
+        hits.sort(Comparator.comparingDouble(res -> res.hit().distanceToSqr(position)));
         if (!hits.isEmpty()) {
             return hits.subList(0, Math.min(hits.size(), pierceAmount));
         }
 
         // disable hit approximation for specific entities - relies only on the sub-hitbox collision instead of falling back to the closest possible limb
-        Entity shooter = source.getEntity();
-        if (shooter != null && shooter.getType().is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION)) {
+        if (!allowApproximation) {
             return Collections.emptyList();
         }
 
