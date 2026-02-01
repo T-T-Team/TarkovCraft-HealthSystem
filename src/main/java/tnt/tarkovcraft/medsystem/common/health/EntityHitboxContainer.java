@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
@@ -42,7 +43,7 @@ public record EntityHitboxContainer(Map<String, LimbHitboxContainer> definitions
         NONE("none", TransformFunction.IDENTITY),
         PITCH_VIEW("pitch_view", RotationMode::pivotRotatePitch),
         YAW_VIEW("yaw_view", (e, aabb) -> rotateY(e.getYHeadRot(), aabb)),
-        YAW_BODY("yaw_body", (e, aabb) -> rotateY(e.yBodyRot, aabb));
+        YAW_BODY("yaw_body", (e, aabb) -> rotateY(Mth.wrapDegrees(e.yBodyRot), aabb));
 
         public static final EnumCodec<RotationMode> CODEC = StringRepresentable.fromEnum(RotationMode::values);
         private final String serializedName;

@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -48,6 +49,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
+import tnt.tarkovcraft.medsystem.network.message.C2S_SendMyRotation;
 
 import java.util.UUID;
 
@@ -89,6 +91,7 @@ public final class MedicalSystemClient {
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
+        NeoForge.EVENT_BUS.addListener(this::onClientTick);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
 
@@ -184,6 +187,13 @@ public final class MedicalSystemClient {
     private void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DRIP.get(), BloodDripParticle.Provider::new);
         event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DECAL.get(), BloodDecalParticle.Provider::new);
+    }
+
+    private void onClientTick(ClientTickEvent.Post event) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null || !MedicalSystem.getConfig().forceEntityRotationSynchronization) return;
+        float yBodyRot = Mth.wrapDegrees(client.player.yBodyRot);
+        ClientPacketDistributor.sendToServer(new C2S_SendMyRotation(yBodyRot));
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {
