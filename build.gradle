@@ -155,7 +155,7 @@ tasks.register('publishToCurseForge', TaskPublishCurseForge) {
     def uploadFile = upload(curseforge_project_id, tasks.jar.archiveFile)
     uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
     uploadFile.changelog = file("./CHANGELOG.md").exists() ? file('./CHANGELOG.md') : "-- No changelog provided --"
-    uploadFile.releaseType = Constants.RELEASE_TYPE_RELEASE
+    uploadFile.releaseType = getReleaseChannel()
     uploadFile.displayName = "${mod_id}-neoforge-${minecraft_version}-${version}"
     uploadFile.addModLoader('NeoForge')
     uploadFile.addEnvironment('Client', 'Server')
@@ -173,7 +173,7 @@ modrinth {
     projectId.set(modrinth_project_id)
     versionNumber.set("${version}")
     versionName.set("${mod_id}-neoforge-${minecraft_version}-${version}")
-    versionType.set("release")
+    versionType.set(getReleaseChannel())
     uploadFile.set(jar)
     gameVersions.set(compatibleVersions)
     debugMode.set(debug.toBoolean())
@@ -201,5 +201,24 @@ idea {
     module {
         downloadSources = true
         downloadJavadoc = true
+    }
+}
+
+def isPublishing() {
+    gradle.startParameter.taskNames.any { it.toLowerCase().contains('publish') }
+}
+
+def getReleaseChannel() {
+    def versionString = version.toString()
+    if (versionString.contains("beta")) {
+        return Constants.RELEASE_TYPE_BETA
+    } else if (versionString.contains("alpha")) {
+        return Constants.RELEASE_TYPE_ALPHA
+    } else if (versionString.contains("dev")) {
+        if (isPublishing())
+            throw new GradleException("Attempted to publish development version: " + versionString)
+        return null
+    } else {
+        return Constants.RELEASE_TYPE_RELEASE
     }
 }
