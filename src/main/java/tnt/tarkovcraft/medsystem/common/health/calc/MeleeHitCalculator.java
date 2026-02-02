@@ -26,9 +26,9 @@ public final class MeleeHitCalculator implements HitCalculator {
     public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
         List<HitResult> hits = new ArrayList<>();
         Entity attacker = source.getEntity();
-        float reachRange = 6.0F;
+        double distance = attacker.distanceTo(entity) + Math.max(entity.getBbWidth(), entity.getBbHeight());
         Vec3 from = attacker.getType() == EntityType.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
-        Vec3 to = from.add(attacker.getLookAngle().scale(reachRange));
+        Vec3 to = from.add(attacker.getLookAngle().scale(distance));
         // Try to find directly hit limb
         container.iterateHitboxes(
                 entity,
@@ -42,7 +42,6 @@ public final class MeleeHitCalculator implements HitCalculator {
             HitResult closest = hits.getFirst();
             return Collections.singletonList(closest);
         }
-
         // No hitboxes were hit, get closest most likely hit limb if the entity type allows hit approximation
         List<HitResult> result = null;
         if (!attacker.getType().is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION)) {
