@@ -12,14 +12,14 @@ import net.minecraft.util.RandomSource;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.client.particle.DecalParticle;
 import tnt.tarkovcraft.core.common.particle.SimpleDecalParticleOptions;
-import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 
 public final class BloodDecalParticle extends DecalParticle {
 
     public BloodDecalParticle(ClientLevel level, Direction direction, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
         super(level, direction, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
-        BloodDecalConfig config = MedicalSystemClient.getConfig().bloodDecals;
+        BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
         this.updateColor(1.0F);
         this.quadSize = config.bloodDecalScale;
         this.setFadeOutStartTime(config.bloodDecalFadeOutAt);

@@ -21,6 +21,7 @@ public final class BloodDecalConfig {
 
     @Configurable
     @Configurable.Range(min = 100, max = 72000)
+    @Configurable.Synchronized
     @Configurable.Validate(LifetimeValidator.class)
     public int bloodDecalLifetime = Duration.minutes(1).tickValue();
 
@@ -29,6 +30,7 @@ public final class BloodDecalConfig {
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.00")
     @Configurable.Comment("Blood decal rendering scale")
+    @Configurable.Synchronized
     public float bloodDecalScale = 0.15F;
 
     @Configurable
@@ -36,18 +38,21 @@ public final class BloodDecalConfig {
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.000")
     @Configurable.Comment("Lifetime percentage at which decals will start to fade out")
+    @Configurable.Synchronized
     public float bloodDecalFadeOutAt = 0.25F;
 
     @Configurable
     @Configurable.Range(min = 0, max = 5)
     @Configurable.Gui.Slider
     @Configurable.Comment("How many decals will be spawned by each heavy bleed tick")
+    @Configurable.Synchronized
     public int heavyBleedDecalCount = 3;
 
     @Configurable
     @Configurable.Range(min = 0, max = 5)
     @Configurable.Gui.Slider
     @Configurable.Comment("How many decals will be spawned by each light bleed tick")
+    @Configurable.Synchronized
     public int lightBleedDecalCount = 1;
 
     @Configurable

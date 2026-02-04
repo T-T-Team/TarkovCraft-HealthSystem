@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.particle.SimpleDecalParticleOptions;
-import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 
 public final class BloodDripParticle extends SingleQuadParticle {
@@ -64,7 +64,7 @@ public final class BloodDripParticle extends SingleQuadParticle {
     }
 
     public static int getParticleColor() {
-        return Integer.decode(MedicalSystemClient.getConfig().bloodDecals.bloodDecalColor);
+        return Integer.decode(MedicalSystem.getConfig().bloodDecals.bloodDecalColor);
     }
 
     public static final class Provider implements ParticleProvider<SimpleParticleType> {

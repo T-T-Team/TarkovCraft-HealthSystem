@@ -5,6 +5,7 @@ import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.FieldVisibility;
 import dev.toma.configuration.config.UpdateRestrictions;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 
 @Config(id = MedSystemConstants.MOD_ID, filename = "medicalsystem")
@@ -66,4 +67,7 @@ public final class MedSystemConfig {
 
     @Configurable
     public StatusEffectConfig statusEffects = new StatusEffectConfig();
+
+    @Configurable
+    public BloodDecalConfig bloodDecals = new BloodDecalConfig();
 }
