@@ -1,17 +1,13 @@
 package tnt.tarkovcraft.medsystem.common.health.calc;
 
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DecayingDamageDistributor;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
+import tnt.tarkovcraft.medsystem.util.HitboxHelper;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 
 public final class ProjectileHitCalculator implements HitCalculator {
 
@@ -21,36 +17,24 @@ public final class ProjectileHitCalculator implements HitCalculator {
     }
 
     @Override
-    public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
-        Entity projectile = source.getDirectEntity();
-        Entity shooter = source.getEntity();
-        boolean allowApproximation = shooter != null && !shooter.getType().is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION);
+    public HitCalculationResult calculateHits(HitCalculationContext context) {
+        Entity projectile = context.getProjectile();
         Vec3 position = projectile.getBoundingBox().getBottomCenter().subtract(projectile.getDeltaMovement());
         Vec3 destPosition = position.add(projectile.getDeltaMovement().scale(2.5D));
-        int pierceAmount = HealthSystem.getProjectilePiercing(entity, source, container, projectile);
-        List<HitResult> hits = new ArrayList<>();
+        Ray ray = new Ray(position, destPosition);
 
-        container.iterateHitboxes(entity, (hitbox, limb) -> {
-            AABB worldspaceAabb = hitbox.toWorldSpaceHitbox(entity);
-            Optional<Vec3> intersect = PositionedAABB.tryIntersect(worldspaceAabb, position, destPosition);
-            intersect.ifPresent(hit -> hits.add(new HitResult(hitbox, limb, worldspaceAabb, hit)));
-        });
-        hits.sort(Comparator.comparingDouble(res -> res.hit().distanceToSqr(position)));
+        int pierceAmount = HealthSystem.getProjectilePiercing(context);
+        List<HitInfo> hits = HitboxHelper.raycast(ray, context)
+                .sorted(Comparator.comparingDouble(hit -> hit.entryPoint().distanceToSqr(position)))
+                .toList();
+
         if (!hits.isEmpty()) {
-            return hits.subList(0, Math.min(hits.size(), pierceAmount));
+            int limit = Math.min(hits.size(), pierceAmount);
+            return HitCalculationResult.of(hits.subList(0, limit))
+                    .withRayCast(ray)
+                    .withDamageDistributor(original -> DecayingDamageDistributor.PROJECTILE);
         }
 
-        // disable hit approximation for specific entities - relies only on the sub-hitbox collision instead of falling back to the closest possible limb
-        if (!allowApproximation) {
-            return Collections.emptyList();
-        }
-
-        List<HitResult> closest = HealthSystem.getClosestPossibleHits(position, entity, container, (hitbox, part) -> true);
-        return closest.isEmpty() ? Collections.emptyList() : Collections.singletonList(closest.getFirst());
-    }
-
-    @Override
-    public DamageDistributor getCustomDamageDistributor(LivingEntity entity, DamageSource source, HealthContainer container, DamageDistributor original) {
-        return DecayingDamageDistributor.PROJECTILE;
+        return context.approximate(ray).withDamageDistributor(original -> DecayingDamageDistributor.PROJECTILE);
     }
 }

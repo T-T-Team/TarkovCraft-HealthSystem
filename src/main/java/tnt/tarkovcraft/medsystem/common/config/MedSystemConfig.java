@@ -11,6 +11,10 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 public final class MedSystemConfig {
 
     @Configurable
+    @Configurable.Comment(value = {"Debug renderer for last hit information", "Available only in singleplayer/lan worlds"}, localize = true)
+    public boolean enableHitDebug = false;
+
+    @Configurable
     @Configurable.Synchronized
     @Configurable.Gui.Visibility(FieldVisibility.ADVANCED)
     @Configurable.Comment(value = "Forces player rotation synchronization between server and clients", localize = true)
@@ -28,7 +32,7 @@ public final class MedSystemConfig {
     @Configurable.Comment(value = {
             "Defines armor calculation logic with custom health system",
             "SIMULATED - modular armor with fully simulated logic such as deflections, blunt damage and so on",
-            "MODULAR - modular armor - getting hit in head damages only helmet",
+            "MODULAR - modular armor - getting entryPoint in head damages only helmet",
             "MODULAR_BOOSTED - same as above, but each armor piece has 150% additional protection",
             "VANILLA - vanilla armor calculation, full armor is used for any damage calculations"
     }, localize = true)

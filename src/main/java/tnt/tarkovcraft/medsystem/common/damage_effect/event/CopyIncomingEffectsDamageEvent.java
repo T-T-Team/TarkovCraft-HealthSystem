@@ -18,7 +18,7 @@ public record CopyIncomingEffectsDamageEvent() implements DamageEffectEvent {
 
     @Override
     public void apply(DamageEffectContext context) {
-        SideEffectHolder holder = context.damageContext().getSideEffects();
+        SideEffectHolder holder = context.damageContext().getEffects();
         if (holder != null) {
             LivingEntity entity = context.target();
             Limb limb = context.limb();

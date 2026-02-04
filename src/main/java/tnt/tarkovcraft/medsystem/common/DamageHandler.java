@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.common;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -7,6 +8,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,7 +25,6 @@ import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.message.S2C_MakeParticles;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
@@ -32,9 +33,7 @@ import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.TimeRange;
 import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 import tnt.tarkovcraft.medsystem.common.health.*;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
-import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
+import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.status.BloodData;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
@@ -44,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class DamageHandler {
+
+    private static HitCalculationResultDebugInfo hitDebugInfo = null;
 
     // Hitbox collision detection
     @SubscribeEvent
@@ -66,17 +67,26 @@ public final class DamageHandler {
             return;
         }
 
-        HitCalculator hitCalculator = MedicalSystem.HEALTH_SYSTEM.getHitCalculator(livingEntity, source, container);
-        List<HitResult> hits = hitCalculator.calculateHits(livingEntity, source, container);
-        if (hits == null || hits.isEmpty()) {
-            event.setInvulnerable(true);
-        } else {
-            DamageContext context = new DamageContext(livingEntity, source);
-            context.setHits(hits);
-            context.setHitCalculator(hitCalculator);
-            context.setSideEffects(SideEffectHolder.fromDamage(source));
-            livingEntity.setData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT, context);
+        HitCalculationContext context = new HitCalculationContext(livingEntity, container, source);
+        HitCalculator hitCalculator = MedicalSystem.HEALTH_SYSTEM.getHitCalculator(context);
+        HitCalculationResult result = hitCalculator.calculateHits(context);
+
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (config.enableHitDebug) {
+            Level level = entity.level();
+            MinecraftServer server = level.getServer();
+            if (!level.isClientSide() && !server.isDedicatedServer()) {
+                hitDebugInfo = HitCalculationResultDebugInfo.collectDebugData(context, result);
+            }
         }
+
+        if (result.isMiss()) {
+            event.setInvulnerable(true);
+            return;
+        }
+
+        DamageContext damageContext = new DamageContext(context, result);
+        livingEntity.setData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT, damageContext);
     }
 
     // Entity armor damage recalculation
@@ -110,8 +120,8 @@ public final class DamageHandler {
         DamageSource source = event.getSource();
         DamageContext context = entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT)
                 .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
-        DamageDistributor damageDistributor = context.getDamageDistributor(container);
-        Map<Limb, Float> distributedDamage = damageDistributor.distribute(context, container, event.getNewDamage());
+        float damage = event.getNewDamage();
+        Map<Limb, Float> distributedDamage = context.getDamage(damage);
         List<Limb> lostLimbs = new ArrayList<>();
 
         // apply health container damage
@@ -207,14 +217,14 @@ public final class DamageHandler {
         float motionScale = projectile ? config.projectileDamageMotionScale : config.damageMotionScale;
         RandomSource random = entity.getRandom();
         direction = new Vec3(direction.x / length * motionScale, 0.0, direction.z / length * motionScale);
-        HitResult result = context.getHits().getFirst();
+        HitInfo result = context.getHits().getFirst();
         Limb mainDamagedLimb = result.limb();
         HealthContainerDefinition definition = container.getDefinition();
         EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
         String entityState = definition.getCurrentEntityState(entity);
         Vec3 pos;
-        if (result.hit() != null) {
-            pos = result.hit();
+        if (result.entryPoint() != null) {
+            pos = result.entryPoint();
         } else {
             AABB aabb = hitboxContainer.getLimbHitbox(mainDamagedLimb.getLimbCode(), entityState).toWorldSpaceHitbox(entity);
             pos = aabb.getCenter();
@@ -227,5 +237,9 @@ public final class DamageHandler {
             directions.add(new Vec3(direction.x + deviateX, 0.05F, direction.z + deviateZ));
         }
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(MedSystemParticleTypes.BLOOD_DRIP.get(), pos.x, pos.y, pos.z, true, true, directions));
+    }
+
+    public static HitCalculationResultDebugInfo getHitDebugInfo() {
+        return hitDebugInfo;
     }
 }

@@ -1,9 +1,8 @@
 package tnt.tarkovcraft.medsystem.common.health.distributor;
 
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +15,9 @@ public final class FullDamageDistributor implements DamageDistributor {
     }
 
     @Override
-    public Map<Limb, Float> distribute(DamageContext context, HealthContainer container, float damage) {
+    public Map<Limb, Float> distribute(DamageContext context, float damage) {
         Map<Limb, Float> damages = new HashMap<>();
-        for (HitResult hit : context.getHits()) {
+        for (HitInfo hit : context.getHits()) {
             damages.put(hit.limb(), damage);
         }
         return damages;

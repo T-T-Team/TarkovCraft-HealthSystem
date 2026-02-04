@@ -139,6 +139,14 @@ public final class Limb {
         return this.definition.damageConfiguration().isStatusEffectAllowed(statusEffect);
     }
 
+    public boolean is(LimbType type) {
+        return this.definition.type() == type;
+    }
+
+    public boolean isLeg() {
+        return this.is(LimbType.LEG);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Limb part)) return false;

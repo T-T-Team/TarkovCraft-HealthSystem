@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.common.health.distributor;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +17,11 @@ public final class PoisonDamageDistributor implements DamageDistributor {
     }
 
     @Override
-    public Map<Limb, Float> distribute(DamageContext context, HealthContainer container, float damage) {
+    public Map<Limb, Float> distribute(DamageContext context, float damage) {
+        HealthContainer container = context.getCalculationContext().container();
         int vitalLimbsCount = container.getVitalLimbs().size();
         float vitalDmgCutoff = 1.0F / vitalLimbsCount - 0.01F;
-        List<Limb> limbs = context.getHits().stream().map(HitResult::limb)
+        List<Limb> limbs = context.getHits().stream().map(HitInfo::limb)
                 .filter(limb -> {
                     if (limb.isVital()) {
                         return limb.getHealth() > vitalDmgCutoff;
@@ -30,7 +31,7 @@ public final class PoisonDamageDistributor implements DamageDistributor {
                 .toList();
         float perLimb = damage / limbs.size();
         Map<Limb, Float> damageMap = new HashMap<>();
-        for (HitResult hit : context.getHits()) {
+        for (HitInfo hit : context.getHits()) {
             Limb limb = hit.limb();
             float amount = Math.min(perLimb, limb.isVital() ? limb.getHealth() - vitalDmgCutoff : limb.getHealth());
             if (amount > 0)

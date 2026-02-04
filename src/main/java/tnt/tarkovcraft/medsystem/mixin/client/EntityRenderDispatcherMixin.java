@@ -13,9 +13,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.core.util.helper.ARGB;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.LimbDefinition;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
+
+import java.util.Map;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin implements ResourceManagerReloadListener {
@@ -28,15 +32,21 @@ public abstract class EntityRenderDispatcherMixin implements ResourceManagerRelo
         if (!HealthSystem.hasCustomHealth(entity))
             return;
         LivingEntity livingEntity = (LivingEntity) entity;
-        HealthContainer container = HealthSystem.getHealthData(livingEntity);
-        container.iterateHitboxes(livingEntity, (hitbox, limb) -> {
-            LimbType group = limb.getType();
-            int color = group.getHitboxColor();
-            float red = ARGB.redFloat(color);
-            float green = ARGB.greenFloat(color);
-            float blue = ARGB.blueFloat(color);
-            AABB aabb = hitbox.getWithTransforms(livingEntity).aabb();
-            LevelRenderer.renderLineBox(poseStack, buffer, aabb, red, green, blue, 1.0F);
+        MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).ifPresent(definition -> {
+            String state = definition.getCurrentEntityState(livingEntity);
+            EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
+            for (Map.Entry<String, LimbDefinition> entry : definition.limbConfiguration().limbs().entrySet()) {
+                String limbCode = entry.getKey();
+                AABB aabb = hitboxContainer.getLimbHitbox(limbCode, state)
+                        .getWithTransforms(livingEntity)
+                        .aabb();
+                LimbType type = entry.getValue().type();
+                int color = type.getHitboxColor();
+                float red = ARGB.redFloat(color);
+                float green = ARGB.greenFloat(color);
+                float blue = ARGB.blueFloat(color);
+                LevelRenderer.renderLineBox(poseStack, buffer, aabb, red, green, blue, 1.0F);
+            }
         });
     }
 }

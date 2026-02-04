@@ -10,14 +10,11 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.logging.log4j.Marker;
@@ -37,7 +34,6 @@ import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
 
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener {
@@ -52,13 +48,13 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
 
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.SPECIFIC_PART, SpecificBodyPartHitCalculator::canApply, SpecificBodyPartHitCalculator::createInstance));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, FallDamageHitCalculator::isFall, ctx -> FallDamageHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, ctx -> ctx.source().is(DamageTypeTags.IS_EXPLOSION) && !Vec3.ZERO.equals(ctx.source().getSourcePosition()), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, new ScaledDamageDistributor(2.5F))));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, ctx -> ctx.isDamageType(DamageTypeTags.IS_EXPLOSION) && ctx.hasDamagePosition(), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, new ScaledDamageDistributor(2.5F))));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, LavaHitCalculator::canApply, ctx -> LavaHitCalculator.INSTANCE));
         this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, MovementDamageHitCalculator::canApply, ctx -> MovementDamageHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, ctx -> ctx.source().is(NeoForgeMod.POISON_DAMAGE), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, PoisonDamageDistributor.INSTANCE)));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.GENERIC, ctx -> ctx.getSourceEntity() == null && ctx.source().is(MedSystemTags.DamageTypes.IS_GENERIC), ctx -> GenericHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.MELEE, ctx -> ctx.source().getEntity() != null && ctx.source().isDirect(), ctx -> MeleeHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.PROJECTILE, ctx -> ctx.source().getDirectEntity() != null, ctx -> ProjectileHitCalculator.DEFAULT));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, ctx -> ctx.isDamage(NeoForgeMod.POISON_DAMAGE), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, PoisonDamageDistributor.INSTANCE)));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.GENERIC, ctx -> ctx.getAttackingEntity() == null && ctx.isDamageType(MedSystemTags.DamageTypes.IS_GENERIC), ctx -> GenericHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.MELEE, ctx -> ctx.getAttackingEntity() != null && ctx.source().isDirect(), ctx -> MeleeHitCalculator.INSTANCE));
+        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.PROJECTILE, ctx -> ctx.getProjectile() != null, ctx -> ProjectileHitCalculator.DEFAULT));
     }
 
     public synchronized void registerHitCalculatorRule(HitCalculatorRule rule) {
@@ -72,6 +68,10 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
 
     public static HealthContainer getHealthData(LivingEntity entity) {
         return entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+    }
+
+    public static HealthContainer getHealthDataOrThrow(LivingEntity entity) {
+        return Objects.requireNonNull(getHealthData(entity), String.format(Locale.ROOT, "Entity '%s' does not have health data attached", entity));
     }
 
     public static boolean hasPainRelief(LivingEntity entity) {
@@ -129,8 +129,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         }
     }
 
-    public HitCalculator getHitCalculator(LivingEntity entity, DamageSource source, HealthContainer container) {
-        HitCalculatorRule.Context context = new HitCalculatorRule.Context(source, entity, container);
+    public HitCalculator getHitCalculator(HitCalculationContext context) {
         for (HitCalculatorRule rule : this.rules) {
             if (rule.validate(context)) {
                 return rule.createCalculator(context);
@@ -139,30 +138,12 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         return GenericHitCalculator.INSTANCE;
     }
 
-    public static int getProjectilePiercing(LivingEntity entity, DamageSource source, HealthContainer container, Entity projectile) {
+    public static int getProjectilePiercing(HitCalculationContext context) {
         int pierceLevel = 1;
-        if (projectile instanceof AbstractArrow arrow) {
+        if (context.getProjectile() instanceof AbstractArrow arrow) {
             pierceLevel += arrow.getPierceLevel();
         }
-        return NeoForge.EVENT_BUS.post(new HitboxPiercingEvent(entity, source, container, projectile, pierceLevel)).getPiercing();
-    }
-
-    public static List<HitResult> getClosestPossibleHits(Vec3 point, LivingEntity entity, HealthContainer container, BiPredicate<EntityHitboxContainer.LimbHitbox, Limb> filter) {
-        List<HitResult> results = new ArrayList<>();
-        container.iterateHitboxes(
-                entity,
-                filter,
-                (hitbox, part) -> {
-                    AABB aabb = hitbox.toWorldSpaceHitbox(entity);
-                    Vec3 aabbCenter = aabb.getCenter();
-                    results.add(new HitResult(hitbox, part, aabb, aabbCenter));
-                }
-        );
-        results.sort(Comparator
-                .<HitResult>comparingDouble(res -> res.aabb().getCenter().y - point.y)
-                .thenComparingDouble(res -> res.aabb().getCenter().distanceToSqr(point))
-        );
-        return results;
+        return NeoForge.EVENT_BUS.post(new HitboxPiercingEvent(context, pierceLevel)).getPiercing();
     }
 
     public Optional<HealthContainerDefinition> getHealthContainer(EntityType<?> type) {

@@ -6,12 +6,12 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 public final class StatusEffectConfig {
 
     @Configurable
-    @Configurable.Comment(value = "Enables hit effects such as bleeds, fractures and other effects", localize = true)
+    @Configurable.Comment(value = "Enables entryPoint effects such as bleeds, fractures and other effects", localize = true)
     @Configurable.Synchronized
     public boolean enableStatusEffects = true;
 
     @Configurable
-    @Configurable.Comment(value = "Enables transferring of status effects from items/projectiles to hit entities", localize = true)
+    @Configurable.Comment(value = "Enables transferring of status effects from items/projectiles to entryPoint entities", localize = true)
     public boolean enableItemDamageStatusEffects = true;
 
     @Configurable

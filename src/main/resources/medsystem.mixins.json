@@ -18,6 +18,7 @@
     "client.MouseHandlerMixin",
     "client.GameRendererMixin",
     "client.PlayerModelMixin",
-    "client.EntityRenderDispatcherMixin"
+    "client.EntityRenderDispatcherMixin",
+    "client.DebugRendererMixin"
   ]
 }
