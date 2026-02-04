@@ -17,7 +17,6 @@ import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
-import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
@@ -100,7 +99,7 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                     entity.hurt(damageSource, damage);
                 }
             } else {
-                BloodDecalConfig config = MedicalSystemClient.getConfig().bloodDecals;
+                BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
                 if (!config.enableBloodDecals)
                     return;
                 Vec3 position = this.getParticlePosition(entity, container, limb);

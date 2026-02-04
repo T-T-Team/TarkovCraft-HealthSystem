@@ -9,14 +9,14 @@ import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.client.particle.DecalParticle;
 import tnt.tarkovcraft.core.common.particle.SimpleDecalParticleOptions;
 import tnt.tarkovcraft.core.util.helper.ARGB;
-import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 
 public final class BloodDecalParticle extends DecalParticle {
 
     public BloodDecalParticle(ClientLevel level, Direction direction, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
         super(level, direction, x, y, z, xSpeed, ySpeed, zSpeed);
-        BloodDecalConfig config = MedicalSystemClient.getConfig().bloodDecals;
+        BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
         this.updateColor(1.0F);
         this.quadSize = config.bloodDecalScale;
         this.setFadeOutStartTime(config.bloodDecalFadeOutAt);

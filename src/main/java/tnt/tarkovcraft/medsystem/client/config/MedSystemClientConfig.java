@@ -24,7 +24,4 @@ public final class MedSystemClientConfig {
     @Configurable.Range(min = 0, max = 2)
     @Configurable.Gui.Slider
     public int numericHealthScale = 1;
-
-    @Configurable
-    public BloodDecalConfig bloodDecals = new BloodDecalConfig();
 }

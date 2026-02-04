@@ -25,7 +25,6 @@ import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.message.S2C_MakeParticles;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
@@ -204,7 +203,7 @@ public final class DamageHandler {
     }
 
     private void addBloodParticles(LivingEntity entity, DamageSource source, HealthContainer container, DamageContext context, float damage) {
-        BloodDecalConfig config = MedicalSystemClient.getConfig().bloodDecals;
+        BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
         if (!config.enableBloodDecals || context.getHits().isEmpty())
             return;
         int particleCount = Math.min(Mth.floor(damage / config.damageDecalScale), config.maxDamageDecalsPerHit);
