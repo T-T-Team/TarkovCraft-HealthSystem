@@ -2,76 +2,60 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculator;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationContext;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationResult;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitInfo;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
-import tnt.tarkovcraft.medsystem.common.health.distributor.EvenDamageDistributor;
 
-import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public final class DamageContext {
 
-    private final LivingEntity entity;
-    private final DamageSource source;
-    private List<HitResult> hits;
-    private List<EquipmentSlot> affectedSlots = new ArrayList<>();
-    private HitCalculator hitCalculator;
-    private DamageDistributor damageDistributor;
-    private SideEffectHolder sideEffects;
+    private final HitCalculationContext context;
+    private final HitCalculationResult result;
+    private final Set<EquipmentSlot> damagedSlots = EnumSet.noneOf(EquipmentSlot.class);
 
-    public DamageContext(LivingEntity entity, DamageSource source) {
-        this.entity = entity;
-        this.source = source;
+    public DamageContext(HitCalculationContext context, HitCalculationResult result) {
+        this.context = context;
+        this.result = result;
     }
 
-    @ApiStatus.Internal
-    public void setSideEffects(SideEffectHolder sideEffects) {
-        this.sideEffects = sideEffects;
+    public HitCalculationContext getCalculationContext() {
+        return this.context;
     }
 
-    public HitCalculator getHitCalculator() {
-        return hitCalculator;
+    public HitCalculationResult getCalculationResult() {
+        return this.result;
     }
 
-    public void setHitCalculator(HitCalculator hitCalculator) {
-        this.hitCalculator = hitCalculator;
+    public void addArmorDamageSlot(EquipmentSlot slot) {
+        this.damagedSlots.add(slot);
     }
 
-    public void setHits(List<HitResult> hits) {
-        this.hits = hits;
+    public Set<EquipmentSlot> getArmorDamageSlots() {
+        return this.damagedSlots;
     }
 
-    public void setDamageDistributor(DamageDistributor damageDistributor) {
-        this.damageDistributor = damageDistributor;
-    }
-
-    public SideEffectHolder getSideEffects() {
-        return sideEffects;
-    }
-
-    public LivingEntity getEntity() {
-        return entity;
+    @Nullable
+    public SideEffectHolder getEffects() {
+        return SideEffectHolder.fromDamage(this.context.source());
     }
 
     public DamageSource getSource() {
-        return source;
+        return this.context.source();
     }
 
-    public List<HitResult> getHits() {
-        return hits;
+    public List<HitInfo> getHits() {
+        return this.result.getHits();
     }
 
-    public List<EquipmentSlot> getAffectedSlots() {
-        return affectedSlots;
-    }
-
-    public DamageDistributor getDamageDistributor(HealthContainer container) {
-        DamageDistributor original = this.damageDistributor != null ? this.damageDistributor : EvenDamageDistributor.INSTANCE;
-        DamageDistributor custom = this.hitCalculator.getCustomDamageDistributor(this.entity, this.source, container, original);
-        return custom != null ? custom : original;
+    public Map<Limb, Float> getDamage(float incomingTotalDamage) {
+        DamageDistributor damageDistributor = this.result.getDamageDistributor();
+        return damageDistributor.distribute(this, incomingTotalDamage);
     }
 }

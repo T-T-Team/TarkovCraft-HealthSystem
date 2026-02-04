@@ -1,23 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.armor;
 
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.health.*;
-import tnt.tarkovcraft.medsystem.common.health.calc.HitResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
-
-import java.util.List;
-
 // TODO finish implementation
 public class SimulatedArmorComponent extends ModularArmorComponent {
 
@@ -31,7 +13,7 @@ public class SimulatedArmorComponent extends ModularArmorComponent {
         super(1.0F);
     }
 
-    @Override
+    /*@Override
     public boolean shouldDeflectIncomingHit(DamageSource source, LivingEntity entity, List<HitResult> hits) {
         HitResult first = hits.getFirst();
         Limb limb = first.limb();
@@ -72,5 +54,5 @@ public class SimulatedArmorComponent extends ModularArmorComponent {
             }
         }
         return false;
-    }
+    }*/
 }

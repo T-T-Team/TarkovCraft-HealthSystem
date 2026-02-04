@@ -11,7 +11,7 @@ import java.util.Optional;
 public class ItemStatusEffectConfig {
 
     @Configurable
-    @Configurable.Comment("Chance to get light bleed on hit from this item")
+    @Configurable.Comment("Chance to get light bleed on entryPoint from this item")
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     @Configurable.Gui.NumberFormat("0.0#")
@@ -19,7 +19,7 @@ public class ItemStatusEffectConfig {
     public float lightBleedChance;
 
     @Configurable
-    @Configurable.Comment("Chance to get heavy bleed on hit from this item")
+    @Configurable.Comment("Chance to get heavy bleed on entryPoint from this item")
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     @Configurable.Gui.NumberFormat("0.0#")
@@ -27,7 +27,7 @@ public class ItemStatusEffectConfig {
     public float heavyBleedChance;
 
     @Configurable
-    @Configurable.Comment("Chance to fracture on hit from this item")
+    @Configurable.Comment("Chance to fracture on entryPoint from this item")
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     @Configurable.Gui.NumberFormat("0.0#")

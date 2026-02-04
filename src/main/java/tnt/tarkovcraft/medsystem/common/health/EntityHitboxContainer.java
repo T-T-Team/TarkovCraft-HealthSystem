@@ -11,21 +11,38 @@ import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.calc.PositionedAABB;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public record EntityHitboxContainer(Map<String, LimbHitboxContainer> definitions) {
 
     public static final Codec<EntityHitboxContainer> CODEC = Codec.unboundedMap(Codec.STRING, LimbHitboxContainer.CODEC)
             .xmap(EntityHitboxContainer::new, EntityHitboxContainer::definitions);
 
-    public LimbHitbox getLimbHitbox(String limbCode, String state) {
+    public LimbHitboxDefinition getLimbHitbox(String limbCode, String state) {
         LimbHitboxContainer container = this.definitions.get(limbCode);
         return container.getByStateOrDefault(state);
     }
 
-    public record LimbHitboxContainer(Map<String, LimbHitbox> hitboxMap) {
+    public Stream<LimbHitboxDefinition> getLimbHitboxesStream(String state) {
+        return this.definitions.values().stream()
+                .map(container -> container.getByStateOrDefault(state));
+    }
 
-        public static final Codec<LimbHitboxContainer> CODEC = Codec.unboundedMap(Codec.STRING, LimbHitbox.CODEC)
+    public List<LimbHitboxDefinition> getBaseHitboxes(String state) {
+        return this.getLimbHitboxesStream(state).toList();
+    }
+
+    public List<AABB> getWorldSpaceHitboxes(String state, LivingEntity context) {
+        return this.getLimbHitboxesStream(state)
+                .map(hitbox -> hitbox.toWorldSpaceHitbox(context))
+                .toList();
+    }
+
+    public record LimbHitboxContainer(Map<String, LimbHitboxDefinition> hitboxMap) {
+
+        public static final Codec<LimbHitboxContainer> CODEC = Codec.unboundedMap(Codec.STRING, LimbHitboxDefinition.CODEC)
                 .xmap(LimbHitboxContainer::new, LimbHitboxContainer::hitboxMap).validate(container -> {
                     if (!container.hitboxMap.containsKey(MedSystemConstants.DEFAULT_ENTITY_STATE)) {
                         return DataResult.error(() -> "No default hitbox defined");
@@ -33,7 +50,7 @@ public record EntityHitboxContainer(Map<String, LimbHitboxContainer> definitions
                     return DataResult.success(container);
                 });
 
-        public LimbHitbox getByStateOrDefault(String state) {
+        public LimbHitboxDefinition getByStateOrDefault(String state) {
             return this.hitboxMap.getOrDefault(state, this.hitboxMap.get(MedSystemConstants.DEFAULT_ENTITY_STATE));
         }
     }
@@ -74,13 +91,13 @@ public record EntityHitboxContainer(Map<String, LimbHitboxContainer> definitions
         }
     }
 
-    public record LimbHitbox(RotationMode pitch, RotationMode yaw, PositionedAABB aabb) {
+    public record LimbHitboxDefinition(RotationMode pitch, RotationMode yaw, PositionedAABB aabb) {
 
-        public static final Codec<LimbHitbox> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                RotationMode.CODEC.optionalFieldOf("pitch", RotationMode.NONE).forGetter(LimbHitbox::pitch),
-                RotationMode.CODEC.optionalFieldOf("yaw", RotationMode.NONE).forGetter(LimbHitbox::yaw),
-                PositionedAABB.VEC_COMPONENT_CODEC.fieldOf("aabb").forGetter(LimbHitbox::aabb)
-        ).apply(instance, LimbHitbox::new));
+        public static final Codec<LimbHitboxDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                RotationMode.CODEC.optionalFieldOf("pitch", RotationMode.NONE).forGetter(LimbHitboxDefinition::pitch),
+                RotationMode.CODEC.optionalFieldOf("yaw", RotationMode.NONE).forGetter(LimbHitboxDefinition::yaw),
+                PositionedAABB.VEC_COMPONENT_CODEC.fieldOf("aabb").forGetter(LimbHitboxDefinition::aabb)
+        ).apply(instance, LimbHitboxDefinition::new));
 
         public AABB toWorldSpaceHitbox(LivingEntity entity) {
             PositionedAABB aabb = this.getWithTransforms(entity);

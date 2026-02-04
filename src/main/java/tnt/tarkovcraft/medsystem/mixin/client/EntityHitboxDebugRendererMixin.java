@@ -11,9 +11,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.LimbDefinition;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
+
+import java.util.Map;
 
 @Mixin(EntityHitboxDebugRenderer.class)
 public abstract class EntityHitboxDebugRendererMixin {
@@ -26,13 +30,19 @@ public abstract class EntityHitboxDebugRendererMixin {
         if (!HealthSystem.hasCustomHealth(entity))
             return;
         LivingEntity livingEntity = (LivingEntity) entity;
-        HealthContainer container = HealthSystem.getHealthData(livingEntity);
-        container.iterateHitboxes(livingEntity, (hitbox, limb) -> {
-            LimbType limbType = limb.getType();
-            Vec3 positionVec = entity.position();
-            Vec3 interpolatedPosition = entity.getPosition(renderTickDelta).subtract(positionVec);
-            AABB aabb = hitbox.toWorldSpaceHitbox(livingEntity).move(interpolatedPosition);
-            Gizmos.cuboid(aabb, GizmoStyle.stroke(limbType.getHitboxColor() | 0xFF << 24));
+        MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).ifPresent(definition -> {
+            EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
+            String state = definition.getCurrentEntityState(livingEntity);
+            for (Map.Entry<String, LimbDefinition> entry : definition.limbConfiguration().limbs().entrySet()) {
+                String code = entry.getKey();
+                LimbDefinition def = entry.getValue();
+                LimbType type = def.type();
+                Vec3 positionVec = entity.position();
+                Vec3 interpolatedPosition = entity.getPosition(renderTickDelta).subtract(positionVec);
+                EntityHitboxContainer.LimbHitboxDefinition hitboxDefinition = hitboxContainer.getLimbHitbox(code, state);
+                AABB aabb = hitboxDefinition.toWorldSpaceHitbox(livingEntity).move(interpolatedPosition);
+                Gizmos.cuboid(aabb, GizmoStyle.stroke(type.getHitboxColor() | 0xFF << 24));
+            }
         });
     }
 }

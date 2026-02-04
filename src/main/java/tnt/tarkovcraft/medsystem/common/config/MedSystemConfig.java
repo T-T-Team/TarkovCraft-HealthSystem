@@ -28,7 +28,7 @@ public final class MedSystemConfig {
     @Configurable.Comment({
             "Defines armor calculation logic with custom health system",
             "SIMULATED - modular armor with fully simulated logic such as deflections, blunt damage and so on",
-            "MODULAR - modular armor - getting hit in head damages only helmet",
+            "MODULAR - modular armor - getting entryPoint in head damages only helmet",
             "MODULAR_BOOSTED - same as above, but each armor piece has 150% additional protection",
             "VANILLA - vanilla armor calculation, full armor is used for any damage calculations"
     })

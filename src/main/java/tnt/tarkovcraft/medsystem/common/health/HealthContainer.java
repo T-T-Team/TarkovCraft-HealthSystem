@@ -30,8 +30,6 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -245,28 +243,8 @@ public final class HealthContainer {
     }
 
     public boolean shouldDie() {
-        for (Limb limb : this.limbs.values()) {
-            if (limb.isVital() && limb.isDead()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void iterateHitboxes(LivingEntity entity, BiConsumer<EntityHitboxContainer.LimbHitbox, Limb> consumer) {
-        this.iterateHitboxes(entity, (hitbox, limb) -> true, consumer);
-    }
-
-    public void iterateHitboxes(LivingEntity entity, BiPredicate<EntityHitboxContainer.LimbHitbox, Limb> filter, BiConsumer<EntityHitboxContainer.LimbHitbox, Limb> consumer) {
-        String state = this.definition.getCurrentEntityState(entity);
-        EntityHitboxContainer hitboxContainer = this.definition.hitboxContainer();
-        for (Limb limb : this.limbs.values()) {
-            String limbCode = limb.getLimbCode();
-            EntityHitboxContainer.LimbHitbox hitbox = hitboxContainer.getLimbHitbox(limbCode, state);
-            if (filter.test(hitbox, limb)) {
-                consumer.accept(hitbox, limb);
-            }
-        }
+        return this.getLimbsAsStream()
+                .anyMatch(limb -> limb.isVital() && limb.isDead());
     }
 
     public Limb getPartToHeal() {

@@ -109,6 +109,10 @@ public final class PositionedAABB {
         return this.aabb;
     }
 
+    public static Optional<Vec3> tryIntersect(AABB aabb, Ray ray) {
+        return tryIntersect(aabb, ray.from(), ray.to());
+    }
+
     public static Optional<Vec3> tryIntersect(AABB aabb, Vec3 start, Vec3 end) {
         Optional<Vec3> optional = aabb.clip(start, end);
         if (aabb.contains(start)) {

@@ -159,7 +159,7 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
         HealthContainerDefinition definition = container.getDefinition();
         EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
         String state = definition.getCurrentEntityState(entity);
-        EntityHitboxContainer.LimbHitbox hitbox = hitboxContainer.getLimbHitbox(limb.getLimbCode(), state);
+        EntityHitboxContainer.LimbHitboxDefinition hitbox = hitboxContainer.getLimbHitbox(limb.getLimbCode(), state);
         return hitbox.toWorldSpaceHitbox(entity).getCenter();
     }
 

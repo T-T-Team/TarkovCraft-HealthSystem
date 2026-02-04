@@ -1,17 +1,11 @@
 package tnt.tarkovcraft.medsystem.common.health.calc;
 
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
+import tnt.tarkovcraft.medsystem.util.HitboxHelper;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -23,36 +17,26 @@ public final class MeleeHitCalculator implements HitCalculator {
     }
 
     @Override
-    public List<HitResult> calculateHits(LivingEntity entity, DamageSource source, HealthContainer container) {
-        List<HitResult> hits = new ArrayList<>();
-        Entity attacker = source.getEntity();
+    public HitCalculationResult calculateHits(HitCalculationContext context) {
+        Entity attacker = context.getAttackingEntity();
+        LivingEntity entity = context.entity();
         double distance = attacker.distanceTo(entity) + Math.max(entity.getBbWidth(), entity.getBbHeight());
+
+        // TODO improve logic for non player entities
         Vec3 from = attacker.getType() == EntityType.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
         Vec3 to = from.add(attacker.getHeadLookAngle().scale(distance));
-        // Try to find directly hit limb
-        container.iterateHitboxes(
-                entity,
-                (hitbox, limb) -> {
-                    AABB aabb = hitbox.toWorldSpaceHitbox(entity);
-                    PositionedAABB.tryIntersect(aabb, from, to).ifPresent(hit -> hits.add(new HitResult(hitbox, limb, aabb, hit)));
-                }
-        );
+        Ray ray = new Ray(from, to);
+
+        List<HitInfo> hits = HitboxHelper.raycast(ray, context)
+                .sorted(Comparator.comparingDouble(hit -> hit.entryPoint().distanceToSqr(from)))
+                .toList();
+
         if (!hits.isEmpty()) {
-            hits.sort(Comparator.comparingDouble(res -> res.hit().distanceToSqr(from)));
-            HitResult closest = hits.getFirst();
-            return Collections.singletonList(closest);
-        }
-        // No hitboxes were hit, get closest most likely hit limb if the entity type allows hit approximation
-        List<HitResult> result = null;
-        if (!attacker.getType().is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION)) {
-            result = HealthSystem.getClosestPossibleHits(
-                    attacker.getBoundingBox().getCenter(),
-                    entity,
-                    container,
-                    (hitbox, part) -> !part.isDead()
-            );
+            HitInfo closest = hits.getFirst();
+            return HitCalculationResult.of(closest)
+                    .withRayCast(ray);
         }
 
-        return result == null || result.isEmpty() ? Collections.emptyList() : Collections.singletonList(result.getFirst());
+        return context.approximate(ray);
     }
 }

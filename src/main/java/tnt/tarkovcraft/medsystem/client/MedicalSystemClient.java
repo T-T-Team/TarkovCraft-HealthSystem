@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.toma.configuration.Configuration;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.debug.DebugEntryNoop;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -35,6 +36,7 @@ import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
+import tnt.tarkovcraft.medsystem.client.debug.HitResultInfoDebugRenderer;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.model.properties.BloodVolumeItemModelProperty;
@@ -88,6 +90,8 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerRenderStateExtensions);
         modEventBus.addListener(this::registerShaderPrograms);
         modEventBus.addListener(this::registerParticleProviders);
+        modEventBus.addListener(this::registerDebugRenderers);
+        modEventBus.addListener(this::registerDebugEntries);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
@@ -194,6 +198,16 @@ public final class MedicalSystemClient {
         if (client.player == null || !MedicalSystem.getConfig().forceEntityRotationSynchronization) return;
         float yBodyRot = Mth.wrapDegrees(client.player.yBodyRot);
         ClientPacketDistributor.sendToServer(new C2S_SendMyRotation(yBodyRot));
+    }
+
+    private void registerDebugRenderers(RegisterDebugRenderersEvent event) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.debugEntries.isCurrentlyEnabled(HitResultInfoDebugRenderer.IDENTIFIER))
+            event.register(HitResultInfoDebugRenderer.INSTANCE);
+    }
+
+    private void registerDebugEntries(RegisterDebugEntriesEvent event) {
+        event.register(HitResultInfoDebugRenderer.IDENTIFIER, new DebugEntryNoop());
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {
