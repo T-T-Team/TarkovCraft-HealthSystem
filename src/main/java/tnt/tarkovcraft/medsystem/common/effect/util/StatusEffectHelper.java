@@ -5,6 +5,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -17,6 +19,8 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import javax.annotation.Nullable;
 
 public final class StatusEffectHelper {
+
+    public static final Marker MARKER = MarkerManager.getMarker("StatusEffects");
 
     private StatusEffectHelper() {}
 
@@ -41,14 +45,14 @@ public final class StatusEffectHelper {
             if (event.isCanceled())
                 return;
             HealthContainer container = HealthSystem.getHealthData(entity);
-            MedicalSystem.LOGGER.debug("Scheduling effect {} with delay of {} ticks to target limb {}", effect.getType(), event.getDelay(), limb);
+            MedicalSystem.LOGGER.debug(MARKER, "Scheduling effect {} with delay of {} ticks to target limb \"{}\" with duration {} for entity {}", effect.getType(), event.getDelay(), limb, effect.getDuration(), entity);
             container.scheduleStatusEffect(entity, event.getDelay(), limb, effect);
             return;
         }
         StatusEffectEvent.Add event = NeoForge.EVENT_BUS.post(new StatusEffectEvent.Add(entity, effect, limb));
         if (event.isCanceled())
             return;
-        MedicalSystem.LOGGER.debug("Adding immediate status effect {} to target limb {}", effect.getType(), limb);
+        MedicalSystem.LOGGER.debug(MARKER, "Adding status effect {} to target limb \"{}\" with duration {} for entity {}", effect.getType(), limb, effect.getDuration(), entity);
         effects.addEffect(effect);
         HealthContainer container = HealthSystem.getHealthData(entity);
         container.markStatusEffectAdded(entity);
@@ -61,7 +65,7 @@ public final class StatusEffectHelper {
     public static void removeEffect(StatusEffectSubmitter submitter, StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, HealthContainer container, StatusEffectType<?> type) {
         effects.getEffect(type).ifPresent(effect -> {
             NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, effect, limb));
-            MedicalSystem.LOGGER.debug("Removing status effect {} from target limb {}", type, limb);
+            MedicalSystem.LOGGER.debug(MARKER, "Removing status effect {} from target limb {} from entity {}", type, limb, entity);
             effects.remove(submitter, type, container, entity, limb);
         });
     }

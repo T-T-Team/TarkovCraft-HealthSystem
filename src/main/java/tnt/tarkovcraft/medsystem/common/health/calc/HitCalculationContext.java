@@ -33,7 +33,8 @@ public record HitCalculationContext(LivingEntity entity, HealthContainer contain
     }
 
     public boolean hasDamagePosition() {
-        return !Vec3.ZERO.equals(this.source.getSourcePosition());
+        Vec3 sourcePosition = this.source.getSourcePosition();
+        return sourcePosition != null && !Vec3.ZERO.equals(sourcePosition);
     }
 
     public boolean allowHitApproximation(boolean fallback) {

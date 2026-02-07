@@ -64,6 +64,10 @@ public final class HitboxHelper {
         return getEntityHitboxes(entity, container).toList();
     }
 
+    public static List<LimbHitbox> getEntityHitboxList(HitCalculationContext ctx) {
+        return getEntityHitboxList(ctx.entity(), ctx.container());
+    }
+
     public static Stream<HitInfo> raycast(Ray ray, LivingEntity entity, HealthContainer container) {
         return getEntityHitboxes(entity, container)
                 .map(hitbox -> {
