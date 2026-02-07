@@ -9,8 +9,10 @@ import net.minecraft.tags.TagKey;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
@@ -102,7 +104,9 @@ public final class StatusEffectType<S extends StatusEffect> {
     }
 
     public S merge(S a, S b) {
-        return this.merger.apply(a, b);
+        S result = this.merger.apply(a, b);
+        MedicalSystem.LOGGER.debug(StatusEffectHelper.MARKER, "Merging incoming {} status effect with existing one, new duration is {}", this, result.getDuration());
+        return result;
     }
 
     public boolean isSpecialStatusEffect() {

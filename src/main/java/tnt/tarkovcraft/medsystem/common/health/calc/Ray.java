@@ -4,6 +4,10 @@ import net.minecraft.world.phys.Vec3;
 
 public record Ray(Vec3 from, Vec3 to) {
 
+    public static Ray create(Vec3 from, Vec3 to) {
+        return new Ray(from, to);
+    }
+
     public Vec3 direction() {
         return this.from.subtract(this.to);
     }
