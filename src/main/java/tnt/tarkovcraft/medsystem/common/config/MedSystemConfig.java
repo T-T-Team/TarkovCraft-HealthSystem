@@ -61,7 +61,7 @@ public final class MedSystemConfig {
     @Configurable.DecimalRange(min = 0, max = 1.0)
     @Configurable.Gui.Slider
     @Configurable.Gui.NumberFormat("0.0##")
-    @Configurable.Comment(value = "Threshold for prioritized vital body part health recovery", localize = true)
+    @Configurable.Comment(value = "Threshold for prioritized vital limb health recovery", localize = true)
     public float vitalBodyPartHealthTrigger = 0.75F;
 
     @Configurable

@@ -22,12 +22,12 @@ public class HealthOverlayConfiguration extends ConfigurableOverlay {
 
     @Configurable
     @Configurable.Gui.ColorValue
-    @Configurable.Comment(value = "Overlay color for dead body parts", localize = true)
+    @Configurable.Comment(value = "Overlay color for dead limbs", localize = true)
     public String deadLimbColor = "#444444";
 
     @Configurable
     @Configurable.Gui.ColorValue
-    @Configurable.Comment(value = "Color schema used for color blending of body part overlay based on the part health", localize = true)
+    @Configurable.Comment(value = "Color schema used for color blending of limb overlay based on the part health", localize = true)
     public String[] colorSchema = { "#00FF00", "#FFFF00", "#FF0000" };
 
     public HealthOverlayConfiguration(boolean enabled, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int x, int y) {

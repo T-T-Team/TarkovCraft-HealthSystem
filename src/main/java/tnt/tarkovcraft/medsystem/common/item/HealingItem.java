@@ -87,7 +87,7 @@ public class HealingItem extends InteractableItem {
         if (!attributes.applyGlobally()) {
             Level level = origin.level();
             if (interaction.isSelf() && !origin.isCrouching()) {
-                this.selectBodyPart(interaction, itemStack, target);
+                this.selectLimb(interaction, itemStack, target);
             }
             if (interaction.isLimbSelected()) {
                 setActiveInteraction(itemStack, interaction.toImmutable());
@@ -251,38 +251,38 @@ public class HealingItem extends InteractableItem {
         return itemStack.get(MedSystemItemComponents.HEAL_ATTRIBUTES);
     }
 
-    private void selectBodyPart(InteractionTarget.Mutable activeTarget, ItemStack itemStack, LivingEntity entity) {
+    private void selectLimb(InteractionTarget.Mutable activeTarget, ItemStack itemStack, LivingEntity entity) {
         HealthContainer container = HealthSystem.getHealthData(entity);
         HealItemAttributes attributes = this.getHealingAttributes(itemStack);
-        List<BodyPartWithPriority> bodyParts = container.getLimbsAsStream()
-                .map(part -> new BodyPartWithPriority(part, part.isVital() ? MedSystemConstants.HEAL_VITAL_PART_MULTIPLIER : 1.0F))
+        List<LimbWithPriority> limbs = container.getLimbsAsStream()
+                .map(part -> new LimbWithPriority(part, part.isVital() ? MedSystemConstants.HEAL_VITAL_PART_MULTIPLIER : 1.0F))
                 .toList();
 
         if (attributes.isSurgeryItem()) {
-            bodyParts.forEach(this::addSurgeryHealingPriorities);
+            limbs.forEach(this::addSurgeryHealingPriorities);
         }
         if (attributes.isRecoveryItem()) {
-            bodyParts.forEach(part -> this.addStatusEffectHealingPriorities(part, attributes.recoveries(), container));
+            limbs.forEach(part -> this.addStatusEffectHealingPriorities(part, attributes.recoveries(), container));
         }
         if (attributes.isHealing()) {
-            bodyParts.forEach(this::addHealthHealingPriorities);
+            limbs.forEach(this::addHealthHealingPriorities);
         }
 
-        bodyParts.stream()
-                .filter(BodyPartWithPriority::isViable)
-                .max(Comparator.comparingInt(BodyPartWithPriority::priority))
-                .ifPresent(priorityPart -> activeTarget.setLimbCode(priorityPart.limb.getLimbCode()));
+        limbs.stream()
+                .filter(LimbWithPriority::isViable)
+                .max(Comparator.comparingInt(LimbWithPriority::priority))
+                .ifPresent(limbWithPriority -> activeTarget.setLimbCode(limbWithPriority.limb.getLimbCode()));
     }
 
-    private void addSurgeryHealingPriorities(BodyPartWithPriority part) {
+    private void addSurgeryHealingPriorities(LimbWithPriority part) {
         if (part.limb.isDead()) {
             LimbType group = part.limb.getType();
             part.add(MedSystemConstants.HEAL_SURGERY_BASE + group.getSurgeryHealingPriority());
         }
     }
 
-    private void addStatusEffectHealingPriorities(BodyPartWithPriority part, List<EffectRecovery> recoveries, HealthContainer container) {
-        Limb limb = part.limb;
+    private void addStatusEffectHealingPriorities(LimbWithPriority priorityLimb, List<EffectRecovery> recoveries, HealthContainer container) {
+        Limb limb = priorityLimb.limb;
         StatusEffectMap statusEffects = limb.getStatusEffects();
         if (statusEffects.isEmpty())
             return;
@@ -295,13 +295,13 @@ public class HealingItem extends InteractableItem {
             for (EffectRecovery recovery : recoveries) {
                 if (recovery.effect().value() == type && recovery.predicate().test(effect)) {
                     int healPriority = type.getHealingPriority(effect);
-                    part.add(healPriority);
+                    priorityLimb.add(healPriority);
                 }
             }
         }
     }
 
-    private void addHealthHealingPriorities(BodyPartWithPriority part) {
+    private void addHealthHealingPriorities(LimbWithPriority part) {
         Limb limb = part.limb;
         float missingAmount = limb.getMaxHealAmount();
         if (!limb.isDead() && missingAmount > 0) {
@@ -309,13 +309,13 @@ public class HealingItem extends InteractableItem {
         }
     }
 
-    private static final class BodyPartWithPriority {
+    private static final class LimbWithPriority {
 
         private final Limb limb;
         private final float multiplier;
         private int priority;
 
-        public BodyPartWithPriority(Limb limb, float multiplier) {
+        public LimbWithPriority(Limb limb, float multiplier) {
             this.limb = limb;
             this.multiplier = multiplier;
         }

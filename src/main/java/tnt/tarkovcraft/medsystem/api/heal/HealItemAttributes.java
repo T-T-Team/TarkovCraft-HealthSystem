@@ -42,7 +42,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
     ).apply(instance, HealItemAttributes::new));
 
     private HealItemAttributes(Builder builder) {
-        this(!builder.requiresSpecificBodyPart, builder.alwaysConsumable, builder.minUseTime, builder.surgery, builder.healthRecovery, builder.recoveries);
+        this(!builder.requiresLimb, builder.alwaysConsumable, builder.minUseTime, builder.surgery, builder.healthRecovery, builder.recoveries);
     }
 
     private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<Surgery> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries) {
@@ -54,7 +54,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
     }
 
     public static HealItemAttributes withSideEffectsOnly(int minUseTime) {
-        return builder().setMinUseTime(minUseTime).setAlwaysConsumable().setNoBodyPartSelection().build();
+        return builder().setMinUseTime(minUseTime).setAlwaysConsumable().setNoLimbSelection().build();
     }
 
     public static HealItemAttributes withSideEffectsOnly(TickValue minUseTime) {
@@ -153,7 +153,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
 
     public static final class Builder {
 
-        private boolean requiresSpecificBodyPart = true;
+        private boolean requiresLimb = true;
         private boolean alwaysConsumable = false;
         private int minUseTime = 20;
         private Surgery surgery;
@@ -163,8 +163,8 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         private Builder() {
         }
 
-        public Builder setNoBodyPartSelection() {
-            this.requiresSpecificBodyPart = false;
+        public Builder setNoLimbSelection() {
+            this.requiresLimb = false;
             return this;
         }
 

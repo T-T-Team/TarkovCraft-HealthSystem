@@ -71,7 +71,7 @@ other player factions, just driving around in custom vehicles, ambushing enemies
 >
 > **A:** You need to craft Emergency Surgery Kit and then use it on your limb (use time is 15 seconds). After recovering the limb, it will have reduced max health for 5 minutes)
 
-> **Q: How can I check if specific body part has any status effect?**
+> **Q: How can I check if specific limb has any status effect?**
 >
 > **A:** Status effects are rendered on HUD next to your health stats, however it does show all effects at once. If you want to check specific limbs, you can do so via Character screen - `O` keybind by default and then by going to Health tab
 
