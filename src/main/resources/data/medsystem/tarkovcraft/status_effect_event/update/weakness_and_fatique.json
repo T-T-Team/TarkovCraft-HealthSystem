@@ -32,7 +32,7 @@
           "type": "medsystem:dead_limb_scale",
           "limb": "arm",
           "limb_operator": "multiply",
-          "scale": 3
+          "scale": 2
         },
         {
           "type": "medsystem:calculation",
