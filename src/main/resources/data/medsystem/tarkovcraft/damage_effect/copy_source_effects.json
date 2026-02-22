@@ -1,6 +1,0 @@
-{
-  "context_type": "on_hurt",
-  "event": {
-    "type": "medsystem:copy_incoming_effects"
-  }
-}

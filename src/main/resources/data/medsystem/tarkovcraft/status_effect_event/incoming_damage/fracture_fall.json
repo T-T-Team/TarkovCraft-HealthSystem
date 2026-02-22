@@ -1,0 +1,27 @@
+{
+  "event_source": "medsystem:incoming_damage",
+  "conditions": [
+    {
+      "type": "medsystem:is_limb",
+      "limb": ["leg"]
+    },
+    {
+      "type": "medsystem:is_damage",
+      "tag": "minecraft:is_fall"
+    },
+    {
+      "type": "medsystem:fall_fracture",
+      "min_fall_distance": 4.0,
+      "modifier": 0.005
+    }
+  ],
+  "actions": {
+    "type": "medsystem:add_status_effect",
+    "effect": {
+      "template": {
+        "type": "medsystem:fracture",
+        "duration": -1
+      }
+    }
+  }
+}

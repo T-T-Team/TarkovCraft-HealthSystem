@@ -1,0 +1,40 @@
+{
+  "event_source": "medsystem:incoming_damage",
+  "conditions": [
+    {
+      "type": "medsystem:logical",
+      "operator": "or",
+      "conditions": [
+        {
+          "type": "medsystem:is_limb",
+          "limb": "head"
+        },
+        {
+          "type": "medsystem:is_damage",
+          "tag": "minecraft:is_explosion"
+        }
+      ]
+    },
+    {
+      "type": "medsystem:damage_range",
+      "local_damage": false,
+      "from": 3.0
+    }
+  ],
+  "actions": {
+    "type": "medsystem:add_status_effect",
+    "duration_modifiers": [
+      {
+        "type": "medsystem:damage_scale",
+        "local_damage": true
+      }
+    ],
+    "effect": {
+      "delay": 0,
+      "template": {
+        "type": "medsystem:concussion",
+        "duration": 15
+      }
+    }
+  }
+}

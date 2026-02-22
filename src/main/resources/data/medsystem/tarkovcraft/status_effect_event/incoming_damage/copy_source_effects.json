@@ -1,0 +1,6 @@
+{
+  "event_source": "medsystem:incoming_damage",
+  "actions": {
+    "type": "medsystem:copy_incoming_effects"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "event_source": "medsystem:incoming_damage",
+  "conditions": [
+    {
+      "type": "medsystem:is_limb",
+      "limb": ["arm", "leg", "other"]
+    },
+    {
+      "type": "medsystem:random_chance",
+      "chance": {
+        "type": "tarkovcraft_core:config",
+        "location": "medsystem:statusEffects/playerFractureChance"
+      }
+    },
+    {
+      "type": "medsystem:damage_range",
+      "local_damage": true,
+      "from": 1.0
+    },
+    {
+      "type": "medsystem:is_damage",
+      "tag": "medsystem:fracture_causing"
+    }
+  ],
+  "actions": {
+    "type": "medsystem:add_status_effect",
+    "effect": {
+      "template": {
+        "type": "medsystem:fracture",
+        "duration": -1
+      }
+    }
+  }
+}
