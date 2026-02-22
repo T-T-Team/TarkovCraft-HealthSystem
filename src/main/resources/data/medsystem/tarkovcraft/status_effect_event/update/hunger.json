@@ -1,0 +1,18 @@
+{
+  "event_source": "medsystem:update",
+  "conditions": [
+    {
+      "type": "medsystem:is_limb",
+      "limb": "stomach"
+    },
+    {
+      "type": "medsystem:is_dead_limb"
+    }
+  ],
+  "actions": {
+    "type": "medsystem:add_mob_effect",
+    "effect": "minecraft:hunger",
+    "duration": 25,
+    "amplifier": 1
+  }
+}

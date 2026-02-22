@@ -1,0 +1,38 @@
+{
+  "event_source": "medsystem:update",
+  "conditions": [
+    {
+      "type": "medsystem:is_limb",
+      "limb": "leg"
+    },
+    {
+      "type": "medsystem:logical",
+      "operator": "not",
+      "conditions": [
+        {
+          "type": "medsystem:has_effect",
+          "tag": "medsystem:is_pain_relief"
+        }
+      ]
+    },
+    {
+      "type": "medsystem:logical",
+      "operator": "or",
+      "conditions": [
+        {
+          "type": "medsystem:is_dead_limb"
+        },
+        {
+          "type": "medsystem:has_effect",
+          "tag": "medsystem:movement_restricting"
+        }
+      ]
+    }
+  ],
+  "actions": {
+    "type": "medsystem:add_mob_effect",
+    "effect": "minecraft:slowness",
+    "duration": 25,
+    "amplifier": 2
+  }
+}

@@ -30,7 +30,8 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.TimeRange;
-import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
+import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
+import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventParams;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.init.*;
@@ -134,7 +135,7 @@ public final class DamageHandler {
                 SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
             }
             // apply post-damage effects
-            MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_HURT, effect -> effect.applyDamageEvent(entity, container, context, totalDamage, distributedDamage, lostLimbs));
+            this.triggerStatusEffectEvent(entity, container, context, distributedDamage, totalDamage);
             // blood decals
             this.addBloodParticles(entity, source, container, context, totalDamage);
         }
@@ -157,7 +158,7 @@ public final class DamageHandler {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST, lostLimbCount);
         }
 
-        // Unconscious state processing
+        // Unconscious state processing TODO move to status effect events?
         if (BloodSystem.hasBloodDataIntegration(entity) && !entity.level().isClientSide()) {
             RandomSource random = entity.getRandom();
             BloodData bloodData = BloodSystem.getBloodData(entity);
@@ -200,6 +201,19 @@ public final class DamageHandler {
         ArmorComponent component = system.getComponent();
         entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT)
                 .ifPresent(context -> component.applyItemDamage(event, context));
+    }
+
+    private void triggerStatusEffectEvent(LivingEntity entity, HealthContainer container, DamageContext context, Map<Limb, Float> damage, float total) {
+        for (Map.Entry<Limb, Float> entry : damage.entrySet()) {
+            Limb limb = entry.getKey();
+            float localDamage = entry.getValue();
+            StatusEffectEventContext ctx = StatusEffectEventContext.withParams(entity, container, limb, builder -> {
+                builder.add(StatusEffectEventParams.DAMAGE_CONTEXT, context);
+                builder.add(StatusEffectEventParams.DAMAGE_AMOUNT, total);
+                builder.add(StatusEffectEventParams.DAMAGE_AMOUNT_LIMB, localDamage);
+            });
+            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemStatusEffectEventSources.INCOMING_DAMAGE, ctx);
+        }
     }
 
     private void addBloodParticles(LivingEntity entity, DamageSource source, HealthContainer container, DamageContext context, float damage) {

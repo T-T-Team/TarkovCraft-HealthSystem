@@ -19,7 +19,7 @@ import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffects;
+import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.status.BloodSystemEventHandler;
@@ -32,7 +32,7 @@ public final class MedicalSystem {
     public static final Logger LOGGER = LogManager.getLogger("MedicalSystem");
 
     public static final HealthSystem HEALTH_SYSTEM = new HealthSystem();
-    public static final DamageEffects DAMAGE_EFFECTS = new DamageEffects();
+    public static final StatusEffectEventManager STATUS_EFFECT_EVENTS = new StatusEffectEventManager();
 
     private static MedSystemConfig config;
 
@@ -60,9 +60,10 @@ public final class MedicalSystem {
         MedSystemStatusEffectPredicates.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
         MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
-        MedSystemDamageEffectFunctions.REGISTRY.register(modEventBus);
-        MedSystemDamageEffectConditions.REGISTRY.register(modEventBus);
-        MedSystemDamageEffectEvents.REGISTRY.register(modEventBus);
+        MedSystemStatusEffectEventSources.REGISTRY.register(modEventBus);
+        MedSystemStatusEffectEventFunctions.REGISTRY.register(modEventBus);
+        MedSystemStatusEffectEventConditions.REGISTRY.register(modEventBus);
+        MedSystemStatusEffectEventActions.REGISTRY.register(modEventBus);
         MedSystemStateFilters.REGISTRY.register(modEventBus);
         MedSystemParticleTypes.REGISTRY.register(modEventBus);
         MedSystemArgumentTypes.REGISTRY.register(modEventBus);
@@ -75,16 +76,17 @@ public final class MedicalSystem {
     private void createRegistries(NewRegistryEvent event) {
         event.register(MedSystemRegistries.STATUS_EFFECT);
         event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
-        event.register(MedSystemRegistries.DAMAGE_EFFECT_CONDITION);
-        event.register(MedSystemRegistries.DAMAGE_EFFECT_FUNCTION);
-        event.register(MedSystemRegistries.DAMAGE_EFFECT_EVENT);
         event.register(MedSystemRegistries.STATE_MATCHER);
         event.register(MedSystemRegistries.STATUS_EFFECT_PREDICATE);
+        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_SOURCE);
+        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_FUNCTION);
+        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_CONDITION);
+        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_ACTION);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(HEALTH_SYSTEM);
-        event.addListener(DAMAGE_EFFECTS);
+        event.addListener(STATUS_EFFECT_EVENTS);
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

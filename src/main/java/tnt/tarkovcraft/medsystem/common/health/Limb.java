@@ -6,9 +6,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.damage_effect.DamageEffectContextType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventSources;
 
 import java.util.Objects;
 
@@ -131,7 +132,8 @@ public final class Limb {
     public void tick(HealthContainer container, LivingEntity entity) {
         this.statusEffects.tick(container, entity, this);
         if (entity.level().getGameTime() % 20 == 0) {
-            MedicalSystem.DAMAGE_EFFECTS.apply(DamageEffectContextType.ON_UPDATE, effect -> effect.applyUpdateEvent(entity, container, this));
+            StatusEffectEventContext ctx = StatusEffectEventContext.simple(entity, container, this);
+            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemStatusEffectEventSources.UPDATE, ctx);
         }
     }
 
