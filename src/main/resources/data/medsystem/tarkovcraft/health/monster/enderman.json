@@ -1,0 +1,70 @@
+{
+  "targets": [
+    "minecraft:enderman"
+  ],
+  "limb_configuration": {
+    "root_limb": "head",
+    "limbs": {
+      "head": {
+        "type": "head",
+        "vital": true,
+        "base_health": 14.0,
+        "damage_configuration": {
+          "scale": 0.75
+        }
+      },
+      "body": {
+        "type": "torso",
+        "vital": true,
+        "base_health": 32.0
+      },
+      "legs": {
+        "type": "leg",
+        "base_health": 20.0,
+        "damage_configuration": {
+          "transfer_scale": 0.7
+        }
+      }
+    }
+  },
+  "hitbox_container": {
+    "head": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 2.6, 0 ],
+          "size": [ 0.25, 0.25 ]
+        }
+      }
+    },
+    "body": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 1.75, 0 ],
+          "size": [ 0.275, 0.6 ]
+        }
+      }
+    },
+    "legs": {
+      "default": {
+        "aabb": {
+          "pos": [ 0, 0.575, 0 ],
+          "size": [ 0.275, 0.575 ]
+        }
+      }
+    }
+  },
+  "display_configuration": {
+    "head": {
+      "pos": [ 0, -48 ],
+      "size": [ 24, 24 ]
+    },
+    "body": {
+      "pos": [ 0, -24 ],
+      "size": [ 20, 28 ]
+    },
+    "legs": {
+      "pos": [ 0, 4 ],
+      "size": [ 20, 22 ]
+    }
+  }
+}

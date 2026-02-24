@@ -143,7 +143,7 @@
   "death.attack.medsystem.toxic_side_effect.player": "%s succumbed to toxic side effects while fighting %s",
 
   "config.screen.medsystem": "Medical System",
-  "config.medsystem.option.enableHitDebug": "Hit debug renderer",
+  "config.medsystem.option.hitDebugInfoCollection": "Hit debug renderer",
   "config.medsystem.option.enableHitDebug.comment.0": "Debug renderer for last hit information",
   "config.medsystem.option.enableHitDebug.comment.1": "Available only in singleplayer/lan worlds",
   "config.medsystem.option.forceEntityRotationSynchronization": "Strict player rotation synchronization",
