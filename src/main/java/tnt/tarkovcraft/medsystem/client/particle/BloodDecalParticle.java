@@ -4,19 +4,21 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.state.BlockState;
 import tnt.tarkovcraft.core.client.particle.DecalParticle;
-import tnt.tarkovcraft.core.common.particle.SimpleDecalParticleOptions;
 import tnt.tarkovcraft.core.util.helper.ARGB;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 
 public final class BloodDecalParticle extends DecalParticle {
 
-    public BloodDecalParticle(ClientLevel level, Direction direction, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-        super(level, direction, x, y, z, xSpeed, ySpeed, zSpeed);
+    private final int inputColor;
+
+    public BloodDecalParticle(ClientLevel level, BloodDecalParticleOptions options, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        super(level, options, x, y, z, xSpeed, ySpeed, zSpeed);
         BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
+        this.inputColor = config.getDecalColor(options.color());
         this.updateColor(1.0F);
         this.quadSize = config.bloodDecalScale;
         this.setFadeOutStartTime(config.bloodDecalFadeOutAt);
@@ -26,13 +28,19 @@ public final class BloodDecalParticle extends DecalParticle {
 
     @Override
     protected void updateColor(float lifetimeLeft) {
-        int color = BloodDripParticle.getParticleColor();
+        int color = BloodDripParticle.getParticleColor(this.inputColor);
         this.rCol = lifetimeLeft * ARGB.redFloat(color);
         this.gCol = lifetimeLeft * ARGB.greenFloat(color);
         this.bCol = lifetimeLeft * ARGB.blueFloat(color);
     }
 
-    public static final class Provider implements ParticleProvider<SimpleDecalParticleOptions> {
+    @Override
+    protected void handleAttachedBlockRemoved(BlockState state) {
+        this.level.addAlwaysVisibleParticle(new BloodDripParticleOptions(this.inputColor), this.x, this.y, this.z, 0, 0, 0);
+        super.handleAttachedBlockRemoved(state);
+    }
+
+    public static final class Provider implements ParticleProvider<BloodDecalParticleOptions> {
 
         private final SpriteSet sprites;
 
@@ -41,8 +49,8 @@ public final class BloodDecalParticle extends DecalParticle {
         }
 
         @Override
-        public Particle createParticle(SimpleDecalParticleOptions options, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            BloodDecalParticle particle = new BloodDecalParticle(level, options.attachDirection(), x, y, z, xSpeed, ySpeed, zSpeed);
+        public Particle createParticle(BloodDecalParticleOptions options, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+            BloodDecalParticle particle = new BloodDecalParticle(level, options, x, y, z, xSpeed, ySpeed, zSpeed);
             particle.pickSprite(this.sprites);
             return particle;
         }

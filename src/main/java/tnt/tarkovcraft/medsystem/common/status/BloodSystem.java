@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.common.status;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
-import tnt.tarkovcraft.core.util.helper.PlayerHelper;
+import tnt.tarkovcraft.core.util.helper.EntityHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -27,7 +27,7 @@ public final class BloodSystem {
         if (!isEnabled() && !hasBloodDataIntegration(entity)) {
             return;
         }
-        if (PlayerHelper.isCreativeOrSpectator(entity)) {
+        if (EntityHelper.isCreativeOrSpectator(entity)) {
             return;
         }
         BloodData data = getBloodData(entity);

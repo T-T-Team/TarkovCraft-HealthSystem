@@ -10,6 +10,10 @@ public final class BloodDecalConfig {
     public boolean enableBloodDecals = true;
 
     @Configurable
+    @Configurable.Comment(value = "Forces all blood decals to be have specific color - configure in the option below", localize = true)
+    public boolean forceBloodDecalColor = false;
+
+    @Configurable
     @Configurable.StringPattern("^#[0-9a-fA-F]{1,6}$")
     @Configurable.Gui.ColorValue
     public String bloodDecalColor = "#B20000";
@@ -78,4 +82,10 @@ public final class BloodDecalConfig {
     @Configurable.Comment(value = "How much motion is applied to decals on received damage from projectiles", localize = true)
     public float projectileDamageMotionScale = 0.25F;
 
+    public int getDecalColor(int inputColor) {
+        if (this.forceBloodDecalColor) {
+            return Integer.decode(this.bloodDecalColor);
+        }
+        return inputColor;
+    }
 }
