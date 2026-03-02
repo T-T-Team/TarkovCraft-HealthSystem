@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.debug.DebugEntryNoop;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.core.particles.ParticleLimit;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
@@ -66,6 +67,7 @@ public final class MedicalSystemClient {
             GLFW.GLFW_KEY_X,
             KEYMAPPING_CATEGORY
     );
+    public static final ParticleLimit BLOOD_PARTICLES_LIMIT = new ParticleLimit(2000);
     private static MedSystemClientConfig config;
 
     public static final NavigationEntry HEALTH = new OptionalNavigationEntry(

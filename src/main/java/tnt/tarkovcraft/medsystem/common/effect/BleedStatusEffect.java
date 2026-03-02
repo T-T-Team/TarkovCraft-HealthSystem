@@ -19,6 +19,8 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticleOptions;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -108,7 +110,8 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                 int particleCount = isHeavyBleed(this) ? config.heavyBleedDecalCount : config.lightBleedDecalCount;
                 RandomSource random = level.getRandom();
                 for (int i = 0; i < particleCount; i++) {
-                    level.addParticle(MedSystemParticleTypes.BLOOD_DRIP.get(), position.x, position.y, position.z, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.x, 0.1F + direction.y, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.z);
+                    // TODO custom color
+                    level.addParticle(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, 0xB20000), position.x, position.y, position.z, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.x, 0.1F + direction.y, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.z);
                 }
             }
         }

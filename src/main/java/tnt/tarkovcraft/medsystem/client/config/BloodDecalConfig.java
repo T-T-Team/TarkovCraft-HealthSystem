@@ -15,7 +15,14 @@ public final class BloodDecalConfig {
     public boolean enableBloodDecals = true;
 
     @Configurable
+    @Configurable.Comment("Forces all blood decals to be have specific color - configure in the option below")
+    public boolean forceBloodDecalColor = false;
+
+    @Configurable
     @Configurable.StringPattern(ConfigurationHelper.SIMPLE_RGB_PATTERN)
+    @Configurable.DependsOn(
+            configValues = @Configurable.DependsOn.ConfigValue(location = "medsystem:bloodDecals/forceBloodDecalColor", accepts = "true")
+    )
     @Configurable.Gui.ColorValue
     public String bloodDecalColor = "#B20000";
 
@@ -83,6 +90,13 @@ public final class BloodDecalConfig {
     @Configurable.Gui.Slider
     @Configurable.Comment("How much motion is applied to decals on received damage from projectiles")
     public float projectileDamageMotionScale = 0.25F;
+
+    public int getDecalColor(int inputColor) {
+        if (this.forceBloodDecalColor) {
+            return Integer.decode(this.bloodDecalColor);
+        }
+        return inputColor;
+    }
 
     public static final class LifetimeValidator implements Validator<Integer> {
 

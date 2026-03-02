@@ -26,6 +26,7 @@ import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.core.network.message.S2C_MakeParticles;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -244,7 +245,8 @@ public final class DamageHandler {
             double deviateZ = random.nextFloat() * (deviateAmount * 2.0F) - deviateAmount;
             directions.add(new Vec3(direction.x + deviateX, 0.05F, direction.z + deviateZ));
         }
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(MedSystemParticleTypes.BLOOD_DRIP.get(), pos.x, pos.y, pos.z, true, true, directions));
+        // TODO custom colors
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, 0xB20000), pos.x, pos.y, pos.z, true, true, directions));
     }
 
     public static HitCalculationResultDebugInfo getHitDebugInfo() {

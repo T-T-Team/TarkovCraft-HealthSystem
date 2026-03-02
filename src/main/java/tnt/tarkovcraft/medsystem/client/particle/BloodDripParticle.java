@@ -8,7 +8,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ParticleLimit;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ClipContext;
@@ -16,18 +16,21 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jspecify.annotations.Nullable;
-import tnt.tarkovcraft.core.common.particle.SimpleDecalParticleOptions;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
+
+import java.util.Optional;
 
 public final class BloodDripParticle extends SingleQuadParticle {
 
-    public BloodDripParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
+    public BloodDripParticle(ClientLevel level, int inputColor, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
         this.xd = xSpeed;
         this.yd = ySpeed;
         this.zd = zSpeed;
-        int color = getParticleColor();
+        int color = getParticleColor(inputColor);
         this.rCol = ARGB.redFloat(color);
         this.gCol = ARGB.greenFloat(color);
         this.bCol = ARGB.blueFloat(color);
@@ -59,17 +62,24 @@ public final class BloodDripParticle extends SingleQuadParticle {
         }
     }
 
+    @Override
+    public Optional<ParticleLimit> getParticleLimit() {
+        return Optional.of(MedicalSystemClient.BLOOD_PARTICLES_LIMIT);
+    }
+
     private void onCollision(double x, double y, double z, Direction direction, BlockPos position) {
-        SimpleDecalParticleOptions options = new SimpleDecalParticleOptions(MedSystemParticleTypes.BLOOD_DECAL, direction, position);
+        int color = ARGB.colorFromFloat(1.0F, this.rCol, this.gCol, this.bCol);
+        BloodDecalParticleOptions options = new BloodDecalParticleOptions(MedSystemParticleTypes.BLOOD_DECAL, direction, position, color);
         this.level.addParticle(options, true, true, x, y, z, 0, 0, 0);
         this.remove();
     }
 
-    public static int getParticleColor() {
-        return Integer.decode(MedicalSystem.getConfig().bloodDecals.bloodDecalColor);
+    public static int getParticleColor(int input) {
+        BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
+        return config.getDecalColor(input);
     }
 
-    public static final class Provider implements ParticleProvider<SimpleParticleType> {
+    public static final class Provider implements ParticleProvider<BloodDripParticleOptions> {
 
         private final SpriteSet spriteSet;
 
@@ -78,8 +88,8 @@ public final class BloodDripParticle extends SingleQuadParticle {
         }
 
         @Override
-        public @Nullable Particle createParticle(SimpleParticleType particleType, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-            return new BloodDripParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet.get(random));
+        public @Nullable Particle createParticle(BloodDripParticleOptions options, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
+            return new BloodDripParticle(level, options.color(), x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet.get(random));
         }
     }
 }
