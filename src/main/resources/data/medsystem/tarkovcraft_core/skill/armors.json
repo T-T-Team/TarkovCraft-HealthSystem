@@ -38,10 +38,9 @@
         "attribute": "medsystem:armor_durability",
         "id": "dee47603-d508-4b0d-85f7-0cc22e41df12",
         "per_level_value": -0.005,
-        "display_format": {
-          "decimal_places": 2,
-          "multiplier": -100,
-          "suffix": "%"
+        "formatter": {
+          "format": "%.2f%%",
+          "multiplier": -100
         }
       }
     }

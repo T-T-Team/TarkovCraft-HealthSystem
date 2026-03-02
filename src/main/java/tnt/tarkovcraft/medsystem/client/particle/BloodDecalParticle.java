@@ -5,6 +5,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -17,8 +18,8 @@ import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 
 public final class BloodDecalParticle extends DecalParticle {
 
-    public BloodDecalParticle(ClientLevel level, Direction direction, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
-        super(level, direction, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
+    public BloodDecalParticle(ClientLevel level, Direction direction, BlockPos position, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
+        super(level, direction, position, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
         BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
         this.updateColor(1.0F);
         this.quadSize = config.bloodDecalScale;
@@ -45,7 +46,7 @@ public final class BloodDecalParticle extends DecalParticle {
 
         @Override
         public @Nullable Particle createParticle(SimpleDecalParticleOptions options, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-            return new BloodDecalParticle(level, options.attachDirection(), x, y, z, xSpeed, ySpeed, zSpeed, this.sprites.get(random));
+            return new BloodDecalParticle(level, options.attachDirection(), options.position(), x, y, z, xSpeed, ySpeed, zSpeed, this.sprites.get(random));
         }
     }
 }

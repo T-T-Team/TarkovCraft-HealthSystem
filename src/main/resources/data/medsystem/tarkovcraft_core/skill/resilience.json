@@ -38,10 +38,9 @@
         "attribute": "medsystem:unconscious_on_limb_loss_chance",
         "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
         "per_level_value": -0.0015,
-        "display_format": {
-          "decimal_places": 2,
-          "multiplier": -100,
-          "suffix": "%"
+        "formatter": {
+          "format": "%.2f%%",
+          "multiplier": -100
         }
       }
     },
@@ -64,12 +63,14 @@
         "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
         "per_level_value": 0.00025,
         "constant": true,
-        "display_format": {
-          "decimal_places": 2,
+        "formatter": {
+          "format": "%.2f%s",
           "multiplier": 1200,
-          "suffix": {
-            "translate": "label.medsystem.unit.liter_per_day.suffix"
-          }
+          "arguments": [
+            {
+              "translate": "label.medsystem.unit.liter_per_day.suffix"
+            }
+          ]
         }
       }
     }

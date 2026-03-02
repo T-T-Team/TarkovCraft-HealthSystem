@@ -6,6 +6,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.ARGB;
@@ -48,7 +49,8 @@ public final class BloodDripParticle extends SingleQuadParticle {
                 if (result.getType() != BlockHitResult.Type.MISS) {
                     Vec3 hit = result.getLocation();
                     Direction direction = result.getDirection();
-                    this.onCollision(hit.x, hit.y, hit.z, direction);
+                    BlockPos hitBlockPos = result.getBlockPos();
+                    this.onCollision(hit.x, hit.y, hit.z, direction, hitBlockPos);
                     return;
                 }
             }
@@ -57,8 +59,8 @@ public final class BloodDripParticle extends SingleQuadParticle {
         }
     }
 
-    private void onCollision(double x, double y, double z, Direction direction) {
-        SimpleDecalParticleOptions options = new SimpleDecalParticleOptions(MedSystemParticleTypes.BLOOD_DECAL, direction);
+    private void onCollision(double x, double y, double z, Direction direction, BlockPos position) {
+        SimpleDecalParticleOptions options = new SimpleDecalParticleOptions(MedSystemParticleTypes.BLOOD_DECAL, direction, position);
         this.level.addParticle(options, true, true, x, y, z, 0, 0, 0);
         this.remove();
     }
