@@ -66,5 +66,8 @@
       "pos": [ 0, 4 ],
       "size": [ 20, 22 ]
     }
+  },
+  "blood_decals": {
+    "colors": "#00722F"
   }
 }

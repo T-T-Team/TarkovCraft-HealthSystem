@@ -22,10 +22,7 @@ import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticleOptions;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
@@ -109,9 +106,12 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                 float baseDir = 0.025F;
                 int particleCount = isHeavyBleed(this) ? config.heavyBleedDecalCount : config.lightBleedDecalCount;
                 RandomSource random = level.getRandom();
+                BloodDecalSettings settings = container.getDefinition().decalSettings();
                 for (int i = 0; i < particleCount; i++) {
-                    // TODO custom color
-                    level.addParticle(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, 0xB20000), position.x, position.y, position.z, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.x, 0.1F + direction.y, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.z);
+                    Integer color = settings.getColor(entity);
+                    if (color == null)
+                        return;
+                    level.addParticle(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, color), position.x, position.y, position.z, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.x, 0.1F + direction.y, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.z);
                 }
             }
         }

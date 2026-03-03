@@ -18,14 +18,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, Map<String, EntityStateMatcher> customStateDefinitions, EntityHitboxContainer hitboxContainer, HealthContainerDisplay display) {
+public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfiguration limbConfiguration, Map<String, EntityStateMatcher> customStateDefinitions, EntityHitboxContainer hitboxContainer, HealthContainerDisplay display, BloodDecalSettings decalSettings) {
 
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).fieldOf("targets").forGetter(HealthContainerDefinition::targets),
             LimbConfiguration.CODEC.fieldOf("limb_configuration").forGetter(HealthContainerDefinition::limbConfiguration),
             Codec.unboundedMap(Codec.string(1, 64), EntityStateMatcherType.CODEC).optionalFieldOf("custom_state_definitions", Collections.emptyMap()).forGetter(HealthContainerDefinition::customStateDefinitions),
             EntityHitboxContainer.CODEC.fieldOf("hitbox_container").forGetter(HealthContainerDefinition::hitboxContainer),
-            HealthContainerDisplay.CODEC.fieldOf("display_configuration").forGetter(HealthContainerDefinition::display)
+            HealthContainerDisplay.CODEC.fieldOf("display_configuration").forGetter(HealthContainerDefinition::display),
+            BloodDecalSettings.CODEC.optionalFieldOf("blood_decals", BloodDecalSettings.DEFAULT).forGetter(HealthContainerDefinition::decalSettings)
     ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
 
     public String getRootLimbCode() {
