@@ -250,8 +250,12 @@ public final class DamageHandler {
             double deviateZ = random.nextFloat() * (deviateAmount * 2.0F) - deviateAmount;
             directions.add(new Vec3(direction.x + deviateX, 0.05F, direction.z + deviateZ));
         }
-        // TODO custom colors
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, 0xB20000), pos.x, pos.y, pos.z, true, true, directions));
+        // fixme colors are always the same per hit
+        BloodDecalSettings settings = definition.decalSettings();
+        Integer color = settings.getColor(entity);
+        if (color == null)
+            return;
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, color), pos.x, pos.y, pos.z, true, true, directions));
     }
 
     public static HitCalculationResultDebugInfo getHitDebugInfo() {
