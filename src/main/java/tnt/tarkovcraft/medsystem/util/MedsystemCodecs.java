@@ -3,9 +3,12 @@ package tnt.tarkovcraft.medsystem.util;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import net.minecraft.Util;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec2;
+import tnt.tarkovcraft.core.util.helper.ARGB;
 
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,4 +31,34 @@ public class MedsystemCodecs {
             },
             pose -> pose.name().toLowerCase(Locale.ROOT)
     );
+    public static final Codec<Integer> RGB_COLOR_CODEC = Codec.withAlternative(
+            Codec.INT,
+            ExtraCodecs.VECTOR3F,
+            p_454448_ -> ARGB.colorFromFloat(1.0F, p_454448_.x(), p_454448_.y(), p_454448_.z())
+    );
+    public static final Codec<Integer> STRING_RGB_COLOR = Codec.withAlternative(
+            hexColor(6).xmap(ARGB::opaque, ARGB::transparent),
+            RGB_COLOR_CODEC
+    );
+
+    private static Codec<Integer> hexColor(int digits) {
+        long limit = (1L << digits * 4) - 1L;
+        return Codec.STRING.comapFlatMap(p_457388_ -> {
+            if (!p_457388_.startsWith("#")) {
+                return DataResult.error(() -> "Hex color must begin with #");
+            } else {
+                int j = p_457388_.length() - "#".length();
+                if (j != digits) {
+                    return DataResult.error(() -> "Hex color is wrong size, expected " + digits + " digits but got " + j);
+                } else {
+                    try {
+                        long k = HexFormat.fromHexDigitsToLong(p_457388_, "#".length(), p_457388_.length());
+                        return k >= 0L && k <= limit ? DataResult.success((int)k) : DataResult.error(() -> "Color value out of range: " + p_457388_);
+                    } catch (NumberFormatException numberformatexception) {
+                        return DataResult.error(() -> "Invalid color value: " + p_457388_);
+                    }
+                }
+            }
+        }, p_457393_ -> "#" + HexFormat.of().toHexDigits(p_457393_, digits));
+    }
 }
