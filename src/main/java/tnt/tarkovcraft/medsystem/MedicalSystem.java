@@ -17,6 +17,7 @@ import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -32,6 +33,7 @@ public final class MedicalSystem {
 
     public static final HealthSystem HEALTH_SYSTEM = new HealthSystem();
     public static final StatusEffectEventManager STATUS_EFFECT_EVENTS = new StatusEffectEventManager();
+    public static final BloodSystemManager BLOOD_SYSTEM = new BloodSystemManager();
 
     private static MedSystemConfig config;
 
@@ -86,6 +88,7 @@ public final class MedicalSystem {
     private void addReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(HealthSystem.IDENTIFIER, HEALTH_SYSTEM);
         event.addListener(StatusEffectEventManager.IDENTIFIER, STATUS_EFFECT_EVENTS);
+        BLOOD_SYSTEM.registerServerDataListeners(event::addListener);
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
