@@ -1,0 +1,74 @@
+{
+  "entity_types": [
+    "minecraft:player"
+  ],
+  "blood_types": {
+    "player": 1
+  },
+  "volume": {
+    "constant": 5000
+  },
+  "recovery": {
+    "attribute": "medsystem:blood_regeneration_amount"
+  },
+  "effect_list": [
+    {
+      "volume_range": {
+        "from": 0,
+        "to": 1250
+      },
+      "effects": [
+        {
+          "type": "medsystem:death"
+        }
+      ]
+    },
+    {
+      "volume_range": {
+        "from": 0,
+        "to": 2000
+      },
+      "effects": [
+        {
+          "type": "medsystem:unconscious",
+          "duration": "5s",
+          "chance": {
+            "constant": 1.0
+          },
+          "source": {
+            "allow_entity_death": true,
+            "label": {
+              "translate": "label.medsystem.unconscious.info.low_blood_level"
+            }
+          }
+        },
+        {
+          "type": "medsystem:status_effect",
+          "status_effect": {
+            "type": "medsystem:bloodloss",
+            "duration": -1,
+            "stage": "severe"
+          }
+        }
+      ]
+    },
+    {
+      "volume_range": {
+        "from": 2000,
+        "to": 3250
+      },
+      "effects": [
+        {
+          "type": "medsystem:unconscious",
+          "duration": ""
+        },
+        {
+          "type": "medsystem:status_effect",
+          "status_effect": {
+
+          }
+        }
+      ]
+    }
+  ]
+}

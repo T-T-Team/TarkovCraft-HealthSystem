@@ -115,7 +115,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             if (!limb.isDead() && limb.getHealth() < limb.getMaxHealth()) {
                 return true;
             }
-            if (!selfHealing && target instanceof Player player && container.getRootLimb().getLimbCode().equals(limb.getLimbCode())) {
+            if (!selfHealing && target instanceof Player player && container.getRootLimb().equals(limb)) {
                 BloodData bloodData = BloodSystem.getBloodData(player);
                 BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
                 return bloodData.isUnconscious() && info.causesDeath();

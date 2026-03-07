@@ -1,0 +1,12 @@
+{
+  "blood_types": {
+    "medsystem:player": {
+      "color": "#121212",
+      "label": {
+        "translate": "label.medsystem.blood_type.player"
+      }
+    }
+  },
+  "compatibility_map": {
+  }
+}
