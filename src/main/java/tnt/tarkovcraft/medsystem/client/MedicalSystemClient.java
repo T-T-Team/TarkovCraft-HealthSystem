@@ -39,12 +39,12 @@ import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItems;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
-import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SendMyRotation;
@@ -139,7 +139,7 @@ public final class MedicalSystemClient {
         if (KEY_GIVE_UP.consumeClick()) {
             Minecraft minecraft = Minecraft.getInstance();
             Player player = minecraft.player;
-            if (BloodSystem.canGiveUp(player)) {
+            if (BloodSystemManager.canSkipUnconsciousMode(player)) {
                 PacketDistributor.sendToServer(new C2S_RequestGiveUp());
             }
         }
@@ -178,7 +178,7 @@ public final class MedicalSystemClient {
         Screen screen = minecraft.screen;
         if (screen != null)
             return; // allows screen events
-        if (BloodSystem.isEntityUnconscious(player)) {
+        if (BloodSystemManager.isUnconscious(player)) {
             event.setCanceled(true);
         }
     }

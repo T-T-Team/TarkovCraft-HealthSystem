@@ -14,6 +14,7 @@ import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.renderable.IconWithLabelRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.util.HorizontalAlignment;
+import tnt.tarkovcraft.core.util.helper.ARGB;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.client.RegisterHealthScreenLabelsEvent;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -21,6 +22,8 @@ import tnt.tarkovcraft.medsystem.client.config.HealthDisplayType;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.client.screen.widget.LimbHealthWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.LimbWidget;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
@@ -37,6 +40,7 @@ import java.util.UUID;
 public class HealthScreen extends CharacterSubScreen implements HealthContainerScreen {
 
     public static final ResourceLocation HEALTH_ICON = MedicalSystem.resource("textures/icons/health.png");
+    public static final ResourceLocation DROPLET_ICON = MedicalSystem.resource("textures/icons/droplet.png");
 
     private HealthContainer healthContainer;
 
@@ -62,18 +66,33 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
         MedSystemClientConfig config = MedicalSystemClient.getConfig();
         float healthScale = config.healthDisplayType == HealthDisplayType.HEARTS
                 ? 0.5F : (float) Math.pow(10, config.numericHealthScale);
+        // Current health display
         list.add(new IconWithLabel(
-                        HEALTH_ICON,
-                        () -> Component.literal(Mth.floor(healthContainer.getHealth() * healthScale) + "/" + Mth.floor(healthContainer.getMaxHealth() * healthScale)),
-                        0xFF55FF55, 0xFF55FF55
-                )
-        );
+                HEALTH_ICON,
+                () -> Component.literal(Mth.floor(healthContainer.getHealth() * healthScale) + "/" + Mth.floor(healthContainer.getMaxHealth() * healthScale)),
+                0xFF55FF55, 0xFF55FF55
+        ));
+        // Blood type indicator
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(this.minecraft.player);
+        if (bloodSystem != null) {
+            ResourceLocation bloodTypeId = bloodSystem.getBloodType();
+            BloodConfiguration configuration = MedicalSystem.BLOOD_SYSTEM.getConfig();
+            configuration.getOptions(bloodTypeId).ifPresent(options -> {
+                Component styledLabel = options.getStylizedLabel();
+                list.add(new IconWithLabel(
+                        DROPLET_ICON,
+                        () -> styledLabel,
+                        ARGB.opaque(options.color()), 0xFFFFFFFF
+                ));
+            });
+        }
+        // Additional labels
         NeoForge.EVENT_BUS.post(new RegisterHealthScreenLabelsEvent(list));
         for (int i = 0; i < list.size(); i++) {
             IconWithLabel icon = list.get(i);
-            IconWithLabelRenderable renderable = this.addRenderableOnly(new IconWithLabelRenderable(this.font, 5, this.height - 5 - this.font.lineHeight - i * 11, this.width / 3, 10, HorizontalAlignment.LEFT, icon));
+            IconWithLabelRenderable renderable = this.addRenderableOnly(new IconWithLabelRenderable(this.font, 5, this.height - 5 - this.font.lineHeight - i * 12, this.width / 3, 10, HorizontalAlignment.LEFT, icon));
             renderable.setIconSize(10);
-            renderable.setHorizontalTextOffset(5);
+            renderable.setHorizontalTextOffset(3);
         }
 
         Vector2f center = new Vector2f(this.width / 2.0F, this.height / 2.0F);

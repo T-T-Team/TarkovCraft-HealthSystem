@@ -1,11 +1,11 @@
 package tnt.tarkovcraft.medsystem.client;
 
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 
 public final class UnconsciousPoseHelper {
 
     public static boolean shouldApplyUnconsciousAttributes(LivingEntity entity) {
-        return !entity.isPassenger() && BloodSystem.isEntityUnconscious(entity) ;
+        return !entity.isPassenger() && BloodSystemManager.isUnconscious(entity) ;
     }
 }

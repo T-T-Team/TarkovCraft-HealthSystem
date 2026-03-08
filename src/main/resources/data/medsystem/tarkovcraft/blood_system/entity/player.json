@@ -3,70 +3,182 @@
     "minecraft:player"
   ],
   "blood_types": {
-    "player": 1
+    "medsystem:ab_positive": 1
   },
-  "volume": {
-    "constant": 5000
-  },
-  "recovery": {
+  "blood_volume": 5.0,
+  "blood_recovery": {
     "attribute": "medsystem:blood_regeneration_amount"
+  },
+  "pain_threshold": 0.8,
+  "blood_effect_attributes": {
+    "pain_threshold": 0.8,
+    "grayscale_start": 0.9,
+    "grayscale_end": 0.65,
+    "bloodloss_effect": {
+      "mild": 0.9,
+      "moderate": 0.8,
+      "severe": 0.65
+    }
+  },
+  "unconscious_mode": {
+    "enabled": true,
+    "downed_on_death": true,
+    "custom_pose": true
   },
   "effect_list": [
     {
       "volume_range": {
-        "from": 0,
-        "to": 1250
+        "mode": "inclusive_exclusive",
+        "from": 0.0,
+        "to": 1.25
       },
       "effects": [
         {
           "type": "medsystem:death"
+        },
+        {
+          "type": "medsystem:unconscious",
+          "duration": "15s",
+          "options": {
+            "allow_skip": false,
+            "label": {
+              "translate": "label.medsystem.unconscious.info.low_blood_level"
+            }
+          }
         }
       ]
     },
     {
       "volume_range": {
-        "from": 0,
-        "to": 2000
+        "mode": "inclusive_exclusive",
+        "from": 1.25,
+        "to": 2.0
       },
       "effects": [
         {
           "type": "medsystem:unconscious",
           "duration": "5s",
-          "chance": {
-            "constant": 1.0
-          },
-          "source": {
-            "allow_entity_death": true,
+          "options": {
+            "allow_skip": true,
             "label": {
               "translate": "label.medsystem.unconscious.info.low_blood_level"
             }
           }
         },
         {
-          "type": "medsystem:status_effect",
-          "status_effect": {
-            "type": "medsystem:bloodloss",
-            "duration": -1,
-            "stage": "severe"
+          "type": "medsystem:apply_unconscious_config"
+        }
+      ]
+    },
+    {
+      "volume_range": {
+        "mode": "inclusive_exclusive",
+        "from": 2.0,
+        "to": 3.25
+      },
+      "effects": [
+        {
+          "type": "medsystem:configurable_unconscious",
+          "chance": {
+            "attribute": "medsystem:random_blackout_chance"
+          },
+          "options": {
+            "allow_skip": false,
+            "label": {
+              "translate": "label.medsystem.unconscious.info.random_unconsciousness"
+            }
+          }
+        },
+        {
+          "type": "medsystem:add_vanilla_attribute_modifier",
+          "attribute": "minecraft:movement_speed",
+          "modifier": {
+            "id": "medsystem:blood_system",
+            "amount": -0.3,
+            "operation": "add_multiplied_total"
+          }
+        },
+        {
+          "type": "medsystem:add_attribute_modifier",
+          "attribute": "tarkovcraft_core:weight_limit",
+          "modifier": {
+            "type": "tarkovcraft_core:multiply",
+            "id": "6079d919-84b8-4e8b-9639-bbfd8d313ee1",
+            "value": 0.5
           }
         }
       ]
     },
     {
       "volume_range": {
-        "from": 2000,
-        "to": 3250
+        "mode": "inclusive_exclusive",
+        "from": 3.25,
+        "to": 4.0
       },
       "effects": [
         {
-          "type": "medsystem:unconscious",
-          "duration": ""
+          "type": "medsystem:add_vanilla_attribute_modifier",
+          "attribute": "minecraft:movement_speed",
+          "modifier": {
+            "id": "medsystem:blood_system",
+            "amount": -0.2,
+            "operation": "add_multiplied_total"
+          }
         },
         {
-          "type": "medsystem:status_effect",
-          "status_effect": {
-
+          "type": "medsystem:add_attribute_modifier",
+          "attribute": "tarkovcraft_core:weight_limit",
+          "modifier": {
+            "type": "tarkovcraft_core:multiply",
+            "id": "6079d919-84b8-4e8b-9639-bbfd8d313ee1",
+            "value": 0.75
           }
+        }
+      ]
+    },
+    {
+      "volume_range": {
+        "mode": "inclusive_exclusive",
+        "from": 4.0,
+        "to": 4.5
+      },
+      "effects": [
+        {
+          "type": "medsystem:add_vanilla_attribute_modifier",
+          "attribute": "minecraft:movement_speed",
+          "modifier": {
+            "id": "medsystem:blood_system",
+            "amount": -0.1,
+            "operation": "add_multiplied_total"
+          }
+        },
+        {
+          "type": "medsystem:add_attribute_modifier",
+          "attribute": "tarkovcraft_core:weight_limit",
+          "modifier": {
+            "type": "tarkovcraft_core:multiply",
+            "id": "6079d919-84b8-4e8b-9639-bbfd8d313ee1",
+            "value": 0.9
+          }
+        }
+      ]
+    },
+    {
+      "volume_range": {
+        "mode": "inclusive",
+        "from": 4.5,
+        "to": 5.0
+      },
+      "effects": [
+        {
+          "type": "medsystem:remove_vanilla_attribute_modifier",
+          "attribute": "minecraft:movement_speed",
+          "modifier": "medsystem:blood_system"
+        },
+        {
+          "type": "medsystem:remove_attribute_modifier",
+          "attribute": "tarkovcraft_core:weight_limit",
+          "modifier": "6079d919-84b8-4e8b-9639-bbfd8d313ee1"
         }
       ]
     }

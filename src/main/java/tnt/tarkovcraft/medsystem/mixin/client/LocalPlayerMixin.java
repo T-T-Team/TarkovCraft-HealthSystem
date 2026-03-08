@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer {
@@ -25,7 +25,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     )
     private void medsystem$applyInput(CallbackInfo ci) {
         LocalPlayer player = (LocalPlayer)(Object)this;
-        if (BloodSystem.isEntityUnconscious(player)) {
+        if (BloodSystemManager.isUnconscious(player)) {
             ci.cancel();
         }
     }
@@ -37,7 +37,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     )
     private void isShiftKeyDown(CallbackInfoReturnable<Boolean> cir) {
         LocalPlayer player = (LocalPlayer)(Object)this;
-        if (BloodSystem.isEntityUnconscious(player)) {
+        if (BloodSystemManager.isUnconscious(player)) {
             cir.setReturnValue(false);
         }
     }

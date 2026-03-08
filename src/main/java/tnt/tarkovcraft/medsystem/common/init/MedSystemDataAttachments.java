@@ -5,9 +5,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -26,12 +26,12 @@ public final class MedSystemDataAttachments {
             .serialize(SideEffectHolder.CODEC)
             .build()
     );
-    public static final Supplier<AttachmentType<BloodData>> BLOOD_DATA = REGISTRY.register("blood_data", () -> AttachmentType.builder(() -> new BloodData(5.0F))
-            .serialize(BloodData.CODEC)
-            .sync(BloodData.STREAM_CODEC)
+    public static final Supplier<AttachmentType<DamageContext>> ACTIVE_DAMAGE_CONTEXT = REGISTRY.register("active_damage_context", () -> AttachmentType.builder(() -> new DamageContext(null, null))
             .build()
     );
-    public static final Supplier<AttachmentType<DamageContext>> ACTIVE_DAMAGE_CONTEXT = REGISTRY.register("active_damage_context", () -> AttachmentType.builder(() -> new DamageContext(null, null))
+    public static final Supplier<AttachmentType<EntityBloodSystem>> BLOOD_SYSTEM = REGISTRY.register("blood_system", () -> AttachmentType.builder(EntityBloodSystem::invalid)
+            .serialize(EntityBloodSystem.CODEC)
+            .sync(EntityBloodSystem.STREAM_CODEC)
             .build()
     );
 }

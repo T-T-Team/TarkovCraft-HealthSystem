@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// TODO put active blood type somewhere
 public class HealthLayer implements LayeredDraw.Layer {
 
     public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/health");

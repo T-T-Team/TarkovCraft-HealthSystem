@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 
 import java.util.function.BiConsumer;
 
@@ -24,7 +24,7 @@ public class UnconsciousShaderProgram implements ShaderProgram {
 
     @Override
     public void update(Minecraft client, LivingEntity entity) {
-        this.unconscious = BloodSystem.isEntityUnconscious(entity);
+        this.unconscious = BloodSystemManager.isUnconscious(entity);
         this.gameTime = client.level.getGameTime() % 24000L;
     }
 

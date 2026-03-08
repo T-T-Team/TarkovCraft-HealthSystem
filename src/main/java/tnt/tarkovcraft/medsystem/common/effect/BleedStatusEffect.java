@@ -18,14 +18,13 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
-import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticleOptions;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -89,9 +88,7 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
         }
         if (limb != null && (time - this.addedAt) % this.bleedInterval == 0L) {
             if (level instanceof ServerLevel serverLevel) {
-                if (BloodSystem.hasBloodDataIntegration(entity)) {
-                    BloodSystem.causeBloodLoss(entity, this.bleedAmount);
-                } else {
+                if (!BloodSystemManager.causeBloodLoss(entity, this.bleedAmount)) {
                     RegistryAccess access = serverLevel.registryAccess();
                     DamageSource damageSource = MedSystemDamageTypes.causeBleedDamage(access, this.getCausingEntity(serverLevel));
                     float damage = this.bleedAmount * RAW_DAMAGE_SCALE;

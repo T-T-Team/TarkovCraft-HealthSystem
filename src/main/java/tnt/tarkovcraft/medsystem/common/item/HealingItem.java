@@ -17,12 +17,14 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
+import tnt.tarkovcraft.core.util.helper.EntityHelper;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.HealthRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.Surgery;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -32,14 +34,13 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenLimbSelectScreen;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class HealingItem extends InteractableItem {
 
@@ -123,14 +124,12 @@ public class HealingItem extends InteractableItem {
                         ? container.getLimbByCode(activeInteraction.limbCode())
                         : null;
 
-                if (level instanceof ServerLevel serverLevel) {
-                    SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, origin);
-                    if (itemStack.isDamageableItem()) {
-                        itemStack.hurtAndBreak(1, serverLevel, origin, item -> origin.onEquippedItemBroken(item, EquipmentSlot.MAINHAND));
-                    } else {
-                        itemStack.consume(1, origin);
-                    }
-                }
+                SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, origin);
+
+                ItemStack originalItemStack = itemStack.copy();
+                EntityHelper.hurtOrConsumeEquipmentItem(origin, itemStack, 1, EquipmentSlot.MAINHAND);
+
+                // add health and cancel using item if fully healed
                 float leftover = container.heal(amount, part);
                 if (leftover == amount) {
                     origin.useItemRemaining = 0;
@@ -139,14 +138,12 @@ public class HealingItem extends InteractableItem {
                     container.heal(amount, null);
                 }
                 // rescue logic
-                if (!interaction.self() && target instanceof Player player) {
-                    BloodData bloodData = BloodSystem.getBloodData(player);
-                    BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
-                    if (bloodData.isUnconscious() && info.causesDeath()) {
-                        bloodData.setUnconsciousTime(BloodSystem.RESCUE_WAKE_UP_DELAY, BloodData.UnconsciousInfo.PAIN);
-                        bloodData.sync(player);
-                    }
+                EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
+                if (!interaction.self() && bloodSystem != null && bloodSystem.canRescueUnconsciousEntity(target, origin, originalItemStack)) {
+                    bloodSystem.rescueDownedEntity(target, origin, originalItemStack);
                 }
+
+                // adjust vanilla health pool
                 container.updateHealth(target);
                 if (cycleIndex + 1 > cycleLimit || (part != null && !attributes.canUseOnLimb(part, itemStack, container, interaction.self(), target))) {
                     origin.useItemRemaining = 0;

@@ -6,6 +6,8 @@ import net.minecraft.Util;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.Vec2;
+import org.joml.Vector2f;
+import org.joml.Vector2fc;
 import tnt.tarkovcraft.core.util.helper.ARGB;
 
 import java.util.HexFormat;
@@ -40,6 +42,12 @@ public class MedsystemCodecs {
             hexColor(6).xmap(ARGB::opaque, ARGB::transparent),
             RGB_COLOR_CODEC
     );
+    public static final Codec<Vector2fc> VECTOR2F = Codec.FLOAT
+            .listOf()
+            .comapFlatMap(
+                    floats -> Util.fixedSize(floats, 2).map(list -> new Vector2f(list.get(0), list.get(1))),
+                    vector2fc -> List.of(vector2fc.x(), vector2fc.y())
+            );
 
     private static Codec<Integer> hexColor(int digits) {
         long limit = (1L << digits * 4) - 1L;

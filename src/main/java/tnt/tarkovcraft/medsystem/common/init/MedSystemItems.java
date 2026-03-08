@@ -18,7 +18,7 @@ import tnt.tarkovcraft.medsystem.common.effect.group.MobEffectGroupItem;
 import tnt.tarkovcraft.medsystem.common.item.BloodBagItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 import tnt.tarkovcraft.medsystem.common.item.SimpleHealingItem;
-import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 
 public final class MedSystemItems {
 
@@ -106,7 +106,7 @@ public final class MedSystemItems {
             properties -> new BloodBagItem(
                     properties.stacksTo(1)
                             .component(CoreItemDataComponents.WEIGHT, 100)
-                            .component(MedSystemItemComponents.BLOOD_CONTAINER, new BloodContainer(0.5F, 0.0F, true))
+                            .component(MedSystemItemComponents.BLOOD_CONTAINER, BloodContainer.emptyContainer(0.5F, true))
             )
     );
     public static final DeferredItem<SimpleHealingItem> MORPHINE_INJECTOR = REGISTRY.registerItem(

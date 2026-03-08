@@ -23,6 +23,10 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.api.LimbDamageSource;
 import tnt.tarkovcraft.medsystem.common.argument.StatusEffectArgument;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
@@ -32,8 +36,6 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -44,6 +46,7 @@ public final class TarkovCraftCommand {
 
     private static final SimpleCommandExceptionType NO_VALID_TARGET_FOUND = new SimpleCommandExceptionType(Component.literal("No health containers found for given entity selector"));
     private static final SimpleCommandExceptionType NO_BLOOD_DATA_FOUND = new SimpleCommandExceptionType(Component.literal("No blood data found for given entity"));
+    private static final SimpleCommandExceptionType UNCONSCIOUS_MODE_DISABLED = new SimpleCommandExceptionType(Component.literal("Unconscious mode is not allowed for given entity"));
     private static final DynamicCommandExceptionType INVALID_STATUS_EFFECT = new DynamicCommandExceptionType(arg -> Component.literal("Status effect " + arg + " is not assignable"));
 
     public static void create(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
@@ -288,37 +291,42 @@ public final class TarkovCraftCommand {
 
     private static int getBloodInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(ctx, "target");
-        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystem.hasBloodDataIntegration(livingEntity)) {
+        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystemManager.isEnabled(livingEntity)) {
             throw NO_BLOOD_DATA_FOUND.create();
         }
-        BloodData data = BloodSystem.getBloodData(livingEntity);
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
+        EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
         CommandSourceStack source = ctx.getSource();
-        source.sendSystemMessage(Component.literal(entity.getDisplayName().getString() + " blood: " + String.format(Locale.ROOT, "%.4f/%.2fL", data.getBloodVolume(), data.getMaxBloodVolume())));
+        source.sendSystemMessage(Component.literal(entity.getDisplayName().getString() + " blood: " + String.format(Locale.ROOT, "%.4f/%.2fL", bloodSystem.getBloodVolume(), definition.getMaxBloodVolume())));
         return 0;
     }
 
     private static int setBloodVolume(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(ctx, "target");
-        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystem.hasBloodDataIntegration(livingEntity)) {
+        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystemManager.isEnabled(livingEntity)) {
             throw NO_BLOOD_DATA_FOUND.create();
         }
-        BloodData data = BloodSystem.getBloodData(livingEntity);
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
         float volume = FloatArgumentType.getFloat(ctx, "volume");
-        data.setBloodVolume(volume);
-        data.sync(livingEntity);
+        bloodSystem.setBloodVolume(volume);
+        bloodSystem.synchronizeImmediately(livingEntity);
         HealthSystem.synchronizeEntity(livingEntity);
         return 0;
     }
 
     private static int setUnconsciousState(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(ctx, "target");
-        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystem.hasBloodDataIntegration(livingEntity)) {
+        if (!(entity instanceof LivingEntity livingEntity) || !BloodSystemManager.isEnabled(livingEntity)) {
             throw NO_BLOOD_DATA_FOUND.create();
         }
-        BloodData data = BloodSystem.getBloodData(livingEntity);
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
+        EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
+        if (!definition.isUnconsciousModeAllowed()) {
+            throw UNCONSCIOUS_MODE_DISABLED.create();
+        }
         int time = IntegerArgumentType.getInteger(ctx, "time");
-        data.setUnconsciousTime(time, BloodData.UnconsciousInfo.EMPTY);
-        data.sync(livingEntity);
+        bloodSystem.setUnconscious(time, UnconsciousOptions.PAIN);
+        bloodSystem.synchronizeImmediately(livingEntity);
         HealthSystem.synchronizeEntity(livingEntity);
         return 0;
     }

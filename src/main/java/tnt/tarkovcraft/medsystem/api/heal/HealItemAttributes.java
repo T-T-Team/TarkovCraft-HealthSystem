@@ -7,7 +7,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -15,12 +14,13 @@ import net.minecraft.world.item.component.TooltipProvider;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.AnyEffectPredicate;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicate;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,10 +88,10 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             if (entity.getHealth() < entity.getMaxHealth())
                 return true;
             // rescue
-            if (origin != entity && entity instanceof Player player) {
-                BloodData data = BloodSystem.getBloodData(player);
-                BloodData.UnconsciousInfo info = data.getUnconsciousInfo();
-                return data.isUnconscious() && info.causesDeath();
+            if (origin != entity && BloodSystemManager.isEnabled(entity)) {
+                EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+                UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+                return bloodSystem.isUnconscious() && options.allowRescue();
             }
         }
         return false;
@@ -115,10 +115,11 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             if (!limb.isDead() && limb.getHealth() < limb.getMaxHealth()) {
                 return true;
             }
-            if (!selfHealing && target instanceof Player player && container.getRootLimb().equals(limb)) {
-                BloodData bloodData = BloodSystem.getBloodData(player);
-                BloodData.UnconsciousInfo info = bloodData.getUnconsciousInfo();
-                return bloodData.isUnconscious() && info.causesDeath();
+            // TODO why is root limb required?
+            if (!selfHealing && BloodSystemManager.isEnabled(target) && container.getRootLimb().equals(limb)) {
+                EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
+                UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+                return bloodSystem.isUnconscious() && options.allowRescue();
             }
         }
         return false;

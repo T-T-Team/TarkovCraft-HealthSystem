@@ -11,10 +11,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -44,6 +45,10 @@ public abstract class LivingEntityMixin extends Entity {
             HealthContainer container = HealthSystem.getHealthData(livingEntity);
             container.tick(livingEntity);
         }
+        if (BloodSystemManager.isEnabled(livingEntity)) {
+            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
+            bloodSystem.tick(livingEntity);
+        }
     }
 
     @Inject(
@@ -54,7 +59,7 @@ public abstract class LivingEntityMixin extends Entity {
     private void medsystem$swing(CallbackInfo ci) {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
         livingEntity.isCrouching();
-        if (livingEntity.getType() == EntityType.PLAYER && BloodSystem.isEntityUnconscious(livingEntity)) {
+        if (BloodSystemManager.isUnconscious(livingEntity)) {
             ci.cancel();
         }
     }

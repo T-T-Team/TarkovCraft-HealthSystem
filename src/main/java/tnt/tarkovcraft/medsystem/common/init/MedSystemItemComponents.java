@@ -6,8 +6,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainerMode;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
-import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
 
 import java.util.function.Supplier;
 
@@ -28,5 +29,9 @@ public final class MedSystemItemComponents {
     public static final Supplier<DataComponentType<BloodContainer>> BLOOD_CONTAINER = REGISTRY.registerComponentType("blood_container", builder -> builder
             .persistent(BloodContainer.CODEC)
             .networkSynchronized(BloodContainer.STREAM_CODEC)
+    );
+    public static final Supplier<DataComponentType<BloodContainerMode>> BLOOD_CONTAINER_MODE = REGISTRY.registerComponentType("blood_container_mode", builder -> builder
+            .persistent(BloodContainerMode.CODEC)
+            .networkSynchronized(BloodContainerMode.STREAM_CODEC)
     );
 }

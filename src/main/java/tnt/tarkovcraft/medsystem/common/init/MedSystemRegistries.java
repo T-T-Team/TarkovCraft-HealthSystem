@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicateType;
+import tnt.tarkovcraft.medsystem.common.blood_system.effect.BloodLevelEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventSource;
 import tnt.tarkovcraft.medsystem.common.effect.event.action.StatusEffectEventActionType;
@@ -25,6 +26,8 @@ public final class MedSystemRegistries {
     public static final Registry<StatusEffectEventActionType<?>> STATUS_EFFECT_EVENT_ACTION = new RegistryBuilder<>(Keys.STATUS_EFFECT_EVENT_ACTION).create();
     public static final Registry<StatusEffectEventFunctionType<?>> STATUS_EFFECT_EVENT_FUNCTION = new RegistryBuilder<>(Keys.STATUS_EFFECT_EVENT_FUNCTION).create();
 
+    public static final Registry<BloodLevelEffectType<?>> BLOOD_LEVEL_EFFECT = new RegistryBuilder<>(Keys.BLOOD_LEVEL_EFFECT).create();
+
     public static final class Keys {
 
         public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect"));
@@ -35,5 +38,6 @@ public final class MedSystemRegistries {
         public static final ResourceKey<Registry<StatusEffectEventConditionType<?>>> STATUS_EFFECT_EVENT_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect_event/condition"));
         public static final ResourceKey<Registry<StatusEffectEventActionType<?>>> STATUS_EFFECT_EVENT_ACTION = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect_event/action"));
         public static final ResourceKey<Registry<StatusEffectEventFunctionType<?>>> STATUS_EFFECT_EVENT_FUNCTION = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect_event/function"));
+        public static final ResourceKey<Registry<BloodLevelEffectType<?>>> BLOOD_LEVEL_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("blood_system/effect"));
     }
 }

@@ -8,13 +8,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -42,13 +42,15 @@ public class BloodLossStatusEffect extends IntervalAppliedStatusEffect {
 
     @Override
     public void applyEffect(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
-        if (!BloodSystem.hasBloodDataIntegration(entity)) {
+        if (!BloodSystemManager.isEnabled(entity)) {
             this.markForRemoval();
             return;
         }
-        BloodData data = BloodSystem.getBloodData(entity);
-        BloodStatus status = BloodStatus.fromBloodLevelPercentage(data.getBloodVolumePercentage());
-        if (!status.isLowBloodLevel()) {
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
+        float f = bloodSystem.getBloodVolume() / definition.getMaxBloodVolume();
+        Stage actualStage = definition.getBloodLossStage(f);
+        if (actualStage == null) {
             this.markForRemoval();
         }
     }

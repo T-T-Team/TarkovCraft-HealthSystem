@@ -8,7 +8,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -22,15 +21,12 @@ import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.api.event.PainCheckEvent;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.health.distributor.PoisonDamageDistributor;
-import tnt.tarkovcraft.medsystem.common.health.distributor.ScaledDamageDistributor;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
 
 import java.util.*;
@@ -86,15 +82,19 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
             return false;
         HealthContainer container = getHealthData(entity);
         boolean inPain = container.getStatusEffectStream().anyMatch(effect -> effect.getType().is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING));
-        if (BloodSystem.hasBloodDataIntegration(entity)) {
-            BloodData data = BloodSystem.getBloodData(entity);
-            BloodStatus status = BloodStatus.fromBloodLevelPercentage(data.getBloodVolumePercentage());
-            if (status.isSameOrBelow(BloodStatus.MODERATE_BLOOD_LOSS)) {
-                inPain = true;
-            }
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        if (!inPain && bloodSystem != null && bloodSystem.isInPain()) {
+            inPain = true;
         }
         PainCheckEvent event = NeoForge.EVENT_BUS.post(new PainCheckEvent(entity, container, inPain));
         return event.isInPain();
+    }
+
+    public static boolean isBleeding(LivingEntity entity) {
+        if (!hasCustomHealth(entity))
+            return false;
+        HealthContainer container = getHealthData(entity);
+        return container.hasMatchingStatusEffect(MedSystemTags.StatusEffects.IS_BLEED);
     }
 
     public static boolean isMovementRestricted(LivingEntity entity) {
@@ -108,12 +108,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         if (map.hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING)) {
             return true;
         }
-        if (BloodSystem.hasBloodDataIntegration(entity)) {
-            BloodData data = BloodSystem.getBloodData(entity);
-            BloodStatus status = BloodStatus.fromBloodLevelPercentage(data.getBloodVolumePercentage());
-            if (status.isSameOrBelow(BloodStatus.MODERATE_BLOOD_LOSS)) {
-                return true;
-            }
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        if (bloodSystem != null && bloodSystem.isInPain()) {
+            return true;
         }
         Stream<Limb> parts = healthContainer.getLimbsAsStream();
         return parts.anyMatch(HealthSystem::isMovementRestrictedOnLimb);
