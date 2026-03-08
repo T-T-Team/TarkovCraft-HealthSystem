@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import net.minecraft.core.Holder;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +17,8 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+
+import java.util.Optional;
 
 public final class StatusEffectHelper {
 
@@ -74,5 +77,11 @@ public final class StatusEffectHelper {
         if (cause != null) {
             target.setCausingEntity(cause.getUUID());
         }
+    }
+
+    public static Optional<StatusEffect> getAnyTaggedEffect(HealthContainer container, TagKey<StatusEffectType<?>> tag) {
+        return container.getStatusEffectStream()
+                .filter(effect -> effect.getType().is(tag))
+                .findAny();
     }
 }

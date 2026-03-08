@@ -1,19 +1,18 @@
 package tnt.tarkovcraft.medsystem.network;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.HandlerThread;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.network.config.BloodSystemSynchronizationTask;
+import tnt.tarkovcraft.medsystem.network.config.HealthContainerSynchronizationTask;
 import tnt.tarkovcraft.medsystem.network.message.*;
 
 import java.util.Locale;
-import java.util.function.Consumer;
 
 public final class MedicalSystemNetwork {
 
@@ -38,26 +37,12 @@ public final class MedicalSystemNetwork {
         registry.playToServer(C2S_SendMyRotation.TYPE, C2S_SendMyRotation.CODEC, C2S_SendMyRotation::handleMessage);
 
         registry.configurationToClient(S2C_SendHealthDefinitions.TYPE, S2C_SendHealthDefinitions.CODEC, S2C_SendHealthDefinitions::handleMessage);
+        registry.configurationToClient(S2C_SendBloodSystemData.TYPE, S2C_SendBloodSystemData.CODEC, S2C_SendBloodSystemData::handleMessage);
     }
 
     @SubscribeEvent
     private void registerConfigurationTasks(RegisterConfigurationTasksEvent event) {
         event.register(new HealthContainerSynchronizationTask(event.getListener()));
-    }
-
-    private record HealthContainerSynchronizationTask(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
-
-        public static final Type TYPE = new Type(MedicalSystem.createIdentifier("health_container_sync"));
-
-        @Override
-        public void run(Consumer<CustomPacketPayload> sender) {
-            sender.accept(MedicalSystem.HEALTH_SYSTEM.getConfigurationPayload());
-            this.listener.finishCurrentTask(TYPE);
-        }
-
-        @Override
-        public Type type() {
-            return TYPE;
-        }
+        event.register(new BloodSystemSynchronizationTask(event.getListener()));
     }
 }

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 
 @Mixin(MouseHandler.class)
 public abstract class MouseHandlerMixin {
@@ -23,7 +23,7 @@ public abstract class MouseHandlerMixin {
     )
     private void medsystem$turnPlayer(CallbackInfo ci) {
         Player player = this.minecraft.player;
-        if (player != null && BloodSystem.isEntityUnconscious(player)) {
+        if (player != null && BloodSystemManager.isUnconscious(player)) {
             ci.cancel();
         }
     }

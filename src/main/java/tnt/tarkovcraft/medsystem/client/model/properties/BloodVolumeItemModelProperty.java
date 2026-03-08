@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
-import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 
 public record BloodVolumeItemModelProperty() implements RangeSelectItemModelProperty {
 

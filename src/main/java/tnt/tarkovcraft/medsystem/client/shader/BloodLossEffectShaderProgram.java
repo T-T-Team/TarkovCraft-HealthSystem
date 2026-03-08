@@ -13,9 +13,9 @@ import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 
 public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
 
@@ -28,19 +28,16 @@ public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
     @Override
     public void tickProgram(Minecraft minecraft, LivingEntity livingEntity) {
         this.lastStrength = this.strength;
-        if (!BloodSystem.hasBloodDataIntegration(livingEntity))
+        if (!BloodSystemManager.isEnabled(livingEntity))
             return;
-        BloodData data = BloodSystem.getBloodData(livingEntity);
-        float percentage = data.getBloodVolumePercentage();
-        BloodStatus status = BloodStatus.fromBloodLevelPercentage(percentage);
-        if (status == BloodStatus.HEALTHY) {
-            this.adjustTowards(0.0F);
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
+        EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
+        float percentage = bloodSystem.getBloodVolume() / definition.getMaxBloodVolume();
+        if (definition.shouldApplyGrayscaleShader(percentage)) {
+            float grayscale = definition.getGrayscaleAmount(percentage);
+            this.adjustTowards(grayscale);
         } else {
-            float maxBloodPercentage = BloodStatus.MILD_BLOOD_LOSS.getAmount();
-            float minBloodPercentage = BloodStatus.RANDOM_BLACKOUT.getAmount();
-            float clampedValue = Mth.clamp(percentage, minBloodPercentage, maxBloodPercentage);
-            float adjustedPercentage = 1.0F - ((clampedValue - minBloodPercentage) / (maxBloodPercentage - minBloodPercentage));
-            this.adjustTowards(adjustedPercentage);
+            this.adjustTowards(0.0F);
         }
     }
 

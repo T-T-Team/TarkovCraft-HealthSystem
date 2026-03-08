@@ -1,14 +1,41 @@
-package tnt.tarkovcraft.medsystem.common.health;
+package tnt.tarkovcraft.medsystem.util;
 
 import com.mojang.serialization.DataResult;
+import tnt.tarkovcraft.medsystem.common.health.*;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
-public final class HealthContainerHelper {
+public final class HealthHelper {
 
-    public static DataResult<HealthContainerDefinition> validate(HealthContainerDefinition container) {
+    public static boolean allMatch(HealthContainer container, LimbType type, Predicate<Limb> filter) {
+        return container.getLimbsAsStream()
+                .filter(limb -> limb.getType() == type)
+                .allMatch(filter);
+    }
+
+    public static boolean allMatch(HealthContainer container, Predicate<Limb> filter) {
+        return container.getLimbsAsStream().allMatch(filter);
+    }
+
+    public static boolean allDead(HealthContainer container, LimbType type) {
+        return allMatch(container, type, Limb::isDead);
+    }
+
+    public static boolean allDead(HealthContainer container) {
+        return allMatch(container, Limb::isDead);
+    }
+
+    public static void recoverVitalLimbs(HealthContainer container, float health) {
+        container.getVitalLimbs().forEach(limb -> {
+            if (limb.isDead()) {
+                limb.setHealth(health);
+            }
+        });
+    }
+
+    public static DataResult<HealthContainerDefinition> validateHealthContainer(HealthContainerDefinition container) {
         // validation of hitbox links
         LimbConfiguration limbConfiguration = container.limbConfiguration();
         Set<String> limbs = limbConfiguration.limbs().keySet();
@@ -38,5 +65,8 @@ public final class HealthContainerHelper {
             }
         }
         return DataResult.success(container);
+    }
+
+    private HealthHelper() {
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 public record C2S_RequestGiveUp() implements CustomPacketPayload {
@@ -17,8 +17,8 @@ public record C2S_RequestGiveUp() implements CustomPacketPayload {
 
     public void handleMessage(IPayloadContext ctx) {
         Player player = ctx.player();
-        if (BloodSystem.canGiveUp(player)) {
-            BloodSystem.causeBloodLoss(player, Float.MAX_VALUE);
+        if (BloodSystemManager.canSkipUnconsciousMode(player)) {
+            BloodSystemManager.causeBloodLoss(player, Float.MAX_VALUE);
         }
     }
 

@@ -1,23 +1,35 @@
 package tnt.tarkovcraft.medsystem.common.blood_system;
 
 import com.google.gson.JsonParser;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.core.util.helper.EntityHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.*;
 
 public final class BloodSystemManager {
 
@@ -25,17 +37,101 @@ public final class BloodSystemManager {
     private final ConfigurationLoader configLoader = new ConfigurationLoader();
     private final BloodAssignmentLoader assignmentLoader = new BloodAssignmentLoader();
 
-    public void registerServerDataListeners(BiConsumer<Identifier, PreparableReloadListener> registration) {
-        registration.accept(ConfigurationLoader.ID, this.configLoader);
+    public static boolean isEnabled() {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        return config.bloodSystem.useBloodSystem;
+    }
+
+    public static boolean isEnabled(LivingEntity entity) {
+        return isEnabled() && EntityBloodSystem.getAttached(entity) != null;
+    }
+
+    public static boolean isUnconscious(LivingEntity entity) {
+        return isEnabled(entity) && EntityBloodSystem.getAttached(entity).isUnconscious();
+    }
+
+    public static void synchronize(LivingEntity entity) {
+        EntityBloodSystem system = EntityBloodSystem.getAttached(entity);
+        if (system != null) {
+            system.synchronizeImmediately(entity);
+        }
+    }
+
+    public static void handleNewEntity(LivingEntity entity) {
+        if (isEnabled()) {
+            EntityBloodSystem existingBloodSystem = EntityBloodSystem.getAttached(entity);
+            if (existingBloodSystem != null && existingBloodSystem.isValidBloodAttachment(entity))
+                return;
+            EntityBloodSystem.detach(entity);
+            EntityBloodSystemDefinition definition = EntityBloodSystemDefinition.forEntity(entity);
+            if (definition != null) {
+                definition.bind(entity);
+            }
+        } else {
+            EntityBloodSystem.detach(entity);
+        }
+    }
+
+    public static boolean canSkipUnconsciousMode(LivingEntity entity) {
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        if (bloodSystem == null)
+            return false;
+        UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+        return !bloodSystem.hasBledOut() && bloodSystem.isUnconscious() && options.allowSkip() && !EntityHelper.isCreativeOrSpectator(entity);
+    }
+
+    public static boolean causeBloodLoss(LivingEntity entity, float amount) {
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        if (bloodSystem != null && !EntityHelper.isCreativeOrSpectator(entity)) {
+            bloodSystem.causeBloodLoss(amount);
+            bloodSystem.synchronizeImmediately(entity);
+            return true;
+        }
+        return false;
+    }
+
+    public void registerServerDataListeners(AddServerReloadListenersEvent event) {
+        event.addListener(ConfigurationLoader.ID, this.configLoader);
+        event.addListener(BloodAssignmentLoader.ID, this.assignmentLoader);
+        event.addDependency(ConfigurationLoader.ID, BloodAssignmentLoader.ID);
     }
 
     public BloodConfiguration getConfig() {
         return this.configLoader.config;
     }
 
+    public EntityBloodSystemDefinition getAssignment(EntityType<?> type) {
+        return this.assignmentLoader.assignmentMap.get(type);
+    }
+
+    public Set<Identifier> getAvailableBloodTypes() {
+        return this.getConfig().bloodTypes().keySet();
+    }
+
+    public NetworkData prepareSynchronizationData() {
+        return new NetworkData(this.configLoader.config, this.assignmentLoader.assignmentMap);
+    }
+
+    public void receiveServerData(NetworkData networkData) {
+        this.configLoader.importServerConfiguration(networkData.configuration());
+        this.assignmentLoader.importServerAssignments(networkData.assignments());
+    }
+
+    public record NetworkData(BloodConfiguration configuration, Map<EntityType<?>, EntityBloodSystemDefinition> assignments) {
+
+        public static final Codec<NetworkData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                BloodConfiguration.CODEC.fieldOf("configuration").forGetter(NetworkData::configuration),
+                Codec.unboundedMap(BuiltInRegistries.ENTITY_TYPE.byNameCodec(), EntityBloodSystemDefinition.CODEC).fieldOf("assignments").forGetter(NetworkData::assignments)
+        ).apply(instance, NetworkData::new));
+        public static final StreamCodec<FriendlyByteBuf, NetworkData> STREAM_CODEC = StreamCodec.of(
+                (buffer, value) -> buffer.writeNbt(Codecs.encodeWithCodec(CODEC, value)),
+                buffer -> Codecs.decodeWithCodec(CODEC, buffer.readNbt())
+        );
+    }
+
     private static final class ConfigurationLoader extends SimplePreparableReloadListener<BloodConfiguration> {
 
-        private static final Identifier ID = MedicalSystem.createIdentifier("blood_system/blood_configuration");
+        private static final Identifier ID = MedicalSystem.createIdentifier("blood_configuration");
         private BloodConfiguration config = BloodConfiguration.missingConfiguration();
 
         @Override
@@ -61,7 +157,53 @@ public final class BloodSystemManager {
                 bloodTypes.forEach(id -> MedicalSystem.LOGGER.debug(MARKER, "Registered blood type: {}", id));
             }
         }
+
+        void importServerConfiguration(BloodConfiguration configuration) {
+            this.config = configuration;
+        }
     }
 
-    private static final class BloodAssignmentLoader {}
+    private final class BloodAssignmentLoader extends SimpleJsonResourceReloadListener<EntityBloodSystemDefinition> {
+
+        private static final Identifier ID = MedicalSystem.createIdentifier("blood_assignment");
+        private final Map<EntityType<?>, EntityBloodSystemDefinition> assignmentMap = new HashMap<>();
+
+        private BloodAssignmentLoader() {
+            super(EntityBloodSystemDefinition.CODEC, FileToIdConverter.json("tarkovcraft/blood_system/entity"));
+        }
+
+        @Override
+        protected void apply(Map<Identifier, EntityBloodSystemDefinition> map, ResourceManager resourceManager, ProfilerFiller profiler) {
+            MedicalSystem.LOGGER.debug(MARKER, "Loading entity blood assignment data");
+            this.assignmentMap.clear();
+            Set<Identifier> bloodTypeRegistry = BloodSystemManager.this.getAvailableBloodTypes();
+            for (Map.Entry<Identifier, EntityBloodSystemDefinition> entry : map.entrySet()) {
+                Identifier id = entry.getKey();
+                EntityBloodSystemDefinition definition = entry.getValue();
+                this.validateAndRegister(id, definition, bloodTypeRegistry);
+            }
+            MedicalSystem.LOGGER.info(MARKER, "Loaded {} entity blood assignments", this.assignmentMap.size());
+        }
+
+        private void validateAndRegister(Identifier fileId, EntityBloodSystemDefinition definition, Set<Identifier> bloodTypeRegistry) {
+            List<Identifier> definedBloodTypes = definition.getAvailableBloodTypes();
+            for (Identifier bloodType : definedBloodTypes) {
+                if (!bloodTypeRegistry.contains(bloodType)) {
+                    MedicalSystem.LOGGER.error(MARKER, "Unknown blood type '{}' defined within file '{}'", bloodType, fileId);
+                    return;
+                }
+            }
+            Collection<EntityType<?>> entities = definition.getEntityTypes();
+            for (EntityType<?> entity : entities) {
+                if (this.assignmentMap.put(entity, definition) != null) {
+                    MedicalSystem.LOGGER.warn(MARKER, "Detected blood assignment override for entity '{}' from '{}'", entity, fileId);
+                }
+            }
+        }
+
+        void importServerAssignments(Map<EntityType<?>, EntityBloodSystemDefinition> data) {
+            this.assignmentMap.clear();
+            this.assignmentMap.putAll(data);
+        }
+    }
 }

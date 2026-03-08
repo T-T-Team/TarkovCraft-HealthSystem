@@ -25,8 +25,8 @@ import tnt.tarkovcraft.core.common.init.CoreAttributes;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
 import tnt.tarkovcraft.medsystem.common.config.TimeRange;
+import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
 import tnt.tarkovcraft.medsystem.common.effect.BloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
@@ -39,6 +39,7 @@ import tnt.tarkovcraft.medsystem.network.message.S2C_RefreshEntityDimensions;
 import java.util.Optional;
 import java.util.UUID;
 
+@Deprecated
 public final class BloodData {
 
     public static final MapCodec<BloodData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -96,7 +97,7 @@ public final class BloodData {
                 BloodEvent.OnWakeUp onWakeUp = NeoForge.EVENT_BUS.post(new BloodEvent.OnWakeUp(entity, this));
                 UnconsciousInfo info = onWakeUp.getUnconsciousInfo();
                 if (info.causesDeath()) {
-                    BloodSystem.causeBloodLoss(entity, Float.MAX_VALUE);
+                    //BloodSystem.causeBloodLoss(entity, Float.MAX_VALUE);
                 } else if (onWakeUp.willWakeUp()) {
                     this.updateEffects(entity);
                     this.updateConsciousStatus(entity, true);
@@ -182,8 +183,8 @@ public final class BloodData {
     }
 
     public void sync(LivingEntity entity) {
-        if (entity.isAlive())
-            entity.syncData(MedSystemDataAttachments.BLOOD_DATA);
+        //if (entity.isAlive())
+            //entity.syncData(MedSystemDataAttachments.BLOOD_DATA);
     }
 
     private void bloodLevelTick(LivingEntity entity) {
@@ -287,8 +288,6 @@ public final class BloodData {
         if (!entity.isAlive())
             return;
         boolean unconscious = this.isUnconscious();
-        HealthContainer container = HealthSystem.getHealthData(entity);
-        StatusEffectMap effects = container.getGlobalStatusEffects();
         AttributeMap attributeMap = entity.getAttributes();
         if (wakeUp) {
             entity.refreshDimensions();
@@ -346,9 +345,9 @@ public final class BloodData {
         public static final UnconsciousInfo DEATH = new UnconsciousInfo(true, true, Component.translatable("label.medsystem.unconscious.info.death"));
 
         public static final Codec<UnconsciousInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.BOOL.fieldOf("showGiveUpHint").forGetter(UnconsciousInfo::showGiveUpHint),
+                Codec.BOOL.fieldOf("allowSkip").forGetter(UnconsciousInfo::showGiveUpHint),
                 Codec.BOOL.optionalFieldOf("causesDeath", false).forGetter(UnconsciousInfo::causesDeath),
-                ComponentSerialization.CODEC.fieldOf("reason").forGetter(UnconsciousInfo::reason)
+                ComponentSerialization.CODEC.fieldOf("label").forGetter(UnconsciousInfo::reason)
         ).apply(instance, UnconsciousInfo::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, UnconsciousInfo> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL, UnconsciousInfo::showGiveUpHint,

@@ -29,6 +29,10 @@ import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.TimeRange;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
@@ -36,8 +40,6 @@ import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventParams;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.init.*;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +65,7 @@ public final class DamageHandler {
         DamageSource source = event.getSource();
 
         // no in-block damage when unconscious
-        if (BloodSystem.isEntityUnconscious(livingEntity) && source.is(DamageTypes.IN_WALL)) {
+        if (BloodSystemManager.isUnconscious(livingEntity) && source.is(DamageTypes.IN_WALL)) {
             event.setInvulnerable(true);
             return;
         }
@@ -155,12 +157,13 @@ public final class DamageHandler {
         }
 
         // Unconscious state processing TODO move to status effect events?
-        if (BloodSystem.hasBloodDataIntegration(entity) && !entity.level().isClientSide()) {
+        if (BloodSystemManager.isEnabled(entity) && !entity.level().isClientSide()) {
+            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+            EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
             RandomSource random = entity.getRandom();
-            BloodData bloodData = BloodSystem.getBloodData(entity);
             MedSystemConfig config = MedicalSystem.getConfig();
             int limbLostCount = lostLimbs.size();
-            if (!bloodData.isUnconscious() && config.bloodSystem.unconsciousAfterLimbLossMultiplier > 0.0F && limbLostCount > 0) {
+            if (definition.isUnconsciousModeAllowed() && !bloodSystem.isUnconscious() && config.bloodSystem.unconsciousAfterLimbLossMultiplier > 0.0F && limbLostCount > 0) {
                 float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F) * config.bloodSystem.unconsciousAfterLimbLossMultiplier;
                 if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
                     TimeRange timeRange = config.bloodSystem.unconsciousOnLimbLoss;
@@ -169,12 +172,11 @@ public final class DamageHandler {
                         unconsciousTime += timeRange.getDurationInSeconds(random);
                     }
                     if (unconsciousTime > 0) {
-                        bloodData.setOrExtendedUnconsciousTime(unconsciousTime, BloodData.UnconsciousInfo.PAIN);
+                        bloodSystem.setOrExtendedUnconscious(unconsciousTime, UnconsciousOptions.PAIN);
+                        bloodSystem.synchronizeImmediately(entity);
                     }
                 }
             }
-
-            bloodData.sync(entity);
         }
 
         // disable sprinting if an entity can no longer sprint

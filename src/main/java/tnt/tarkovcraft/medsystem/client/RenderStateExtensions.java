@@ -6,11 +6,16 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 
 public final class RenderStateExtensions {
 
+    public static final ContextKey<Boolean> SPECIAL_POSE = create("special_pose");
     public static final ContextKey<Boolean> PASSENGER = create("passenger");
     public static final ContextKey<Boolean> UNCONSCIOUS = create("unconscious");
 
     private static <T> ContextKey<T> create(String code) {
         return new ContextKey<>(MedicalSystem.createIdentifier(code));
+    }
+
+    public static boolean hasSpecialPoseRenderer(BaseRenderState renderState) {
+        return renderState.getRenderDataOrDefault(SPECIAL_POSE, false);
     }
 
     public static boolean shouldApplyUnconsciousAttributes(BaseRenderState renderState) {

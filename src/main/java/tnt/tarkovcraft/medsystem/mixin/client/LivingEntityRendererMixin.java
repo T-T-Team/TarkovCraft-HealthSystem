@@ -27,7 +27,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
             cancellable = true
     )
     private void medsystem$setupRotations(S renderState, PoseStack poseStack, float bodyRot, float scale, CallbackInfo ci) {
-        if (!RenderStateExtensions.shouldApplyUnconsciousAttributes(renderState))
+        if (!RenderStateExtensions.shouldApplyUnconsciousAttributes(renderState)) // TODO default pose
             return;
 
         poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - bodyRot));

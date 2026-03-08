@@ -1,21 +1,11 @@
-package tnt.tarkovcraft.medsystem.common.status;
+package tnt.tarkovcraft.medsystem.common.blood_system;
 
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public final class BloodSystemEventHandler {
-
-    @SubscribeEvent
-    private void onPlayerPostTick(PlayerTickEvent.Post event) {
-        if (!BloodSystem.isEnabled())
-            return;
-        Player player = event.getEntity();
-        BloodData data = BloodSystem.getBloodData(player);
-        data.update(player);
-    }
 
     @SubscribeEvent
     private void onItemUse(PlayerInteractEvent.RightClickItem event) {
@@ -44,7 +34,7 @@ public final class BloodSystemEventHandler {
 
     private <T extends PlayerInteractEvent & ICancellableEvent> void cancelIfUnconscious(T event) {
         Player entity = event.getEntity();
-        if (BloodSystem.isEntityUnconscious(entity)) {
+        if (BloodSystemManager.isUnconscious(entity)) {
             event.setCanceled(true);
         }
     }

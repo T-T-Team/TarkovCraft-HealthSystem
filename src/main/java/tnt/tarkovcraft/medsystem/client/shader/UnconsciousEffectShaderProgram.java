@@ -6,7 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 
 public final class UnconsciousEffectShaderProgram implements PostEffectShaderProgram {
 
@@ -15,7 +15,7 @@ public final class UnconsciousEffectShaderProgram implements PostEffectShaderPro
 
     @Override
     public void tickProgram(Minecraft minecraft, LivingEntity livingEntity) {
-        this.unconscious = BloodSystem.isEntityUnconscious(livingEntity);
+        this.unconscious = BloodSystemManager.isUnconscious(livingEntity);
     }
 
     @Override

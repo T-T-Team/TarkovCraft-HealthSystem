@@ -7,7 +7,7 @@ import tnt.tarkovcraft.core.common.weight.WeightContext;
 import tnt.tarkovcraft.core.common.weight.WeightProvider;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
-import tnt.tarkovcraft.medsystem.common.status.BloodContainer;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 
 public class BloodContainerWeightProvider implements WeightProvider {
 

@@ -8,11 +8,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.util.HitboxHelper;
-
-import javax.annotation.Nullable;
 
 public record HitCalculationContext(LivingEntity entity, HealthContainer container, DamageSource source) {
 

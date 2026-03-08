@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import tnt.tarkovcraft.core.client.hint.KeybindOnScreenHint;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 
 public class GiveUpOnScreenHint extends KeybindOnScreenHint {
 
@@ -18,7 +18,7 @@ public class GiveUpOnScreenHint extends KeybindOnScreenHint {
     public void onHintUpdate() {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
-        this.active = BloodSystem.canGiveUp(player);
+        this.active = BloodSystemManager.canSkipUnconsciousMode(player);
     }
 
     @Override

@@ -14,8 +14,8 @@ import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 
 import java.util.List;
 
@@ -34,10 +34,10 @@ public class UnconsciousLayer implements GuiLayer {
             return;
         Window window = client.getWindow();
 
-        BloodData data = BloodSystem.getBloodData(player);
-        if (data.isUnconscious()) {
-            BloodData.UnconsciousInfo info = data.getUnconsciousInfo();
-            Component reason = info.reason();
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(player);
+        if (bloodSystem != null && bloodSystem.isUnconscious()) {
+            UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+            Component reason = options.label();
             List<FormattedCharSequence> lines = font.split(reason, window.getGuiScaledWidth() / 3 * 2);
             for (int i = 0; i < lines.size(); i++) {
                 FormattedCharSequence line = lines.get(i);
@@ -45,8 +45,8 @@ public class UnconsciousLayer implements GuiLayer {
                 guiGraphics.drawString(font, line, (window.getGuiScaledWidth() - textWidth) / 2, 30 + i * 11, ColorPalette.WHITE, true);
             }
 
-            if (info.causesDeath()) {
-                Duration timer = Duration.ticks(data.getRemainingUnconsciousTime());
+            if (options.allowRescue()) {
+                Duration timer = Duration.ticks(bloodSystem.getRemainingUnconsciousTime());
                 Component text = timer.format(DurationFormats.LONG_NAME);
                 int textWidth = font.width(text);
                 guiGraphics.drawString(font, text, (window.getGuiScaledWidth() - textWidth) / 2, 30 + (lines.size() + 1) * 11, ColorPalette.WHITE, true);

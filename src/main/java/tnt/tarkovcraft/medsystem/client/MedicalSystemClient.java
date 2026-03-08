@@ -6,10 +6,12 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugEntryNoop;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.core.particles.ParticleLimit;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -38,18 +40,20 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.client.debug.HitResultInfoDebugRenderer;
-import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
-import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.model.properties.BloodVolumeItemModelProperty;
 import tnt.tarkovcraft.medsystem.client.model.properties.IsEmptyBloodContainerItemModelProperty;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SendMyRotation;
@@ -123,16 +127,20 @@ public final class MedicalSystemClient {
         DynamicTransformsPipelineModifier.addTargetPipeline(PainReliefEffectShaderProgram.PIPELINE);
     }
 
-    @SuppressWarnings({"unchecked", "RedundantCast"})
+    @SuppressWarnings({"RedundantCast", "unchecked"})
     private void registerRenderStateExtensions(RegisterRenderStateModifiersEvent event) {
         event.registerEntityModifier(
-                (Class<? extends AvatarRenderer<AbstractClientPlayer>>)(Object)AvatarRenderer.class,
+                (Class<? extends EntityRenderer<? extends LivingEntity, ? extends LivingEntityRenderState>>)(Object) LivingEntityRenderer.class,
                 (entity, state) -> {
+                    EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+                    if (bloodSystem == null)
+                        return;
+                    EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
+                    state.setRenderData(RenderStateExtensions.SPECIAL_POSE, definition.hasSpecialUnconsciousPoseRenderer());
                     state.setRenderData(RenderStateExtensions.PASSENGER, entity.isPassenger());
-                    state.setRenderData(RenderStateExtensions.UNCONSCIOUS, BloodSystem.isEntityUnconscious(entity));
+                    state.setRenderData(RenderStateExtensions.UNCONSCIOUS, bloodSystem.isUnconscious());
                 }
         );
-
     }
 
     private void registerGuiLayer(RegisterGuiLayersEvent event) {
@@ -154,7 +162,7 @@ public final class MedicalSystemClient {
         if (KEY_GIVE_UP.consumeClick()) {
             Minecraft minecraft = Minecraft.getInstance();
             Player player = minecraft.player;
-            if (BloodSystem.canGiveUp(player)) {
+            if (BloodSystemManager.canSkipUnconsciousMode(player)) {
                 ClientPacketDistributor.sendToServer(new C2S_RequestGiveUp());
             }
         }
@@ -220,7 +228,7 @@ public final class MedicalSystemClient {
         Screen screen = minecraft.screen;
         if (screen != null)
             return; // allows screen events
-        if (BloodSystem.isEntityUnconscious(player)) {
+        if (BloodSystemManager.isUnconscious(player)) {
             event.setCanceled(true);
         }
     }

@@ -1,10 +1,10 @@
 package tnt.tarkovcraft.medsystem.common.health.calc;
 
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
 import tnt.tarkovcraft.medsystem.common.health.distributor.EvenDamageDistributor;
 import tnt.tarkovcraft.medsystem.util.HitboxHelper;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

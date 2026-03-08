@@ -1,12 +1,87 @@
 {
   "blood_types": {
-    "medsystem:player": {
-      "color": "#121212",
+    "medsystem:o_positive": {
+      "color": "#B20000",
       "label": {
-        "translate": "label.medsystem.blood_type.player"
+        "translate": "blood_type.medsystem.o_positive"
+      }
+    },
+    "medsystem:o_negative": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.o_negative"
+      }
+    },
+    "medsystem:a_positive": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.a_positive"
+      }
+    },
+    "medsystem:a_negative": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.a_negative"
+      }
+    },
+    "medsystem:b_positive": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.b_positive"
+      }
+    },
+    "medsystem:b_negative": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.b_negative"
+      }
+    },
+    "medsystem:ab_positive": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.ab_positive"
+      }
+    },
+    "medsystem:ab_negative": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.ab_negative"
       }
     }
   },
-  "compatibility_map": {
+  "receiver_compatibility_map": {
+    "medsystem:o_positive": [
+      "medsystem:o_negative"
+    ],
+    "medsystem:a_positive": [
+      "medsystem:o_positive",
+      "medsystem:o_negative",
+      "medsystem:a_negative"
+    ],
+    "medsystem:a_negative": [
+      "medsystem:o_negative"
+    ],
+    "medsystem:b_positive": [
+      "medsystem:b_negative",
+      "medsystem:o_positive",
+      "medsystem:o_negative"
+    ],
+    "medsystem:b_negative": [
+      "medsystem:o_negative"
+    ],
+    "medsystem:ab_positive": [
+      "medsystem:o_positive",
+      "medsystem:o_negative",
+      "medsystem:a_positive",
+      "medsystem:a_negative",
+      "medsystem:b_positive",
+      "medsystem:b_negative",
+      "medsystem:ab_negative"
+    ],
+    "medsystem:ab_negative": [
+      "medsystem:o_negative",
+      "medsystem:a_negative",
+      "medsystem:b_negative"
+    ]
   }
 }

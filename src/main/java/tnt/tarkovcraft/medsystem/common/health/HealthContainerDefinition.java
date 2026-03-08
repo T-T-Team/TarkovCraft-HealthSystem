@@ -9,10 +9,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcher;
 import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcherType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +28,7 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
             EntityHitboxContainer.CODEC.fieldOf("hitbox_container").forGetter(HealthContainerDefinition::hitboxContainer),
             HealthContainerDisplay.CODEC.fieldOf("display_configuration").forGetter(HealthContainerDefinition::display),
             BloodDecalSettings.CODEC.optionalFieldOf("blood_decals", BloodDecalSettings.DEFAULT).forGetter(HealthContainerDefinition::decalSettings)
-    ).apply(instance, HealthContainerDefinition::new)).validate(HealthContainerHelper::validate);
+    ).apply(instance, HealthContainerDefinition::new)).validate(HealthHelper::validateHealthContainer);
 
     public String getRootLimbCode() {
         return this.limbConfiguration.rootLimb();

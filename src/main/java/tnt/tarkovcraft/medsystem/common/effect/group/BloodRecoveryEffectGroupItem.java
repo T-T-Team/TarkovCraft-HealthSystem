@@ -9,13 +9,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -40,10 +40,9 @@ public record BloodRecoveryEffectGroupItem(float amount) implements EffectGroupI
         if (time % 20L != 0L) {
             return;
         }
-        if (BloodSystem.hasBloodDataIntegration(entity)) {
-            BloodData data = BloodSystem.getBloodData(entity);
-            data.setBloodVolume(data.getBloodVolume() + this.amount);
-            data.sync(entity);
+        if (BloodSystemManager.isEnabled(entity)) {
+            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+            bloodSystem.recoverBlood(this.amount);
         }
     }
 

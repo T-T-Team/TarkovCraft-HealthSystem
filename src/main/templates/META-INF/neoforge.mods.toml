@@ -50,7 +50,7 @@ file="META-INF/accesstransformer.cfg"
     # 'incompatible' will prevent the game from loading when the mod exists, and 'discouraged' will show a warning
     type="required" #mandatory
     # Optional field describing why the dependency is required or why it is incompatible
-    # reason="..."
+    # label="..."
     # The version range of the dependency
     versionRange="${neo_version_range}" #mandatory
     # An ordering relationship for the dependency.

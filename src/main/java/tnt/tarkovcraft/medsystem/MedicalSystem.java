@@ -22,7 +22,7 @@ import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystemEventHandler;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemEventHandler;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
@@ -68,6 +68,7 @@ public final class MedicalSystem {
         MedSystemStateFilters.REGISTRY.register(modEventBus);
         MedSystemParticleTypes.REGISTRY.register(modEventBus);
         MedSystemArgumentTypes.REGISTRY.register(modEventBus);
+        MedSystemBloodLevelEffects.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -83,12 +84,13 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_FUNCTION);
         event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_CONDITION);
         event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_ACTION);
+        event.register(MedSystemRegistries.BLOOD_LEVEL_EFFECT);
     }
 
     private void addReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(HealthSystem.IDENTIFIER, HEALTH_SYSTEM);
         event.addListener(StatusEffectEventManager.IDENTIFIER, STATUS_EFFECT_EVENTS);
-        BLOOD_SYSTEM.registerServerDataListeners(event::addListener);
+        BLOOD_SYSTEM.registerServerDataListeners(event);
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

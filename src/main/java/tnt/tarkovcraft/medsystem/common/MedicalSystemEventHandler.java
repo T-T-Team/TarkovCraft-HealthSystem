@@ -6,13 +6,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -22,16 +18,20 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -45,9 +45,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
-import tnt.tarkovcraft.medsystem.common.status.BloodData;
-import tnt.tarkovcraft.medsystem.common.status.BloodStatus;
-import tnt.tarkovcraft.medsystem.common.status.BloodSystem;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -60,13 +58,13 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         if (entity instanceof LivingEntity livingEntity) {
+            // modular health system
             MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).ifPresent(container -> {
                 container.bind(livingEntity);
                 HealthSystem.synchronizeEntity(livingEntity);
             });
-            if (livingEntity.getType() == EntityType.PLAYER && !BloodSystem.hasBloodDataIntegration(livingEntity)) {
-                livingEntity.setData(MedSystemDataAttachments.BLOOD_DATA, new BloodData(5.0F));
-            }
+            // blood system
+            BloodSystemManager.handleNewEntity(livingEntity);
         }
     }
 
@@ -144,46 +142,40 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
         DamageSource source = event.getSource();
-        if (!event.isCanceled() && BloodSystem.isEnabled() && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && entity instanceof Player player) {
-            BloodData bloodData = BloodSystem.getBloodData(player);
-            BloodStatus status = BloodStatus.fromBloodLevelPercentage(bloodData.getBloodVolumePercentage());
-            BloodData.UnconsciousInfo unconsciousInfo = bloodData.getUnconsciousInfo();
-            if (status == BloodStatus.DEATH || (unconsciousInfo != null && unconsciousInfo.causesDeath()))
-                return; // no rescue on full blood loss, small workaround for immediate death
-            RandomSource random = player.getRandom();
+        if (!event.isCanceled() && HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+            UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+            if (options.allowRescue() || bloodSystem.hasBledOut())
+                return; // do not allow duplicate rescues
+
+            RandomSource random = entity.getRandom();
+            EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
             // Start unconscious mode if allowed instead of death
-            if (random.nextFloat() < config.bloodSystem.unconsciousOnDeathChance) {
-                HealthContainer container = HealthSystem.getHealthData(player);
+            if (definition.isDownedStateEnabled() && random.nextFloat() < config.bloodSystem.unconsciousOnDeathChance) {
+                HealthContainer container = HealthSystem.getHealthData(entity);
                 // Prevent unconscious mode if head limb died and config disallows this case
                 if (config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
-                    boolean anyHeadDead = container.getLimbsAsStream()
-                            .filter(part -> part.getType() == LimbType.HEAD)
-                            .anyMatch(Limb::isDead);
                     // no head body part alive, terminate further processing logic
-                    if (anyHeadDead)
+                    if (HealthHelper.allDead(container, LimbType.HEAD))
                         return;
                 }
                 event.setCanceled(true);
 
-                // recover vital body part health - otherwise player would immediately "die" again
-                container.getVitalLimbs().forEach(limb -> {
-                    if (limb.isDead()) {
-                        limb.setHealth(1.0F);
-                    }
-                });
+                // recover vital body part health - otherwise entity would immediately "die" again
+                HealthHelper.recoverVitalLimbs(container, 1.0F);
 
-                // make other mobs peaceful towards this player
-                this.clearAttackTargetsAround(player, 48.0D);
+                // make other mobs peaceful towards this entity
+                this.clearAttackTargetsAround(entity, 48.0D);
 
-                container.updateHealth(player);
-                HealthSystem.synchronizeEntity(player);
+                container.updateHealth(entity);
+                HealthSystem.synchronizeEntity(entity);
 
                 // set unconscious
-                bloodData.setUnconsciousTime(config.bloodSystem.rescueWaitDuration, BloodData.UnconsciousInfo.DEATH);
-                bloodData.sync(player);
+                bloodSystem.setUnconscious(config.bloodSystem.rescueWaitDuration, UnconsciousOptions.DOWNED);
+                bloodSystem.synchronizeImmediately(entity);
 
                 // set a short invulnerability window to prevent immediate follow-up damage
-                player.invulnerableTime = 30;
+                entity.invulnerableTime = 30;
             }
         }
 
@@ -228,30 +220,32 @@ public final class MedicalSystemEventHandler {
     }
 
     @SubscribeEvent
-    private void adjustHitboxSize(EntityEvent.Size event) {
+    private void canMountEntity(EntityMountEvent event) {
         Entity entity = event.getEntity();
-        if (entity.getType() == EntityType.PLAYER && !entity.isPassenger()) {
-            Player player = (Player) entity;
-            if (BloodSystem.isEntityUnconscious(player)) {
-                event.setNewSize(BloodData.PLAYER_UNCONSCIOUS_DIMENSIONS);
-            }
+        if (entity instanceof LivingEntity livingEntity && BloodSystemManager.isUnconscious(livingEntity)) {
+            event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
-    private void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        Player player = event.getEntity();
-        BloodData data = BloodSystem.getBloodData(player);
-        data.updateEffects(player);
+    private void adjustHitboxSize(EntityEvent.Size event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof LivingEntity livingEntity))
+            return;
+        if (BloodSystemManager.isUnconscious(livingEntity) && !livingEntity.isPassenger()) {
+            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
+            EntityDimensions scalableDim = bloodSystem.getDefinition().getDimensionsForUnconsciousMode();
+            event.setNewSize(scalableDim);
+        }
     }
 
     @SubscribeEvent
     private void onSetAttackTarget(LivingChangeTargetEvent event) {
         LivingEntity newTarget = event.getNewAboutToBeSetTarget();
-        if (!event.isCanceled() && newTarget instanceof Player player) {
-            BloodData data = BloodSystem.getBloodData(player);
-            BloodData.UnconsciousInfo info = data.getUnconsciousInfo();
-            if (data.isUnconscious() && info.causesDeath()) {
+        if (!event.isCanceled() && newTarget != null && BloodSystemManager.isEnabled(newTarget)) {
+            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(newTarget);
+            UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+            if (bloodSystem.isUnconscious() && options.allowRescue()) {
                 event.setNewAboutToBeSetTarget(null);
             }
         }

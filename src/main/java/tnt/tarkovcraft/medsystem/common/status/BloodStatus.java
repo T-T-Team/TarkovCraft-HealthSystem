@@ -4,6 +4,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
+@Deprecated
 public enum BloodStatus {
 
     DEATH(0.25F, BloodData::onDeathBloodLevel), // 1.25L
