@@ -36,6 +36,8 @@ public final class EntityBloodSystemDefinition {
             Codecs.list(BloodLevelEffectHolder.CODEC).optionalFieldOf("effect_list", Collections.emptyList()).forGetter(t -> t.effectList)
     ).apply(instance, EntityBloodSystemDefinition::new));
 
+    public static final int BLOOD_COLOR = 0xB20000;
+
     private final Set<EntityType<?>> entityTypes;
     private final Map<ResourceLocation, Integer> bloodTypes;
     private final NumberProvider bloodVolume;

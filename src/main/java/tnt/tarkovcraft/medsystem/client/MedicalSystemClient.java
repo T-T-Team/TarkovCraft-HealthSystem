@@ -32,6 +32,7 @@ import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
+import tnt.tarkovcraft.medsystem.client.model.tint.BloodTintSource;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
@@ -82,6 +83,7 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerKeyBinds);
         modEventBus.addListener(this::registerOnScreenHints);
         modEventBus.addListener(this::registerParticleProviders);
+        modEventBus.addListener(this::registerItemModelTintSources);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
@@ -147,6 +149,10 @@ public final class MedicalSystemClient {
 
     private void registerOnScreenHints(RegisterOnScreenHintEvent event) {
         event.register(new GiveUpOnScreenHint());
+    }
+
+    private void registerItemModelTintSources(RegisterColorHandlersEvent.Item event) {
+        event.register(BloodTintSource.INSTANCE, MedSystemItems.BLOODBAG);
     }
 
     private void onMouseInput(InputEvent.MouseButton.Pre event) {

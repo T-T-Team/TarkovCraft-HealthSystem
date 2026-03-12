@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "medsystem:item/bloodbag_2"
+    "layer0": "medsystem:item/bloodbag/bloodbag_2_content",
+    "layer1": "medsystem:item/bloodbag/bloodbag_2_background"
   }
 }
