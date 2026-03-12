@@ -42,6 +42,7 @@ import tnt.tarkovcraft.medsystem.client.config.MedSystemClientConfig;
 import tnt.tarkovcraft.medsystem.client.debug.HitResultInfoDebugRenderer;
 import tnt.tarkovcraft.medsystem.client.model.properties.BloodVolumeItemModelProperty;
 import tnt.tarkovcraft.medsystem.client.model.properties.IsEmptyBloodContainerItemModelProperty;
+import tnt.tarkovcraft.medsystem.client.model.tint.BloodTintSource;
 import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
@@ -91,6 +92,7 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerGuiLayer);
         modEventBus.addListener(this::registerConditionalItemModelProperties);
         modEventBus.addListener(this::registerRangeSelectItemModelProperties);
+        modEventBus.addListener(this::registerItemModelTintSources);
         modEventBus.addListener(this::registerKeyBinds);
         modEventBus.addListener(this::registerOnScreenHints);
         modEventBus.addListener(this::registerRenderStateExtensions);
@@ -178,6 +180,10 @@ public final class MedicalSystemClient {
 
     private void registerRangeSelectItemModelProperties(RegisterRangeSelectItemModelPropertyEvent event) {
         event.register(MedicalSystem.createIdentifier("blood_volume"), BloodVolumeItemModelProperty.CODEC);
+    }
+
+    private void registerItemModelTintSources(RegisterColorHandlersEvent.ItemTintSources event) {
+        event.register(BloodTintSource.IDENTIFIER, BloodTintSource.CODEC);
     }
 
     private void onMouseInput(InputEvent.MouseButton.Pre event) {

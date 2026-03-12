@@ -11,28 +11,48 @@
       "property": "medsystem:blood_volume",
       "fallback": {
         "type": "minecraft:model",
-        "model": "medsystem:item/bloodbag_1"
+        "model": "medsystem:item/bloodbag_1",
+        "tints": [
+          {
+            "type": "medsystem:blood_tint"
+          }
+        ]
       },
       "entries": [
         {
           "threshold": 0.45,
           "model": {
             "type": "minecraft:model",
-            "model": "medsystem:item/bloodbag_2"
+            "model": "medsystem:item/bloodbag_2",
+            "tints": [
+              {
+                "type": "medsystem:blood_tint"
+              }
+            ]
           }
         },
         {
           "threshold": 0.70,
           "model": {
             "type": "minecraft:model",
-            "model": "medsystem:item/bloodbag_3"
+            "model": "medsystem:item/bloodbag_3",
+            "tints": [
+              {
+                "type": "medsystem:blood_tint"
+              }
+            ]
           }
         },
         {
           "threshold": 0.95,
           "model": {
             "type": "minecraft:model",
-            "model": "medsystem:item/bloodbag_4"
+            "model": "medsystem:item/bloodbag_4",
+            "tints": [
+              {
+                "type": "medsystem:blood_tint"
+              }
+            ]
           }
         }
       ]
