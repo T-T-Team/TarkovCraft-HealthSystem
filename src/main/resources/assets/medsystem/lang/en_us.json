@@ -180,6 +180,8 @@
   "config.medsystem.option.forceEntityRotationSynchronization.comment.0": "Forces player rotation synchronization between server and clients",
   "config.medsystem.option.defaultEntityHitboxInflation": "Projectile hitbox inflation",
   "config.medsystem.option.defaultEntityHitboxInflation.comment.0": "Expands entity hitbox for projectile detection purposes by this amount in all directions",
+  "config.medsystem.option.useExplosionPerformanceMode": "Explosion performance mode",
+  "config.medsystem.option.useExplosionPerformanceMode.comment.0": "Uses less hit traces for explosions to save performance",
   "config.medsystem.option.armorSystem": "Armor system",
   "config.medsystem.option.armorSystem.comment.0": "Defines armor calculation logic with custom health system",
   "config.medsystem.option.armorSystem.comment.1": "SIMULATED - modular armor with fully simulated logic such as deflections, blunt damage and so on",
