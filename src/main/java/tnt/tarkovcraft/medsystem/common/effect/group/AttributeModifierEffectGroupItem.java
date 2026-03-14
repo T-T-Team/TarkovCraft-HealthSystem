@@ -18,12 +18,10 @@ import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifierType;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public record AttributeModifierEffectGroupItem(Holder<Attribute> attribute, AttributeModifier modifier,
@@ -38,11 +36,12 @@ public record AttributeModifierEffectGroupItem(Holder<Attribute> attribute, Attr
     ).apply(instance, AttributeModifierEffectGroupItem::new));
 
     @Override
-    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void apply(EffectGroupHolder holder, StatusEffectContext context) {
     }
 
     @Override
-    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void init(EffectGroupHolder holder, StatusEffectContext context) {
+        LivingEntity entity = context.entity();
         if (!AttributeSystem.isEnabledForEntity(entity))
             return;
         EntityAttributeData attributeData = AttributeSystem.getAttributes(entity);
@@ -52,7 +51,8 @@ public record AttributeModifierEffectGroupItem(Holder<Attribute> attribute, Attr
     }
 
     @Override
-    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void cleanup(EffectGroupHolder holder, StatusEffectContext context) {
+        LivingEntity entity = context.entity();
         if (!AttributeSystem.isEnabledForEntity(entity))
             return;
         EntityAttributeData attributeData = AttributeSystem.getAttributes(entity);

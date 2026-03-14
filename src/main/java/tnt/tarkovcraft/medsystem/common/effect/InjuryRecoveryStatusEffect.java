@@ -12,13 +12,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -45,11 +43,14 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
+    public void apply(StatusEffectContext context) {
+        Limb limb = context.limb();
         if (this.reduction < 1 || limb == null) {
             this.markForRemoval();
             return;
         }
+        LivingEntity entity = context.entity();
+        HealthContainer container = context.container();
         this.reduction = Math.min((int) limb.getMaxHealth() - 1, this.reduction);
         AttributeMap map = entity.getAttributes();
         AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
@@ -65,15 +66,17 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
-        if (limb != null) {
+    public void onRemoved(StatusEffectContext context) {
+        context.ifLimbPresent(limb -> {
+            HealthContainer container = context.container();
+            LivingEntity entity = context.entity();
             limb.setMaxHealth(limb.getMaxHealth() + this.reduction);
             AttributeMap map = entity.getAttributes();
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
             instance.removeModifier(this.getUniqueModifierId(limb));
             container.updateHealth(entity);
             HealthSystem.synchronizeEntity(entity);
-        }
+        });
     }
 
     @Override

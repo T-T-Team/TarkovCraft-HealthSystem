@@ -11,9 +11,6 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import javax.annotation.Nullable;
@@ -41,7 +38,8 @@ public class BloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public void applyEffect(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void applyEffect(StatusEffectContext context) {
+        LivingEntity entity = context.entity();
         if (!BloodSystemManager.isEnabled(entity)) {
             this.markForRemoval();
             return;
@@ -56,7 +54,7 @@ public class BloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void onRemoved(StatusEffectContext context) {
     }
 
     @Override

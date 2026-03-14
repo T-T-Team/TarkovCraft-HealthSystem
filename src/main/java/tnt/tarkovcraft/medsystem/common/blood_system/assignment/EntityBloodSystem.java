@@ -16,12 +16,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.NeoForge;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.Cached;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodSystemEvent;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousModeHelper;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.effect.BloodImmuneReactionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.BloodLossStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -48,7 +50,7 @@ public final class EntityBloodSystem {
     private float bloodVolume;
     private int remainingUnconsciousTime;
     private int unconsciousInvulnerability;
-    private UnconsciousOptions unconsciousOptions = UnconsciousOptions.EMPTY;
+    private UnconsciousOptions unconsciousOptions;
 
     private final Cached<EntityBloodSystemDefinition> definition;
     private Boolean lastUnconsciousState;
@@ -154,8 +156,8 @@ public final class EntityBloodSystem {
         this.recoverBlood(amount);
         ResourceLocation myBloodType = this.getBloodType();
         BloodConfiguration configuration = MedicalSystem.BLOOD_SYSTEM.getConfig();
-        if (!configuration.isCompatibleBloodTypeForTransfusion(myBloodType, bloodType)) {
-
+        if (!entity.level().isClientSide() && !configuration.isCompatibleBloodTypeForTransfusion(myBloodType, bloodType)) {
+            this.initiateBloodImmuneReaction(entity);
         }
         return amount;
     }
@@ -236,7 +238,7 @@ public final class EntityBloodSystem {
                     .orElse(null);
             if (stage != null && (statusEffect == null || statusEffect.getStage() != stage)) {
                 BloodLossStatusEffect bloodLoss = BloodLossStatusEffect.createTemplate(stage);
-                StatusEffectHelper.addEffect(statusEffects, entity, null, 1, bloodLoss);
+                StatusEffectHelper.addGlobalEffect(statusEffects, entity, 1, bloodLoss);
             }
         }
         if (!level.isClientSide())
@@ -264,5 +266,14 @@ public final class EntityBloodSystem {
 
         }
         this.lastUnconsciousState = unconscious;
+    }
+
+    private void initiateBloodImmuneReaction(LivingEntity entity) {
+        if (!HealthSystem.hasCustomHealth(entity))
+            return;
+        HealthContainer container = HealthSystem.getHealthData(entity);
+        StatusEffectMap effects = container.getGlobalStatusEffects();
+        int delay = Duration.minutes(5).tickValue();
+        StatusEffectHelper.addGlobalEffect(effects, entity, delay, BloodImmuneReactionStatusEffect.createDefault());
     }
 }

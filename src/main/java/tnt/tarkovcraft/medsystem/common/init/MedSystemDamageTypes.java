@@ -17,6 +17,7 @@ public interface MedSystemDamageTypes {
     ResourceKey<DamageType> FRACTURE = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("fracture"));
     ResourceKey<DamageType> BLEED = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("bleed"));
     ResourceKey<DamageType> TOXIC_SIDE_EFFECT = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("toxic_side_effect"));
+    ResourceKey<DamageType> IMMUNE_REACTION = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("immune_reaction"));
 
     static DamageSource causeFractureDamage(RegistryAccess access) {
         return new DamageSource(of(access, FRACTURE));
@@ -29,6 +30,10 @@ public interface MedSystemDamageTypes {
 
     static DamageSource causeToxinDamage(RegistryAccess access) {
         return new DamageSource(of(access, TOXIC_SIDE_EFFECT));
+    }
+
+    static DamageSource causeImmuneReactionDamage(RegistryAccess access) {
+        return new DamageSource(of(access, IMMUNE_REACTION));
     }
 
     static Holder<DamageType> of(RegistryAccess access, ResourceKey<DamageType> type) {

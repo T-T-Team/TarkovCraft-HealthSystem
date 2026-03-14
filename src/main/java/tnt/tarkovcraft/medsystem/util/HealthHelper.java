@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.util;
 import com.mojang.serialization.DataResult;
 import tnt.tarkovcraft.medsystem.common.health.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -25,6 +26,12 @@ public final class HealthHelper {
 
     public static boolean allDead(HealthContainer container) {
         return allMatch(container, Limb::isDead);
+    }
+
+    public static List<Limb> getDeadLimbs(HealthContainer container) {
+        return container.getLimbsAsStream()
+                .filter(Limb::isDead)
+                .toList();
     }
 
     public static void recoverVitalLimbs(HealthContainer container, float health) {

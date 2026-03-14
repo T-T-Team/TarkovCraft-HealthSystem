@@ -30,8 +30,8 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 public class BloodBagItem extends InteractableItem implements LeftClickListener {

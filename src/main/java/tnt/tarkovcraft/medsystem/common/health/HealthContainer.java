@@ -20,6 +20,7 @@ import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.PainStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.QueuedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
@@ -78,8 +79,10 @@ public final class HealthContainer {
         float previousHealth = this.getHealth();
         this.tickEffectQueue(entity);
         this.tickStatusEffectCheck(entity, 20, false);
+        StatusEffectContext.MutableContext statusEffectContext = new StatusEffectContext.MutableContext(this, entity);
         for (Limb limb : this.limbs.values()) {
-            limb.tick(this, entity);
+            statusEffectContext.withLimb(limb);
+            limb.tick(statusEffectContext);
         }
         float health = this.getHealth();
         if (health != previousHealth) {
@@ -88,10 +91,11 @@ public final class HealthContainer {
     }
 
     public void clearBoundData(LivingEntity entity) {
-        for (Limb part : this.limbs.values()) {
-            StatusEffectMap map = part.getStatusEffects();
+        for (Limb limb : this.limbs.values()) {
+            StatusEffectMap map = limb.getStatusEffects();
+            StatusEffectContext ctx = StatusEffectContext.of(this, entity, StatusEffectSubmitter.NOOP, limb);
             if (!map.isEmpty())
-                map.removeAll(StatusEffectSubmitter.NOOP, this, entity, part);
+                map.removeAll(ctx);
         }
         this.effectQueue.clear();
     }
@@ -155,8 +159,9 @@ public final class HealthContainer {
 
     public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, LivingEntity entity) {
         boolean modified = false;
-        for (Limb part : this.limbs.values()) {
-            modified |= part.getStatusEffects().removeMatching(StatusEffectSubmitter.NOOP, tag, this, entity, part);
+        for (Limb limb : this.limbs.values()) {
+            StatusEffectContext ctx = StatusEffectContext.of(this, entity, StatusEffectSubmitter.NOOP, limb);
+            modified |= limb.getStatusEffects().removeMatching(tag, ctx);
         }
         return modified;
     }
@@ -298,7 +303,7 @@ public final class HealthContainer {
                 map = part.getStatusEffects();
             }
 
-            StatusEffectHelper.addEffect(map, entity, part, effect.data().copy());
+            StatusEffectHelper.addImmediateEffect(map, entity, part, effect.data().copy());
             modified = true;
         }
         if (modified) {
@@ -310,7 +315,7 @@ public final class HealthContainer {
         long time = entity.level().getGameTime();
         if ((forcedTick || time % 20 == 0) && !this.getGlobalStatusEffects().hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
             // delay cannot be bigger than 20 as otherwise it will schedule multiple pain effects
-            StatusEffectHelper.addEffect(this.getGlobalStatusEffects(), entity, null, painDelay, new PainStatusEffect(-1));
+            StatusEffectHelper.addGlobalEffect(this.getGlobalStatusEffects(), entity, painDelay, PainStatusEffect.infinite());
         }
     }
 

@@ -4,9 +4,9 @@ import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.effect.event.function.CalculateEventFunction;
+import tnt.tarkovcraft.medsystem.common.effect.event.function.DeadLimbScaleEventFunction;
 import tnt.tarkovcraft.medsystem.common.effect.event.function.StatusEffectEventFunctionType;
 import tnt.tarkovcraft.medsystem.common.effect.event.function.StatusScaleEventFunction;
-import tnt.tarkovcraft.medsystem.common.effect.event.function.DeadLimbScaleEventFunction;
 
 public final class MedSystemStatusEffectEventFunctions {
 

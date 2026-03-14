@@ -123,4 +123,13 @@ public final class MedSystemStatusEffects {
             .combineEffects(StatusEffect::replace)
             .build()
     );
+    public static final Holder<StatusEffectType<?>> BLOOD_IMMUNE_REACTION = REGISTRY.register("blood_immune_reaction", key -> StatusEffectType.builder(key, BloodImmuneReactionStatusEffect::new)
+            .persist(BloodImmuneReactionStatusEffect.CODEC)
+            .type(EffectType.NEGATIVE)
+            .visibility(EffectVisibility.NEVER)
+            .setGlobal()
+            .setSpecial()
+            .combineEffects(BloodImmuneReactionStatusEffect::mergeImmuneEffect)
+            .build()
+    );
 }

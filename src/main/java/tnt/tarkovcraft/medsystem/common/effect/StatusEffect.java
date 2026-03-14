@@ -8,11 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.*;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -24,6 +20,7 @@ import java.util.function.IntFunction;
 public abstract class StatusEffect {
 
     public static final DurationFormatSettings DURATION_SETTINGS = new DurationFormatSettings();
+    public static final int INFINITE_DURATION = -1;
 
     private int duration;
 
@@ -33,9 +30,9 @@ public abstract class StatusEffect {
 
     public abstract StatusEffectType<?> getType();
 
-    public abstract void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb);
+    public abstract void apply(StatusEffectContext context);
 
-    public abstract void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb);
+    public abstract void onRemoved(StatusEffectContext context);
 
     public abstract StatusEffect copy();
 
@@ -94,7 +91,7 @@ public abstract class StatusEffect {
     }
 
     public final StatusEffect setInfinite() {
-        this.setDuration(-1);
+        this.setDuration(INFINITE_DURATION);
         return this;
     }
 
@@ -130,7 +127,7 @@ public abstract class StatusEffect {
 
     public static <S extends StatusEffect> S merge(S a, S b) {
         if (a.isInfinite() || b.isInfinite()) {
-            a.setDuration(-1);
+            a.setDuration(INFINITE_DURATION);
         } else {
             int duration = a.getDuration();
             a.setDuration(duration + b.getDuration());
@@ -168,6 +165,13 @@ public abstract class StatusEffect {
 
     public static Component getDurationLabel(int duration, ChatFormatting color) {
         return Duration.format(duration, DURATION_SETTINGS, DurationFormats.TIME).copy().withStyle(color);
+    }
+
+    public static int sumEffectDurations(StatusEffect effect1, StatusEffect effect2) {
+        if (effect1.isInfinite() || effect2.isInfinite()) {
+            return INFINITE_DURATION;
+        }
+        return effect1.getDuration() + effect2.getDuration();
     }
 
     static {

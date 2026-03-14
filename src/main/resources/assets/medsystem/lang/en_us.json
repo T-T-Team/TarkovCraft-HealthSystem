@@ -77,6 +77,7 @@
   "status_effect.medsystem.bloodloss.stage.severe.info": "You may randomly lose consciousness for a short while",
   "status_effect.medsystem.unconscious": "Unconscious",
   "status_effect.medsystem.concussion": "Concussion",
+  "status_effect.medsystem.blood_immune_reaction": "Blood Immunity Reaction",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",
@@ -145,6 +146,7 @@
   "label.medsystem.unconscious.info.pain": "You have temporarily lost consciousness due pain shock. You may still wake up",
   "label.medsystem.unconscious.info.rescue_delay": "You have been rescued by your friends. You will wake up soon",
   "label.medsystem.unconscious.info.downed": "Waiting for rescue by other players...",
+  "label.medsystem.unconscious.info.immune_reaction": "You are experiencing strong immunity reaction due to receiving incompatible blood type in transfusion",
   "label.medsystem.unit.liter_per_day.suffix": "L/day",
   "label.medsystem.unit.liter": "%sL",
   "label.medsystem.blood": "Blood: %s/%s",
@@ -167,6 +169,8 @@
   "death.attack.medsystem.fracture.player": "%s has died due to fracture while fighting %s",
   "death.attack.medsystem.toxic_side_effect": "%s succumbed to toxic side effects",
   "death.attack.medsystem.toxic_side_effect.player": "%s succumbed to toxic side effects while fighting %s",
+  "death.attack.medsystem.immune_reaction": "%s has been killed by their immunity system",
+  "death.attack.medsystem.immune_reaction.player": "%s has been killed by their immunity system while fighting %s",
 
   "config.screen.medsystem": "Medical System",
   "config.medsystem.option.hitDebugInfoCollection": "Hit debug renderer",

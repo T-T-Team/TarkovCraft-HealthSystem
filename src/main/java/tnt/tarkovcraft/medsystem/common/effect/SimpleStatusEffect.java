@@ -1,12 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
-
-import javax.annotation.Nullable;
-
 public abstract class SimpleStatusEffect extends StatusEffect {
 
     public SimpleStatusEffect(int duration) {
@@ -14,10 +7,10 @@ public abstract class SimpleStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
+    public final void apply(StatusEffectContext context) {
     }
 
     @Override
-    public final void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public final void onRemoved(StatusEffectContext context) {
     }
 }

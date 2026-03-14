@@ -5,7 +5,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.Item;
@@ -32,6 +35,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -92,7 +96,8 @@ public final class MedicalSystemEventHandler {
         if (factor > 0.0F) {
             effects.replace(new OverweightStatusEffect(factor >= 1.0F));
         } else {
-            effects.remove(StatusEffectSubmitter.NOOP, MedSystemStatusEffects.OVERWEIGHT, container, entity, null);
+            StatusEffectContext context = StatusEffectContext.of(container, entity, StatusEffectSubmitter.NOOP, null);
+            effects.remove(MedSystemStatusEffects.OVERWEIGHT, context);
         }
         HealthSystem.synchronizeEntity(entity);
     }
@@ -143,7 +148,7 @@ public final class MedicalSystemEventHandler {
         if (!event.isCanceled() && HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
             UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
-            if (options.allowRescue() || bloodSystem.hasBledOut())
+            if (!options.downedStateAllowed() || bloodSystem.hasBledOut())
                 return; // do not allow duplicate rescues
 
             RandomSource random = entity.getRandom();

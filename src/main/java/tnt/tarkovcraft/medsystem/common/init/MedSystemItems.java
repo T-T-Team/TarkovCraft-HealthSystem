@@ -10,6 +10,7 @@ import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.IsBleedPredicate;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.effect.BleedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
@@ -18,7 +19,6 @@ import tnt.tarkovcraft.medsystem.common.effect.group.MobEffectGroupItem;
 import tnt.tarkovcraft.medsystem.common.item.BloodBagItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 import tnt.tarkovcraft.medsystem.common.item.SimpleHealingItem;
-import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 
 public final class MedSystemItems {
 

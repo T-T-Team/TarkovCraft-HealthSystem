@@ -21,7 +21,10 @@ import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
 import tnt.tarkovcraft.medsystem.util.HitboxHelper;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class ExplosionHitCalculator implements HitCalculator {
 

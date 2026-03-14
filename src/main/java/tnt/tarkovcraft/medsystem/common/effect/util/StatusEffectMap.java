@@ -8,9 +8,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
@@ -37,15 +36,16 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         this.effects = new LinkedHashMap<>(effects);
     }
 
-    public void tick(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void tick(StatusEffectContext.MutableContext ctx) {
         if (this.effects.isEmpty())
             return;
         Iterator<Map.Entry<StatusEffectType<?>, StatusEffect>> it = effects.entrySet().iterator();
         ListStatusEffectSubmitter submitter = StatusEffectSubmitter.list();
-        boolean needsUpdate = false;
+        ctx.withEffectSubmitter(submitter);
+        LivingEntity entity = ctx.entity();
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
-            effect.apply(container, submitter, entity, limb);
+            effect.apply(ctx);
             if (!entity.isAlive())
                 break;
             if (!effect.isInfinite()) {
@@ -53,16 +53,12 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
                 effect.setDuration(newDuration);
                 if (newDuration <= 0) {
                     it.remove();
-                    effect.onRemoved(submitter, container, entity, limb);
-                    needsUpdate = true;
+                    effect.onRemoved(ctx);
                 }
             }
         }
         if (entity.isAlive()) {
-            StatusEffectHelper.handleSubmittedEffects(this, entity, limb, submitter);
-        }
-        if (needsUpdate) {
-            HealthSystem.synchronizeEntity(entity);
+            this.submitPendingEffects(submitter, entity, ctx.limb());
         }
     }
 
@@ -111,29 +107,29 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         return this.getEffect((StatusEffectType<T>) holder.value());
     }
 
-    public void removeAll(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void removeAll(StatusEffectContext ctx) {
         Collection<StatusEffectType<?>> keys = new ArrayList<>(this.effects.keySet());
         for (StatusEffectType<?> key : keys) {
-            this.remove(submitter, key, container, entity, limb);
+            this.remove(key, ctx);
         }
     }
 
-    public void remove(StatusEffectSubmitter submitter, StatusEffectType<?> type, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void remove(StatusEffectType<?> type, StatusEffectContext context) {
         StatusEffect effect = this.effects.remove(type);
         if (effect != null) {
-            effect.onRemoved(submitter, container, entity, limb);
+            effect.onRemoved(context);
         }
     }
 
-    public void remove(StatusEffectSubmitter submitter, Holder<StatusEffectType<?>> holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
-        this.remove(submitter, holder.value(), container, entity, limb);
+    public void remove(Holder<StatusEffectType<?>> holder, StatusEffectContext ctx) {
+        this.remove(holder.value(), ctx);
     }
 
-    public boolean removeMatching(StatusEffectSubmitter submitter, TagKey<StatusEffectType<?>> tag, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public boolean removeMatching(TagKey<StatusEffectType<?>> tag, StatusEffectContext ctx) {
         return this.effects.entrySet().removeIf(entry -> {
             if (entry.getKey().is(tag)) {
-                entry.getValue().onRemoved(submitter, container, entity, limb);
-                NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, entry.getValue(), limb));
+                entry.getValue().onRemoved(ctx);
+                NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(ctx.entity(), entry.getValue(), ctx.limb()));
                 return true;
             }
             return false;
@@ -159,5 +155,15 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     @Override
     public @NotNull Iterator<StatusEffect> iterator() {
         return this.listEffects().iterator();
+    }
+
+    private void submitPendingEffects(ListStatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
+        submitter.forEach(delayedEffect -> {
+            if (limb != null) {
+                StatusEffectHelper.addEffect(this, entity, limb, delayedEffect.delay(), delayedEffect.createInstance());
+            } else {
+                StatusEffectHelper.addGlobalEffect(this, entity, delayedEffect.delay(), delayedEffect.createInstance());
+            }
+        });
     }
 }

@@ -1,5 +1,11 @@
 {
   "blood_types": {
+    "medsystem:unknown": {
+      "color": "#B20000",
+      "label": {
+        "translate": "blood_type.medsystem.unknown"
+      }
+    },
     "medsystem:o_positive": {
       "color": "#B20000",
       "label": {
