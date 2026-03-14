@@ -25,10 +25,6 @@ public final class MedSystemConfig {
     @Configurable.Comment("Expands entity hitbox for projectile detection purposes by this amount in all directions")
     public float defaultEntityHitboxInflation = 0.2F;
 
-    // TODO
-    @Configurable
-    public boolean hitDebugInfoCollection = false;
-
     @Configurable
     @Configurable.Comment({
             "Defines armor calculation logic with custom health system",
@@ -40,8 +36,8 @@ public final class MedSystemConfig {
     @Configurable.UpdateRestriction(UpdateRestrictions.MAIN_MENU)
     public ArmorSystem armorSystem = ArmorSystem.SIMULATED;
 
-    // TODO
     @Configurable
+    @Configurable.Comment("Uses less hit traces for explosions to save performance")
     public boolean useExplosionPerformanceMode = false;
 
     @Configurable

@@ -27,8 +27,6 @@ public final class UnconsciousModeHelper {
         S2C_RefreshEntityDimensions.broadcast(entity);
     }
 
-    // TODO events
-
     public static void onUnconsciousModeEnabled(LivingEntity entity, EntityBloodSystem bloodSystem) {
         if (entity.isUsingItem()) {
             entity.stopUsingItem();

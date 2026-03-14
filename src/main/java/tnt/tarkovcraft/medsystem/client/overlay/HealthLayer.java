@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// TODO put active blood type somewhere
 public class HealthLayer implements GuiLayer {
 
     public static final Identifier LAYER_ID = MedicalSystem.createIdentifier("layer/health");
