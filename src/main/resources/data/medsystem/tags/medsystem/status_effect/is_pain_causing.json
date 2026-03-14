@@ -1,6 +1,7 @@
 {
   "values": [
     "medsystem:fracture",
-    "medsystem:wound"
+    "medsystem:wound",
+    "medsystem:injury_recovery"
   ]
 }
