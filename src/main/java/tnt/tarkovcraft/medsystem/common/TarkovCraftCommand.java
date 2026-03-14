@@ -8,6 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -32,15 +34,12 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public final class TarkovCraftCommand {
 
@@ -61,6 +60,7 @@ public final class TarkovCraftCommand {
                                                                 Commands.literal("add")
                                                                         .then(
                                                                                 Commands.argument("limb", StringArgumentType.word())
+                                                                                        .suggests(TarkovCraftCommand::suggestAllEntityLimbs)
                                                                                         .then(
                                                                                                 Commands.argument("status_effect", StatusEffectArgument.statusEffect(context))
                                                                                                         .executes(ctx -> addLocalStatusEffect(ctx, Duration.seconds(60).tickValue(), 0))
@@ -113,6 +113,7 @@ public final class TarkovCraftCommand {
                                                                                 Commands.argument("type", ResourceArgument.resource(context, MedSystemRegistries.Keys.STATUS_EFFECT))
                                                                                         .then(
                                                                                                 Commands.argument("limb", StringArgumentType.word())
+                                                                                                        .suggests(TarkovCraftCommand::suggestAllEntityLimbs)
                                                                                                         .executes(TarkovCraftCommand::removeLocalStatusEffect)
                                                                                         )
                                                                         )
@@ -130,9 +131,10 @@ public final class TarkovCraftCommand {
                                 Commands.literal("hurt")
                                         .requires(src -> src.hasPermission(2))
                                         .then(
-                                                Commands.argument("targets", EntityArgument.entities())
+                                                Commands.argument("target", EntityArgument.entities())
                                                         .then(
                                                                 Commands.argument("limb", StringArgumentType.word())
+                                                                        .suggests(TarkovCraftCommand::suggestAllEntityLimbs)
                                                                         .then(
                                                                                 Commands.argument("damage_type", ResourceArgument.resource(context, Registries.DAMAGE_TYPE))
                                                                                         .then(
@@ -272,7 +274,7 @@ public final class TarkovCraftCommand {
     }
 
     private static int hurtLimb(CommandContext<CommandSourceStack> ctx, Entity source, Entity projectile) throws CommandSyntaxException {
-        Collection<? extends Entity> targets = EntityArgument.getEntities(ctx, "targets");
+        Collection<? extends Entity> targets = EntityArgument.getEntities(ctx, "target");
         List<LivingEntity> entities = targets.stream()
                 .filter(HealthSystem::hasCustomHealth)
                 .map(entity -> (LivingEntity) entity)
@@ -329,5 +331,20 @@ public final class TarkovCraftCommand {
         bloodSystem.synchronizeImmediately(livingEntity);
         HealthSystem.synchronizeEntity(livingEntity);
         return 0;
+    }
+
+    private static CompletableFuture<Suggestions> suggestAllEntityLimbs(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) throws CommandSyntaxException {
+        Collection<? extends Entity> entities = EntityArgument.getOptionalEntities(ctx, "target");
+        Set<String> suggestions = new HashSet<>();
+        for (Entity entity : entities) {
+            if (!HealthSystem.hasCustomHealth(entity))
+                continue;
+            HealthContainer container = HealthSystem.getHealthData((LivingEntity) entity);
+            HealthContainerDefinition definition = container.getDefinition();
+            LimbConfiguration configuration = definition.limbConfiguration();
+            suggestions.addAll(configuration.getLimbCodes());
+        }
+        suggestions.forEach(builder::suggest);
+        return builder.buildFuture();
     }
 }
