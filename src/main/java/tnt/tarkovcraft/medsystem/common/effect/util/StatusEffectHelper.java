@@ -81,6 +81,11 @@ public final class StatusEffectHelper {
         }
     }
 
+    public static boolean hasTaggedEffect(HealthContainer container, TagKey<StatusEffectType<?>> tag) {
+        return container.getStatusEffectStream()
+                .anyMatch(effect -> effect.getType().is(tag));
+    }
+
     public static Optional<StatusEffect> getAnyTaggedEffect(HealthContainer container, TagKey<StatusEffectType<?>> tag) {
         return container.getStatusEffectStream()
                 .filter(effect -> effect.getType().is(tag))

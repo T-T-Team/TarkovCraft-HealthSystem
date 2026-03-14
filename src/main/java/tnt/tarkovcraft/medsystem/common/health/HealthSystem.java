@@ -19,12 +19,14 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.api.event.PainCheckEvent;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.health.distributor.PoisonDamageDistributor;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -78,7 +80,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         if (!hasCustomHealth(entity) || hasPainRelief(entity))
             return false;
         HealthContainer container = getHealthData(entity);
-        boolean inPain = container.getStatusEffectStream().anyMatch(effect -> effect.getType().is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING));
+        boolean inPain = HealthHelper.anyLimbDead(container) || StatusEffectHelper.hasTaggedEffect(container, MedSystemTags.StatusEffects.IS_PAIN_CAUSING);
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
         if (!inPain && bloodSystem != null && bloodSystem.isInPain()) {
             inPain = true;
@@ -91,7 +93,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         if (!hasCustomHealth(entity))
             return false;
         HealthContainer container = getHealthData(entity);
-        return container.hasMatchingStatusEffect(MedSystemTags.StatusEffects.IS_BLEED);
+        return StatusEffectHelper.hasTaggedEffect(container, MedSystemTags.StatusEffects.IS_BLEED);
     }
 
     public static boolean isMovementRestricted(LivingEntity entity) {

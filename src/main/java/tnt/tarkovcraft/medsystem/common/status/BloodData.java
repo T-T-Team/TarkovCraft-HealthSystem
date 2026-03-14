@@ -195,7 +195,7 @@ public final class BloodData {
             return;
         }
         HealthContainer container = HealthSystem.getHealthData(entity);
-        boolean bleeding = container.hasMatchingStatusEffect(MedSystemTags.StatusEffects.IS_BLEED);
+        boolean bleeding = StatusEffectHelper.hasTaggedEffect(container, MedSystemTags.StatusEffects.IS_BLEED);
         boolean changed = false;
         if (!bleeding) {
             float bloodRecoverySpeed = AttributeSystem.getFloatValue(entity, MedSystemAttributes.BLOOD_REGENERATION_AMOUNT, 0.0F);

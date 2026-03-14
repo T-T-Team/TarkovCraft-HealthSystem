@@ -154,10 +154,6 @@ public final class HealthContainer {
                 .flatMap(limb -> limb.getStatusEffects().getEffectsStream());
     }
 
-    public boolean hasMatchingStatusEffect(TagKey<StatusEffectType<?>> tag) {
-        return this.getStatusEffectStream().anyMatch(effect -> effect.getType().is(tag));
-    }
-
     public boolean removeMatchingStatusEffects(TagKey<StatusEffectType<?>> tag, LivingEntity entity) {
         boolean modified = false;
         for (Limb limb : this.limbs.values()) {

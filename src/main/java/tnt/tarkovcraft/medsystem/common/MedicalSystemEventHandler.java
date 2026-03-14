@@ -158,7 +158,7 @@ public final class MedicalSystemEventHandler {
                 // Prevent unconscious mode if head limb died and config disallows this case
                 if (config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
                     // no head body part alive, terminate further processing logic
-                    if (HealthHelper.allDead(container, LimbType.HEAD))
+                    if (HealthHelper.allLimbsDead(container, LimbType.HEAD))
                         return;
                 }
                 event.setCanceled(true);
