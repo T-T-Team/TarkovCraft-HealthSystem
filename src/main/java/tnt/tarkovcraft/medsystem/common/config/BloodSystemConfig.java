@@ -50,4 +50,29 @@ public final class BloodSystemConfig {
     @Configurable
     @Configurable.Comment("Unconscious duration interval on unconsciousness due to blood loss")
     public TimeRange unconsciousOnBloodLoss = new TimeRange(5, 10);
+
+    // TODO all below
+    @Configurable
+    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
+    @Configurable.Gui.NumberFormat("0.00")
+    @Configurable.Gui.Slider
+    public float unconsciousHeldItemDropChance = 0.6F;
+
+    @Configurable
+    @Configurable.Synchronized
+    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
+    @Configurable.Gui.NumberFormat("0.00")
+    @Configurable.Gui.Slider
+    public float unconsciousSoundVolumeScale = 0.2F;
+
+    @Configurable
+    @Configurable.Synchronized
+    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
+    @Configurable.Gui.NumberFormat("0.00")
+    @Configurable.Gui.Slider
+    public float unconsciousSoundPitchScale = 0.7F;
+
+    @Configurable
+    @Configurable.Synchronized
+    public UnconsciousOverlayType unconsciousOverlayType = UnconsciousOverlayType.BLINKING;
 }

@@ -6,9 +6,11 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugEntryNoop;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.core.particles.ParticleLimit;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +24,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
@@ -53,6 +56,8 @@ import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
+import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
@@ -104,6 +109,8 @@ public final class MedicalSystemClient {
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
+        NeoForge.EVENT_BUS.addListener(this::displayScreen);
+        NeoForge.EVENT_BUS.addListener(this::playSound);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
 
@@ -147,7 +154,7 @@ public final class MedicalSystemClient {
 
     private void registerGuiLayer(RegisterGuiLayersEvent event) {
         event.registerAbove(StaminaLayer.LAYER_ID, HealthLayer.LAYER_ID, new HealthLayer());
-        event.registerAbove(HealthLayer.LAYER_ID, UnconsciousLayer.LAYER_ID, new UnconsciousLayer());
+        event.registerBelowAll(UnconsciousLayer.LAYER_ID, new UnconsciousLayer());
     }
 
     private void prepareLayerRender(RenderGuiLayerEvent.Pre event) {
@@ -224,6 +231,31 @@ public final class MedicalSystemClient {
 
     private void registerDebugEntries(RegisterDebugEntriesEvent event) {
         event.register(HitResultInfoDebugRenderer.IDENTIFIER, new DebugEntryNoop());
+    }
+
+    private void displayScreen(ScreenEvent.Opening event) {
+        Minecraft client = Minecraft.getInstance();
+        Player player = client.player;
+        if (player != null && BloodSystemManager.isUnconscious(player) && event.getScreen() instanceof InventoryScreen) {
+            event.setCanceled(true);
+        }
+    }
+
+    private void playSound(PlaySoundEvent event) {
+        Minecraft client = Minecraft.getInstance();
+        Player player = client.player;
+        if (player != null && BloodSystemManager.isUnconscious(player) && event.getSound() instanceof AbstractSoundInstance soundInstance) {
+            MedSystemConfig configuration = MedicalSystem.getConfig();
+            BloodSystemConfig bloodSystemConfig = configuration.bloodSystem;
+            if (bloodSystemConfig.unconsciousSoundVolumeScale <= 0.0F) {
+                event.setSound(null);
+                return;
+            }
+            float newVolume = soundInstance.volume * bloodSystemConfig.unconsciousSoundVolumeScale;
+            float newPitch = soundInstance.pitch * bloodSystemConfig.unconsciousSoundPitchScale;
+            soundInstance.volume = newVolume;
+            soundInstance.pitch = newPitch;
+        }
     }
 
     private <E extends ICancellableEvent> void cancelInputEventIfUnconscious(E event) {

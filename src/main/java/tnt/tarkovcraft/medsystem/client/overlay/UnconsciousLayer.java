@@ -16,6 +16,8 @@ import tnt.tarkovcraft.core.common.data.duration.DurationFormats;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.UnconsciousOverlayType;
 
 import java.util.List;
 
@@ -36,6 +38,10 @@ public class UnconsciousLayer implements GuiLayer {
 
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(player);
         if (bloodSystem != null && bloodSystem.isUnconscious()) {
+            MedSystemConfig config = MedicalSystem.getConfig();
+            if (config.bloodSystem.unconsciousOverlayType == UnconsciousOverlayType.STATIC) {
+                guiGraphics.fill(0, 0, window.getGuiScaledWidth(), window.getGuiScaledWidth(), 0xFF << 24);
+            }
             UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
             Component reason = options.label();
             List<FormattedCharSequence> lines = font.split(reason, window.getGuiScaledWidth() / 3 * 2);

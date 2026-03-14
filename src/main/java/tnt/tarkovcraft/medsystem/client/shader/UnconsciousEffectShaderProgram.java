@@ -7,6 +7,8 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.UnconsciousOverlayType;
 
 public final class UnconsciousEffectShaderProgram implements PostEffectShaderProgram {
 
@@ -15,7 +17,8 @@ public final class UnconsciousEffectShaderProgram implements PostEffectShaderPro
 
     @Override
     public void tickProgram(Minecraft minecraft, LivingEntity livingEntity) {
-        this.unconscious = BloodSystemManager.isUnconscious(livingEntity);
+        MedSystemConfig config = MedicalSystem.getConfig();
+        this.unconscious = config.bloodSystem.unconsciousOverlayType == UnconsciousOverlayType.BLINKING && BloodSystemManager.isUnconscious(livingEntity);
     }
 
     @Override
