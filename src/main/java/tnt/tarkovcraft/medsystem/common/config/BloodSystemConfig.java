@@ -50,8 +50,7 @@ public final class BloodSystemConfig {
     @Configurable
     @Configurable.Comment("Unconscious duration interval on unconsciousness due to blood loss")
     public TimeRange unconsciousOnBloodLoss = new TimeRange(5, 10);
-
-    // TODO all below
+    
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.00")
