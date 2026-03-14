@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 public record LimbConfiguration(String rootLimb, Map<String, LimbDefinition> limbs) {
@@ -25,6 +26,10 @@ public record LimbConfiguration(String rootLimb, Map<String, LimbDefinition> lim
 
     public LimbDefinition getLimbDefinition(String code) {
         return this.limbs.get(code);
+    }
+
+    public Set<String> getLimbCodes() {
+        return this.limbs.keySet();
     }
 
     public float getMaxHealth() {
