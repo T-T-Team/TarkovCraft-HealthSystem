@@ -2,12 +2,16 @@ package tnt.tarkovcraft.medsystem.common.blood_system;
 
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.neoforged.neoforge.common.NeoForge;
+import tnt.tarkovcraft.core.util.helper.EntityHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.BloodSystemEvent;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
 import tnt.tarkovcraft.medsystem.network.message.S2C_RefreshEntityDimensions;
 
 public final class UnconsciousModeHelper {
@@ -33,6 +37,13 @@ public final class UnconsciousModeHelper {
         }
         entity.setSprinting(false);
         entity.ejectPassengers();
+
+        RandomSource random = entity.getRandom();
+        BloodSystemConfig config = MedicalSystem.getConfig().bloodSystem;
+        if (random.nextFloat() < config.unconsciousHeldItemDropChance) {
+            EntityHelper.dropEquippedItem(entity, EquipmentSlot.MAINHAND);
+            EntityHelper.dropEquippedItem(entity, EquipmentSlot.OFFHAND);
+        }
 
         AttributeMap attributes = entity.getAttributes();
         addUnconsciousAttributeModifier(attributes, Attributes.MOVEMENT_SPEED);

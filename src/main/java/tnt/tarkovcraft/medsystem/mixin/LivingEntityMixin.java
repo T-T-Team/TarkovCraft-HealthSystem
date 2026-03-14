@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -61,6 +62,18 @@ public abstract class LivingEntityMixin extends Entity {
         livingEntity.isCrouching();
         if (BloodSystemManager.isUnconscious(livingEntity)) {
             ci.cancel();
+        }
+    }
+
+    @Inject(
+            method = "isPushable",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void medsystem$isPushable(CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity livingEntity = (LivingEntity) (Object) this;
+        if (BloodSystemManager.isUnconscious(livingEntity)) {
+            cir.setReturnValue(false);
         }
     }
 }

@@ -11,12 +11,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
@@ -24,6 +26,7 @@ import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
@@ -249,6 +252,16 @@ public final class MedicalSystemEventHandler {
             if (bloodSystem.isUnconscious() && options.allowRescue()) {
                 event.setNewAboutToBeSetTarget(null);
             }
+        }
+    }
+
+    @SubscribeEvent
+    private void onItemEntityPickUp(ItemEntityPickupEvent.Pre event) {
+        if (event.canPickup().isFalse())
+            return;
+        Player player = event.getPlayer();
+        if (BloodSystemManager.isUnconscious(player)) {
+            event.setCanPickup(TriState.FALSE);
         }
     }
 
