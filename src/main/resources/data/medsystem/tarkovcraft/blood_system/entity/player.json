@@ -41,6 +41,7 @@
           "duration": "15s",
           "options": {
             "allow_skip": false,
+            "allow_downed": false,
             "label": {
               "translate": "label.medsystem.unconscious.info.low_blood_level"
             }
@@ -60,6 +61,7 @@
           "duration": "5s",
           "options": {
             "allow_skip": true,
+            "allow_downed": false,
             "label": {
               "translate": "label.medsystem.unconscious.info.low_blood_level"
             }

@@ -51,7 +51,7 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
                 int duration = Mth.ceil(this.recoveryTime * durationScale);
                 InjuryRecoveryStatusEffect effect = InjuryRecoveryStatusEffect.createTemplate(reduction);
                 effect.setDuration(duration);
-                StatusEffectHelper.addEffect(part.getStatusEffects(), entity, part, effect);
+                StatusEffectHelper.addImmediateEffect(part.getStatusEffects(), entity, part, effect);
             }
         }
     }

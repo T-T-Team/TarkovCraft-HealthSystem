@@ -21,7 +21,6 @@ import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
@@ -80,12 +79,14 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
-        Level level = entity.level();
+    public void apply(StatusEffectContext context) {
+        Level level = context.level();
         long time = level.getGameTime();
         if (this.addedAt == 0L) {
             this.addedAt = time - 1L;
         }
+        Limb limb = context.limb();
+        LivingEntity entity = context.entity();
         if (limb != null && (time - this.addedAt) % this.bleedInterval == 0L) {
             if (level instanceof ServerLevel serverLevel) {
                 if (!BloodSystemManager.causeBloodLoss(entity, this.bleedAmount)) {
@@ -98,6 +99,7 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                 BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
                 if (!config.enableBloodDecals)
                     return;
+                HealthContainer container = context.container();
                 Vec3 position = this.getParticlePosition(entity, container, limb);
                 Vec3 direction = entity.getDeltaMovement();
                 float baseDir = 0.025F;
@@ -115,9 +117,9 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void onRemoved(StatusEffectContext context) {
         if (this.woundDuration > 0) {
-            submitter.submit(
+            context.submit(
                     Duration.seconds(5),
                     new FreshWoundStatusEffect(this.woundDuration)
             );

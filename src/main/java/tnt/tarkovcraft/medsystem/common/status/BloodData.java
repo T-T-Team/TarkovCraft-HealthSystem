@@ -33,7 +33,10 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.network.message.S2C_RefreshEntityDimensions;
 
 import java.util.Optional;
@@ -279,7 +282,7 @@ public final class BloodData {
         BloodLossStatusEffect statusEffect = (BloodLossStatusEffect) map.getEffect(MedSystemStatusEffects.BLOODLOSS)
                 .orElse(null);
         if (statusEffect == null || statusEffect.getStage() != stage) {
-            StatusEffectHelper.addEffect(map, entity, null, BloodLossStatusEffect.createTemplate(stage));
+            StatusEffectHelper.addImmediateGlobalEffect(map, entity, BloodLossStatusEffect.createTemplate(stage));
             HealthSystem.synchronizeEntity(entity);
         }
     }

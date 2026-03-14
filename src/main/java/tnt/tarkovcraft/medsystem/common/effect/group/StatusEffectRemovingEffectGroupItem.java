@@ -8,14 +8,13 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
@@ -31,24 +30,26 @@ public record StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> ta
     ).apply(instance, StatusEffectRemovingEffectGroupItem::new));
 
     @Override
-    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void init(EffectGroupHolder holder, StatusEffectContext context) {
     }
 
     @Override
-    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
-        Level level = entity.level();
+    public void apply(EffectGroupHolder holder, StatusEffectContext context) {
+        Level level = context.level();
         long time = level.getGameTime();
         if (time % 20L != 0L) {
             return;
         }
         // could be possibly restricted to specific limb, unspecified would clear all effects
+        LivingEntity entity = context.entity();
+        HealthContainer container = context.container();
         if (container.removeMatchingStatusEffects(this.tag, entity)) {
             HealthSystem.synchronizeEntity(entity);
         }
     }
 
     @Override
-    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void cleanup(EffectGroupHolder holder, StatusEffectContext context) {
     }
 
     @Override

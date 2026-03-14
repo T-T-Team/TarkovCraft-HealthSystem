@@ -3,11 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.LivingEntity;
-import org.jspecify.annotations.Nullable;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 public class PainStatusEffect extends IntervalAppliedStatusEffect {
@@ -18,13 +14,18 @@ public class PainStatusEffect extends IntervalAppliedStatusEffect {
         super(duration);
     }
 
+    public static PainStatusEffect infinite() {
+        return new PainStatusEffect(INFINITE_DURATION);
+    }
+
     @Override
     public int getUpdateInterval() {
         return 20;
     }
 
     @Override
-    public void applyEffect(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void applyEffect(StatusEffectContext context) {
+        LivingEntity entity = context.entity();
         if (!HealthSystem.isInPain(entity) && this.isInfinite()) {
             this.setDuration(30);
         }
@@ -36,7 +37,7 @@ public class PainStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
-    public void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void onRemoved(StatusEffectContext context) {
     }
 
     @Override

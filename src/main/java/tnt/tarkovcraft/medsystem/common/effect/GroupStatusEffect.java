@@ -3,12 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.LivingEntity;
-import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupHolder;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +41,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
     }
 
     @Override
-    public final void apply(HealthContainer container, StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
+    public final void apply(StatusEffectContext context) {
         if (this.items.isEmpty()) {
             this.markForRemoval();
             return;
@@ -54,15 +49,15 @@ public abstract class GroupStatusEffect extends StatusEffect {
         Iterator<EffectGroupHolder> iterator = items.iterator();
         while (iterator.hasNext()) {
             EffectGroupHolder item = iterator.next();
-            item.tick(container, entity, limb);
+            item.tick(context);
             if (item.isExpired())
                 iterator.remove();
         }
     }
 
     @Override
-    public final void onRemoved(StatusEffectSubmitter submitter, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
-        this.items.forEach(item -> item.cleanUp(container, entity, limb));
+    public final void onRemoved(StatusEffectContext context) {
+        this.items.forEach(item -> item.cleanUp(context));
     }
 
     @Override

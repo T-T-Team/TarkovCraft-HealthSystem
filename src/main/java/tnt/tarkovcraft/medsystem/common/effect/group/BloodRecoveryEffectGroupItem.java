@@ -7,14 +7,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.Locale;
@@ -26,20 +24,21 @@ public record BloodRecoveryEffectGroupItem(float amount) implements EffectGroupI
             .xmap(BloodRecoveryEffectGroupItem::new, BloodRecoveryEffectGroupItem::amount).fieldOf("amount");
 
     @Override
-    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void init(EffectGroupHolder holder, StatusEffectContext context) {
     }
 
     @Override
-    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void cleanup(EffectGroupHolder holder, StatusEffectContext context) {
     }
 
     @Override
-    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
-        Level level = entity.level();
+    public void apply(EffectGroupHolder holder, StatusEffectContext context) {
+        Level level = context.level();
         long time = level.getGameTime();
         if (time % 20L != 0L) {
             return;
         }
+        LivingEntity entity = context.entity();
         if (BloodSystemManager.isEnabled(entity)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
             bloodSystem.recoverBlood(this.amount);

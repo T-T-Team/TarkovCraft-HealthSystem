@@ -156,7 +156,7 @@ public final class DamageHandler {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST, lostLimbCount);
         }
 
-        // Unconscious state processing TODO move to status effect events?
+        // Unconscious state processing
         if (BloodSystemManager.isEnabled(entity) && !entity.level().isClientSide()) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
             EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
@@ -247,7 +247,6 @@ public final class DamageHandler {
             double deviateZ = random.nextFloat() * (deviateAmount * 2.0F) - deviateAmount;
             directions.add(new Vec3(direction.x + deviateX, 0.05F, direction.z + deviateZ));
         }
-        // fixme colors are always the same per hit
         BloodDecalSettings settings = definition.decalSettings();
         Integer color = settings.getColor(entity);
         if (color == null)

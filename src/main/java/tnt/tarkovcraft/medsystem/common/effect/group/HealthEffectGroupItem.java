@@ -12,12 +12,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
@@ -46,17 +44,18 @@ public record HealthEffectGroupItem(UUID effectId, float amount, int interval) i
     }
 
     @Override
-    public void init(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void init(EffectGroupHolder holder, StatusEffectContext context) {
     }
 
     @Override
-    public void apply(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
-        Level level = entity.level();
+    public void apply(EffectGroupHolder holder, StatusEffectContext context) {
+        Level level = context.level();
         if (level.isClientSide())
             return;
         long time = level.getGameTime();
         if (time % this.interval != 0)
             return;
+        LivingEntity entity = context.entity();
         if (!entity.isAlive())
             return;
         if (this.amount >= 0.0F) {
@@ -68,7 +67,7 @@ public record HealthEffectGroupItem(UUID effectId, float amount, int interval) i
     }
 
     @Override
-    public void cleanup(EffectGroupHolder holder, HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+    public void cleanup(EffectGroupHolder holder, StatusEffectContext context) {
     }
 
     @Override

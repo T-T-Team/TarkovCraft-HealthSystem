@@ -103,8 +103,8 @@ public final class StatusEffectType<S extends StatusEffect> {
         return this.isGlobalEffect;
     }
 
-    public S merge(S a, S b) {
-        S result = this.merger.apply(a, b);
+    public S merge(S currentEffect, S newEffect) {
+        S result = this.merger.apply(currentEffect, newEffect);
         MedicalSystem.LOGGER.debug(StatusEffectHelper.MARKER, "Merging incoming {} status effect with existing one, new duration is {}", this, result.getDuration());
         return result;
     }

@@ -13,6 +13,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -26,16 +27,16 @@ public final class StatusEffectHelper {
 
     private StatusEffectHelper() {}
 
-    public static void addEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, StatusEffect effect) {
+    public static void addImmediateGlobalEffect(StatusEffectMap effects, LivingEntity entity, StatusEffect effect) {
+        addImmediateEffect(effects, entity, null, effect);
+    }
+
+    public static void addImmediateEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, StatusEffect effect) {
         addEffect(effects, entity, limb, 0, effect);
     }
 
-    public static void handleSubmittedEffects(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, ListStatusEffectSubmitter submitter) {
-        submitter.forEach(post -> addPostEffect(effects, entity, limb, post));
-    }
-
-    public static void addPostEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, StatusEffectWithDelay statusEffectWithDelay) {
-        addEffect(effects, entity, limb, statusEffectWithDelay.delay(), statusEffectWithDelay.createInstance());
+    public static void addGlobalEffect(StatusEffectMap effects, LivingEntity entity, int delay, StatusEffect effect) {
+        addEffect(effects, entity, null, delay, effect);
     }
 
     public static void addEffect(StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, int delay, StatusEffect effect) {
@@ -65,10 +66,11 @@ public final class StatusEffectHelper {
     }
 
     public static void removeEffect(StatusEffectSubmitter submitter, StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, HealthContainer container, StatusEffectType<?> type) {
+        StatusEffectContext ctx = StatusEffectContext.of(container, entity, submitter, limb);
         effects.getEffect(type).ifPresent(effect -> {
             NeoForge.EVENT_BUS.post(new StatusEffectEvent.Remove(entity, effect, limb));
             MedicalSystem.LOGGER.debug(MARKER, "Removing status effect {} from target limb {} from entity {}", type, limb, entity);
-            effects.remove(submitter, type, container, entity, limb);
+            effects.remove(type, ctx);
         });
     }
 

@@ -2,6 +2,7 @@
   "values": [
     "medsystem:fracture",
     "medsystem:bleed",
-    "medsystem:toxic_side_effect"
+    "medsystem:toxic_side_effect",
+    "medsystem:immune_reaction"
   ]
 }
