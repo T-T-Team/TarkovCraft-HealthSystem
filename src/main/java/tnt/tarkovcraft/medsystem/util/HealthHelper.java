@@ -10,22 +10,26 @@ import java.util.function.Predicate;
 
 public final class HealthHelper {
 
-    public static boolean allMatch(HealthContainer container, LimbType type, Predicate<Limb> filter) {
+    public static boolean allLimbsMatch(HealthContainer container, LimbType type, Predicate<Limb> filter) {
         return container.getLimbsAsStream()
                 .filter(limb -> limb.getType() == type)
                 .allMatch(filter);
     }
 
-    public static boolean allMatch(HealthContainer container, Predicate<Limb> filter) {
+    public static boolean allLimbsMatch(HealthContainer container, Predicate<Limb> filter) {
         return container.getLimbsAsStream().allMatch(filter);
     }
 
-    public static boolean allDead(HealthContainer container, LimbType type) {
-        return allMatch(container, type, Limb::isDead);
+    public static boolean anyLimbsMatch(HealthContainer container, Predicate<Limb> filter) {
+        return container.getLimbsAsStream().anyMatch(filter);
     }
 
-    public static boolean allDead(HealthContainer container) {
-        return allMatch(container, Limb::isDead);
+    public static boolean allLimbsDead(HealthContainer container, LimbType type) {
+        return allLimbsMatch(container, type, Limb::isDead);
+    }
+
+    public static boolean anyLimbDead(HealthContainer container) {
+        return anyLimbsMatch(container, Limb::isDead);
     }
 
     public static List<Limb> getDeadLimbs(HealthContainer container) {
