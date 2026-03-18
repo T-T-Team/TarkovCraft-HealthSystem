@@ -9,7 +9,6 @@
   "blood_recovery": {
     "attribute": "medsystem:blood_regeneration_amount"
   },
-  "pain_threshold": 0.8,
   "blood_effect_attributes": {
     "pain_threshold": 0.8,
     "grayscale_start": 0.9,
