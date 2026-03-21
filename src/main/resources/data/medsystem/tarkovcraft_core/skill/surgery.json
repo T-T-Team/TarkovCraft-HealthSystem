@@ -36,7 +36,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:injury_recovery_duration",
-        "id": "0581d391-3c53-4d59-93e8-a56479769035",
+        "id": "medsystem:skill/surgery",
         "per_level_value": -0.005,
         "formatter": {
           "format": "%.2f%%",
@@ -61,7 +61,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:injury_amount",
-        "id": "f694346f-dd40-49bd-b02c-cea106d0dc6f",
+        "id": "medsystem:skill/surgery",
         "per_level_value": -0.0075,
         "formatter": {
           "format": "%.2f%%",
