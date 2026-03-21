@@ -18,7 +18,7 @@ public record LimbTypeScaleEventFunction(Map<LimbType, NumberProvider> limbTypeS
 
     public static final MapCodec<LimbTypeScaleEventFunction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.unboundedMap(LimbType.CODEC, NumberProviderType.VALUE_CODEC).optionalFieldOf("limb_scaling", Collections.emptyMap()).forGetter(LimbTypeScaleEventFunction::limbTypeScales),
-            NumberProviderType.VALUE_CODEC.optionalFieldOf("scale", new ConstantNumberProvider(1)).forGetter(LimbTypeScaleEventFunction::scale) // TODO use constant
+            NumberProviderType.VALUE_CODEC.optionalFieldOf("scale", ConstantNumberProvider.ONE).forGetter(LimbTypeScaleEventFunction::scale)
     ).apply(instance, LimbTypeScaleEventFunction::new));
 
     @Override

@@ -89,12 +89,9 @@ public final class EntityBloodSystem {
     }
 
     public void tick(LivingEntity entity) {
-        boolean isServer = !entity.level().isClientSide();
         this.bloodTick(entity);
-        if (isServer) {
-            this.unconsciousTick(entity);
-            this.shockTick();
-        }
+        this.unconsciousTick(entity);
+        this.shockTick();
 
         if (this.synchronizationNeeded) {
             this.synchronizationNeeded = false;
