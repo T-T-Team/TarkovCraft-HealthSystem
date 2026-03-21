@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
+import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
@@ -24,6 +26,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Optional;
@@ -95,6 +98,8 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                     float damage = this.bleedAmount * RAW_DAMAGE_SCALE;
                     entity.hurtServer(serverLevel, damageSource, damage);
                 }
+                StatisticTracker.incrementOptional(entity, MedSystemStats.BLOOD_LOST, Mth.floor(this.bleedAmount * 1000));
+                // TODO bloodloss statistic
             } else {
                 BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
                 if (!config.enableBloodDecals)
