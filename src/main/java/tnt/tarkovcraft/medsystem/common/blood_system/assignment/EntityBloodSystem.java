@@ -89,9 +89,12 @@ public final class EntityBloodSystem {
     }
 
     public void tick(LivingEntity entity) {
+        boolean isServer = !entity.level().isClientSide();
         this.bloodTick(entity);
-        this.unconsciousTick(entity);
-        this.shockTick();
+        if (isServer) {
+            this.unconsciousTick(entity);
+            this.shockTick();
+        }
 
         if (this.synchronizationNeeded) {
             this.synchronizationNeeded = false;
@@ -259,11 +262,12 @@ public final class EntityBloodSystem {
     }
 
     private void unconsciousTick(LivingEntity entity) {
-        boolean unconscious = this.isUnconscious();
+        boolean unconscious = this.remainingUnconsciousTime > 0;
         if (this.lastUnconsciousState == null || unconscious != this.lastUnconsciousState) {
             UnconsciousModeHelper.onChanged(unconscious, entity, this);
             this.markForUpdate();
         }
+        this.lastUnconsciousState = unconscious;
         if (this.unconsciousInvulnerability > 0 && !this.unconsciousOptions.allowRescue()) {
             --this.unconsciousInvulnerability;
             return;
@@ -276,9 +280,7 @@ public final class EntityBloodSystem {
             } else {
                 this.setUnconsciousPrevention(100);
             }
-
         }
-        this.lastUnconsciousState = unconscious;
     }
 
     private void shockTick() {
