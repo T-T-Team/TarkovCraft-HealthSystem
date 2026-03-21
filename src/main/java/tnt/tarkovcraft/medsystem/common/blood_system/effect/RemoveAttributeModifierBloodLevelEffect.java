@@ -3,8 +3,7 @@ package tnt.tarkovcraft.medsystem.common.blood_system.effect;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.attribute.Attribute;
@@ -14,13 +13,11 @@ import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 
-import java.util.UUID;
-
-public record RemoveAttributeModifierBloodLevelEffect(Holder<Attribute> attribute, Identifier modifier) implements BloodLevelEffect {
+public record RemoveAttributeModifierBloodLevelEffect(Holder<Attribute> attribute, ResourceLocation modifier) implements BloodLevelEffect {
 
     public static final MapCodec<RemoveAttributeModifierBloodLevelEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             CoreRegistries.ATTRIBUTE.holderByNameCodec().fieldOf("attribute").forGetter(RemoveAttributeModifierBloodLevelEffect::attribute),
-            Identifier.CODEC.fieldOf("modifier").forGetter(RemoveAttributeModifierBloodLevelEffect::modifier)
+            ResourceLocation.CODEC.fieldOf("modifier").forGetter(RemoveAttributeModifierBloodLevelEffect::modifier)
     ).apply(instance, RemoveAttributeModifierBloodLevelEffect::new));
 
     @Override

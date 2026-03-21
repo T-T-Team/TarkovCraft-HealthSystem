@@ -92,6 +92,7 @@
   "tooltip.medsystem.heal_attributes.side_effects.delay": "Del.: %s",
   "tooltip.medsystem.heal_attributes.recoveries.title": "Heals effects:",
   "tooltip.medsystem.heal_attributes.recoveries.use_label": "%s uses",
+  "tooltip.medsystem.heal_attributes.shock_reduction": "Removes %s of pain shock",
 
   "medsystem.limb.head": "Head",
   "medsystem.limb.body": "Body",

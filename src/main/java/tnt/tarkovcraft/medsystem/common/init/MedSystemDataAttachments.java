@@ -9,8 +9,6 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public final class MedSystemDataAttachments {
@@ -22,7 +20,7 @@ public final class MedSystemDataAttachments {
             .sync(new HealthContainer.SyncHandler())
             .build()
     );
-    public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(() -> new SideEffectHolder(Optional.empty(), Collections.emptyList(), false))
+    public static final Supplier<AttachmentType<SideEffectHolder>> SIDE_EFFECTS = REGISTRY.register("side_effects", () -> AttachmentType.builder(SideEffectHolder::empty)
             .serialize(SideEffectHolder.CODEC)
             .build()
     );

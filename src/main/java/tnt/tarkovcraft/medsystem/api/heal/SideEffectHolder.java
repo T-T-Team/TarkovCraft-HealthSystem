@@ -28,18 +28,22 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideEffects, boolean hideTooltip) implements TooltipProvider {
+public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideEffects, List<Component> additionalLabels, boolean hideTooltip) implements TooltipProvider {
 
     public static final Component DEFAULT_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title").withStyle(ChatFormatting.GRAY);
     public static final Component ITEM_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title_item").withStyle(ChatFormatting.GRAY);
     public static final Component USAGE_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title_usage").withStyle(ChatFormatting.GRAY);
+    public static final SideEffectHolder EMPTY = new SideEffectHolder(Optional.empty(), Collections.emptyList(), Collections.emptyList(), true);
+
     public static final Codec<SideEffectHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ComponentSerialization.CODEC.optionalFieldOf("title").forGetter(t -> t.title),
             SideEffect.CODEC.listOf().fieldOf("effects").forGetter(t -> t.sideEffects),
+            ComponentSerialization.CODEC.listOf().optionalFieldOf("additional_labels", Collections.emptyList()).forGetter(t -> t.additionalLabels),
             Codec.BOOL.optionalFieldOf("hide_tooltip", false).forGetter(t -> t.hideTooltip)
     ).apply(instance, SideEffectHolder::new));
 
@@ -49,6 +53,10 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
 
     public static Builder withItemUsage() {
         return builder().title(USAGE_TITLE);
+    }
+
+    public static SideEffectHolder empty() {
+        return EMPTY;
     }
 
     public void onConsume(LivingEntity target, HealthContainer container, @Nullable Limb part) {
@@ -83,6 +91,7 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         if (this.hideTooltip)
             return;
         Component title = this.title.orElse(DEFAULT_TITLE);
+        this.additionalLabels.forEach(tooltipAdder);
         tooltipAdder.accept(title);
         this.sideEffects.forEach(effect -> effect.addToTooltip(context, tooltipAdder, tooltipFlag));
     }
@@ -91,6 +100,7 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
 
         private Component title;
         private final List<SideEffect> sideEffects = new ArrayList<>();
+        private final List<Component> additionalLabels = new ArrayList<>();
         private boolean hideTooltip = false;
 
         private Builder() {}
@@ -188,9 +198,14 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
             return this.infinite(NegativeEffectsGroup.createTemplate(builder));
         }
 
+        public Builder label(Component label) {
+            this.additionalLabels.add(label);
+            return this;
+        }
+
         public SideEffectHolder build() {
             Preconditions.checkState(!sideEffects.isEmpty(), "sideEffects cannot be empty");
-            return new SideEffectHolder(Optional.ofNullable(this.title), sideEffects, hideTooltip);
+            return new SideEffectHolder(Optional.ofNullable(this.title), this.sideEffects, this.additionalLabels, this.hideTooltip);
         }
     }
 }
