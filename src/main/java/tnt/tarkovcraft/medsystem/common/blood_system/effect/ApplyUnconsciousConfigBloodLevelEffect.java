@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.blood_system.effect;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;

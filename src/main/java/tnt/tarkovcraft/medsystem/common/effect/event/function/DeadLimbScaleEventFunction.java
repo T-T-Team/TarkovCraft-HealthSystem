@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.effect.event.function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Mth;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.core.util.NumberOperator;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;

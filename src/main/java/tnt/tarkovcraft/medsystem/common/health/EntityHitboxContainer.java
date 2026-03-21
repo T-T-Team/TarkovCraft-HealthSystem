@@ -8,8 +8,8 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import tnt.tarkovcraft.medsystem.common.health.calc.PositionedAABB;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.common.health.calc.PositionedAABB;
 
 import java.util.List;
 import java.util.Map;

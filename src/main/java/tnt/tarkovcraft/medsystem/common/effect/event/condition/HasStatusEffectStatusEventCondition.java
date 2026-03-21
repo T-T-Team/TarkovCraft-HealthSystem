@@ -7,8 +7,8 @@ import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 import tnt.tarkovcraft.medsystem.common.effect.event.TriggerResult;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventConditions;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventConditions;
 
 public record HasStatusEffectStatusEventCondition(TagKey<StatusEffectType<?>> tag) implements StatusEffectEventCondition {
 

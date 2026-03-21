@@ -2,10 +2,10 @@ package tnt.tarkovcraft.medsystem.common.init;
 
 import net.minecraft.core.Holder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.effect.*;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.Collections;
 import java.util.Optional;
