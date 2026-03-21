@@ -26,7 +26,8 @@ public final class MedSystemDataAttachments {
             .serialize(SideEffectHolder.CODEC)
             .build()
     );
-    public static final Supplier<AttachmentType<DamageContext>> ACTIVE_DAMAGE_CONTEXT = REGISTRY.register("active_damage_context", () -> AttachmentType.builder(() -> new DamageContext(null, null))
+    // reusable damage container for entities
+    public static final Supplier<AttachmentType<DamageContext>> DAMAGE_CONTEXT = REGISTRY.register("damage_context", () -> AttachmentType.builder(DamageContext::createEmptyInstance)
             .build()
     );
     public static final Supplier<AttachmentType<EntityBloodSystem>> BLOOD_SYSTEM = REGISTRY.register("blood_system", () -> AttachmentType.builder(EntityBloodSystem::invalid)

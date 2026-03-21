@@ -83,8 +83,8 @@ public final class DamageHandler {
             return;
         }
 
-        DamageContext damageContext = new DamageContext(context, result);
-        livingEntity.setData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT, damageContext);
+        livingEntity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                .ifPresent(ctx -> ctx.init(context, result));
     }
 
     // Entity armor damage recalculation
@@ -99,7 +99,7 @@ public final class DamageHandler {
             return;
         ArmorSystem armorSystem = MedicalSystem.getConfig().armorSystem;
         ArmorComponent component = armorSystem.getComponent();
-        entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT).ifPresent(context -> {
+        entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT).ifPresent(context -> {
             component.applyDamageReduction(event, context);
             float armorReduction = event.getContainer().getReduction(DamageContainer.Reduction.ARMOR);
             if (armorReduction > 0.0F) {
@@ -116,7 +116,7 @@ public final class DamageHandler {
             return;
         HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
         DamageSource source = event.getSource();
-        DamageContext context = entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT)
+        DamageContext context = entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
                 .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
         float damage = event.getNewDamage();
         Map<Limb, Float> distributedDamage = context.getDamage(damage);
@@ -141,7 +141,8 @@ public final class DamageHandler {
 
 
         // Clean data and apply
-        entity.removeData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT);
+        entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                .ifPresent(DamageContext::reset);
         container.updateHealth(entity);
 
         // Death processing
@@ -174,7 +175,7 @@ public final class DamageHandler {
         MedSystemConfig config = MedicalSystem.getConfig();
         ArmorSystem system = config.armorSystem;
         ArmorComponent component = system.getComponent();
-        entity.getExistingData(MedSystemDataAttachments.ACTIVE_DAMAGE_CONTEXT)
+        entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
                 .ifPresent(context -> component.applyItemDamage(event, context));
     }
 
