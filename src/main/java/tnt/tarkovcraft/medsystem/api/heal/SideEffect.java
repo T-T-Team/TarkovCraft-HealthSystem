@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.api.heal;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
@@ -85,16 +86,19 @@ public record SideEffect(float chance, int delay, StatusEffect template) impleme
     public static Component createDescriptionComponent(EffectType type, Component name, float chance, int duration, int delay) {
         MutableComponent component = Component.literal("> ");
         if (chance < 1.0F) {
-            component.append(String.format(Locale.ROOT, "%.1f%%", chance * 100) + " ");
+            Component chanceComponent = Component.literal(String.format(Locale.ROOT, "%.1f%%", chance * 100) + " ").withStyle(ChatFormatting.GRAY);
+            component.append(chanceComponent);
         }
-        component.append(name);
+        component.append(name.copy().withStyle(type));
         if (duration > 0) {
-            component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", Duration.format(duration, DurationFormats.SHORT_NAME)));
+            Component durationValue = Duration.format(duration, DurationFormats.SHORT_NAME).plainCopy().withStyle(ChatFormatting.GRAY);
+            component.append(" / ").append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.duration", durationValue));
         }
         if (delay > 0) {
+            Component delayValue = Duration.format(delay, DurationFormats.SHORT_NAME).plainCopy().withStyle(ChatFormatting.GRAY);
             component.append(" / ")
-                    .append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.delay", Duration.format(delay, DurationFormats.SHORT_NAME)));
+                    .append(Component.translatable("tooltip.medsystem.heal_attributes.side_effects.delay", delayValue));
         }
-        return component.withStyle(type);
+        return component.withStyle(ChatFormatting.DARK_GRAY);
     }
 }

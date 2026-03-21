@@ -12,6 +12,7 @@ import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.IsBleedPredicate;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
+import tnt.tarkovcraft.medsystem.common.consume_effect.RemoveShockConsumeEffect;
 import tnt.tarkovcraft.medsystem.common.effect.BleedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
@@ -127,6 +128,7 @@ public final class MedSystemItems {
                                     .debuffs(factory -> {
                                         factory.create(Duration.minutes(3), Duration.minutes(10).addSeconds(3), new MobEffectGroupItem(MobEffects.WEAKNESS));
                                     })
+                                    .consumeEffectWithLabel(new RemoveShockConsumeEffect(1.0F), RemoveShockConsumeEffect::createTooltipLabel)
                                     .build()
                             )
             )

@@ -104,6 +104,11 @@ public final class EntityBloodSystem {
         this.markForUpdate();
     }
 
+    public void removeShock(float amount) {
+        this.shockAmount = Math.max(0, this.shockAmount - amount);
+        this.markForUpdate();
+    }
+
     public float getShockAmount() {
         return shockAmount;
     }
