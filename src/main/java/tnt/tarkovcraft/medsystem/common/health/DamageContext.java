@@ -16,11 +16,20 @@ import java.util.Set;
 
 public final class DamageContext {
 
-    private final HitCalculationContext context;
-    private final HitCalculationResult result;
+    private HitCalculationContext context;
+    private HitCalculationResult result;
     private final Set<EquipmentSlot> damagedSlots = EnumSet.noneOf(EquipmentSlot.class);
 
     public DamageContext(HitCalculationContext context, HitCalculationResult result) {
+        this.context = context;
+        this.result = result;
+    }
+
+    public static DamageContext createEmptyInstance() {
+        return new DamageContext(null, null);
+    }
+
+    public void init(HitCalculationContext context, HitCalculationResult result) {
         this.context = context;
         this.result = result;
     }
@@ -57,5 +66,11 @@ public final class DamageContext {
     public Map<Limb, Float> getDamage(float incomingTotalDamage) {
         DamageDistributor damageDistributor = this.result.getDamageDistributor();
         return damageDistributor.distribute(this, incomingTotalDamage);
+    }
+
+    public void reset() {
+        this.context = null;
+        this.result = null;
+        this.damagedSlots.clear();
     }
 }
