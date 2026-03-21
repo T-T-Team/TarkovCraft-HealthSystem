@@ -23,12 +23,12 @@ public record DeadLimbScaleEventFunction(Set<LimbType> limb, float scale, Number
     ).apply(instance, DeadLimbScaleEventFunction::new));
 
     @Override
-    public int apply(int value, StatusEffectEventContext context) {
+    public float apply(float value, StatusEffectEventContext context) {
         HealthContainer container = context.getHealthContainer();
         int deadLimbCount = (int) container.getLimbsAsStream()
                 .filter(limb -> limb.isDead() && this.limb.contains(limb.getType()))
                 .count();
-        return Mth.floor(this.operator.applyAsDouble(value, this.limbOperator.applyAsDouble(deadLimbCount, this.scale)));
+        return (float) this.operator.applyAsDouble(value, this.limbOperator.applyAsDouble(deadLimbCount, this.scale));
     }
 
     @Override

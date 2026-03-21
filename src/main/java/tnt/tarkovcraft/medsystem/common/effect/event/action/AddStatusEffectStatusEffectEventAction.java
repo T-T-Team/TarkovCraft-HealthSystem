@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.effect.event.action;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.Mth;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventParams;
@@ -31,7 +32,7 @@ public record AddStatusEffectStatusEffectEventAction(StatusEffectWithDelay effec
         if (context == null)
             return false;
         StatusEffect statusEffect = this.effect.createInstance();
-        int duration = StatusEffectEventFunctionType.applyFunctions(statusEffect.getDuration(), ctx, this.durationModifiers);
+        int duration = Mth.floor(StatusEffectEventFunctionType.applyFunctions(statusEffect.getDuration(), ctx, this.durationModifiers));
         statusEffect.setDuration(duration);
         StatusEffectHelper.setCausingEntityFromSource(statusEffect, context.getSource());
         boolean isGlobalEffect = statusEffect.getType().isGlobalEffect();
@@ -39,7 +40,7 @@ public record AddStatusEffectStatusEffectEventAction(StatusEffectWithDelay effec
         if (!isGlobalEffect && !targetLimb.canApplyStatusEffect(statusEffect.getType()))
             return true;
         // at least 1 tick delay is required to prevent CMEs while ticking
-        int delay = Math.max(1, StatusEffectEventFunctionType.applyFunctions(this.effect.delay(), ctx, this.delayModifiers));
+        int delay = Math.max(1, Mth.floor(StatusEffectEventFunctionType.applyFunctions(this.effect.delay(), ctx, this.delayModifiers)));
         StatusEffectMap effects = isGlobalEffect ? ctx.getHealthContainer().getGlobalStatusEffects() : targetLimb.getStatusEffects();
         StatusEffectHelper.addEffect(effects, ctx.getEntity(), targetLimb, delay, statusEffect);
         return true;

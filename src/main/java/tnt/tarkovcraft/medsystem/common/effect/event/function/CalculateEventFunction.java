@@ -17,8 +17,8 @@ public record CalculateEventFunction(NumberOperator operator, float value, Numbe
     ).apply(instance, CalculateEventFunction::new));
 
     @Override
-    public int apply(int value, StatusEffectEventContext context) {
-        return (int) this.rounding.applyAsDouble(this.operator.applyAsDouble(value, this.value));
+    public float apply(float value, StatusEffectEventContext context) {
+        return (float) this.rounding.applyAsDouble(this.operator.applyAsDouble(value, this.value));
     }
 
     @Override

@@ -11,6 +11,7 @@ public final class MedSystemStatusEffectEventSources {
 
     public static final Holder<StatusEffectEventSource> UPDATE = register("update");
     public static final Holder<StatusEffectEventSource> INCOMING_DAMAGE = register("incoming_damage");
+    public static final Holder<StatusEffectEventSource> INCOMING_DAMAGE_GLOBAL = register("incoming_damage_global");
     // TODO implement
     public static final Holder<StatusEffectEventSource> CONSUME = register("consume");
 

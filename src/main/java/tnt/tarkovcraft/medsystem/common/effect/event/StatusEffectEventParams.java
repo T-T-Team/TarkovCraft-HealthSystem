@@ -10,6 +10,7 @@ public final class StatusEffectEventParams {
     public static final ContextKey<DamageContext> DAMAGE_CONTEXT = key("damage_context");
     public static final ContextKey<Float> DAMAGE_AMOUNT = key("damage_amount");
     public static final ContextKey<Float> DAMAGE_AMOUNT_LIMB = key("damage_amount_limb");
+    public static final ContextKey<Integer> LIMBS_LOST = key("limbs_lost");
     public static final ContextKey<ItemStack> ITEM = key("item");
 
     private static <T> ContextKey<T> key(String path) {

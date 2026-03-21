@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.effect.event.function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Mth;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventFunctions;
 
@@ -15,10 +14,10 @@ public record StatusScaleEventFunction(boolean localDamage, float scale) impleme
     ).apply(instance, StatusScaleEventFunction::new));
 
     @Override
-    public int apply(int value, StatusEffectEventContext context) {
+    public float apply(float value, StatusEffectEventContext context) {
         float damageSrc = context.getDamage(this.localDamage, 0.0F);
         float amount = damageSrc * this.scale;
-        return Mth.ceil(amount * value);
+        return amount * value;
     }
 
     @Override

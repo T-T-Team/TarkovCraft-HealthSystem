@@ -1,0 +1,21 @@
+{
+  "event_source": "medsystem:incoming_damage_global",
+  "conditions": [
+    {
+      "type": "medsystem:lost_limb"
+    }
+  ],
+  "actions": {
+    "type": "medsystem:add_shock",
+    "scale_functions": [
+      {
+        "type": "medsystem:lost_limb_count"
+      }
+    ],
+    "amount": {
+      "type": "tarkovcraft_core:config",
+      "location": "medsystem:bloodSystem/shockPerLimbLoss",
+      "default": 0.25
+    }
+  }
+}

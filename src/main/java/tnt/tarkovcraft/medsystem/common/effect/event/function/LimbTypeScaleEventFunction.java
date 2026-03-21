@@ -1,0 +1,36 @@
+package tnt.tarkovcraft.medsystem.common.effect.event.function;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import tnt.tarkovcraft.core.common.data.number.ConstantNumberProvider;
+import tnt.tarkovcraft.core.common.data.number.NumberProvider;
+import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
+import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventFunctions;
+
+import java.util.Collections;
+import java.util.Map;
+
+public record LimbTypeScaleEventFunction(Map<LimbType, NumberProvider> limbTypeScales, NumberProvider scale) implements StatusEffectEventFunction {
+
+    public static final MapCodec<LimbTypeScaleEventFunction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.unboundedMap(LimbType.CODEC, NumberProviderType.VALUE_CODEC).optionalFieldOf("limb_scaling", Collections.emptyMap()).forGetter(LimbTypeScaleEventFunction::limbTypeScales),
+            NumberProviderType.VALUE_CODEC.optionalFieldOf("scale", new ConstantNumberProvider(1)).forGetter(LimbTypeScaleEventFunction::scale) // TODO use constant
+    ).apply(instance, LimbTypeScaleEventFunction::new));
+
+    @Override
+    public float apply(float value, StatusEffectEventContext ctx) {
+        Limb limb = ctx.getLimb();
+        LimbType limbType = limb.getType();
+        NumberProvider provider = this.limbTypeScales.getOrDefault(limbType, this.scale);
+        return value * provider.floatValue();
+    }
+
+    @Override
+    public StatusEffectEventFunctionType<?> getType() {
+        return MedSystemStatusEffectEventFunctions.LIMB_TYPE_SCALE.value();
+    }
+}

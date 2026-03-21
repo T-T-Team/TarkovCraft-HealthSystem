@@ -327,7 +327,7 @@ public final class TarkovCraftCommand {
             throw UNCONSCIOUS_MODE_DISABLED.create();
         }
         int time = IntegerArgumentType.getInteger(ctx, "time");
-        bloodSystem.setUnconscious(time, UnconsciousOptions.PAIN);
+        bloodSystem.setUnconscious(time, UnconsciousOptions.PAIN_SHOCK);
         bloodSystem.synchronizeImmediately(livingEntity);
         return 0;
     }
