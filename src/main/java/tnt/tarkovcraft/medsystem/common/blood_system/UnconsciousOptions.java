@@ -16,6 +16,7 @@ public record UnconsciousOptions(boolean allowSkip, boolean allowRescue, boolean
     public static final UnconsciousOptions RESCUE_DELAY = new UnconsciousOptions(false, false, false, Component.translatable("label.medsystem.unconscious.info.rescue_delay"));
     public static final UnconsciousOptions IMMUNE_REACTION = new UnconsciousOptions(true, false, false, Component.translatable("label.medsystem.unconscious.info.immune_reaction"));
     public static final UnconsciousOptions DOWNED = new UnconsciousOptions(true, true, false, Component.translatable("label.medsystem.unconscious.info.downed"));
+    public static final UnconsciousOptions BLOODLOSS = new UnconsciousOptions(false, false, false, Component.translatable("label.medsystem.unconscious.info.low_blood_level"));
 
     public static final Codec<UnconsciousOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.fieldOf("allow_skip").forGetter(UnconsciousOptions::allowSkip),
