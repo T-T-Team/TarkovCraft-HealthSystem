@@ -21,7 +21,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
@@ -37,7 +36,6 @@ import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
 import tnt.tarkovcraft.core.client.screen.navigation.OptionalNavigationEntry;
-import tnt.tarkovcraft.core.client.shader.DynamicTransformsPipelineModifier;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
@@ -93,7 +91,6 @@ public final class MedicalSystemClient {
     public MedicalSystemClient(IEventBus modEventBus, ModContainer container) {
         config = Configuration.registerSimpleYmlConfig(MedSystemClientConfig.class);
 
-        modEventBus.addListener(this::setup);
         modEventBus.addListener(this::registerGuiLayer);
         modEventBus.addListener(this::registerConditionalItemModelProperties);
         modEventBus.addListener(this::registerRangeSelectItemModelProperties);
@@ -127,13 +124,6 @@ public final class MedicalSystemClient {
         if (screen instanceof HealthContainerScreen healthContainerScreen) {
             healthContainerScreen.onHealthContainerUpdated(holder, container);
         }
-    }
-
-    private void setup(FMLClientSetupEvent event) {
-        DynamicTransformsPipelineModifier.addTargetPipeline(PainEffectShaderProgram.PIPELINE);
-        DynamicTransformsPipelineModifier.addTargetPipeline(ConcussionEffectShaderProgram.PIPELINE);
-        DynamicTransformsPipelineModifier.addTargetPipeline(BloodLossEffectShaderProgram.PIPELINE);
-        DynamicTransformsPipelineModifier.addTargetPipeline(PainReliefEffectShaderProgram.PIPELINE);
     }
 
     @SuppressWarnings({"RedundantCast", "unchecked"})
@@ -202,13 +192,11 @@ public final class MedicalSystemClient {
     }
 
     private void registerShaderPrograms(RegisterPostShaderProgramsEvent event) {
-        event.registerMany(
-                new PainEffectShaderProgram(),
-                new ConcussionEffectShaderProgram(),
-                new UnconsciousEffectShaderProgram(),
-                new BloodLossEffectShaderProgram(),
-                new PainReliefEffectShaderProgram()
-        );
+        event.registerWithDynamicPipeline(new PainEffectShaderProgram(), PainEffectShaderProgram.PIPELINE);
+        event.registerWithDynamicPipeline(new ConcussionEffectShaderProgram(), ConcussionEffectShaderProgram.PIPELINE);
+        event.registerWithDynamicPipeline(new BloodLossEffectShaderProgram(), BloodLossEffectShaderProgram.PIPELINE);
+        event.registerWithDynamicPipeline(new PainReliefEffectShaderProgram(), PainReliefEffectShaderProgram.PIPELINE);
+        event.register(new UnconsciousEffectShaderProgram());
     }
 
     private void registerParticleProviders(RegisterParticleProvidersEvent event) {
