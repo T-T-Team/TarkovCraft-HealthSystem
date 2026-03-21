@@ -9,7 +9,7 @@ public final class MedSystemStatusEffectEventSources {
 
     public static final DeferredRegister<StatusEffectEventSource> REGISTRY = DeferredRegister.create(MedSystemRegistries.Keys.STATUS_EFFECT_EVENT_SOURCE, MedSystemConstants.MOD_ID);
 
-    public static final Holder<StatusEffectEventSource> UPDATE = register("update");
+    public static final Holder<StatusEffectEventSource> UPDATE = register("tickProgram");
     public static final Holder<StatusEffectEventSource> INCOMING_DAMAGE = register("incoming_damage");
     // TODO implement
     public static final Holder<StatusEffectEventSource> CONSUME = register("consume");

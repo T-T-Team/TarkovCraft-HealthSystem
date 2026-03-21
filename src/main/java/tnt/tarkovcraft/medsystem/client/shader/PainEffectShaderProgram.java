@@ -4,11 +4,11 @@ import net.minecraft.core.Holder;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-public final class PainShaderProgram extends StatusEffectShaderProgram {
+public final class PainEffectShaderProgram extends StatusEffectShaderProgram {
 
-    public static final PainShaderProgram INSTANCE = new PainShaderProgram();
+    public static final PainEffectShaderProgram INSTANCE = new PainEffectShaderProgram();
 
-    private PainShaderProgram() {}
+    private PainEffectShaderProgram() {}
 
     @Override
     protected Holder<StatusEffectType<?>> getStatusEffect() {

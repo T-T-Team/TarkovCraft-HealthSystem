@@ -24,11 +24,16 @@ group = mod_group_id
 repositories {
     mavenLocal()
     maven {
-        name 'Configuration'
+        name 'Toma'
         url 'https://repo.repsy.io/mvn/toma/public/'
     }
-    flatDir {
-        dir './library'
+    maven {
+        name 'Toma development'
+        url 'https://repo.repsy.io/mvn/toma/development/'
+        credentials {
+            username project.findProperty("MAVEN_USERNAME").toString() ?: ""
+            password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
+        }
     }
 }
 
@@ -109,7 +114,7 @@ dependencies {
     implementation "dev.toma.configuration:configuration-${project.minecraft_version}:${project.configuration}-neoforge"
 
     // Core library
-    implementation name: "tarkovcraft_core-${minecraft_version}-${core}"
+    implementation "tnt.tarkovcraft:tarkovcraft_core:${project.core}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

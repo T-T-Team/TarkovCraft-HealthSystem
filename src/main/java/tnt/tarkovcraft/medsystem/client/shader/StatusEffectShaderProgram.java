@@ -19,8 +19,8 @@ public abstract class StatusEffectShaderProgram extends SimpleScalingShaderProgr
     protected abstract float getDecay();
 
     @Override
-    public void update(Minecraft client, LivingEntity entity) {
-        super.update(client, entity);
+    public void tickProgram(Minecraft client, LivingEntity entity) {
+        super.tickProgram(client, entity);
         if (!HealthSystem.hasCustomHealth(entity))
             return;
         HealthContainer container = HealthSystem.getHealthData(entity);

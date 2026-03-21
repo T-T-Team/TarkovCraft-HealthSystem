@@ -3,19 +3,18 @@ package tnt.tarkovcraft.medsystem.client.shader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 
-import java.util.function.BiConsumer;
+public class UnconsciousEffectShaderProgram implements PostEffectShaderProgram {
 
-public class UnconsciousShaderProgram implements ShaderProgram {
-
-    public static final UnconsciousShaderProgram INSTANCE = new UnconsciousShaderProgram();
+    public static final UnconsciousEffectShaderProgram INSTANCE = new UnconsciousEffectShaderProgram();
     public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("unconscious");
     private boolean unconscious;
     private long gameTime;
 
-    private UnconsciousShaderProgram() {}
+    private UnconsciousEffectShaderProgram() {}
 
     @Override
     public ResourceLocation postChainId() {
@@ -23,18 +22,18 @@ public class UnconsciousShaderProgram implements ShaderProgram {
     }
 
     @Override
-    public void update(Minecraft client, LivingEntity entity) {
+    public void tickProgram(Minecraft client, LivingEntity entity) {
         this.unconscious = BloodSystemManager.isUnconscious(entity);
         this.gameTime = client.level.getGameTime() % 24000L;
     }
 
     @Override
-    public boolean shouldRender() {
+    public boolean active() {
         return this.unconscious;
     }
 
     @Override
-    public void renderTick(float delta, BiConsumer<String, Float> uniformSetter) {
-        uniformSetter.accept("GameTime", this.gameTime / 24000.0F);
+    public void onRender(float delta, UniformSetter uniformSetter) {
+        uniformSetter.setUniform("GameTime", this.gameTime / 24000.0F);
     }
 }

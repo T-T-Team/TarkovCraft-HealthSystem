@@ -62,7 +62,7 @@ public record EntityHitboxContainer(Map<String, LimbHitboxContainer> definitions
         YAW_VIEW("yaw_view", (e, aabb) -> rotateY(e.getYHeadRot(), aabb)),
         YAW_BODY("yaw_body", (e, aabb) -> rotateY(Mth.wrapDegrees(e.yBodyRot), aabb));
 
-        public static final EnumCodec<RotationMode> CODEC = StringRepresentable.fromEnum(RotationMode::values);
+        public static final Codec<RotationMode> CODEC = StringRepresentable.fromEnum(RotationMode::values);
         private final String serializedName;
         private final TransformFunction transform;
 

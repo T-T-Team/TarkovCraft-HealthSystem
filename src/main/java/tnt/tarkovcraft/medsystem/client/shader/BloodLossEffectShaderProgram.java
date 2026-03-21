@@ -8,12 +8,12 @@ import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 
-public final class BloodlossShaderProgram extends SimpleScalingShaderProgram {
+public final class BloodLossEffectShaderProgram extends SimpleScalingShaderProgram {
 
-    public static final BloodlossShaderProgram INSTANCE = new BloodlossShaderProgram();
+    public static final BloodLossEffectShaderProgram INSTANCE = new BloodLossEffectShaderProgram();
     private static final ResourceLocation IDENTIFIER = MedicalSystem.resource("bloodloss");
 
-    private BloodlossShaderProgram() {}
+    private BloodLossEffectShaderProgram() {}
 
     @Override
     public ResourceLocation postChainId() {
@@ -21,8 +21,8 @@ public final class BloodlossShaderProgram extends SimpleScalingShaderProgram {
     }
 
     @Override
-    public void update(Minecraft client, LivingEntity entity) {
-        super.update(client, entity);
+    public void tickProgram(Minecraft client, LivingEntity entity) {
+        super.tickProgram(client, entity);
         if (!BloodSystemManager.isEnabled(entity))
             return;
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);

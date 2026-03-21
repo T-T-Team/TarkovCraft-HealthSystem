@@ -7,11 +7,11 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-public final class PainReliefShaderProgram extends StatusEffectShaderProgram {
+public final class PainReliefEffectShaderProgram extends StatusEffectShaderProgram {
 
-    public static final PainReliefShaderProgram INSTANCE = new PainReliefShaderProgram();
+    public static final PainReliefEffectShaderProgram INSTANCE = new PainReliefEffectShaderProgram();
 
-    private PainReliefShaderProgram() {}
+    private PainReliefEffectShaderProgram() {}
 
     @Override
     protected Holder<StatusEffectType<?>> getStatusEffect() {
@@ -30,6 +30,6 @@ public final class PainReliefShaderProgram extends StatusEffectShaderProgram {
 
     @Override
     protected boolean canApply(LivingEntity entity, HealthContainer container, StatusEffectMap map) {
-        return !BloodlossShaderProgram.INSTANCE.shouldRender();
+        return !BloodLossEffectShaderProgram.INSTANCE.active();
     }
 }

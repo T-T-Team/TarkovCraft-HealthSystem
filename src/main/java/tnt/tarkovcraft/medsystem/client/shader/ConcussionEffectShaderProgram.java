@@ -7,15 +7,13 @@ import tnt.tarkovcraft.core.util.Easing;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-import java.util.function.BiConsumer;
+public final class ConcussionEffectShaderProgram extends StatusEffectShaderProgram {
 
-public final class ConcussionShaderProgram extends StatusEffectShaderProgram {
-
-    public static final ConcussionShaderProgram INSTANCE = new ConcussionShaderProgram();
+    public static final ConcussionEffectShaderProgram INSTANCE = new ConcussionEffectShaderProgram();
 
     private long gameTime;
 
-    private ConcussionShaderProgram() {}
+    private ConcussionEffectShaderProgram() {}
 
     @Override
     protected Holder<StatusEffectType<?>> getStatusEffect() {
@@ -23,8 +21,8 @@ public final class ConcussionShaderProgram extends StatusEffectShaderProgram {
     }
 
     @Override
-    public void update(Minecraft client, LivingEntity entity) {
-        super.update(client, entity);
+    public void tickProgram(Minecraft client, LivingEntity entity) {
+        super.tickProgram(client, entity);
         this.gameTime = client.level.getGameTime() % 24000L;
     }
 
@@ -39,9 +37,9 @@ public final class ConcussionShaderProgram extends StatusEffectShaderProgram {
     }
 
     @Override
-    public void renderTick(float delta, BiConsumer<String, Float> uniformSetter) {
-        super.renderTick(delta, uniformSetter);
-        uniformSetter.accept("GameTime", this.gameTime / 24000.0F);
+    public void onRender(float delta, UniformSetter uniformSetter) {
+        super.onRender(delta, uniformSetter);
+        uniformSetter.setUniform("GameTime", this.gameTime / 24000.0F);
     }
 
     @Override

@@ -6,8 +6,8 @@ import dev.toma.configuration.config.format.ConfigFormats;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +27,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 import tnt.tarkovcraft.core.api.event.client.RegisterOnScreenHintEvent;
+import tnt.tarkovcraft.core.api.event.client.RegisterPostShaderProgramsEvent;
 import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
@@ -91,12 +92,12 @@ public final class MedicalSystemClient {
         modEventBus.addListener(this::registerItemModelTintSources);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
+        NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
+        NeoForge.EVENT_BUS.addListener(this::onClientTick);
         NeoForge.EVENT_BUS.addListener(this::displayScreen);
         NeoForge.EVENT_BUS.addListener(this::playSound);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
-        NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
-        NeoForge.EVENT_BUS.addListener(this::clientTick);
 
         CoreNavigators.CHARACTER_NAVIGATION_PROVIDER.register(HEALTH);
     }
@@ -121,12 +122,6 @@ public final class MedicalSystemClient {
             }
             return container.value() / container.capacity();
         });
-
-        ShaderProcessor.INSTANCE.registerProgram(PainShaderProgram.INSTANCE);
-        ShaderProcessor.INSTANCE.registerProgram(BloodlossShaderProgram.INSTANCE);
-        ShaderProcessor.INSTANCE.registerProgram(ConcussionShaderProgram.INSTANCE);
-        ShaderProcessor.INSTANCE.registerProgram(PainReliefShaderProgram.INSTANCE);
-        ShaderProcessor.INSTANCE.registerProgram(UnconsciousShaderProgram.INSTANCE);
     }
 
     private void registerGuiLayer(RegisterGuiLayersEvent event) {
@@ -170,13 +165,22 @@ public final class MedicalSystemClient {
         this.cancelInputEventIfUnconscious(event);
     }
 
+    private void registerShaderPrograms(RegisterPostShaderProgramsEvent event) {
+        event.registerMany(
+                PainEffectShaderProgram.INSTANCE,
+                ConcussionEffectShaderProgram.INSTANCE,
+                BloodLossEffectShaderProgram.INSTANCE,
+                PainReliefEffectShaderProgram.INSTANCE,
+                UnconsciousEffectShaderProgram.INSTANCE
+        );
+    }
+
     private void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DRIP.get(), BloodDripParticle.Provider::new);
         event.registerSpriteSet(MedSystemParticleTypes.BLOOD_DECAL.get(), BloodDecalParticle.Provider::new);
     }
 
-    private void clientTick(ClientTickEvent.Post event) {
-        ShaderProcessor.INSTANCE.tick();
+    private void onClientTick(ClientTickEvent.Post event) {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null || !MedicalSystem.getConfig().forceEntityRotationSynchronization) return;
         float yBodyRot = Mth.wrapDegrees(client.player.yBodyRot);

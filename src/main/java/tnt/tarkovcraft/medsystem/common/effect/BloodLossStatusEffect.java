@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
@@ -107,7 +108,7 @@ public class BloodLossStatusEffect extends IntervalAppliedStatusEffect {
 
         SEVERE("severe", Component.translatable("status_effect.medsystem.bloodloss.stage.severe.info").withStyle(ChatFormatting.DARK_GRAY));
 
-        public static final EnumCodec<Stage> CODEC = StringRepresentable.fromEnum(Stage::values);
+        public static final Codec<Stage> CODEC = StringRepresentable.fromEnum(Stage::values);
         private final String serializedName;
         private final Component title;
         private final ResourceLocation icon;

@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
+import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -23,7 +24,7 @@ public enum LimbType implements StringRepresentable {
     ANIMAL("animal", 0, 0x00FF00, EquipmentSlot.BODY),
     OTHER("other", 0, 0x444444);
 
-    public static final EnumCodec<LimbType> CODEC = StringRepresentable.fromEnum(LimbType::values);
+    public static final Codec<LimbType> CODEC = StringRepresentable.fromEnum(LimbType::values);
     public static final IntFunction<LimbType> BY_ID = ByIdMap.continuous(Enum::ordinal, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final StreamCodec<ByteBuf, LimbType> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, Enum::ordinal);
 
