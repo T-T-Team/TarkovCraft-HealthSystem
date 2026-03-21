@@ -7,8 +7,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 
 public record IsEmptyBloodContainerItemModelProperty() implements ConditionalItemModelProperty {
 

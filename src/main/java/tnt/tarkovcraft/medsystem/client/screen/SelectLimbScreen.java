@@ -15,6 +15,7 @@ import tnt.tarkovcraft.core.client.screen.renderable.LabelRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.util.HorizontalAlignment;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.client.config.HealthOverlayConfiguration;
@@ -32,7 +33,6 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.network.message.C2S_SelectLimb;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
 import java.util.ArrayList;
 import java.util.List;

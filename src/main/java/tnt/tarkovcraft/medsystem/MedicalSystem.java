@@ -17,12 +17,12 @@ import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
-import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemEventHandler;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
