@@ -14,8 +14,8 @@ public record StatusEffectEventFunctionType<F extends StatusEffectEventFunction>
     public static final Codec<StatusEffectEventFunction> CODEC = MedSystemRegistries.STATUS_EFFECT_EVENT_FUNCTION.byNameCodec()
             .dispatch(StatusEffectEventFunction::getType, StatusEffectEventFunctionType::codec);
 
-    public static int applyFunctions(final int initialValue, StatusEffectEventContext context, Collection<StatusEffectEventFunction> functions) {
-        int value = initialValue;
+    public static float applyFunctions(final float initialValue, StatusEffectEventContext context, Collection<StatusEffectEventFunction> functions) {
+        float value = initialValue;
         for (StatusEffectEventFunction function : functions) {
             value = function.apply(value, context);
         }

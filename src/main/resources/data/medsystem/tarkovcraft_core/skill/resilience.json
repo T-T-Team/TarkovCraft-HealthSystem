@@ -22,10 +22,10 @@
     {
       "display": {
         "name": {
-          "translate": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss"
+          "translate": "skill.medsystem.resilience.bonus.shock_scale"
         },
-        "description_key": "skill.medsystem.resilience.bonus.unconscious_on_limb_loss.description",
-        "icon": "medsystem:textures/icons/skill/bonus/unconscious_on_limb_loss.png"
+        "description_key": "skill.medsystem.resilience.bonus.shock_scale.description",
+        "icon": "medsystem:textures/icons/skill/bonus/shock_scale.png"
       },
       "conditions": [
         {
@@ -35,9 +35,9 @@
       ],
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
-        "attribute": "medsystem:unconscious_on_limb_loss_chance",
+        "attribute": "medsystem:shock_scale",
         "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
-        "per_level_value": -0.0015,
+        "per_level_value": -0.0025,
         "formatter": {
           "format": "%.2f%%",
           "multiplier": -100

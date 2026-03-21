@@ -22,13 +22,23 @@
       "tag": "medsystem:fracture_causing"
     }
   ],
-  "actions": {
-    "type": "medsystem:add_status_effect",
-    "effect": {
-      "template": {
-        "type": "medsystem:fracture",
-        "duration": -1
+  "actions": [
+    {
+      "type": "medsystem:add_status_effect",
+      "effect": {
+        "template": {
+          "type": "medsystem:fracture",
+          "duration": -1
+        }
+      }
+    },
+    {
+      "type": "medsystem:add_shock",
+      "amount": {
+        "type": "tarkovcraft_core:config",
+        "location": "medsystem:bloodSystem/shockPerFracture",
+        "default": 0.1
       }
     }
-  }
+  ]
 }
