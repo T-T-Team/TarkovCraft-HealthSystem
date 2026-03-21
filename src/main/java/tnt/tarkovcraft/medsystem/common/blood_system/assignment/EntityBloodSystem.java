@@ -41,7 +41,8 @@ public final class EntityBloodSystem {
             ResourceLocation.CODEC.fieldOf("blood_type").forGetter(t -> t.bloodType),
             Codec.FLOAT.fieldOf("blood_volume").forGetter(t -> t.bloodVolume),
             Codec.INT.optionalFieldOf("remaining_unconscious_time", 0).forGetter(t -> t.remainingUnconsciousTime),
-            UnconsciousOptions.CODEC.optionalFieldOf("unconscious_options", UnconsciousOptions.EMPTY).forGetter(t -> t.unconsciousOptions)
+            UnconsciousOptions.CODEC.optionalFieldOf("unconscious_options", UnconsciousOptions.EMPTY).forGetter(t -> t.unconsciousOptions),
+            Codec.FLOAT.optionalFieldOf("shock_amount", 0.0F).forGetter(t -> t.shockAmount)
     ).apply(instance, EntityBloodSystem::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, EntityBloodSystem> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
 
@@ -51,21 +52,23 @@ public final class EntityBloodSystem {
     private int remainingUnconsciousTime;
     private int unconsciousInvulnerability;
     private UnconsciousOptions unconsciousOptions;
+    private float shockAmount;
 
     private final Cached<EntityBloodSystemDefinition> definition;
     private Boolean lastUnconsciousState;
     private boolean synchronizationNeeded;
 
     EntityBloodSystem(EntityType<?> type, ResourceLocation bloodType, float bloodVolume) {
-        this(type, bloodType, bloodVolume, 0, UnconsciousOptions.EMPTY);
+        this(type, bloodType, bloodVolume, 0, UnconsciousOptions.EMPTY, 0.0F);
     }
 
-    private EntityBloodSystem(EntityType<?> type, ResourceLocation bloodType, float bloodVolume, int remainingUnconsciousTime, UnconsciousOptions options) {
+    private EntityBloodSystem(EntityType<?> type, ResourceLocation bloodType, float bloodVolume, int remainingUnconsciousTime, UnconsciousOptions options, float shockAmount) {
         this.type = type;
         this.bloodType = bloodType;
         this.bloodVolume = bloodVolume;
         this.remainingUnconsciousTime = remainingUnconsciousTime;
         this.unconsciousOptions = options;
+        this.shockAmount = shockAmount;
 
         this.definition = Cached.create(this::loadDefinition);
     }

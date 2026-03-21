@@ -50,6 +50,7 @@
   "attribute.medsystem.unconscious_on_limb_loss_scaling": "Unconscious chance scaling on limb loss",
 
   "stat.medsystem.limbs_lost": "Limbs lost",
+  "stat.medsystem.blood_lost": "Blood lost",
 
   "status_effect.medsystem.pain_relief": "Pain Relief",
   "status_effect.medsystem.pain": "Pain",
@@ -152,6 +153,7 @@
   "label.medsystem.blood": "Blood: %s/%s",
   "label.medsystem.blood.unit": "Blood: %sL/%sL",
   "label.medsystem.blood_type": "Blood type: %s",
+  "label.unit.liter": "L",
 
   "blood_type.medsystem.unknown": "Unknown",
   "blood_type.medsystem.o_positive": "O+",
