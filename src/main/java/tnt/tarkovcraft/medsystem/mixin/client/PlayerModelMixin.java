@@ -27,7 +27,6 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
     private void medsystem$setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
         if (!UnconsciousPoseHelper.shouldApplyUnconsciousAttributes(entity))
             return;
-        // TODO verify all models copy parents properly
         PlayerModel<T> model = (PlayerModel<T>) (Object) this;
         UnconsciousModelHelper.applyPlayerUnconsciousTransforms(model);
         ci.cancel();

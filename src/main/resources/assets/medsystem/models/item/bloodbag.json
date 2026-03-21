@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "medsystem:item/bloodbag_0"
+    "layer0": "medsystem:item/bloodbag/bloodbag_empty"
   },
   "overrides": [
     {

@@ -15,6 +15,8 @@ public final class BloodTintSource implements ItemColor {
 
     @Override
     public int getColor(ItemStack stack, int tintIndex) {
+        if (tintIndex != 1)
+            return 0xFFFFFFFF;
         BloodContainer container = stack.get(MedSystemItemComponents.BLOOD_CONTAINER);
         if (container == null)
             return EntityBloodSystemDefinition.BLOOD_COLOR;

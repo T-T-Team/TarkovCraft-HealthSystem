@@ -102,8 +102,7 @@
     "entity_overrides": {
       "minecraft:skeleton": [],
       "minecraft:stray": [],
-      "minecraft:bogged": [],
-      "minecraft:parched": []
+      "minecraft:bogged": []
     }
   }
 }
