@@ -11,4 +11,5 @@ public final class MedSystemStats {
     public static final DeferredRegister<Statistic> REGISTRY = DeferredRegister.create(CoreRegistries.Keys.STATISTICS, MedSystemConstants.MOD_ID);
 
     public static final Holder<Statistic> LIMBS_LOST = REGISTRY.register("limbs_lost", Statistic::new);
+    public static final Holder<Statistic> BLOOD_LOST = REGISTRY.register("blood_lost", Statistic::new);
 }

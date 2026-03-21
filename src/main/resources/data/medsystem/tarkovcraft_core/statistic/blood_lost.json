@@ -1,0 +1,16 @@
+{
+  "label": {
+    "translate": "stat.medsystem.blood_lost"
+  },
+  "formatter": {
+    "format": "%.3f%s",
+    "arguments": [
+      {
+        "translate": "label.unit.liter"
+      }
+    ],
+    "multiplier": 0.001
+  },
+  "source": "medsystem:blood_lost",
+  "order": 740
+}
