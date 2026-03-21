@@ -10,6 +10,7 @@ public final class StatusEffectEventParams {
     public static final LootContextParam<DamageContext> DAMAGE_CONTEXT = key("damage_context");
     public static final LootContextParam<Float> DAMAGE_AMOUNT = key("damage_amount");
     public static final LootContextParam<Float> DAMAGE_AMOUNT_LIMB = key("damage_amount_limb");
+    public static final LootContextParam<Integer> LIMBS_LOST = key("limbs_lost");
     public static final LootContextParam<ItemStack> ITEM = key("item");
 
     private static <T> LootContextParam<T> key(String path) {

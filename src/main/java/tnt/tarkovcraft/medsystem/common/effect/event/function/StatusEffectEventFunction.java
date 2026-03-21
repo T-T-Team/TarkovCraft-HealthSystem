@@ -4,7 +4,7 @@ import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 
 public interface StatusEffectEventFunction {
 
-    int apply(int value, StatusEffectEventContext ctx);
+    float apply(float value, StatusEffectEventContext ctx);
 
     StatusEffectEventFunctionType<?> getType();
 }

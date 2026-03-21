@@ -1,0 +1,22 @@
+{
+  "event_source": "medsystem:incoming_damage",
+  "actions": {
+    "type": "medsystem:add_shock",
+    "scale_functions": [
+      {
+        "type": "medsystem:damage_scale"
+      },
+      {
+        "type": "medsystem:limb_type_scale",
+        "limb_scaling": {
+          "head": 2.0
+        }
+      }
+    ],
+    "amount": {
+      "type": "tarkovcraft_core:config",
+      "location": "medsystem:bloodSystem/shockPerHpLoss",
+      "default": 0.04
+    }
+  }
+}

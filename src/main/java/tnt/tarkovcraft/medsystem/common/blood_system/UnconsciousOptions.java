@@ -12,7 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 public record UnconsciousOptions(boolean allowSkip, boolean allowRescue, boolean downedStateAllowed, Component label) {
 
     public static final UnconsciousOptions EMPTY = new UnconsciousOptions(true, false, true, CommonComponents.EMPTY);
-    public static final UnconsciousOptions PAIN = new UnconsciousOptions(false, false, true, Component.translatable("label.medsystem.unconscious.info.pain"));
+    public static final UnconsciousOptions PAIN_SHOCK = new UnconsciousOptions(false, false, true, Component.translatable("label.medsystem.unconscious.info.pain"));
     public static final UnconsciousOptions RESCUE_DELAY = new UnconsciousOptions(false, false, false, Component.translatable("label.medsystem.unconscious.info.rescue_delay"));
     public static final UnconsciousOptions IMMUNE_REACTION = new UnconsciousOptions(true, false, false, Component.translatable("label.medsystem.unconscious.info.immune_reaction"));
     public static final UnconsciousOptions DOWNED = new UnconsciousOptions(true, true, false, Component.translatable("label.medsystem.unconscious.info.downed"));

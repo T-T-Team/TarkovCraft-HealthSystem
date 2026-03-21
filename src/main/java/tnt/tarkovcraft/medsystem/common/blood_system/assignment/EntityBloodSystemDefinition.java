@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Vector2fc;
+import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
 import tnt.tarkovcraft.core.common.util.AttributeNumber;
@@ -19,6 +20,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.effect.BloodLevelEffectHolder;
 import tnt.tarkovcraft.medsystem.common.effect.BloodLossStatusEffect;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.util.WeightedList;
 
@@ -32,6 +34,7 @@ public final class EntityBloodSystemDefinition {
             NumberProviderType.valueCodec(ExtraCodecs.POSITIVE_FLOAT).fieldOf("blood_volume").forGetter(t -> t.bloodVolume),
             AttributeNumber.CODEC.fieldOf("blood_recovery").forGetter(t -> t.bloodRecovery),
             UnconsciousModeSettings.CODEC.optionalFieldOf("unconscious_mode", UnconsciousModeSettings.DEFAULT).forGetter(t -> t.unconsciousMode),
+            EntityShockData.CODEC.optionalFieldOf("shock_attributes", EntityShockData.DEFAULT).forGetter(t -> t.shockData),
             BloodEffectAttributes.CODEC.optionalFieldOf("blood_effect_attributes", BloodEffectAttributes.DEFAULT).forGetter(t -> t.effectAttributes),
             Codecs.list(BloodLevelEffectHolder.CODEC).optionalFieldOf("effect_list", Collections.emptyList()).forGetter(t -> t.effectList)
     ).apply(instance, EntityBloodSystemDefinition::new));
@@ -43,18 +46,20 @@ public final class EntityBloodSystemDefinition {
     private final NumberProvider bloodVolume;
     private final AttributeNumber bloodRecovery;
     private final UnconsciousModeSettings unconsciousMode;
+    private final EntityShockData shockData;
     private final BloodEffectAttributes effectAttributes;
     private final List<BloodLevelEffectHolder> effectList;
 
     private final WeightedList<ResourceLocation> weightedBloodTypes;
     private final Cached<EntityDimensions> unconsciousModeDimensions;
 
-    private EntityBloodSystemDefinition(Set<EntityType<?>> entityTypes, Map<ResourceLocation, Integer> bloodTypes, NumberProvider bloodVolume, AttributeNumber bloodRecovery, UnconsciousModeSettings unconsciousMode, BloodEffectAttributes effectAttributes, List<BloodLevelEffectHolder> effectList) {
+    private EntityBloodSystemDefinition(Set<EntityType<?>> entityTypes, Map<ResourceLocation, Integer> bloodTypes, NumberProvider bloodVolume, AttributeNumber bloodRecovery, UnconsciousModeSettings unconsciousMode, EntityShockData shockData, BloodEffectAttributes effectAttributes, List<BloodLevelEffectHolder> effectList) {
         this.entityTypes = entityTypes;
         this.bloodTypes = bloodTypes;
         this.bloodVolume = bloodVolume;
         this.bloodRecovery = bloodRecovery;
         this.unconsciousMode = unconsciousMode;
+        this.shockData = shockData;
         this.effectAttributes = effectAttributes;
         this.effectList = effectList;
 
@@ -143,6 +148,19 @@ public final class EntityBloodSystemDefinition {
 
     public Collection<EntityType<?>> getEntityTypes() {
         return this.entityTypes;
+    }
+
+    public float getShockRecoveryRate(boolean inShock) {
+        float multiplier = inShock ? this.shockData.inShockRecoveryMultiplier() : 1.0F;
+        return this.shockData.recoveryRate() * multiplier;
+    }
+
+    public float getReceivedShockValue(float incoming, LivingEntity entity) {
+        return AttributeSystem.getFloatValue(entity, MedSystemAttributes.SHOCK_SCALE, 1.0F) * (incoming * this.shockData.receptionMultiplier());
+    }
+
+    public boolean isInShock(float value) {
+        return this.shockData.isUnconscious(value);
     }
 
     private WeightedList<ResourceLocation> computeWeightedList() {

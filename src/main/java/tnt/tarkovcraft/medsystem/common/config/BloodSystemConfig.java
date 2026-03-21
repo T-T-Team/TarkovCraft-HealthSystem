@@ -37,17 +37,6 @@ public final class BloodSystemConfig {
     public int rescueWaitDuration = Duration.parse("2m30s").tickValue();
 
     @Configurable
-    @Configurable.Comment(value = "Chance multiplier to enter unconscious mode on limb loss", localize = true)
-    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
-    @Configurable.Gui.NumberFormat("0.00")
-    @Configurable.Gui.Slider
-    public float unconsciousAfterLimbLossMultiplier = 1.0F;
-
-    @Configurable
-    @Configurable.Comment(value = "Unconscious duration interval on unconsciousness due to limb loss", localize = true)
-    public TimeRange unconsciousOnLimbLoss = new TimeRange(7, 15);
-
-    @Configurable
     @Configurable.Comment(value = "Unconscious duration interval on unconsciousness due to blood loss", localize = true)
     public TimeRange unconsciousOnBloodLoss = new TimeRange(5, 10);
 
@@ -74,4 +63,22 @@ public final class BloodSystemConfig {
     @Configurable
     @Configurable.Synchronized
     public UnconsciousOverlayType unconsciousOverlayType = UnconsciousOverlayType.BLINKING;
+
+    @Configurable
+    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
+    @Configurable.Gui.NumberFormat("0.000")
+    @Configurable.Gui.Slider
+    public float shockPerHpLoss = 0.04F;
+
+    @Configurable
+    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
+    @Configurable.Gui.NumberFormat("0.000")
+    @Configurable.Gui.Slider
+    public float shockPerLimbLoss = 0.25F;
+
+    @Configurable
+    @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
+    @Configurable.Gui.NumberFormat("0.000")
+    @Configurable.Gui.Slider
+    public float shockPerFracture = 0.1F;
 }

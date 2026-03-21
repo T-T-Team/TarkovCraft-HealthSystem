@@ -19,4 +19,5 @@ public final class MedSystemStatusEffectEventConditions {
     public static final Holder<StatusEffectEventConditionType<?>> RANDOM_CHANCE = REGISTRY.register("random_chance", key -> new StatusEffectEventConditionType<>(key, RandomChanceStatusEffectEventCondition.CODEC));
     public static final Holder<StatusEffectEventConditionType<?>> FALL_FRACTURE = REGISTRY.register("fall_fracture", key -> new StatusEffectEventConditionType<>(key, FallStatusEffectEventCondition.CODEC));
     public static final Holder<StatusEffectEventConditionType<?>> LOGICAL = REGISTRY.register("logical", key -> new StatusEffectEventConditionType<>(key, LogicalFunctionStatusEffectEventCondition.CODEC));
+    public static final Holder<StatusEffectEventConditionType<?>> LOST_LIMB = REGISTRY.register("lost_limb", key -> new StatusEffectEventConditionType<>(key, LostLimbStatusEffectCondition.CODEC));
 }

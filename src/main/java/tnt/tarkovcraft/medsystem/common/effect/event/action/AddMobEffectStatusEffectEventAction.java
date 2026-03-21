@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,8 +46,8 @@ public record AddMobEffectStatusEffectEventAction(Holder<MobEffect> type, int du
     }
 
     private MobEffectInstance createMobEffectInstance(StatusEffectEventContext context) {
-        int duration = StatusEffectEventFunctionType.applyFunctions(this.duration, context, this.durationModifiers);
-        int amplifier = StatusEffectEventFunctionType.applyFunctions(this.amplifier, context, this.amplifierModifiers);
+        int duration = Mth.floor(StatusEffectEventFunctionType.applyFunctions(this.duration, context, this.durationModifiers));
+        int amplifier = Mth.floor(StatusEffectEventFunctionType.applyFunctions(this.amplifier, context, this.amplifierModifiers));
         return new MobEffectInstance(this.type, duration, amplifier, this.ambient, this.visible, this.showIcon);
     }
 }

@@ -19,7 +19,6 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
-import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
@@ -30,11 +29,7 @@ import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
-import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
-import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.TimeRange;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventParams;
 import tnt.tarkovcraft.medsystem.common.health.*;
@@ -133,14 +128,15 @@ public final class DamageHandler {
         // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
         // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
+        int lostLimbCount = lostLimbs.size();
         if (totalDamage > 0.0F) {
             if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+                // apply post-damage effects
+                this.triggerStatusEffectEvent(entity, container, context, distributedDamage, totalDamage, lostLimbCount);
+                // blood decals
+                this.addBloodParticles(entity, source, container, context, totalDamage);
             }
-            // apply post-damage effects
-            this.triggerStatusEffectEvent(entity, container, context, distributedDamage, totalDamage);
-            // blood decals
-            this.addBloodParticles(entity, source, container, context, totalDamage);
         }
 
 
@@ -156,32 +152,8 @@ public final class DamageHandler {
         }
 
         // limbs lost statistic - after death processing to avoid counting lost limbs on entity death
-        int lostLimbCount = lostLimbs.size();
         if (lostLimbCount > 0) {
             StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST, lostLimbCount);
-        }
-
-        // Unconscious state processing
-        if (BloodSystemManager.isEnabled(entity) && !entity.level().isClientSide()) {
-            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
-            EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
-            RandomSource random = entity.getRandom();
-            MedSystemConfig config = MedicalSystem.getConfig();
-            int limbLostCount = lostLimbs.size();
-            if (definition.isUnconsciousModeAllowed() && !bloodSystem.isUnconscious() && config.bloodSystem.unconsciousAfterLimbLossMultiplier > 0.0F && limbLostCount > 0) {
-                float unconsciousChance = limbLostCount * AttributeSystem.getFloatValue(entity, MedSystemAttributes.UNCONSCIOUS_ON_LIMB_LOSS_CHANCE, 0.2F) * config.bloodSystem.unconsciousAfterLimbLossMultiplier;
-                if (unconsciousChance > 0.0F && random.nextFloat() < unconsciousChance) {
-                    TimeRange timeRange = config.bloodSystem.unconsciousOnLimbLoss;
-                    int unconsciousTime = 0;
-                    for (int i = 0; i < limbLostCount; i++) {
-                        unconsciousTime += timeRange.getDurationInSeconds(random);
-                    }
-                    if (unconsciousTime > 0) {
-                        bloodSystem.setOrExtendedUnconscious(unconsciousTime, UnconsciousOptions.PAIN);
-                        bloodSystem.synchronizeImmediately(entity);
-                    }
-                }
-            }
         }
 
         // disable sprinting if an entity can no longer sprint
@@ -206,7 +178,16 @@ public final class DamageHandler {
                 .ifPresent(context -> component.applyItemDamage(event, context));
     }
 
-    private void triggerStatusEffectEvent(LivingEntity entity, HealthContainer container, DamageContext context, Map<Limb, Float> damage, float total) {
+    private void triggerStatusEffectEvent(LivingEntity entity, HealthContainer container, DamageContext context, Map<Limb, Float> damage, float total, int lostLimbs) {
+        // global damage event
+        StatusEffectEventContext globalCtx = StatusEffectEventContext.withParams(entity, container, container.getRootLimb(), builder -> {
+            builder.add(StatusEffectEventParams.DAMAGE_CONTEXT, context);
+            builder.add(StatusEffectEventParams.DAMAGE_AMOUNT, total);
+            builder.add(StatusEffectEventParams.LIMBS_LOST, lostLimbs);
+        });
+        MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemStatusEffectEventSources.INCOMING_DAMAGE_GLOBAL, globalCtx);
+
+        // per limb damage triggers
         for (Map.Entry<Limb, Float> entry : damage.entrySet()) {
             Limb limb = entry.getKey();
             float localDamage = entry.getValue();

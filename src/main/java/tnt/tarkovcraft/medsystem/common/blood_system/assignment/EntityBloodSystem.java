@@ -91,11 +91,21 @@ public final class EntityBloodSystem {
     public void tick(LivingEntity entity) {
         this.bloodTick(entity);
         this.unconsciousTick(entity);
+        this.shockTick();
 
         if (this.synchronizationNeeded) {
             this.synchronizationNeeded = false;
             this.synchronizeImmediately(entity);
         }
+    }
+
+    public void addShock(float amount) {
+        this.shockAmount = Math.max(0, this.shockAmount + amount);
+        this.markForUpdate();
+    }
+
+    public float getShockAmount() {
+        return shockAmount;
     }
 
     public boolean isValidBloodAttachment(LivingEntity entity) {
@@ -269,6 +279,18 @@ public final class EntityBloodSystem {
 
         }
         this.lastUnconsciousState = unconscious;
+    }
+
+    private void shockTick() {
+        if (this.shockAmount > 0) {
+            EntityBloodSystemDefinition definition = this.getDefinition();
+            boolean inShock = definition.isInShock(this.shockAmount);
+            if (inShock && (!this.isUnconscious() || this.unconsciousOptions == UnconsciousOptions.PAIN_SHOCK)) {
+                this.setOrExtendedUnconscious(50, UnconsciousOptions.PAIN_SHOCK);
+            }
+            float recoveryRate = definition.getShockRecoveryRate(inShock);
+            this.shockAmount = Mth.clamp(this.shockAmount - recoveryRate, 0.0F, 1.0F);
+        }
     }
 
     private void initiateBloodImmuneReaction(LivingEntity entity) {
