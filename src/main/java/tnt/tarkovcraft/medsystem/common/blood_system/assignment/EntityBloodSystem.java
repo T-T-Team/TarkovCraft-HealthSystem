@@ -270,11 +270,12 @@ public final class EntityBloodSystem {
             return;
         }
         if (this.remainingUnconsciousTime > 0 && --this.remainingUnconsciousTime <= 0) {
-            this.unconsciousOptions = UnconsciousOptions.EMPTY;
             // rescue time out, cause death
             if (this.unconsciousOptions.allowRescue()) {
                 this.causeBloodLoss(Float.MAX_VALUE);
+                this.setOrExtendedUnconscious(30, UnconsciousOptions.BLOODLOSS);
             } else {
+                this.unconsciousOptions = UnconsciousOptions.EMPTY;
                 this.setUnconsciousPrevention(100);
             }
         }
