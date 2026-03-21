@@ -36,7 +36,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:positive_effect_duration",
-        "id": "938488ce-b3bc-49f9-98f4-cc6135e3461a",
+        "id": "medsystem:skill/firstaid",
         "per_level_value": 0.004,
         "formatter": {
           "format": "%.2f%%",
@@ -61,7 +61,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:positive_effect_chance",
-        "id": "d2ced48c-2789-4ee1-97c3-f7f974a0a155",
+        "id": "medsystem:skill/firstaid",
         "per_level_value": 0.005,
         "formatter": {
           "format": "%.2f%%",
@@ -86,7 +86,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:negative_effect_duration",
-        "id": "b039b3ca-85d2-4b50-99c1-30b223477f6a",
+        "id": "medsystem:skill/firstaid",
         "per_level_value": -0.004,
         "formatter": {
           "format": "%.2f%%",
@@ -111,7 +111,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:negative_effect_chance",
-        "id": "770c5cf8-1989-4ce7-9249-4b8017f17b81",
+        "id": "medsystem:skill/firstaid",
         "per_level_value": -0.005,
         "formatter": {
           "format": "%.2f%%",

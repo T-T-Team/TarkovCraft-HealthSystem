@@ -110,7 +110,7 @@
           "attribute": "tarkovcraft_core:weight_limit",
           "modifier": {
             "type": "tarkovcraft_core:multiply",
-            "id": "6079d919-84b8-4e8b-9639-bbfd8d313ee1",
+            "id": "medsystem:blood_system/blood_level_effects",
             "value": 0.5
           }
         }
@@ -137,7 +137,7 @@
           "attribute": "tarkovcraft_core:weight_limit",
           "modifier": {
             "type": "tarkovcraft_core:multiply",
-            "id": "6079d919-84b8-4e8b-9639-bbfd8d313ee1",
+            "id": "medsystem:blood_system/blood_level_effects",
             "value": 0.75
           }
         }
@@ -164,7 +164,7 @@
           "attribute": "tarkovcraft_core:weight_limit",
           "modifier": {
             "type": "tarkovcraft_core:multiply",
-            "id": "6079d919-84b8-4e8b-9639-bbfd8d313ee1",
+            "id": "medsystem:blood_system/blood_level_effects",
             "value": 0.9
           }
         }
@@ -185,7 +185,7 @@
         {
           "type": "medsystem:remove_attribute_modifier",
           "attribute": "tarkovcraft_core:weight_limit",
-          "modifier": "6079d919-84b8-4e8b-9639-bbfd8d313ee1"
+          "modifier": "medsystem:blood_system/blood_level_effects"
         }
       ]
     }

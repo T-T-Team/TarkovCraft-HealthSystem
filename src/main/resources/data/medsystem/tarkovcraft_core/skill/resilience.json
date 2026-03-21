@@ -36,7 +36,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:shock_scale",
-        "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
+        "id": "medsystem:skill/resilience",
         "per_level_value": -0.0025,
         "formatter": {
           "format": "%.2f%%",
@@ -60,7 +60,7 @@
       "apply": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:blood_regeneration_amount",
-        "id": "cf42f438-098e-465b-b4c8-cf8fadefa864",
+        "id": "medsystem:skill/resilience",
         "per_level_value": 0.00025,
         "constant": true,
         "formatter": {
