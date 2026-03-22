@@ -60,8 +60,11 @@ public final class BloodSystemManager {
     public static void handleNewEntity(LivingEntity entity) {
         if (isEnabled()) {
             EntityBloodSystem existingBloodSystem = EntityBloodSystem.getAttached(entity);
-            if (existingBloodSystem != null && existingBloodSystem.isValidBloodAttachment(entity))
+            if (existingBloodSystem != null && existingBloodSystem.isValidBloodAttachment(entity)) {
+                EntityBloodSystemDefinition definition = EntityBloodSystemDefinition.forEntity(entity);
+                definition.bindListeners(existingBloodSystem, entity);
                 return;
+            }
             EntityBloodSystem.detach(entity);
             EntityBloodSystemDefinition definition = EntityBloodSystemDefinition.forEntity(entity);
             if (definition != null) {
