@@ -72,12 +72,23 @@
           "targets": "swimming"
         },
         {
-          "type": "medsystem:unconscious"
+          "type": "medsystem:custom_pose",
+          "pose": "medsystem:unconscious"
         }
       ]
     },
     "sitting": {
-      "type": "medsystem:sitting_passenger"
+      "type": "medsystem:logical",
+      "operator": "or",
+      "values": [
+        {
+          "type": "medsystem:sitting_passenger"
+        },
+        {
+          "type": "medsystem:custom_pose",
+          "pose": "medsystem:unconscious_sitting"
+        }
+      ]
     }
   },
   "hitbox_container": {

@@ -63,10 +63,7 @@ public final class MedicalSystemEventHandler {
             return;
         if (entity instanceof LivingEntity livingEntity) {
             // modular health system
-            MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).ifPresent(container -> {
-                container.bind(livingEntity);
-                HealthSystem.synchronizeEntity(livingEntity);
-            });
+            HealthSystem.handleNewEntity(livingEntity);
             // blood system
             BloodSystemManager.handleNewEntity(livingEntity);
             // damage system
@@ -93,9 +90,9 @@ public final class MedicalSystemEventHandler {
     private void onWeightUpdate(EntityWeightUpdateEvent event) {
         LivingEntity entity = event.getEntity();
         float factor = event.getOverweightFactor();
-        if (!HealthSystem.hasCustomHealth(entity))
+        HealthContainer container = HealthContainer.getAttachedValid(entity);
+        if (container == null)
             return;
-        HealthContainer container = HealthSystem.getHealthData(entity);
         StatusEffectMap effects = container.getGlobalStatusEffects();
         if (factor > 0.0F) {
             effects.replace(new OverweightStatusEffect(factor >= 1.0F));
@@ -159,7 +156,7 @@ public final class MedicalSystemEventHandler {
             EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
             // Start unconscious mode if allowed instead of death
             if (definition.isDownedStateEnabled() && random.nextFloat() < config.bloodSystem.unconsciousOnDeathChance) {
-                HealthContainer container = HealthSystem.getHealthData(entity);
+                HealthContainer container = HealthContainer.getAttached(entity);
                 // Prevent unconscious mode if head limb died and config disallows this case
                 if (config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
                     // no head body part alive, terminate further processing logic

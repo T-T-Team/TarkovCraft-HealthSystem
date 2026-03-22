@@ -17,7 +17,6 @@ import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
-import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventManager;
@@ -47,7 +46,6 @@ public final class MedicalSystem {
 
         NeoForge.EVENT_BUS.register(new DamageHandler());
         NeoForge.EVENT_BUS.register(new MedicalSystemEventHandler());
-        NeoForge.EVENT_BUS.register(new BloodSystemEventHandler());
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
 
@@ -70,6 +68,7 @@ public final class MedicalSystem {
         MedSystemArgumentTypes.REGISTRY.register(modEventBus);
         MedSystemBloodLevelEffects.REGISTRY.register(modEventBus);
         MedSystemConsumeEffects.REGISTRY.register(modEventBus);
+        MedSystemEntityPoses.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
