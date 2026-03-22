@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 
 @Mixin(FoodData.class)
@@ -31,6 +32,9 @@ public abstract class FoodDataMixin {
             ordinal = 0
     )
     private boolean medsystem$canRegenerateHealth(boolean naturalRegeneration) {
-        return naturalRegeneration && HealthSystem.getHealthData(medsystem$player).canHeal() && BloodSystemManager.isUnconscious(medsystem$player);
+        return naturalRegeneration
+                && HealthSystem.hasCustomHealth(medsystem$player)
+                && HealthContainer.getAttached(medsystem$player).canHeal()
+                && BloodSystemManager.isUnconscious(medsystem$player);
     }
 }

@@ -65,22 +65,17 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         return entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER);
     }
 
-    @Deprecated
-    public static HealthContainer getHealthData(LivingEntity entity) {
-        return entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-    }
-
     public static boolean hasPainRelief(LivingEntity entity) {
         if (!hasCustomHealth(entity))
             return false;
-        HealthContainer container = getHealthData(entity);
+        HealthContainer container = HealthContainer.getAttached(entity);
         return container.getGlobalStatusEffects().hasEffect(MedSystemTags.StatusEffects.IS_PAIN_RELIEF);
     }
 
     public static boolean isInPain(LivingEntity entity) {
         if (!hasCustomHealth(entity) || hasPainRelief(entity))
             return false;
-        HealthContainer container = getHealthData(entity);
+        HealthContainer container = HealthContainer.getAttached(entity);
         boolean inPain = HealthHelper.anyLimbDead(container) || StatusEffectHelper.hasTaggedEffect(container, MedSystemTags.StatusEffects.IS_PAIN_CAUSING);
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
         if (!inPain && bloodSystem != null && bloodSystem.isInPain()) {
@@ -93,7 +88,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
     public static boolean isBleeding(LivingEntity entity) {
         if (!hasCustomHealth(entity))
             return false;
-        HealthContainer container = getHealthData(entity);
+        HealthContainer container = HealthContainer.getAttached(entity);
         return StatusEffectHelper.hasTaggedEffect(container, MedSystemTags.StatusEffects.IS_BLEED);
     }
 
@@ -103,7 +98,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         if (entity instanceof Player player && (player.isCreative() || player.isSpectator())) {
             return false;
         }
-        HealthContainer healthContainer = getHealthData(entity);
+        HealthContainer healthContainer = HealthContainer.getAttached(entity);
         StatusEffectMap map = healthContainer.getGlobalStatusEffects();
         if (map.hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING)) {
             return true;
@@ -116,8 +111,8 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         return parts.anyMatch(HealthSystem::isMovementRestrictedOnLimb);
     }
 
-    public static boolean isMovementRestrictedOnLimb(Limb part) {
-        return part.getType() == LimbType.LEG && (part.isDead() || part.getStatusEffects().hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING));
+    public static boolean isMovementRestrictedOnLimb(Limb limb) {
+        return limb.getType() == LimbType.LEG && (limb.isDead() || limb.getStatusEffects().hasEffect(MedSystemTags.StatusEffects.MOVEMENT_RESTRICTING));
     }
 
     public static void synchronizeEntity(LivingEntity entity) {

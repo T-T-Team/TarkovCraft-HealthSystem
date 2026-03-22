@@ -38,7 +38,7 @@ public final class DeathBloodLevelEffect implements BloodLevelEffect {
 
     private Optional<StatusEffect> findBleedEffect(LivingEntity entity) {
         if (HealthSystem.hasCustomHealth(entity)) {
-            HealthContainer container = HealthSystem.getHealthData(entity);
+            HealthContainer container = HealthContainer.getAttached(entity);
             return StatusEffectHelper.getAnyTaggedEffect(container, MedSystemTags.StatusEffects.IS_BLEED);
         }
         return Optional.empty();

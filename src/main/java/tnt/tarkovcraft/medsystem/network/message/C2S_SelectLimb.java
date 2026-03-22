@@ -46,7 +46,7 @@ public record C2S_SelectLimb(InteractionTarget target) implements CustomPacketPa
             MedicalSystem.LOGGER.warn("Target entity \"{}\" does not have custom health container", targetEntity);
             return;
         }
-        HealthContainer container = HealthSystem.getHealthData(targetEntity);
+        HealthContainer container = HealthContainer.getAttached(targetEntity);
         Limb limb = container.getLimbByCode(this.target.limbCode());
         if (attributes != null && attributes.canUseOnLimb(limb, stack, container, this.target.self(), targetEntity)) {
             stack.set(MedSystemItemComponents.INTERACTION_TARGET, this.target);

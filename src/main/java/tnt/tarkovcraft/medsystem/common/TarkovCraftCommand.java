@@ -192,7 +192,7 @@ public final class TarkovCraftCommand {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
                 continue;
             }
-            HealthContainer container = HealthSystem.getHealthData(livingEntity);
+            HealthContainer container = HealthContainer.getAttached(livingEntity);
             StatusEffectMap map = container.getGlobalStatusEffects();
             addEffect(map, livingEntity, null, container, template, delay);
             HealthSystem.synchronizeEntity(livingEntity);
@@ -209,7 +209,7 @@ public final class TarkovCraftCommand {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
                 continue;
             }
-            HealthContainer container = HealthSystem.getHealthData(livingEntity);
+            HealthContainer container = HealthContainer.getAttached(livingEntity);
             if (!container.hasLimb(limbCode)) {
                 continue;
             }
@@ -221,7 +221,7 @@ public final class TarkovCraftCommand {
         return 0;
     }
 
-    private static <T extends StatusEffect> void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable Limb limb, HealthContainer container, StatusEffect template, int delay) throws CommandSyntaxException {
+    private static void addEffect(StatusEffectMap map, LivingEntity entity, @Nullable Limb limb, HealthContainer container, StatusEffect template, int delay) throws CommandSyntaxException {
         StatusEffectType<?> type = template.getType();
         if (type.isSpecialStatusEffect()) {
             throw INVALID_STATUS_EFFECT.create(MedSystemRegistries.STATUS_EFFECT.getKey(type));
@@ -241,7 +241,7 @@ public final class TarkovCraftCommand {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
                 continue;
             }
-            HealthContainer container = HealthSystem.getHealthData(livingEntity);
+            HealthContainer container = HealthContainer.getAttached(livingEntity);
             StatusEffectMap map = container.getGlobalStatusEffects();
             StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, livingEntity, null, container, type);
             HealthSystem.synchronizeEntity(livingEntity);
@@ -255,17 +255,17 @@ public final class TarkovCraftCommand {
         if (type.isSpecialStatusEffect()) {
             throw INVALID_STATUS_EFFECT.create(reference.getKey().location());
         }
-        String bodyPartId = StringArgumentType.getString(ctx, "limb");
+        String limbCode = StringArgumentType.getString(ctx, "limb");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity livingEntity) || !HealthSystem.hasCustomHealth(livingEntity)) {
                 continue;
             }
-            HealthContainer container = HealthSystem.getHealthData(livingEntity);
-            if (!container.hasLimb(bodyPartId)) {
+            HealthContainer container = HealthContainer.getAttached(livingEntity);
+            if (!container.hasLimb(limbCode)) {
                 continue;
             }
-            Limb limb = container.getLimbByCode(bodyPartId);
+            Limb limb = container.getLimbByCode(limbCode);
             StatusEffectMap map = limb.getStatusEffects();
             StatusEffectHelper.removeEffect(StatusEffectSubmitter.NOOP, map, livingEntity, limb, container, type);
             HealthSystem.synchronizeEntity(livingEntity);
@@ -339,7 +339,7 @@ public final class TarkovCraftCommand {
         for (Entity entity : entities) {
             if (!HealthSystem.hasCustomHealth(entity))
                 continue;
-            HealthContainer container = HealthSystem.getHealthData((LivingEntity) entity);
+            HealthContainer container = HealthContainer.getAttached((LivingEntity) entity);
             HealthContainerDefinition definition = container.getDefinition();
             LimbConfiguration configuration = definition.limbConfiguration();
             suggestions.addAll(configuration.getLimbCodes());

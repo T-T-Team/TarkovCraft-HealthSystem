@@ -182,7 +182,7 @@ public final class MedicalSystemEventHandler {
         }
 
         if (!event.isCanceled() && HealthSystem.hasCustomHealth(entity)) {
-            HealthContainer container = HealthSystem.getHealthData(entity);
+            HealthContainer container = HealthContainer.getAttached(entity);
             container.invalidate();
         }
     }
@@ -213,7 +213,7 @@ public final class MedicalSystemEventHandler {
             }
             if (!HealthSystem.hasCustomHealth(targetEntity))
                 return;
-            HealthContainer container = HealthSystem.getHealthData(targetEntity);
+            HealthContainer container = HealthContainer.getAttached(targetEntity);
             Limb part = container.getLimbByCode(targetLimb);
             holder.onConsume(targetEntity, container, part);
         }
