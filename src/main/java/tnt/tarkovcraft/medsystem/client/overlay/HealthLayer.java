@@ -70,7 +70,7 @@ public class HealthLayer implements GuiLayer {
         });
 
         HorizontalAlignment overlayAlignment = overlay.horizontalAlignment;
-        Map<Identifier, List<StatusEffect>> effects = container.getStatusEffectStream()
+        Map<Identifier, List<StatusEffect>> effects = container.getLimbContainer().getStatusEffects()
                 .filter(effect -> StatusEffectType.isVisible(effect, EffectVisibility.ALWAYS))
                 .collect(Collectors.groupingBy(effect -> effect.getType().getIcon(effect), LinkedHashMap::new, Collectors.toList()));
         int index = 0;

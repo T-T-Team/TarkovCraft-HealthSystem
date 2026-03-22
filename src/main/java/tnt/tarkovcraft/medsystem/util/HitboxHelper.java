@@ -47,7 +47,7 @@ public final class HitboxHelper {
         HealthContainerDefinition definition = container.getDefinition();
         String activeState = definition.getCurrentEntityState(entity);
         EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
-        return container.getLimbsAsStream()
+        return container.getLimbContainer().getLimbs()
                 .map(limb -> {
                     String code = limb.getLimbCode();
                     EntityHitboxContainer.LimbHitboxDefinition hitboxDefinition = hitboxContainer.getLimbHitbox(code, activeState);

@@ -9,15 +9,13 @@ import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationResult;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitInfo;
 import tnt.tarkovcraft.medsystem.common.health.distributor.DamageDistributor;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class DamageContext {
 
     private HitCalculationContext context;
     private HitCalculationResult result;
+    private final List<Limb> lostLimbs = new ArrayList<>();
     private final Set<EquipmentSlot> damagedSlots = EnumSet.noneOf(EquipmentSlot.class);
 
     public DamageContext(HitCalculationContext context, HitCalculationResult result) {
@@ -32,6 +30,7 @@ public final class DamageContext {
     public void init(HitCalculationContext context, HitCalculationResult result) {
         this.context = context;
         this.result = result;
+        this.lostLimbs.clear();
     }
 
     public HitCalculationContext getCalculationContext() {
@@ -66,6 +65,14 @@ public final class DamageContext {
     public Map<Limb, Float> getDamage(float incomingTotalDamage) {
         DamageDistributor damageDistributor = this.result.getDamageDistributor();
         return damageDistributor.distribute(this, incomingTotalDamage);
+    }
+
+    public void addLostLimb(Limb limb) {
+        this.lostLimbs.add(limb);
+    }
+
+    public int getLostLimbsCount() {
+        return this.lostLimbs.size();
     }
 
     public void reset() {

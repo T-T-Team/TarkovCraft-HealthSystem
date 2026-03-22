@@ -1,13 +1,12 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
 
 public record LimbConfiguration(String rootLimb, Map<String, LimbDefinition> limbs) {
 
@@ -22,9 +21,9 @@ public record LimbConfiguration(String rootLimb, Map<String, LimbDefinition> lim
     });
 
     public Map<String, Limb> buildLimbInstances() {
-        ImmutableMap.Builder<String, Limb> builder = ImmutableMap.builder();
-        this.limbs.forEach((code, definition) -> builder.put(code, definition.createLimbInstance(code)));
-        return builder.build();
+        LinkedHashMap<String, Limb> map = new LinkedHashMap<>();
+        this.limbs.forEach((code, definition) -> map.put(code, definition.createLimbInstance(code)));
+        return map;
     }
 
     public LimbDefinition getLimbDefinition(String code) {

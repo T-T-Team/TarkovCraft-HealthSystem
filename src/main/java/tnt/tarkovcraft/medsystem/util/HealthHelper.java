@@ -1,6 +1,10 @@
 package tnt.tarkovcraft.medsystem.util;
 
 import com.mojang.serialization.DataResult;
+import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.Nullable;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
 
 import java.util.List;
@@ -11,17 +15,17 @@ import java.util.function.Predicate;
 public final class HealthHelper {
 
     public static boolean allLimbsMatch(HealthContainer container, LimbType type, Predicate<Limb> filter) {
-        return container.getLimbsAsStream()
+        return container.getLimbContainer().getLimbs()
                 .filter(limb -> limb.getType() == type)
                 .allMatch(filter);
     }
 
     public static boolean allLimbsMatch(HealthContainer container, Predicate<Limb> filter) {
-        return container.getLimbsAsStream().allMatch(filter);
+        return container.getLimbContainer().getLimbs().allMatch(filter);
     }
 
     public static boolean anyLimbsMatch(HealthContainer container, Predicate<Limb> filter) {
-        return container.getLimbsAsStream().anyMatch(filter);
+        return container.getLimbContainer().hasLimb(filter);
     }
 
     public static boolean allLimbsDead(HealthContainer container, LimbType type) {
@@ -33,13 +37,13 @@ public final class HealthHelper {
     }
 
     public static List<Limb> getDeadLimbs(HealthContainer container) {
-        return container.getLimbsAsStream()
+        return container.getLimbContainer().getLimbs()
                 .filter(Limb::isDead)
                 .toList();
     }
 
     public static void recoverVitalLimbs(HealthContainer container, float health) {
-        container.getVitalLimbs().forEach(limb -> {
+        container.getLimbContainer().getVitalLimbs().forEach(limb -> {
             if (limb.isDead()) {
                 limb.setHealth(health);
             }
@@ -76,6 +80,73 @@ public final class HealthHelper {
             }
         }
         return DataResult.success(container);
+    }
+
+    public static boolean canHeal(HealthContainer container) {
+        return selectLimbForHealing(container.getLimbContainer()) != null;
+    }
+
+    public static @Nullable Limb selectLimbForHealing(HealthContainer container) {
+        return selectLimbForHealing(container.getLimbContainer());
+    }
+
+    public static @Nullable Limb selectLimbForHealing(LimbContainer container) {
+        Limb targetPart = null;
+        float targetPercentage = 1.0F;
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (config.prioritizeVitalHealing) {
+            for (Limb vitalPart : container.getVitalLimbs()) {
+                if (vitalPart.isDead())
+                    continue;
+                float percentage = vitalPart.getHealthPercent();
+                if (percentage < config.vitalBodyPartHealthTrigger && percentage < targetPercentage) {
+                    targetPercentage = percentage;
+                    targetPart = vitalPart;
+                }
+            }
+        }
+        if (targetPart != null) {
+            return targetPart;
+        }
+        Limb target = null;
+        for (Limb part : container) {
+            if (part.isDead())
+                continue;
+            float percentage = part.getHealthPercent();
+            if (percentage < 1.0F && percentage < targetPercentage) {
+                target = part;
+                targetPercentage = percentage;
+            }
+        }
+        return target;
+    }
+
+    public static void synchronizeHealth(LivingEntity entity, HealthContainer healthContainer) {
+        LimbContainer container = healthContainer.getLimbContainer();
+        HealthContainerDefinition definition = healthContainer.getDefinition();
+        LimbConfiguration limbConfiguration = definition.limbConfiguration();
+        float playerMaxHealth = entity.getMaxHealth();
+        float containerMaxHealth = container.getMaxHealth();
+        float originalContainerMaxHealth = limbConfiguration.getMaxHealth();
+        if (playerMaxHealth != containerMaxHealth) {
+            MedicalSystem.LOGGER.debug("Health pool changed for {}, entity max health: {}, health container max health: {}", entity, playerMaxHealth, containerMaxHealth);
+            if (playerMaxHealth == originalContainerMaxHealth) {
+                MedicalSystem.LOGGER.debug("Restoring original container max health for {}", entity);
+                container.restoreHealthLimits();
+            } else {
+                double diff = playerMaxHealth - originalContainerMaxHealth;
+                MedicalSystem.LOGGER.debug("Recalculating container max health for {} - changing by {} health points", entity, diff);
+                int limbs = container.getLimbCount();
+                double perLimb = diff / limbs;
+                for (Limb limb : container) {
+                    limb.restoreHealthLimit();
+                    float newMaxHealth = (float) (limb.getMaxHealth() + perLimb);
+                    limb.setMaxHealth(Math.max(newMaxHealth, 1.0F));
+                }
+            }
+        }
+        float health = container.getHealth();
+        entity.setHealth(health);
     }
 
     private HealthHelper() {

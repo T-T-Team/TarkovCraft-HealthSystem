@@ -64,7 +64,7 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
         AttributeModifier modifier = new AttributeModifier(HealthSystem.IDENTIFIER, diff, AttributeModifier.Operation.ADD_VALUE);
         AttributeInstance instance = entity.getAttribute(Attributes.MAX_HEALTH);
         instance.addOrReplacePermanentModifier(modifier);
-        container.updateHealth(entity);
+        HealthHelper.synchronizeHealth(entity, container);
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
     }
 }

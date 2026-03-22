@@ -104,8 +104,8 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         if (bloodSystem != null && bloodSystem.isInPain()) {
             return true;
         }
-        Stream<Limb> parts = healthContainer.getLimbsAsStream();
-        return parts.anyMatch(HealthSystem::isMovementRestrictedOnLimb);
+        LimbContainer limbContainer = healthContainer.getLimbContainer();
+        return limbContainer.hasLimb(HealthSystem::isMovementRestrictedOnLimb);
     }
 
     public static boolean isMovementRestrictedOnLimb(Limb limb) {

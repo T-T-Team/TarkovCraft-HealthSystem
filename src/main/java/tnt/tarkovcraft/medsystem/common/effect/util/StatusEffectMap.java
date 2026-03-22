@@ -4,15 +4,19 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
+import tnt.tarkovcraft.medsystem.common.effect.PainStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -59,6 +63,15 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         }
         if (entity.isAlive()) {
             this.submitPendingEffects(submitter, entity, ctx.limb());
+        }
+    }
+
+    public void painEffectTick(LivingEntity entity, int delay, boolean tickNow) {
+        Level level = entity.level();
+        long time = level.getGameTime();
+        boolean isValidTick = tickNow || time % 20L == 0L;
+        if (isValidTick && this.hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
+            StatusEffectHelper.addGlobalEffect(this, entity, delay, PainStatusEffect.infinite());
         }
     }
 

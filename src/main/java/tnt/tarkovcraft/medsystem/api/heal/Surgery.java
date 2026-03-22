@@ -19,6 +19,7 @@ import tnt.tarkovcraft.medsystem.common.effect.InjuryRecoveryStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
 import java.util.function.Consumer;
@@ -35,7 +36,8 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
     ).apply(instance, Surgery::new));
 
     public boolean canHeal(HealthContainer container) {
-        return container.getLimbsAsStream().anyMatch(part -> part.isDead() && part.getMaxHealth() >= this.minLimbHealth);
+        LimbContainer limbContainer = container.getLimbContainer();
+        return limbContainer.hasLimb(limb -> limb.isDead() && limb.getMaxHealth() >= this.minLimbHealth);
     }
 
     public boolean hasPostRecovery() {
