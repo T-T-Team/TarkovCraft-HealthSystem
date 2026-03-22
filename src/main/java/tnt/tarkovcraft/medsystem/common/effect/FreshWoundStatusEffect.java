@@ -9,29 +9,35 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class FreshWoundStatusEffect extends StatusEffect {
 
-    public static final MapCodec<FreshWoundStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(
+    public static final MapCodec<FreshWoundStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> common(instance).and(instance.group(
+            BleedStatusEffect.BleedType.CODEC.optionalFieldOf("bleed_type", BleedStatusEffect.BleedType.LIGHT).forGetter(t -> t.bleedType),
             Codec.FLOAT.optionalFieldOf("bleed_chance", 0.0F).forGetter(t -> t.bleedChance)
-    ).apply(instance, FreshWoundStatusEffect::new));
+    )).apply(instance, FreshWoundStatusEffect::new));
     private static final Component INFO = Component.translatable("status_effect.medsystem.fresh_wound.info").withStyle(ChatFormatting.DARK_GRAY);
 
+    private final BleedStatusEffect.BleedType bleedType;
     private float bleedChance;
 
-    public FreshWoundStatusEffect(int duration) {
-        this(duration, 0.0F);
+    public FreshWoundStatusEffect(int duration, BleedStatusEffect.BleedType bleedType) {
+        this(duration, bleedType, 0.0F);
     }
 
-    public FreshWoundStatusEffect(int duration, float bleedChance) {
+    public FreshWoundStatusEffect(int duration, BleedStatusEffect.BleedType bleedType, float bleedChance) {
         super(duration);
+        this.bleedType = bleedType;
         this.bleedChance = bleedChance;
     }
 
-    public static FreshWoundStatusEffect createTemplate() {
-        return new FreshWoundStatusEffect(-1);
+    public static FreshWoundStatusEffect createTemplate(int duration) {
+        return new FreshWoundStatusEffect(duration, BleedStatusEffect.BleedType.LIGHT);
+    }
+
+    public static FreshWoundStatusEffect createTemplate(BleedStatusEffect.BleedType bleedType) {
+        return new FreshWoundStatusEffect(-1, bleedType);
     }
 
     @Override
@@ -50,13 +56,13 @@ public class FreshWoundStatusEffect extends StatusEffect {
         LivingEntity entity = context.entity();
         RandomSource source = entity.getRandom();
         if (source.nextFloat() < this.bleedChance) {
-            context.submitImmediate(BleedStatusEffect.defaultLightBleed(-1, Optional.empty()));
+            context.submitImmediate(BleedStatusEffect.createTemplate(-1, this.bleedType));
         }
     }
 
     @Override
     public StatusEffect copy() {
-        return new FreshWoundStatusEffect(this.getDuration(), this.bleedChance);
+        return new FreshWoundStatusEffect(this.getDuration(), this.bleedType, this.bleedChance);
     }
 
     @Override
@@ -67,5 +73,11 @@ public class FreshWoundStatusEffect extends StatusEffect {
     @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.FRESH_WOUND.value();
+    }
+
+    public static FreshWoundStatusEffect merge(FreshWoundStatusEffect first, FreshWoundStatusEffect second) {
+        BleedStatusEffect.BleedType bleedType = first.bleedType.ordinal() > second.bleedType.ordinal() ? first.bleedType : second.bleedType;
+        int duration = sumEffectDurations(first, second);
+        return new FreshWoundStatusEffect(duration, bleedType);
     }
 }

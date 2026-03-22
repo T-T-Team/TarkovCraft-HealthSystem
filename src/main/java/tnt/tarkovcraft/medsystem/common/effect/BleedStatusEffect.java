@@ -8,9 +8,9 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -20,9 +20,10 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
-import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.config.BleedConfiguration;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
@@ -32,53 +33,58 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class BleedStatusEffect extends EntityCausedStatusEffect {
 
     public static final MapCodec<BleedStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).and(
             instance.group(
                     Codec.LONG.optionalFieldOf("added_at", 0L).forGetter(t -> t.addedAt),
-                    Codec.FLOAT.optionalFieldOf("amount", 0.005F).forGetter(t -> t.bleedAmount),
-                    ExtraCodecs.POSITIVE_INT.optionalFieldOf("interval", 60).forGetter(t -> t.bleedInterval),
-                    ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("wound_duration", 0).forGetter(t -> t.woundDuration)
+                    BleedType.CODEC.optionalFieldOf("bleed_type", BleedType.LIGHT).forGetter(t -> t.bleedType)
             )
     ).apply(instance, BleedStatusEffect::new));
     public static final Component LIGHT_BLEED = Component.translatable("status_effect.medsystem.bleed.light");
+    public static final Component MODERATE_BLEED = Component.translatable("status_effect.medsystem.bleed.moderate");
     public static final Component HEAVY_BLEED = Component.translatable("status_effect.medsystem.bleed.heavy");
+    public static final Component CRITICAL_BLEED = Component.translatable("status_effect.medsystem.bleed.critical");
     public static final Identifier ICON_LIGHT_BLEED = MedicalSystem.createIdentifier("textures/icons/status_effect/light_bleed.png");
     public static final Identifier ICON_HEAVY_BLEED = MedicalSystem.createIdentifier("textures/icons/status_effect/heavy_bleed.png");
-    public static final float LIGHT_BLEED_AMOUNT = 0.005F;
-    public static final float HEAVY_BLEED_AMOUNT = 0.025F;
-    public static final int LIGHT_BLEED_INTERVAL = 60;
-    public static final int HEAVY_BLEED_INTERVAL = 30;
-    private static final float HEAVY_BLEED_AMOUNT_THRESHOLD = getBleedAmount(HEAVY_BLEED_AMOUNT, HEAVY_BLEED_INTERVAL, 20);
     private static final float RAW_DAMAGE_SCALE = 40.0F;
-    private static final Component HINT_LIGHT_BLEED = Component.translatable("status_effect.medsystem.bleed.light.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
-    private static final Component HINT_HEAVY_BLEED = Component.translatable("status_effect.medsystem.bleed.heavy.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
+    private static final Component HINT_USE_BANDAGE = Component.translatable("status_effect.medsystem.bleed.bandage.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
+    private static final Component HINT_USE_TOURNIQUET = Component.translatable("status_effect.medsystem.bleed.tourniquet.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
 
     private long addedAt;
-    private final float bleedAmount;
-    private final int bleedInterval;
-    private final int woundDuration;
+    private final BleedType bleedType;
 
-    public BleedStatusEffect(int duration, Optional<UUID> owner, float bleedAmount, int bleedInterval, int woundDuration) {
-        this(duration, owner, 0L, bleedAmount, bleedInterval, woundDuration);
+    public BleedStatusEffect(int duration, Optional<UUID> owner, BleedType bleedType) {
+        this(duration, owner, 0L, bleedType);
     }
 
-    private BleedStatusEffect(int duration, Optional<UUID> owner, long addedAt, float bleedAmount, int bleedInterval, int woundDuration) {
+    private BleedStatusEffect(int duration, Optional<UUID> owner, long addedAt, BleedType bleedType) {
         super(duration, owner);
         this.addedAt = addedAt;
-        this.bleedAmount = bleedAmount;
-        this.bleedInterval = bleedInterval;
-        this.woundDuration = woundDuration;
+        this.bleedType = bleedType;
     }
 
-    public static BleedStatusEffect defaultLightBleed(int duration, Optional<UUID> causingEntity) {
-        return new BleedStatusEffect(duration, causingEntity, LIGHT_BLEED_AMOUNT, LIGHT_BLEED_INTERVAL, 0);
+    public static BleedStatusEffect lightBleed(int duration, Optional<UUID> causingEntity) {
+        return new BleedStatusEffect(duration, causingEntity, BleedType.LIGHT);
     }
 
-    public static BleedStatusEffect defaultHeavyBleed(int duration, Optional<UUID> causingEntity) {
-        return new BleedStatusEffect(duration, causingEntity, HEAVY_BLEED_AMOUNT, HEAVY_BLEED_INTERVAL, Duration.minutes(5).tickValue());
+    public static BleedStatusEffect moderateBleed(int duration, Optional<UUID> causingEntity) {
+        return new BleedStatusEffect(duration, causingEntity, BleedType.MODERATE);
+    }
+
+    public static BleedStatusEffect heavyBleed(int duration, Optional<UUID> causingEntity) {
+        return new BleedStatusEffect(duration, causingEntity, BleedType.HEAVY);
+    }
+
+    public static BleedStatusEffect criticalBleed(int duration, Optional<UUID> causingEntity) {
+        return new BleedStatusEffect(duration, causingEntity, BleedType.CRITICAL);
+    }
+
+    public static BleedStatusEffect createTemplate(int duration, BleedType bleedType) {
+        return new BleedStatusEffect(duration, Optional.empty(), bleedType);
     }
 
     @Override
@@ -90,27 +96,26 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
         }
         Limb limb = context.limb();
         LivingEntity entity = context.entity();
-        if (limb != null && (time - this.addedAt) % this.bleedInterval == 0L) {
+        BleedConfiguration.BleedStageConfig stageConfig = this.getStageConfiguration();
+        if (limb != null && (time - this.addedAt) % stageConfig.bleedInterval == 0L) {
             if (level instanceof ServerLevel serverLevel) {
-                if (!BloodSystemManager.causeBloodLoss(entity, this.bleedAmount)) {
+                if (!BloodSystemManager.causeBloodLoss(entity, stageConfig.bleedAmount)) {
                     RegistryAccess access = serverLevel.registryAccess();
                     DamageSource damageSource = MedSystemDamageTypes.causeBleedDamage(access, this.getCausingEntity(serverLevel));
-                    float damage = this.bleedAmount * RAW_DAMAGE_SCALE;
+                    float damage = stageConfig.bleedAmount * RAW_DAMAGE_SCALE;
                     entity.hurtServer(serverLevel, damageSource, damage);
                 }
-                StatisticTracker.incrementOptional(entity, MedSystemStats.BLOOD_LOST, Mth.floor(this.bleedAmount * 1000));
+                StatisticTracker.incrementOptional(entity, MedSystemStats.BLOOD_LOST, Mth.floor(stageConfig.bleedAmount * 1000));
             } else {
-                BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
-                if (!config.enableBloodDecals)
+                if (!MedicalSystem.getConfig().bloodDecals.enableBloodDecals)
                     return;
                 HealthContainer container = context.container();
                 Vec3 position = this.getParticlePosition(entity, container, limb);
                 Vec3 direction = entity.getDeltaMovement();
                 float baseDir = 0.025F;
-                int particleCount = isHeavyBleed(this) ? config.heavyBleedDecalCount : config.lightBleedDecalCount;
                 RandomSource random = level.getRandom();
                 BloodDecalSettings settings = container.getDefinition().decalSettings();
-                for (int i = 0; i < particleCount; i++) {
+                for (int i = 0; i < stageConfig.decalCount; i++) {
                     Integer color = settings.getColor(entity);
                     if (color == null)
                         return;
@@ -122,32 +127,33 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
 
     @Override
     public void onRemoved(StatusEffectContext context) {
-        if (this.woundDuration > 0) {
+        BleedConfiguration.BleedStageConfig stageConfig = this.getStageConfiguration();
+        if (stageConfig.woundDuration > 0) {
             context.submit(
                     Duration.seconds(5),
-                    new FreshWoundStatusEffect(this.woundDuration)
+                    new FreshWoundStatusEffect(stageConfig.woundDuration, this.bleedType == BleedType.CRITICAL ? BleedType.MODERATE : BleedType.LIGHT)
             );
         }
     }
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(isHeavyBleed(this) ? HINT_HEAVY_BLEED : HINT_LIGHT_BLEED);
+        tooltip.accept(needsTourniquet(this) ? HINT_USE_TOURNIQUET : HINT_USE_BANDAGE);
     }
 
     @Override
     public Component getCustomDisplayName() {
-        return isHeavyBleed(this) ? HEAVY_BLEED : LIGHT_BLEED;
+        return this.bleedType.label.get();
     }
 
     @Override
     public Identifier getCustomIcon() {
-        return isHeavyBleed(this) ? ICON_HEAVY_BLEED : ICON_LIGHT_BLEED;
+        return this.bleedType.icon.get();
     }
 
     @Override
     public StatusEffect copy() {
-        return new BleedStatusEffect(this.getDuration(), Optional.ofNullable(this.getCausingEntity()), this.bleedAmount, this.bleedInterval, this.woundDuration);
+        return new BleedStatusEffect(this.getDuration(), Optional.ofNullable(this.getCausingEntity()), this.bleedType);
     }
 
     @Override
@@ -157,7 +163,7 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
 
     @Override
     protected @Nullable Integer getCustomHealingPriority() {
-        return isHeavyBleed(this) ? MedSystemConstants.HEAL_EFFECT_MAJOR : MedSystemConstants.HEAL_EFFECT_MINOR;
+        return needsTourniquet(this) ? MedSystemConstants.HEAL_EFFECT_MAJOR : MedSystemConstants.HEAL_EFFECT_MINOR;
     }
 
     private Vec3 getParticlePosition(LivingEntity entity, HealthContainer container, Limb limb) {
@@ -168,22 +174,49 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
         return hitbox.toWorldSpaceHitbox(entity).getCenter();
     }
 
-    public static boolean isHeavyBleed(BleedStatusEffect effect) {
-        float bleedAmountPerSecond = getBleedAmount(effect, 20);
-        return bleedAmountPerSecond >= HEAVY_BLEED_AMOUNT_THRESHOLD;
+    public static boolean needsTourniquet(BleedStatusEffect effect) {
+        return effect.bleedType.requiresTourniquet;
     }
 
-    public static float getBleedAmount(BleedStatusEffect effect, float scale) {
-        return getBleedAmount(effect.bleedAmount, effect.bleedInterval, scale);
+    public static BleedStatusEffect higherStage(BleedStatusEffect ef1, BleedStatusEffect ef2) {
+        int duration = sumEffectDurations(ef1, ef2);
+        BleedType bleedType = ef1.bleedType.ordinal() > ef2.bleedType.ordinal() ? ef1.bleedType : ef2.bleedType;
+        UUID causingEntity = ef1.getCausingEntity() != null ? ef1.getCausingEntity() : ef2.getCausingEntity();
+        return new BleedStatusEffect(duration, Optional.ofNullable(causingEntity), bleedType);
     }
 
-    public static float getBleedAmount(float bleedAmount, int bleedInterval, float scale) {
-        return (bleedAmount / bleedInterval) * scale;
+    public BleedConfiguration.BleedStageConfig getStageConfiguration() {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        BleedConfiguration bleedConfiguration = config.statusEffects.bleedConfiguration;
+        return this.bleedType.configProvider.apply(bleedConfiguration);
     }
 
-    public static BleedStatusEffect withHighestDamage(BleedStatusEffect ef1, BleedStatusEffect ef2) {
-        int duration1 = ef1.isInfinite() ? 1 : ef1.getDuration();
-        int duration2 = ef2.isInfinite() ? 1 : ef2.getDuration();
-        return getBleedAmount(ef1, duration1) >= getBleedAmount(ef2, duration2) ? ef1 : ef2;
+    public enum BleedType implements StringRepresentable {
+
+        LIGHT("light", () -> LIGHT_BLEED, () -> ICON_LIGHT_BLEED, false, BleedConfiguration::getLightBleed),
+        MODERATE("moderate", () -> MODERATE_BLEED, () -> ICON_LIGHT_BLEED, false, BleedConfiguration::getModerateBleed),
+        HEAVY("heavy", () -> HEAVY_BLEED, () -> ICON_HEAVY_BLEED, true, BleedConfiguration::getHeavyBleed),
+        CRITICAL("critical", () -> CRITICAL_BLEED, () -> ICON_HEAVY_BLEED, true, BleedConfiguration::getCriticalBleed);
+
+        public static final Codec<BleedType> CODEC = StringRepresentable.fromEnum(BleedType::values);
+
+        private final String name;
+        private final Supplier<Component> label;
+        private final Supplier<Identifier> icon;
+        private final boolean requiresTourniquet;
+        private final Function<BleedConfiguration, BleedConfiguration.BleedStageConfig> configProvider;
+
+        BleedType(String name, Supplier<Component> label, Supplier<Identifier> icon, boolean requiresTourniquet, Function<BleedConfiguration, BleedConfiguration.BleedStageConfig> configProvider) {
+            this.name = name;
+            this.label = label;
+            this.icon = icon;
+            this.requiresTourniquet = requiresTourniquet;
+            this.configProvider = configProvider;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.name;
+        }
     }
 }

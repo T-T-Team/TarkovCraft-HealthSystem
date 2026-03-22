@@ -56,31 +56,6 @@ public final class StatusEffectConfig {
     @Configurable.Gui.Slider
     public float bluntToolFractureMultiplier = 5.0F;
 
-    @SuppressWarnings("unused")
     @Configurable
-    @Configurable.Range(min = 0)
-    public int lightBleedChance = 50;
-
-    @SuppressWarnings("unused")
-    @Configurable
-    @Configurable.Range(min = 0)
-    public int moderateBleedChance = 30;
-
-    @SuppressWarnings("unused")
-    @Configurable
-    @Configurable.Range(min = 0)
-    public int heavyBleedChance = 15;
-
-    @SuppressWarnings("unused")
-    @Configurable
-    @Configurable.Range(min = 0)
-    public int criticalBleedChance = 5;
-
-    public static final class BleedChanceValidator implements Validator<Integer> {
-
-        @Override
-        public ValidationResult validate(Integer integer, IConfigValueReadable<Integer> iConfigValueReadable) {
-            return null;
-        }
-    }
+    public BleedConfiguration bleedConfiguration = new BleedConfiguration();
 }
