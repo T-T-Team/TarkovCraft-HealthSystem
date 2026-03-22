@@ -1,17 +1,14 @@
 package tnt.tarkovcraft.medsystem.client.shader;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
+import tnt.tarkovcraft.core.client.shader.ShaderHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
@@ -19,8 +16,8 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 
 public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
 
-    public static final Identifier PIPELINE = MedicalSystem.createIdentifier("bloodloss/0");
     private static final Identifier IDENTIFIER = MedicalSystem.createIdentifier("bloodloss");
+    public static final Identifier PIPELINE = ShaderHelper.getPostChainPipeline(IDENTIFIER, 0);
     private float strength;
     private float lastStrength;
     private float interpolatedStrength;
@@ -67,8 +64,6 @@ public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
 
     @Override
     public @Nullable GpuBufferSlice getDynamicUniformBuffer() {
-        return RenderSystem.getDynamicUniforms().writeTransform(
-                RenderSystem.getModelViewMatrix(), new Vector4f(0.0F, 0.0F, 0.0F, this.interpolatedStrength), new Vector3f(), new Matrix4f()
-        );
+        return ShaderHelper.scaleTransform(this.interpolatedStrength);
     }
 }

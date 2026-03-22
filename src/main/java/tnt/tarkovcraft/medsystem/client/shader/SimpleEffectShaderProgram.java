@@ -1,17 +1,14 @@
 package tnt.tarkovcraft.medsystem.client.shader;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
+import tnt.tarkovcraft.core.client.shader.ShaderHelper;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -44,7 +41,7 @@ public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgr
         this.lastStrength = this.strength;
         if (!HealthSystem.hasCustomHealth(livingEntity))
             return;
-        HealthContainer container = HealthSystem.getHealthData(livingEntity);
+        HealthContainer container = HealthContainer.getAttached(livingEntity);
         StatusEffectMap map = container.getGlobalStatusEffects();
         if (this.canApply(livingEntity, container, map) && map.hasEffect(this.getEffect())) {
             this.strength = Math.min(1.0F, this.strength + this.getStrengthGain());
@@ -55,9 +52,7 @@ public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgr
 
     @Override
     public final @Nullable GpuBufferSlice getDynamicUniformBuffer() {
-        return RenderSystem.getDynamicUniforms().writeTransform(
-                RenderSystem.getModelViewMatrix(), new Vector4f(0.0F, 0.0F, 0.0F, this.smoothStrength), new Vector3f(), new Matrix4f()
-        );
+        return ShaderHelper.scaleTransform(this.smoothStrength);
     }
 
     protected boolean canApply(LivingEntity entity, HealthContainer container, StatusEffectMap map) {

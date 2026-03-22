@@ -15,6 +15,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.HitboxPiercingEvent;
 import tnt.tarkovcraft.medsystem.api.event.PainCheckEvent;
@@ -61,12 +62,9 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         return entity.hasData(MedSystemDataAttachments.HEALTH_CONTAINER);
     }
 
+    @Deprecated
     public static HealthContainer getHealthData(LivingEntity entity) {
         return entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-    }
-
-    public static HealthContainer getHealthDataOrThrow(LivingEntity entity) {
-        return Objects.requireNonNull(getHealthData(entity), String.format(Locale.ROOT, "Entity '%s' does not have health data attached", entity));
     }
 
     public static boolean hasPainRelief(LivingEntity entity) {
@@ -142,12 +140,8 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
         return NeoForge.EVENT_BUS.post(new HitboxPiercingEvent(context, pierceLevel)).getPiercing();
     }
 
-    public Optional<HealthContainerDefinition> getHealthContainer(EntityType<?> type) {
-        return Optional.ofNullable(this.healthContainers.get(type));
-    }
-
-    public Optional<HealthContainerDefinition> getHealthContainer(LivingEntity entity) {
-        return this.getHealthContainer(entity.getType());
+    public static @Nullable HealthContainerDefinition getHealthContainerDefinition(EntityType<?> type) {
+        return MedicalSystem.HEALTH_SYSTEM.healthContainers.get(type);
     }
 
     public void importServerData(Map<EntityType<?>, HealthContainerDefinition> data) {
@@ -158,6 +152,18 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthC
 
     public CustomPacketPayload getConfigurationPayload() {
         return new S2C_SendHealthDefinitions(this.healthContainers);
+    }
+
+    public static void handleNewEntity(LivingEntity entity) {
+        HealthContainer container = HealthContainer.getAttached(entity);
+        if (container != null && !container.isInvalid()) {
+            return;
+        }
+        HealthContainer.detach(entity);
+        HealthContainerDefinition definition = getHealthContainerDefinition(entity.getType());
+        if (definition != null) {
+            definition.bind(entity);
+        }
     }
 
     @Override

@@ -3,14 +3,15 @@ package tnt.tarkovcraft.medsystem.client.shader;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.EasingType;
+import tnt.tarkovcraft.core.client.shader.ShaderHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 public class ConcussionEffectShaderProgram extends SimpleEffectShaderProgram {
 
-    public static final Identifier PIPELINE = MedicalSystem.createIdentifier("concussion/0");
     private static final Identifier IDENTIFIER = MedicalSystem.createIdentifier("concussion");
+    public static final Identifier PIPELINE = ShaderHelper.getPostChainPipeline(IDENTIFIER, 0);
 
     @Override
     public Holder<StatusEffectType<?>> getEffect() {

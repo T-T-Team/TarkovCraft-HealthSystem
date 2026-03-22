@@ -64,18 +64,21 @@ public final class BloodSystemConfig {
     @Configurable.Synchronized
     public UnconsciousOverlayType unconsciousOverlayType = UnconsciousOverlayType.BLINKING;
 
+    @SuppressWarnings("unused")
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.000")
     @Configurable.Gui.Slider
     public float shockPerHpLoss = 0.04F;
 
+    @SuppressWarnings("unused")
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.000")
     @Configurable.Gui.Slider
     public float shockPerLimbLoss = 0.25F;
 
+    @SuppressWarnings("unused")
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.000")
