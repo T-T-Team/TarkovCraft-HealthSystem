@@ -98,6 +98,7 @@ public final class MedicalSystem {
         TarkovCraftCommand.create(event.getDispatcher(), event.getBuildContext());
     }
 
+    @Deprecated
     private void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
         if (config.addHitEffectsToVanillaItems)
             VanillaItemComponentAssignments.adjustItemData((item, attr) -> event.modify(item, builder -> builder.set(MedSystemItemComponents.SIDE_EFFECTS.get(), attr)));

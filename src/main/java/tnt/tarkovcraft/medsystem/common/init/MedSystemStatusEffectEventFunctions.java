@@ -14,4 +14,6 @@ public final class MedSystemStatusEffectEventFunctions {
     public static final Holder<StatusEffectEventFunctionType<?>> CALCULATION = REGISTRY.register("calculation", key -> new StatusEffectEventFunctionType<>(key, CalculateEventFunction.CODEC));
     public static final Holder<StatusEffectEventFunctionType<?>> LOST_LIMB_COUNT = REGISTRY.register("lost_limb_count", key -> new StatusEffectEventFunctionType<>(key, LostLimbsCountScaleEventFunction.CODEC));
     public static final Holder<StatusEffectEventFunctionType<?>> LIMB_TYPE_SCALE = REGISTRY.register("limb_type_scale", key -> new StatusEffectEventFunctionType<>(key, LimbTypeScaleEventFunction.CODEC));
+    public static final Holder<StatusEffectEventFunctionType<?>> TOOL_MULTIPLIER = REGISTRY.register("tool_multiplier", key -> new StatusEffectEventFunctionType<>(key, ToolMultiplierEventFunction.CODEC));
+    public static final Holder<StatusEffectEventFunctionType<?>> SET_VALUE = REGISTRY.register("set_value", key -> new StatusEffectEventFunctionType<>(key, SetValueEventFunction.CODEC));
 }

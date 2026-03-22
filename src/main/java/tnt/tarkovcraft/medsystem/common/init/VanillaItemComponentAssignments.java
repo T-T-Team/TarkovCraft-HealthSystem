@@ -13,64 +13,7 @@ import java.util.function.BiConsumer;
 public final class VanillaItemComponentAssignments {
 
     public static void adjustItemData(BiConsumer<ItemLike, SideEffectHolder> registration) {
-        MedicalSystem.LOGGER.debug("Applying consumption/entryPoint effects to vanilla items");
-        StatusEffectConfig config = MedicalSystem.getConfig().statusEffects;
-        int effectDuration = config.itemStatusEffectDuration;
-        SideEffectHolder swords = config.swordStatusEffects.apply(SideEffectHolder.builder(), effectDuration)
-                .title(SideEffectHolder.ITEM_TITLE)
-                .build();
-        registration.accept(Items.WOODEN_SWORD, swords);
-        registration.accept(Items.STONE_SWORD, swords);
-        registration.accept(Items.COPPER_SWORD, swords);
-        registration.accept(Items.IRON_SWORD, swords);
-        registration.accept(Items.GOLDEN_SWORD, swords);
-        registration.accept(Items.DIAMOND_SWORD, swords);
-        registration.accept(Items.NETHERITE_SWORD, swords);
-        registration.accept(Items.WOODEN_SPEAR, swords);
-        registration.accept(Items.STONE_SPEAR, swords);
-        registration.accept(Items.COPPER_SPEAR, swords);
-        registration.accept(Items.IRON_SPEAR, swords);
-        registration.accept(Items.GOLDEN_SPEAR, swords);
-        registration.accept(Items.DIAMOND_SPEAR, swords);
-        registration.accept(Items.NETHERITE_SPEAR, swords);
-
-        SideEffectHolder axes = config.axeStatusEffects.apply(SideEffectHolder.builder(), effectDuration)
-                .title(SideEffectHolder.ITEM_TITLE)
-                .build();
-        registration.accept(Items.WOODEN_AXE, axes);
-        registration.accept(Items.STONE_AXE, axes);
-        registration.accept(Items.COPPER_AXE, axes);
-        registration.accept(Items.IRON_AXE, axes);
-        registration.accept(Items.GOLDEN_AXE, axes);
-        registration.accept(Items.DIAMOND_AXE, axes);
-        registration.accept(Items.NETHERITE_AXE, axes);
-
-        SideEffectHolder blunt = config.bluntStatusEffects.apply(SideEffectHolder.builder(), effectDuration)
-                .title(SideEffectHolder.ITEM_TITLE)
-                .build();
-        registration.accept(Items.WOODEN_SHOVEL, blunt);
-        registration.accept(Items.STONE_SHOVEL, blunt);
-        registration.accept(Items.COPPER_SHOVEL, blunt);
-        registration.accept(Items.IRON_SHOVEL, blunt);
-        registration.accept(Items.GOLDEN_SHOVEL, blunt);
-        registration.accept(Items.DIAMOND_SHOVEL, blunt);
-        registration.accept(Items.NETHERITE_SHOVEL, blunt);
-        registration.accept(Items.WOODEN_PICKAXE, blunt);
-        registration.accept(Items.STONE_PICKAXE, blunt);
-        registration.accept(Items.COPPER_PICKAXE, blunt);
-        registration.accept(Items.IRON_PICKAXE, blunt);
-        registration.accept(Items.GOLDEN_PICKAXE, blunt);
-        registration.accept(Items.DIAMOND_PICKAXE, blunt);
-        registration.accept(Items.NETHERITE_PICKAXE, blunt);
-        registration.accept(Items.WOODEN_HOE, blunt);
-        registration.accept(Items.STONE_HOE, blunt);
-        registration.accept(Items.COPPER_HOE, blunt);
-        registration.accept(Items.IRON_HOE, blunt);
-        registration.accept(Items.GOLDEN_HOE, blunt);
-        registration.accept(Items.DIAMOND_HOE, blunt);
-        registration.accept(Items.NETHERITE_HOE, blunt);
-        registration.accept(Items.MACE, blunt);
-
+        // TODO consume event
         // Foods
         SideEffectHolder bloodRegeneration = SideEffectHolder.builder()
                 .buffs(builder ->

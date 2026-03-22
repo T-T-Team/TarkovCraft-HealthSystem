@@ -1,7 +1,9 @@
 package tnt.tarkovcraft.medsystem.common.config;
 
 import dev.toma.configuration.config.Configurable;
-import tnt.tarkovcraft.core.common.data.duration.Duration;
+import dev.toma.configuration.config.validate.ValidationResult;
+import dev.toma.configuration.config.validate.Validator;
+import dev.toma.configuration.config.value.IConfigValueReadable;
 
 public final class StatusEffectConfig {
 
@@ -10,37 +12,75 @@ public final class StatusEffectConfig {
     @Configurable.Synchronized
     public boolean enableStatusEffects = true;
 
-    @Configurable
-    @Configurable.Comment("Enables transferring of status effects from items/projectiles to entryPoint entities")
-    public boolean enableItemDamageStatusEffects = true;
-
-    @Configurable
-    @Configurable.Range(min = 200)
-    @Configurable.Comment("Default duration of item/projectile side effects")
-    public int itemStatusEffectDuration = Duration.minutes(2).tickValue();
-
     @SuppressWarnings("unused")
     @Configurable
     @Configurable.Comment("Base chance for getting any type of bleed from '#medsystem:bleed_causing' damage type")
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Gui.Slider
-    public float playerBleedChance = 0.025F;
+    public float bleedChance = 0.025F;
 
     @SuppressWarnings("unused")
     @Configurable
-    @Configurable.Comment("Base chance for getting fracture from '#medsystem:fracture' damage type")
+    @Configurable.Comment({"Default duration of bleeding status effect", "-1 means infinite duration"})
+    @Configurable.Range(min = -1)
+    public int bleedDuration = -1;
+
+    @SuppressWarnings("unused")
+    @Configurable
+    @Configurable.Comment("Bleed chance multiplier for items from '#medsystem:sharp_tools' tag - swords, spears, axes")
+    @Configurable.DecimalRange(min = 1.0F, max = 10.0F)
+    @Configurable.Gui.NumberFormat("0.0##")
+    @Configurable.Gui.Slider
+    public float sharpToolBleedMultiplier = 5.0F;
+
+    @SuppressWarnings("unused")
+    @Configurable
+    @Configurable.Comment("Base chance for getting fracture from '#medsystem:fracture_causing' damage type")
     @Configurable.DecimalRange(min = 0.0F, max = 1.0F)
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Gui.Slider
-    public float playerFractureChance = 0.03F;
+    public float fractureChance = 0.03F;
 
+    @SuppressWarnings("unused")
     @Configurable
-    public ItemStatusEffectConfig swordStatusEffects = new ItemStatusEffectConfig(0.10F, 0.04F, 0.0F);
+    @Configurable.Comment({"Default duration of fracture status effect", "-1 means infinite duration"})
+    @Configurable.Range(min = -1)
+    public int fractureDuration = -1;
 
+    @SuppressWarnings("unused")
     @Configurable
-    public ItemStatusEffectConfig axeStatusEffects = new ItemStatusEffectConfig(0.10F, 0.02F, 0.10F);
+    @Configurable.Comment("Fracture chance multiplier for items from '#medsystem:blunt_tools' tag - shovels, pickaxes, hoes and mace")
+    @Configurable.DecimalRange(min = 1.0F, max = 10.0F)
+    @Configurable.Gui.NumberFormat("0.0##")
+    @Configurable.Gui.Slider
+    public float bluntToolFractureMultiplier = 5.0F;
 
+    @SuppressWarnings("unused")
     @Configurable
-    public ItemStatusEffectConfig bluntStatusEffects = new ItemStatusEffectConfig(0.05F, 0.0F, 0.10F);
+    @Configurable.Range(min = 0)
+    public int lightBleedChance = 50;
+
+    @SuppressWarnings("unused")
+    @Configurable
+    @Configurable.Range(min = 0)
+    public int moderateBleedChance = 30;
+
+    @SuppressWarnings("unused")
+    @Configurable
+    @Configurable.Range(min = 0)
+    public int heavyBleedChance = 15;
+
+    @SuppressWarnings("unused")
+    @Configurable
+    @Configurable.Range(min = 0)
+    public int criticalBleedChance = 5;
+
+    public static final class BleedChanceValidator implements Validator<Integer> {
+
+        @Override
+        public ValidationResult validate(Integer integer, IConfigValueReadable<Integer> iConfigValueReadable) {
+            return null;
+        }
+    }
 }
