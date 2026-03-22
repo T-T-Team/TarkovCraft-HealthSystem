@@ -14,7 +14,7 @@ public record IsBleedPredicate(boolean heavy) implements StatusEffectPredicate {
     @Override
     public boolean test(StatusEffect effect) {
         if (effect instanceof BleedStatusEffect bleedEffect) {
-            return this.heavy == BleedStatusEffect.isHeavyBleed(bleedEffect);
+            return this.heavy == BleedStatusEffect.needsTourniquet(bleedEffect);
         }
         return false;
     }
