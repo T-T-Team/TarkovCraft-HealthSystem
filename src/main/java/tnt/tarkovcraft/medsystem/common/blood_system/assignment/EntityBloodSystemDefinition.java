@@ -20,6 +20,9 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.effect.BloodLevelEffectHolder;
 import tnt.tarkovcraft.medsystem.common.effect.BloodLossStatusEffect;
+import tnt.tarkovcraft.medsystem.common.health.HealthBloodSystemIntegration;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.util.WeightedList;
@@ -85,6 +88,15 @@ public final class EntityBloodSystemDefinition {
         ResourceLocation bloodType = this.weightedBloodTypes.getRandomOrThrow(entity.getRandom());
         EntityBloodSystem system = new EntityBloodSystem(type, bloodType, this.getMaxBloodVolume());
         entity.setData(MedSystemDataAttachments.BLOOD_SYSTEM, system);
+
+        this.bindListeners(system, entity);
+    }
+
+    public void bindListeners(EntityBloodSystem bloodSystem, LivingEntity entity) {
+        if (HealthSystem.hasCustomHealth(entity)) {
+            HealthContainer container = HealthSystem.getHealthData(entity);
+            bloodSystem.eventHandler.subscribe(new HealthBloodSystemIntegration(container));
+        }
     }
 
     public void applyEffects(LivingEntity entity, ServerLevel level, EntityBloodSystem bloodSystem) {
