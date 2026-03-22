@@ -31,7 +31,7 @@ public record DeadLimbRecoveryEffectGroupItem(float health) implements EffectGro
             part.setHealth(this.health);
         }
         LivingEntity entity = context.entity();
-        container.updateHealth(entity);
+        HealthHelper.synchronizeHealth(entity, container);
         HealthSystem.synchronizeEntity(entity);
     }
 

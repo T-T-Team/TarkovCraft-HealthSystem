@@ -5,6 +5,7 @@ import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 import tnt.tarkovcraft.medsystem.common.effect.event.TriggerResult;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventConditions;
 
@@ -18,8 +19,8 @@ public record HasDeadLimbStatusEffectEventCondition(Set<LimbType> limb) implemen
     @Override
     public TriggerResult test(StatusEffectEventContext ctx) {
         HealthContainer container = ctx.getHealthContainer();
-        return TriggerResult.condition(container.getLimbsAsStream()
-                .anyMatch(limb -> limb.isDead() && this.limb.contains(limb.getType())));
+        LimbContainer limbContainer = container.getLimbContainer();
+        return TriggerResult.condition(limbContainer.hasLimb(limb -> limb.isDead() && this.limb.contains(limb.getType())));
     }
 
     @Override

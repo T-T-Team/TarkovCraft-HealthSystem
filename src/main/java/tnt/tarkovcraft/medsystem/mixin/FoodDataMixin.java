@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin {
@@ -34,7 +35,7 @@ public abstract class FoodDataMixin {
     private boolean medsystem$canRegenerateHealth(boolean naturalRegeneration) {
         return naturalRegeneration
                 && HealthSystem.hasCustomHealth(medsystem$player)
-                && HealthContainer.getAttached(medsystem$player).canHeal()
+                && HealthHelper.canHeal(HealthContainer.getAttached(medsystem$player))
                 && !BloodSystemManager.isUnconscious(medsystem$player);
     }
 }

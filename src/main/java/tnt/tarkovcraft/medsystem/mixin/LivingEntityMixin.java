@@ -16,6 +16,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -31,7 +32,8 @@ public abstract class LivingEntityMixin extends Entity {
     private void medsystem$onAttributeUpdated(Holder<Attribute> holder, CallbackInfo ci) {
         if (hasData(MedSystemDataAttachments.HEALTH_CONTAINER) && holder.is(Attributes.MAX_HEALTH)) {
             LivingEntity livingEntity = (LivingEntity) (Object) this;
-            getData(MedSystemDataAttachments.HEALTH_CONTAINER).updateHealth(livingEntity);
+            HealthContainer container = HealthContainer.getAttached(livingEntity);
+            HealthHelper.synchronizeHealth(livingEntity, container);
         }
     }
 

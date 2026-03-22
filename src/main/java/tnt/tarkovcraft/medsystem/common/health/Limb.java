@@ -14,20 +14,19 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventSources;
 
 import java.util.Objects;
 
+// TODO immutable max health, reduction attribute?
 public final class Limb {
 
     public static final Codec<Limb> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             LimbDefinition.CODEC.fieldOf("definition").forGetter(t -> t.definition),
             Codec.STRING.fieldOf("code").forGetter(t -> t.limbCode),
             Codec.FLOAT.fieldOf("health").forGetter(t -> t.health),
-            Codec.FLOAT.fieldOf("maxHealth").forGetter(t -> t.maxHealth),
-            Codec.FLOAT.fieldOf("originalMaxHealth").forGetter(t -> t.originalMaxHealth),
-            StatusEffectMap.CODEC.fieldOf("statusEffects").forGetter(t -> t.statusEffects)
+            Codec.FLOAT.fieldOf("max_health").forGetter(t -> t.maxHealth),
+            StatusEffectMap.CODEC.fieldOf("status_effects").forGetter(t -> t.statusEffects)
     ).apply(instance, Limb::new));
 
     private final LimbDefinition definition;
     private final String limbCode;
-    private final float originalMaxHealth;
     private float health;
     private float maxHealth;
     private final Component displayName;
@@ -38,17 +37,15 @@ public final class Limb {
         this.limbCode = code;
         this.health = this.definition.baseHealth();
         this.maxHealth = this.definition.baseHealth();
-        this.originalMaxHealth = this.definition.baseHealth();
         this.displayName = getDisplayName(this.limbCode);
         this.statusEffects = new StatusEffectMap();
     }
 
-    private Limb(LimbDefinition definition, String limbCode, float health, float maxHealth, float originalMaxHealth, StatusEffectMap statusEffects) {
+    private Limb(LimbDefinition definition, String limbCode, float health, float maxHealth, StatusEffectMap statusEffects) {
         this.definition = definition;
         this.limbCode = limbCode;
         this.health = health;
         this.maxHealth = maxHealth;
-        this.originalMaxHealth = originalMaxHealth;
         this.displayName = getDisplayName(this.limbCode);
         this.statusEffects = statusEffects;
     }
@@ -86,11 +83,11 @@ public final class Limb {
     }
 
     public float getHealthPercent() {
-        return this.health / this.maxHealth;
+        return this.health / this.getMaxHealth();
     }
 
     public void setHealth(float health) {
-        this.health = Mth.clamp(health, 0, maxHealth);
+        this.health = Mth.clamp(health, 0, this.getMaxHealth());
     }
 
     public void heal(float amount) {
@@ -105,17 +102,21 @@ public final class Limb {
         return maxHealth;
     }
 
+    public float getInitialHealth() {
+        return this.definition.baseHealth();
+    }
+
+    public void restoreHealthLimit() {
+        this.maxHealth = this.getInitialHealth();
+    }
+
     public void setMaxHealth(float maxHealth) {
         this.maxHealth = maxHealth;
         this.setHealth(this.health);
     }
 
     public float getMaxHealAmount() {
-        return this.maxHealth - this.health;
-    }
-
-    public float getOriginalMaxHealth() {
-        return originalMaxHealth;
+        return this.getMaxHealth() - this.health;
     }
 
     public StatusEffectMap getStatusEffects() {

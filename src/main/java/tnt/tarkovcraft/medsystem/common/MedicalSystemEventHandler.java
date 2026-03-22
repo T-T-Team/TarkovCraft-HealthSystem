@@ -78,7 +78,9 @@ public final class MedicalSystemEventHandler {
         if (event.isCanceled())
             return;
         if (amount > 0.0F && HealthSystem.hasCustomHealth(entity)) {
-            float leftover = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER).heal(amount, null);
+            HealthContainer container = HealthContainer.getAttachedValid(entity);
+            LimbContainer limbContainer = container.getLimbContainer();
+            float leftover = limbContainer.heal(amount, null);
             if (leftover > 0.0F) {
                 event.setAmount(amount - leftover);
             }
@@ -171,7 +173,7 @@ public final class MedicalSystemEventHandler {
                 // make other mobs peaceful towards this entity
                 this.clearAttackTargetsAround(entity, 48.0D);
 
-                container.updateHealth(entity);
+                HealthHelper.synchronizeHealth(entity, container);
                 HealthSystem.synchronizeEntity(entity);
 
                 // set unconscious
