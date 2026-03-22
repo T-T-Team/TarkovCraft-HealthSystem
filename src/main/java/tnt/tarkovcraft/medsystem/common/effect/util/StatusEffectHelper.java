@@ -16,7 +16,6 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 
 import java.util.Optional;
@@ -47,7 +46,7 @@ public final class StatusEffectHelper {
             StatusEffectEvent.Schedule event = NeoForge.EVENT_BUS.post(new StatusEffectEvent.Schedule(entity, effect, limb, delay));
             if (event.isCanceled())
                 return;
-            HealthContainer container = HealthSystem.getHealthData(entity);
+            HealthContainer container = HealthContainer.getAttached(entity);
             MedicalSystem.LOGGER.debug(MARKER, "Scheduling effect {} with delay of {} ticks to target limb \"{}\" with duration {} for entity {}", effect.getType(), event.getDelay(), limb, effect.getDuration(), entity);
             container.scheduleStatusEffect(entity, event.getDelay(), limb, effect);
             return;
@@ -57,7 +56,7 @@ public final class StatusEffectHelper {
             return;
         MedicalSystem.LOGGER.debug(MARKER, "Adding status effect {} to target limb \"{}\" with duration {} for entity {}", effect.getType(), limb, effect.getDuration(), entity);
         effects.addEffect(effect);
-        HealthContainer container = HealthSystem.getHealthData(entity);
+        HealthContainer container = HealthContainer.getAttached(entity);
         container.markStatusEffectAdded(entity);
     }
 

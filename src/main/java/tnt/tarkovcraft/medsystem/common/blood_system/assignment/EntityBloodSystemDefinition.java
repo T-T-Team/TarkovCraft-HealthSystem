@@ -94,7 +94,7 @@ public final class EntityBloodSystemDefinition {
 
     public void bindListeners(EntityBloodSystem bloodSystem, LivingEntity entity) {
         if (HealthSystem.hasCustomHealth(entity)) {
-            HealthContainer container = HealthSystem.getHealthData(entity);
+            HealthContainer container = HealthContainer.getAttached(entity);
             bloodSystem.eventHandler.subscribe(new HealthBloodSystemIntegration(container));
         }
     }
