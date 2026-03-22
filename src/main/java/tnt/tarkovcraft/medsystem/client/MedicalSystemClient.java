@@ -20,7 +20,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
@@ -86,16 +85,16 @@ public final class MedicalSystemClient {
 
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::registerGuiLayer);
+        modEventBus.addListener(this::registerItemModelTintSources);
         modEventBus.addListener(this::registerKeyBinds);
         modEventBus.addListener(this::registerOnScreenHints);
+        modEventBus.addListener(this::registerShaderPrograms);
         modEventBus.addListener(this::registerParticleProviders);
-        modEventBus.addListener(this::registerItemModelTintSources);
 
         NeoForge.EVENT_BUS.addListener(this::onKeyInput);
         NeoForge.EVENT_BUS.addListener(this::prepareLayerRender);
         NeoForge.EVENT_BUS.addListener(this::onClientTick);
         NeoForge.EVENT_BUS.addListener(this::displayScreen);
-        NeoForge.EVENT_BUS.addListener(this::playSound);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseInput);
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, this::onMouseWheelInput);
 
@@ -192,23 +191,6 @@ public final class MedicalSystemClient {
         Player player = client.player;
         if (player != null && BloodSystemManager.isUnconscious(player) && event.getScreen() instanceof InventoryScreen) {
             event.setCanceled(true);
-        }
-    }
-
-    private void playSound(PlaySoundEvent event) {
-        Minecraft client = Minecraft.getInstance();
-        Player player = client.player;
-        if (player != null && BloodSystemManager.isUnconscious(player) && event.getSound() instanceof AbstractSoundInstance soundInstance) {
-            MedSystemConfig configuration = MedicalSystem.getConfig();
-            BloodSystemConfig bloodSystemConfig = configuration.bloodSystem;
-            if (bloodSystemConfig.unconsciousSoundVolumeScale <= 0.0F) {
-                event.setSound(null);
-                return;
-            }
-            float newVolume = soundInstance.volume * bloodSystemConfig.unconsciousSoundVolumeScale;
-            float newPitch = soundInstance.pitch * bloodSystemConfig.unconsciousSoundPitchScale;
-            soundInstance.volume = newVolume;
-            soundInstance.pitch = newPitch;
         }
     }
 

@@ -57,7 +57,7 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
             data.clearBoundData(entity);
         }
 
-        HealthContainer container = new HealthContainer(entity);
+        HealthContainer container = new HealthContainer(entity.getType(), this);
         float containerMaxHealth = this.limbConfiguration.getMaxHealth();
         float entityMaxHealth = entity.getMaxHealth();
         float diff = containerMaxHealth - entityMaxHealth;

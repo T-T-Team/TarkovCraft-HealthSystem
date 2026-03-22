@@ -9,14 +9,10 @@
   "mixins": [
     "LivingEntityMixin",
     "FoodDataMixin",
-    "ProjectileUtilMixin",
-    "InventoryMixin"
+    "ProjectileUtilMixin"
   ],
   "client": [
     "client.LivingEntityRendererMixin",
-    "client.CameraMixin",
-    "client.LocalPlayerMixin",
-    "client.MouseHandlerMixin",
     "client.PlayerModelMixin",
     "client.EntityRenderDispatcherMixin",
     "client.DebugRendererMixin"

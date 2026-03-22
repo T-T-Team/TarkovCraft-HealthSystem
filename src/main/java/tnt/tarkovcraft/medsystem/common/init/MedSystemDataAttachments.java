@@ -15,7 +15,7 @@ public final class MedSystemDataAttachments {
 
     public static final DeferredRegister<AttachmentType<?>> REGISTRY = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, MedSystemConstants.MOD_ID);
 
-    public static final Supplier<AttachmentType<HealthContainer>> HEALTH_CONTAINER = REGISTRY.register("health_container", () -> AttachmentType.builder(HealthContainer::new)
+    public static final Supplier<AttachmentType<HealthContainer>> HEALTH_CONTAINER = REGISTRY.register("health_container", () -> AttachmentType.builder(HealthContainer::invalid)
             .serialize(HealthContainer.CODEC)
             .sync(new HealthContainer.SyncHandler())
             .build()

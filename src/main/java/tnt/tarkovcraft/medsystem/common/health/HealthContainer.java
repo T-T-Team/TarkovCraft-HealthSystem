@@ -1,8 +1,9 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Queues;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -10,10 +11,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import tnt.tarkovcraft.core.util.Cached;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
@@ -26,6 +30,7 @@ import tnt.tarkovcraft.medsystem.common.effect.util.QueuedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import javax.annotation.Nullable;
@@ -36,38 +41,58 @@ import java.util.stream.Stream;
 public final class HealthContainer {
 
     public static final Codec<HealthContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            HealthContainerDefinition.CODEC.fieldOf("def").forGetter(t -> t.definition),
-            Codec.unboundedMap(Codec.STRING, Limb.CODEC).fieldOf("bodyParts").forGetter(t -> t.limbs),
-            Codecs.collection(QueuedStatusEffect.CODEC, list -> (Queue<QueuedStatusEffect>) new PriorityQueue<>(list), ArrayList::new).optionalFieldOf("effectQueue", new PriorityQueue<>()).forGetter(t -> t.effectQueue),
+            BuiltInRegistries.ENTITY_TYPE.byNameCodec().optionalFieldOf("entity_type").forGetter(t -> Optional.ofNullable(t.type)),
+            Codec.unboundedMap(Codec.STRING, Limb.CODEC).optionalFieldOf("limbs", Collections.emptyMap()).forGetter(t -> t.limbs),
+            Codecs.collection(QueuedStatusEffect.CODEC, list -> (Queue<QueuedStatusEffect>) new PriorityQueue<>(list), ArrayList::new).optionalFieldOf("effect_queue", new PriorityQueue<>()).forGetter(t -> t.effectQueue),
             Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
     ).apply(instance, HealthContainer::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, HealthContainer> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
 
-    private final HealthContainerDefinition definition;
+    private final EntityType<?> type;
     private final Map<String, Limb> limbs;
     private final Queue<QueuedStatusEffect> effectQueue;
-    private boolean invalidated;
 
-    public HealthContainer(IAttachmentHolder holder) {
-        if (!(holder instanceof LivingEntity livingEntity)) {
-            throw new IllegalArgumentException("Holder must be an instance of LivingEntity");
-        }
-        this.definition = MedicalSystem.HEALTH_SYSTEM.getHealthContainer(livingEntity).orElse(null);
-        this.effectQueue = new PriorityQueue<>();
-        ImmutableMap.Builder<String, Limb> builder = ImmutableMap.builder();
-        if (this.definition != null) {
-            this.definition.limbConfiguration().buildLimbInstances(builder::put);
-            this.limbs = builder.build();
-        } else {
-            this.limbs = Collections.emptyMap();
-        }
+    private boolean invalidated;
+    private final Cached<HealthContainerDefinition> definition;
+
+    public HealthContainer(EntityType<?> type, HealthContainerDefinition definition) {
+        this(
+                Optional.of(type),
+                definition != null ? definition.limbConfiguration().buildLimbInstances() : Collections.emptyMap(),
+                Queues.newPriorityQueue(),
+                false
+        );
     }
 
-    private HealthContainer(HealthContainerDefinition definition, Map<String, Limb> limbs, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
-        this.definition = definition;
+    private HealthContainer(Optional<EntityType<?>> type, Map<String, Limb> limbs, Queue<QueuedStatusEffect> effectQueue, boolean invalidated) {
+        this.type = type.orElse(null);
         this.limbs = limbs;
+        this.definition = Cached.create(this::loadDefinition);
         this.effectQueue = new PriorityQueue<>(effectQueue);
         this.invalidated = invalidated;
+    }
+
+    public static HealthContainer invalid(IAttachmentHolder holder) {
+        if (holder instanceof Entity entity) {
+            return new HealthContainer(entity.getType(), null);
+        }
+        return null;
+    }
+
+    public static void detach(LivingEntity entity) {
+        entity.removeData(MedSystemDataAttachments.HEALTH_CONTAINER);
+    }
+
+    public static @Nullable HealthContainer getAttached(LivingEntity entity) {
+        return entity.getExistingDataOrNull(MedSystemDataAttachments.HEALTH_CONTAINER);
+    }
+
+    public static @Nullable HealthContainer getAttachedValid(LivingEntity entity) {
+        HealthContainer container = getAttached(entity);
+        if (container == null || container.isInvalid()) {
+            return null;
+        }
+        return container;
     }
 
     public void tick(LivingEntity entity) {
@@ -117,11 +142,11 @@ public final class HealthContainer {
     }
 
     public boolean isInvalid() {
-        return this.definition == null || this.limbs.isEmpty() || this.invalidated;
+        return this.type == null || this.getDefinition() == null || this.limbs.isEmpty() || this.invalidated;
     }
 
     public HealthContainerDefinition getDefinition() {
-        return definition;
+        return this.definition.get();
     }
 
     public boolean hasLimb(String code) {
@@ -137,7 +162,7 @@ public final class HealthContainer {
     }
 
     public String getRootLimbCode() {
-        return this.definition.getRootLimbCode();
+        return this.getDefinition().getRootLimbCode();
     }
 
     public Stream<Limb> getLimbsAsStream() {
@@ -335,6 +360,10 @@ public final class HealthContainer {
                 this.hurtInternal(context, pooledDamage, liveLimb, onLimbLoss);
             }
         }
+    }
+
+    private HealthContainerDefinition loadDefinition() {
+        return HealthSystem.getHealthContainerDefinition(this.type);
     }
 
     public static final class SyncHandler implements AttachmentSyncHandler<HealthContainer> {

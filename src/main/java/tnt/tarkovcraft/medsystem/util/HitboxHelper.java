@@ -6,7 +6,6 @@ import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 
 import javax.annotation.Nullable;
@@ -24,7 +23,7 @@ public final class HitboxHelper {
     }
 
     public static Stream<HitInfo> approximateHits(Ray ray, LivingEntity entity) {
-        return approximateHits(ray, entity, HealthSystem.getHealthDataOrThrow(entity));
+        return approximateHits(ray, entity, HealthContainer.getAttached(entity));
     }
 
     public static double distanceToRaySqr(Ray ray, Vec3 point) {
@@ -36,7 +35,7 @@ public final class HitboxHelper {
     }
 
     public static Stream<LimbHitbox> getEntityHitboxes(LivingEntity entity) {
-        HealthContainer container = HealthSystem.getHealthDataOrThrow(entity);
+        HealthContainer container = HealthContainer.getAttached(entity);
         return getEntityHitboxes(entity, container);
     }
 

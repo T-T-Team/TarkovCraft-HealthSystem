@@ -16,11 +16,6 @@ public final class BloodLossEffectShaderProgram extends SimpleScalingShaderProgr
     private BloodLossEffectShaderProgram() {}
 
     @Override
-    public ResourceLocation postChainId() {
-        return IDENTIFIER;
-    }
-
-    @Override
     public void tickProgram(Minecraft client, LivingEntity entity) {
         super.tickProgram(client, entity);
         if (!BloodSystemManager.isEnabled(entity))
@@ -43,5 +38,10 @@ public final class BloodLossEffectShaderProgram extends SimpleScalingShaderProgr
         } else if (target > this.strength) {
             this.strength = Math.min(target, this.strength + change);
         }
+    }
+
+    @Override
+    public ResourceLocation postChainId() {
+        return IDENTIFIER;
     }
 }
