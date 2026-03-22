@@ -28,13 +28,11 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenLimbSelectScreen;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.Comparator;
 import java.util.List;
@@ -119,7 +117,7 @@ public class HealingItem extends InteractableItem {
                 float amount = healthRecovery.healthPerCycle();
                 HealthContainer container = HealthContainer.getAttached(target);
                 InteractionTarget activeInteraction = this.getActiveInteraction(itemStack);
-                Limb part = activeInteraction != null && TextHelper.isNotBlank(activeInteraction.limbCode()) && container.hasLimb(activeInteraction.limbCode())
+                Limb limb = activeInteraction != null && TextHelper.isNotBlank(activeInteraction.limbCode()) && container.hasLimb(activeInteraction.limbCode())
                         ? container.getLimbByCode(activeInteraction.limbCode())
                         : null;
 
@@ -129,12 +127,13 @@ public class HealingItem extends InteractableItem {
                 EntityHelper.hurtOrConsumeEquipmentItem(origin, itemStack, 1, EquipmentSlot.MAINHAND);
 
                 // add health and cancel using item if fully healed
-                float leftover = container.heal(amount, part);
+                LimbContainer limbContainer = container.getLimbContainer();
+                float leftover = limbContainer.heal(amount, limb);
                 if (leftover == amount) {
                     origin.useItemRemaining = 0;
                 }
-                if (leftover > 0 && container.canHeal()) {
-                    container.heal(amount, null);
+                if (leftover > 0 && HealthHelper.canHeal(container)) {
+                    limbContainer.heal(amount, null);
                 }
                 // rescue logic
                 EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
@@ -143,8 +142,8 @@ public class HealingItem extends InteractableItem {
                 }
 
                 // adjust vanilla health pool
-                container.updateHealth(target);
-                if (cycleIndex + 1 > cycleLimit || (part != null && !attributes.canUseOnLimb(part, itemStack, container, interaction.self(), target))) {
+                HealthHelper.synchronizeHealth(target, container);
+                if (cycleIndex + 1 > cycleLimit || (limb != null && !attributes.canUseOnLimb(limb, itemStack, container, interaction.self(), target))) {
                     origin.useItemRemaining = 0;
                 } else {
                     HealthSystem.synchronizeEntity(target);
@@ -195,7 +194,7 @@ public class HealingItem extends InteractableItem {
                 itemStack.consume(1, origin);
             }
         }
-        container.updateHealth(target);
+        HealthHelper.synchronizeHealth(target, container);
         HealthSystem.synchronizeEntity(target);
         return itemStack;
     }
@@ -250,7 +249,7 @@ public class HealingItem extends InteractableItem {
     private void selectLimb(InteractionTarget.Mutable activeTarget, ItemStack itemStack, LivingEntity entity) {
         HealthContainer container = HealthContainer.getAttached(entity);
         HealItemAttributes attributes = this.getHealingAttributes(itemStack);
-        List<LimbWithPriority> limbs = container.getLimbsAsStream()
+        List<LimbWithPriority> limbs = container.getLimbContainer().getLimbs()
                 .map(part -> new LimbWithPriority(part, part.isVital() ? MedSystemConstants.HEAL_VITAL_PART_MULTIPLIER : 1.0F))
                 .toList();
 

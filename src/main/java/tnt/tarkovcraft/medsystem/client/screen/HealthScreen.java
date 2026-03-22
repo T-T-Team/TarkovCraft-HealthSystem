@@ -27,10 +27,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainerDisplay;
-import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.ArrayList;
@@ -59,6 +56,7 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
         this.addRenderableOnly(new ShapeRenderable(0, 25, this.width, this.height - 25, ColorPalette.BG_TRANSPARENT_WEAK));
 
         this.healthContainer = this.minecraft.player.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+        LimbContainer limbContainer = this.healthContainer.getLimbContainer();
         HealthContainerDefinition definition = this.healthContainer.getDefinition();
 
         // label registration
@@ -69,7 +67,7 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
         // Current health display
         list.add(new IconWithLabel(
                 HEALTH_ICON,
-                () -> Component.literal(Mth.floor(healthContainer.getHealth() * healthScale) + "/" + Mth.floor(healthContainer.getMaxHealth() * healthScale)),
+                () -> Component.literal(Mth.floor(limbContainer.getHealth() * healthScale) + "/" + Mth.floor(limbContainer.getMaxHealth() * healthScale)),
                 0xFF55FF55, 0xFF55FF55
         ));
         // Blood type indicator

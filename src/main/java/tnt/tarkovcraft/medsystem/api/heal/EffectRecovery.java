@@ -20,6 +20,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import javax.annotation.Nullable;
@@ -50,7 +51,8 @@ public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect
         if (type.isGlobalEffect()) {
             return this.findEffect(container.getGlobalStatusEffects()).isPresent();
         }
-        return container.getLimbsAsStream().anyMatch(part -> this.findEffect(part.getStatusEffects()).isPresent());
+        LimbContainer limbContainer = container.getLimbContainer();
+        return limbContainer.hasLimb(limb -> this.findEffect(limb.getStatusEffects()).isPresent());
     }
 
     public void recover(HealthContainer container, @Nullable Limb part) {

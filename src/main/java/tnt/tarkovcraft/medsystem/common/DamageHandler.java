@@ -35,6 +35,7 @@ import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventParams;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,15 +121,15 @@ public final class DamageHandler {
                 .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
         float damage = event.getNewDamage();
         Map<Limb, Float> distributedDamage = context.getDamage(damage);
-        List<Limb> lostLimbs = new ArrayList<>();
 
         // apply health container damage
-        container.hurt(context, distributedDamage, lostLimbs::add);
+        LimbContainer limbContainer = container.getLimbContainer();
+        limbContainer.hurt(context, damage);
 
         // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
         // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
-        int lostLimbCount = lostLimbs.size();
+        int lostLimbCount = context.getLostLimbsCount();
         if (totalDamage > 0.0F) {
             if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
@@ -143,11 +144,11 @@ public final class DamageHandler {
         // Clean data and apply
         entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
                 .ifPresent(DamageContext::reset);
-        container.updateHealth(entity);
+        HealthHelper.synchronizeHealth(entity, container);
 
         // Death processing
         HealthSystem.synchronizeEntity(entity); // send status to a client before death or further processing so that a client knows which body part caused death
-        if (container.shouldDie()) {
+        if (container.isDead()) {
             entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
             return;
         }

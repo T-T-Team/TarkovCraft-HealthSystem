@@ -14,7 +14,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
@@ -43,8 +43,9 @@ public record StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> ta
         // could be possibly restricted to specific limb, unspecified would clear all effects
         LivingEntity entity = context.entity();
         HealthContainer container = context.container();
-        if (container.removeMatchingStatusEffects(this.tag, entity)) {
-            HealthSystem.synchronizeEntity(entity);
+        LimbContainer limbContainer = container.getLimbContainer();
+        if (limbContainer.removeMatchingStatusEffects(this.tag, entity, container)) {
+            container.setChanged();
         }
     }
 

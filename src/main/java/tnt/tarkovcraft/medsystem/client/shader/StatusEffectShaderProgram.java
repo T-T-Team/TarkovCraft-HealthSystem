@@ -23,7 +23,7 @@ public abstract class StatusEffectShaderProgram extends SimpleScalingShaderProgr
         super.tickProgram(client, entity);
         if (!HealthSystem.hasCustomHealth(entity))
             return;
-        HealthContainer container = HealthSystem.getHealthData(entity);
+        HealthContainer container = HealthContainer.getAttached(entity);
         StatusEffectMap map = container.getGlobalStatusEffects();
         if (this.canApply(entity, container, map) && map.hasEffect(this.getStatusEffect())) {
             this.strength = Math.min(1.0F, this.strength + this.getGain());

@@ -16,6 +16,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.StatusEffectQueue;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -48,7 +49,8 @@ public final class StatusEffectHelper {
                 return;
             HealthContainer container = HealthContainer.getAttached(entity);
             MedicalSystem.LOGGER.debug(MARKER, "Scheduling effect {} with delay of {} ticks to target limb \"{}\" with duration {} for entity {}", effect.getType(), event.getDelay(), limb, effect.getDuration(), entity);
-            container.scheduleStatusEffect(entity, event.getDelay(), limb, effect);
+            StatusEffectQueue queue = container.getEffectQueue();
+            queue.submit(entity.level(), event.getDelay(), limb, effect);
             return;
         }
         StatusEffectEvent.Add event = NeoForge.EVENT_BUS.post(new StatusEffectEvent.Add(entity, effect, limb));
@@ -57,7 +59,8 @@ public final class StatusEffectHelper {
         MedicalSystem.LOGGER.debug(MARKER, "Adding status effect {} to target limb \"{}\" with duration {} for entity {}", effect.getType(), limb, effect.getDuration(), entity);
         effects.addEffect(effect);
         HealthContainer container = HealthContainer.getAttached(entity);
-        container.markStatusEffectAdded(entity);
+        StatusEffectMap globalEffects = container.getGlobalStatusEffects();
+        globalEffects.painEffectTick(entity, 5, true);
     }
 
     public static void removeEffect(StatusEffectSubmitter submitter, StatusEffectMap effects, LivingEntity entity, @Nullable Limb limb, HealthContainer container, Holder<StatusEffectType<?>> holder) {
@@ -81,12 +84,12 @@ public final class StatusEffectHelper {
     }
 
     public static boolean hasTaggedEffect(HealthContainer container, TagKey<StatusEffectType<?>> tag) {
-        return container.getStatusEffectStream()
+        return container.getLimbContainer().getStatusEffects()
                 .anyMatch(effect -> effect.getType().is(tag));
     }
 
     public static Optional<StatusEffect> getAnyTaggedEffect(HealthContainer container, TagKey<StatusEffectType<?>> tag) {
-        return container.getStatusEffectStream()
+        return container.getLimbContainer().getStatusEffects()
                 .filter(effect -> effect.getType().is(tag))
                 .findAny();
     }

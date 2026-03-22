@@ -16,6 +16,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -60,7 +61,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
             float newMaxHealth = limb.getMaxHealth() - this.reduction;
             instance.addOrReplacePermanentModifier(new AttributeModifier(modifierId, -this.reduction, AttributeModifier.Operation.ADD_VALUE));
             limb.setMaxHealth(newMaxHealth);
-            container.updateHealth(entity);
+            HealthHelper.synchronizeHealth(entity, container);
             HealthSystem.synchronizeEntity(entity);
         }
     }
@@ -74,7 +75,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
             AttributeMap map = entity.getAttributes();
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
             instance.removeModifier(this.getUniqueModifierId(limb));
-            container.updateHealth(entity);
+            HealthHelper.synchronizeHealth(entity, container);
             HealthSystem.synchronizeEntity(entity);
         });
     }

@@ -8,6 +8,7 @@ import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.core.util.NumberOperator;
 import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventFunctions;
 
@@ -25,7 +26,8 @@ public record DeadLimbScaleEventFunction(Set<LimbType> limb, float scale, Number
     @Override
     public float apply(float value, StatusEffectEventContext context) {
         HealthContainer container = context.getHealthContainer();
-        int deadLimbCount = (int) container.getLimbsAsStream()
+        LimbContainer limbContainer = container.getLimbContainer();
+        int deadLimbCount = (int) limbContainer.getLimbs()
                 .filter(limb -> limb.isDead() && this.limb.contains(limb.getType()))
                 .count();
         return (float) this.operator.applyAsDouble(value, this.limbOperator.applyAsDouble(deadLimbCount, this.scale));
