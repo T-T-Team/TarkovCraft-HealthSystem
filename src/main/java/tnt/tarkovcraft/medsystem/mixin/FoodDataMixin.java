@@ -35,6 +35,6 @@ public abstract class FoodDataMixin {
         return naturalRegeneration
                 && HealthSystem.hasCustomHealth(medsystem$player)
                 && HealthContainer.getAttached(medsystem$player).canHeal()
-                && BloodSystemManager.isUnconscious(medsystem$player);
+                && !BloodSystemManager.isUnconscious(medsystem$player);
     }
 }
