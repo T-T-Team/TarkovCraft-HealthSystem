@@ -58,11 +58,11 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
-        Component health = Component.literal(String.valueOf(Mth.ceil(healthAfterHeal))).withStyle(ChatFormatting.YELLOW);
+        Component health = Component.literal(String.valueOf(Mth.ceil(healthAfterHeal))).withStyle(ChatFormatting.GRAY);
         tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.recovery", health).withStyle(ChatFormatting.DARK_GRAY));
-        Component maxHealth = Component.literal((int) ((1.0F - maxHealthMultiplier) * 100) + "%").withStyle(ChatFormatting.YELLOW);
+        Component maxHealth = Component.literal((int) ((1.0F - maxHealthMultiplier) * 100) + "%").withStyle(ChatFormatting.GRAY);
         if (this.hasPostRecovery()) {
-            Component duration = Duration.format(recoveryTime).copy().withStyle(ChatFormatting.YELLOW);
+            Component duration = Duration.format(recoveryTime).copy().withStyle(ChatFormatting.GRAY);
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.max_health", maxHealth, duration).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
