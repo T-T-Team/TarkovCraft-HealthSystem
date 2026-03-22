@@ -2,21 +2,34 @@
   "event_source": "medsystem:incoming_damage",
   "conditions": [
     {
+      "type": "medsystem:is_damage",
+      "tag": "medsystem:bleed_causing"
+    },
+    {
       "type": "medsystem:random_chance",
-      "chance": {
+      "base_chance": {
         "type": "tarkovcraft_core:config",
         "config": "medsystem",
-        "field": "statusEffects.playerBleedChance"
-      }
+        "field": "statusEffects.playerBleedChance",
+        "default": 0.025
+      },
+      "functions": [
+        {
+          "type": "medsystem:tool_multiplier",
+          "tag": "medsystem:sharp_tools",
+          "multiplier": {
+            "type": "tarkovcraft_core:config",
+            "config": "medsystem",
+            "field": "statusEffects.sharpToolBleedMultiplier",
+            "default": 2.5
+          }
+        }
+      ]
     },
     {
       "type": "medsystem:damage_range",
       "local_damage": true,
       "from": 1.5
-    },
-    {
-      "type": "medsystem:is_damage",
-      "tag": "medsystem:bleed_causing"
     }
   ],
   "actions": {
@@ -26,10 +39,20 @@
         "weight": 1,
         "data": {
           "type": "medsystem:add_status_effect",
+          "duration_modifiers": [
+            {
+              "type": "medsystem:set_value",
+              "value": {
+                "type": "tarkovcraft_core:config",
+                "config": "medsystem",
+                "field": "statusEffects.bleedDuration",
+                "default": -1
+              }
+            }
+          ],
           "effect": {
             "template": {
               "type": "medsystem:bleed",
-              "duration": -1,
               "amount": 0.025,
               "interval": 30,
               "wound_duration": 6000
@@ -41,10 +64,20 @@
         "weight": 4,
         "data": {
           "type": "medsystem:add_status_effect",
+          "duration_modifiers": [
+            {
+              "type": "medsystem:set_value",
+              "value": {
+                "type": "tarkovcraft_core:config",
+                "config": "medsystem",
+                "field": "statusEffects.bleedDuration",
+                "default": -1
+              }
+            }
+          ],
           "effect": {
             "template": {
               "type": "medsystem:bleed",
-              "duration": -1,
               "amount": 0.005,
               "interval": 60
             }

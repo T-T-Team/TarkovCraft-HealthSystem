@@ -14,8 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
-import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.NegativeEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.NeutralEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.PositiveEffectsGroup;
@@ -64,9 +62,6 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
     }
 
     public void apply(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable Limb part) {
-        MedSystemConfig config = MedicalSystem.getConfig();
-        if (!config.statusEffects.enableItemDamageStatusEffects)
-            return;
         for (SideEffect effect : sideEffects) {
             effect.apply(target, source, container, part);
         }

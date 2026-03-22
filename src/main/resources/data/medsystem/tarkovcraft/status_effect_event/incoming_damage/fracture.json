@@ -6,30 +6,52 @@
       "limb": ["arm", "leg", "other"]
     },
     {
+      "type": "medsystem:is_damage",
+      "tag": "medsystem:fracture_causing"
+    },
+    {
       "type": "medsystem:random_chance",
-      "chance": {
+      "base_chance": {
         "type": "tarkovcraft_core:config",
         "config": "medsystem",
-        "field": "statusEffects.playerFractureChance"
-      }
+        "field": "statusEffects.fractureChance",
+        "default": 0.03
+      },
+      "functions": [
+        {
+          "type": "medsystem:tool_multiplier",
+          "tag": "medsystem:blunt_tools",
+          "multiplier": {
+            "type": "tarkovcraft_core:config",
+            "location": "medsystem:statusEffects/bluntToolFractureMultiplier",
+            "default": 2.5
+          }
+        }
+      ]
     },
     {
       "type": "medsystem:damage_range",
       "local_damage": true,
       "from": 1.0
-    },
-    {
-      "type": "medsystem:is_damage",
-      "tag": "medsystem:fracture_causing"
     }
   ],
   "actions": [
     {
       "type": "medsystem:add_status_effect",
+      "duration_modifiers": [
+        {
+          "type": "medsystem:set_value",
+          "value": {
+            "type": "tarkovcraft_core:config",
+            "config": "medsystem",
+            "field": "statusEffects.fractureDuration",
+            "default": -1
+          }
+        }
+      ],
       "effect": {
         "template": {
-          "type": "medsystem:fracture",
-          "duration": -1
+          "type": "medsystem:fracture"
         }
       }
     },
