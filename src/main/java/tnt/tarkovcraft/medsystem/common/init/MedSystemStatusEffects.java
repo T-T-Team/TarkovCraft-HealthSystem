@@ -44,17 +44,18 @@ public final class MedSystemStatusEffects {
             .healPriority(MedSystemConstants.HEAL_EFFECT_MINOR)
             .build()
     );
-    public static final Holder<StatusEffectType<?>> BLEED = REGISTRY.register("bleed", key -> StatusEffectType.builder(key, duration -> BleedStatusEffect.defaultLightBleed(duration, Optional.empty()))
+    public static final Holder<StatusEffectType<?>> BLEED = REGISTRY.register("bleed", key -> StatusEffectType.builder(key, duration -> BleedStatusEffect.lightBleed(duration, Optional.empty()))
             .persist(BleedStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .healPriority(MedSystemConstants.HEAL_EFFECT_CRITICAL)
-            .combineEffects(BleedStatusEffect::withHighestDamage)
+            .combineEffects(BleedStatusEffect::higherStage)
             .build()
     );
-    public static final Holder<StatusEffectType<?>> FRESH_WOUND = REGISTRY.register("fresh_wound", key -> StatusEffectType.builder(key, FreshWoundStatusEffect::new)
+    public static final Holder<StatusEffectType<?>> FRESH_WOUND = REGISTRY.register("fresh_wound", key -> StatusEffectType.builder(key, FreshWoundStatusEffect::createTemplate)
             .persist(FreshWoundStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
             .healPriority(MedSystemConstants.HEAL_EFFECT_MINOR)
+            .combineEffects(FreshWoundStatusEffect::merge)
             .build()
     );
     public static final Holder<StatusEffectType<?>> OVERWEIGHT = REGISTRY.register("overweight", key -> StatusEffectType.builder(key, (duration) -> new OverweightStatusEffect(false))

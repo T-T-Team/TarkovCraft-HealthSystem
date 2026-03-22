@@ -34,7 +34,7 @@
     "type": "medsystem:weighted",
     "entries": [
       {
-        "weight": 1,
+        "weight": 50,
         "data": {
           "type": "medsystem:add_status_effect",
           "duration_modifiers": [
@@ -50,15 +50,13 @@
           "effect": {
             "template": {
               "type": "medsystem:bleed",
-              "amount": 0.025,
-              "interval": 30,
-              "wound_duration": 6000
+              "bleed_type": "light"
             }
           }
         }
       },
       {
-        "weight": 4,
+        "weight": 30,
         "data": {
           "type": "medsystem:add_status_effect",
           "duration_modifiers": [
@@ -74,8 +72,51 @@
           "effect": {
             "template": {
               "type": "medsystem:bleed",
-              "amount": 0.005,
-              "interval": 60
+              "bleed_type": "moderate"
+            }
+          }
+        }
+      },
+      {
+        "weight": 15,
+        "data": {
+          "type": "medsystem:add_status_effect",
+          "duration_modifiers": [
+            {
+              "type": "medsystem:set_value",
+              "value": {
+                "type": "tarkovcraft_core:config",
+                "location": "medsystem:statusEffects/bleedDuration",
+                "default": -1
+              }
+            }
+          ],
+          "effect": {
+            "template": {
+              "type": "medsystem:bleed",
+              "bleed_type": "heavy"
+            }
+          }
+        }
+      },
+      {
+        "weight": 5,
+        "data": {
+          "type": "medsystem:add_status_effect",
+          "duration_modifiers": [
+            {
+              "type": "medsystem:set_value",
+              "value": {
+                "type": "tarkovcraft_core:config",
+                "location": "medsystem:statusEffects/bleedDuration",
+                "default": -1
+              }
+            }
+          ],
+          "effect": {
+            "template": {
+              "type": "medsystem:bleed",
+              "bleed_type": "critical"
             }
           }
         }
