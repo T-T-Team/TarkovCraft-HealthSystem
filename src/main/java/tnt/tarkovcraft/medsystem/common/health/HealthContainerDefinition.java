@@ -50,7 +50,7 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
 
     public void bind(LivingEntity entity) {
         // bind new container only to entities without existing health container or with invalid health data
-        HealthContainer data = HealthSystem.hasCustomHealth(entity) ? HealthSystem.getHealthData(entity) : null;
+        HealthContainer data = HealthContainer.getAttached(entity);
         if (data != null && !data.isInvalid()) {
             return;
         } else if (data != null) {

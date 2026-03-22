@@ -42,7 +42,7 @@ public abstract class LivingEntityMixin extends Entity {
     private void medsystem$tick(CallbackInfo ci) {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
         if (HealthSystem.hasCustomHealth(livingEntity)) {
-            HealthContainer container = HealthSystem.getHealthData(livingEntity);
+            HealthContainer container = HealthContainer.getAttached(livingEntity);
             container.tick(livingEntity);
         }
         if (BloodSystemManager.isEnabled(livingEntity)) {

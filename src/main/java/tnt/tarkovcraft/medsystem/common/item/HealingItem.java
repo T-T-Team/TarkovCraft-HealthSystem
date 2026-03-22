@@ -71,12 +71,12 @@ public class HealingItem extends InteractableItem {
         if (attributes == null) {
             return false;
         }
-        return attributes.canUseOn(target, origin, itemStack, HealthSystem.getHealthData(target));
+        return attributes.canUseOn(target, origin, itemStack, HealthContainer.getAttached(target));
     }
 
     @Override
     protected boolean tryInitiateExistingInteraction(ItemStack itemStack, InteractionTarget interaction, LivingEntity target, Player origin) {
-        HealthContainer container = HealthSystem.getHealthData(target);
+        HealthContainer container = HealthContainer.getAttached(target);
         HealItemAttributes attributes = this.getHealingAttributes(itemStack);
         if (attributes == null) {
             return false;
@@ -120,7 +120,7 @@ public class HealingItem extends InteractableItem {
             int cycleIndex = usageTimeElapsed / healthRecovery.cycleDuration();
             if (cycleIndex < cycleLimit) {
                 float amount = healthRecovery.healthPerCycle();
-                HealthContainer container = HealthSystem.getHealthData(target);
+                HealthContainer container = HealthContainer.getAttached(target);
                 InteractionTarget activeInteraction = this.getActiveInteraction(itemStack);
                 Limb part = activeInteraction != null && TextHelper.isNotBlank(activeInteraction.limbCode()) && container.hasLimb(activeInteraction.limbCode())
                         ? container.getLimbByCode(activeInteraction.limbCode())
@@ -166,7 +166,7 @@ public class HealingItem extends InteractableItem {
             return itemStack;
         }
 
-        HealthContainer container = HealthSystem.getHealthData(target);
+        HealthContainer container = HealthContainer.getAttached(target);
         Limb part = container.hasLimb(targetLimb) ? container.getLimbByCode(targetLimb) : null;
         int consume = 0;
         // dead limb recovery
@@ -256,7 +256,7 @@ public class HealingItem extends InteractableItem {
     }
 
     private void selectLimb(InteractionTarget.Mutable activeTarget, ItemStack itemStack, LivingEntity entity) {
-        HealthContainer container = HealthSystem.getHealthData(entity);
+        HealthContainer container = HealthContainer.getAttached(entity);
         HealItemAttributes attributes = this.getHealingAttributes(itemStack);
         List<LimbWithPriority> limbs = container.getLimbsAsStream()
                 .map(part -> new LimbWithPriority(part, part.isVital() ? MedSystemConstants.HEAL_VITAL_PART_MULTIPLIER : 1.0F))
@@ -266,7 +266,7 @@ public class HealingItem extends InteractableItem {
             limbs.forEach(this::addSurgeryHealingPriorities);
         }
         if (attributes.isRecoveryItem()) {
-            limbs.forEach(part -> this.addStatusEffectHealingPriorities(part, attributes.recoveries(), container));
+            limbs.forEach(part -> this.addStatusEffectHealingPriorities(part, attributes.recoveries()));
         }
         if (attributes.isHealing()) {
             limbs.forEach(this::addHealthHealingPriorities);
@@ -285,7 +285,7 @@ public class HealingItem extends InteractableItem {
         }
     }
 
-    private void addStatusEffectHealingPriorities(LimbWithPriority priorityLimb, List<EffectRecovery> recoveries, HealthContainer container) {
+    private void addStatusEffectHealingPriorities(LimbWithPriority priorityLimb, List<EffectRecovery> recoveries) {
         Limb limb = priorityLimb.limb;
         StatusEffectMap statusEffects = limb.getStatusEffects();
         if (statusEffects.isEmpty())
