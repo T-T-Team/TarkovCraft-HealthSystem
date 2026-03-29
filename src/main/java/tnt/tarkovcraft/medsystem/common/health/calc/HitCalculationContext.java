@@ -5,7 +5,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -41,8 +40,7 @@ public record HitCalculationContext(LivingEntity entity, HealthContainer contain
         if (attacker == null) {
             return fallback;
         }
-        EntityType<?> type = attacker.getType();
-        return !type.is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION);
+        return !attacker.is(MedSystemTags.Entities.NO_LIMB_HIT_APPROXIMATION);
     }
 
     public boolean allowHitApproximation() {

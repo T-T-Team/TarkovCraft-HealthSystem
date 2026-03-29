@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.integration.core;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import tnt.tarkovcraft.core.common.weight.WeightContext;
 import tnt.tarkovcraft.core.common.weight.WeightProvider;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -20,8 +20,8 @@ public class BloodContainerWeightProvider implements WeightProvider {
 
     @Override
     public int getWeight(WeightContext weightContext) {
-        ItemStack itemStack = weightContext.itemStack();
-        BloodContainer container = itemStack.get(MedSystemItemComponents.BLOOD_CONTAINER);
+        ItemInstance instance = weightContext.item();
+        BloodContainer container = instance.get(MedSystemItemComponents.BLOOD_CONTAINER);
         if (container == null)
             return 0;
         float volume = container.value();

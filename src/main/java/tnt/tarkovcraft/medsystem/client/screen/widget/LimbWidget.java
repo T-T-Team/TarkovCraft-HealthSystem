@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.client.screen.widget;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -41,7 +41,7 @@ public class LimbWidget extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int color = this.getColor();
         graphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), ARGB.scaleRGB(color, 0.8F));
         graphics.fill(this.getX() + this.scale, this.getY() + this.scale, this.getRight() - this.scale, this.getBottom() - this.scale, color);

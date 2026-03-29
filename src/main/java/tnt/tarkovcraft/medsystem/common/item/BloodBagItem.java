@@ -51,7 +51,7 @@ public class BloodBagItem extends InteractableItem implements LeftClickListener 
             BloodContainerMode nextMode = mode.next(container);
             itemStack.set(MedSystemItemComponents.BLOOD_CONTAINER_MODE, nextMode);
             Component message = Component.translatable("label.medsystem.blood_container.mode_changed", nextMode.getLabel());
-            player.displayClientMessage(message, true);
+            player.sendOverlayMessage(message);
         }
     }
 

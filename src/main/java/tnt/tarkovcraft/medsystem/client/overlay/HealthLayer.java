@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.client.overlay;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -34,7 +34,7 @@ public class HealthLayer implements GuiLayer {
     public static final Identifier LAYER_ID = MedicalSystem.createIdentifier("layer/health");
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         HealthOverlayConfiguration overlay = MedicalSystemClient.getConfig().healthOverlay;
         if (!overlay.enabled)
             return;
@@ -83,7 +83,7 @@ public class HealthLayer implements GuiLayer {
             int count = effectList.size();
             if (count > 1) {
                 String text = String.valueOf(count);
-                graphics.drawString(client.font, text, x + 12 - client.font.width(text), y + 4, ColorPalette.WHITE);
+                graphics.text(client.font, text, x + 12 - client.font.width(text), y + 4, ColorPalette.WHITE);
             }
         }
     }

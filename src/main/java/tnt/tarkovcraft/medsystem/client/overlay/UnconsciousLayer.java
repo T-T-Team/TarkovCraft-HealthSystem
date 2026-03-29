@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
@@ -26,7 +26,7 @@ public class UnconsciousLayer implements GuiLayer {
     public static final Identifier LAYER_ID = MedicalSystem.createIdentifier("layer/unconscious");
 
     @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public void render(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
         Font font = client.font;
@@ -48,14 +48,14 @@ public class UnconsciousLayer implements GuiLayer {
             for (int i = 0; i < lines.size(); i++) {
                 FormattedCharSequence line = lines.get(i);
                 int textWidth = font.width(line);
-                guiGraphics.drawString(font, line, (window.getGuiScaledWidth() - textWidth) / 2, 30 + i * 11, ColorPalette.WHITE, true);
+                guiGraphics.text(font, line, (window.getGuiScaledWidth() - textWidth) / 2, 30 + i * 11, ColorPalette.WHITE, true);
             }
 
             if (options.allowRescue()) {
                 Duration timer = Duration.ticks(bloodSystem.getRemainingUnconsciousTime());
                 Component text = timer.format(DurationFormats.LONG_NAME);
                 int textWidth = font.width(text);
-                guiGraphics.drawString(font, text, (window.getGuiScaledWidth() - textWidth) / 2, 30 + (lines.size() + 1) * 11, ColorPalette.WHITE, true);
+                guiGraphics.text(font, text, (window.getGuiScaledWidth() - textWidth) / 2, 30 + (lines.size() + 1) * 11, ColorPalette.WHITE, true);
             }
         }
     }

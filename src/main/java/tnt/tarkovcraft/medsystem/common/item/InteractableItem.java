@@ -137,7 +137,7 @@ public abstract class InteractableItem extends Item {
             boolean infinite = this.getUseDuration(stack, livingEntity) >= Item.APPROXIMATELY_INFINITE_USE_DURATION;
             Component label = this.getInteractionLabel(stack, interaction, target, livingEntity, remainingUseDuration, infinite);
             if (label != null && livingEntity instanceof Player player) {
-                player.displayClientMessage(label, true);
+                player.sendOverlayMessage(label);
             }
         }
     }

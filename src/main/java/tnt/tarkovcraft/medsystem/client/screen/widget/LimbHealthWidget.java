@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.client.screen.widget;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -108,7 +108,7 @@ public class LimbHealthWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Frame
         if (this.frameSize > 0 && RenderUtils.isVisibleColor(this.frameColor)) {
             int frameColor = this.isHovered ? this.frameHoverColor : this.frameColor;
@@ -120,7 +120,7 @@ public class LimbHealthWidget extends AbstractWidget {
         }
 
         // content
-        this.displayComponent.renderContents(graphics, this);
+        this.displayComponent.extractContents(graphics, this);
 
         // Status effects - we need 14 px for render (12scale+2border) + 17 for health bar offset + 2xFrameSize
         if (this.height >= (19 + this.effectScale + this.frameSize * 2) && this.effects != null && !this.effects.isEmpty()) {
@@ -170,12 +170,12 @@ public class LimbHealthWidget extends AbstractWidget {
         DisplayComponent NUMERIC = new NumericDisplayComponent();
         DisplayComponent ICON = new IconDisplayComponent();
 
-        void renderContents(GuiGraphics graphics, LimbHealthWidget parent);
+        void extractContents(GuiGraphicsExtractor graphics, LimbHealthWidget parent);
 
         final class NumericDisplayComponent implements DisplayComponent {
 
             @Override
-            public void renderContents(GuiGraphics graphics, LimbHealthWidget parent) {
+            public void extractContents(GuiGraphicsExtractor graphics, LimbHealthWidget parent) {
                 MedSystemClientConfig config = MedicalSystemClient.getConfig();
                 int scale = (int) Math.pow(10, config.numericHealthScale);
 
@@ -183,7 +183,7 @@ public class LimbHealthWidget extends AbstractWidget {
                 Component status = parent.getStatusTitle(scale);
                 int statusWidth = parent.font.width(status);
                 int textColor = parent.limb.isDead() ? 0xFFFF0000 : parent.isHovered ? parent.textHoverColor : parent.textColor;
-                graphics.drawString(parent.font, status, parent.getX() + (parent.width - statusWidth) / 2, parent.getY() + 3 + parent.frameSize, textColor);
+                graphics.text(parent.font, status, parent.getX() + (parent.width - statusWidth) / 2, parent.getY() + 3 + parent.frameSize, textColor);
 
                 HealthOverlayConfiguration overlay = config.healthOverlay;
                 int background = Integer.decode(overlay.deadLimbColor) | 0xFF << 24;
@@ -205,13 +205,13 @@ public class LimbHealthWidget extends AbstractWidget {
         final class IconDisplayComponent implements DisplayComponent {
 
             @Override
-            public void renderContents(GuiGraphics graphics, LimbHealthWidget parent) {
+            public void extractContents(GuiGraphicsExtractor graphics, LimbHealthWidget parent) {
                 Limb limb = parent.limb;
                 if (parent.isHovered) {
                     Component displayName = limb.getDisplayName();
                     int width = parent.font.width(displayName);
                     int left = parent.getX() + parent.frameSize + (parent.width - width - parent.frameSize) / 2;
-                    graphics.drawString(parent.font, displayName, left, parent.getY() + parent.frameSize + 5, parent.textHoverColor);
+                    graphics.text(parent.font, displayName, left, parent.getY() + parent.frameSize + 5, parent.textHoverColor);
                 } else {
                     int maxHealth = Mth.ceil(limb.getMaxHealth());
                     int health = Mth.ceil(limb.getHealth());
