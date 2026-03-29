@@ -70,7 +70,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         Level level = entity.level();
         long time = level.getGameTime();
         boolean isValidTick = tickNow || time % 20L == 0L;
-        if (isValidTick && this.hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
+        if (isValidTick && !this.hasEffect(MedSystemStatusEffects.PAIN) && HealthSystem.isInPain(entity)) {
             StatusEffectHelper.addGlobalEffect(this, entity, delay, PainStatusEffect.infinite());
         }
     }
