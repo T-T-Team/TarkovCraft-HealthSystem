@@ -32,6 +32,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class HealthScreen extends CharacterSubScreen implements HealthContainerScreen {
@@ -77,11 +78,24 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
             BloodConfiguration configuration = MedicalSystem.BLOOD_SYSTEM.getConfig();
             configuration.getOptions(bloodTypeId).ifPresent(options -> {
                 Component styledLabel = options.getStylizedLabel();
+                // blood type label
                 list.add(new IconWithLabel(
                         DROPLET_ICON,
                         () -> styledLabel,
                         ARGB.opaque(options.color()), 0xFFFFFFFF
                 ));
+                // blood volume label
+                if (MedicalSystem.getConfig().bloodSystem.showBloodLevel) {
+                    float volume = bloodSystem.getBloodVolume();
+                    float max = bloodSystem.getDefinition().getMaxBloodVolume();
+                    Component valueLabel = Component.literal(String.format(Locale.ROOT, "%.2f/%.2f", volume, max)).withColor(options.color());
+                    Component label = Component.translatable("label.medsystem.unit.liter", valueLabel).withColor(options.color());
+                    list.add(new IconWithLabel(
+                            DROPLET_ICON,
+                            () -> label,
+                            ARGB.opaque(options.color()), 0xFFFFFFFF
+                    ));
+                }
             });
         }
         // Additional labels
