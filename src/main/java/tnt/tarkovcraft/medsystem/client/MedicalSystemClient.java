@@ -50,6 +50,7 @@ import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItems;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
@@ -65,7 +66,14 @@ public final class MedicalSystemClient {
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "give_up"),
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_X,
+            InputConstants.KEY_X,
+            KEYMAPPING_CATEGORY
+    );
+    public static final KeyMapping KEY_OPEN_HEALTH = new KeyMapping(
+            TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "open_health"),
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
             KEYMAPPING_CATEGORY
     );
     private static MedSystemClientConfig config;
@@ -136,14 +144,20 @@ public final class MedicalSystemClient {
 
     private void registerKeyBinds(RegisterKeyMappingsEvent event) {
         event.register(KEY_GIVE_UP);
+        event.register(KEY_OPEN_HEALTH);
     }
 
     private void onKeyInput(InputEvent.Key event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Player player = minecraft.player;
         if (KEY_GIVE_UP.consumeClick()) {
-            Minecraft minecraft = Minecraft.getInstance();
-            Player player = minecraft.player;
             if (BloodSystemManager.canSkipUnconsciousMode(player)) {
                 PacketDistributor.sendToServer(new C2S_RequestGiveUp());
+            }
+        }
+        if (KEY_OPEN_HEALTH.consumeClick()) {
+            if (HealthSystem.hasCustomHealth(player)) {
+                minecraft.setScreen(new HealthScreen(null, player.getUUID()));
             }
         }
     }

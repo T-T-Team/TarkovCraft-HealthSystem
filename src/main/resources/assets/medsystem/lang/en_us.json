@@ -107,6 +107,7 @@
 
   "key.category.medsystem.keymap": "Medical system",
   "key.medsystem.give_up": "Give up",
+  "key.medsystem.open_health": "Show health UI",
 
   "screen.medsystem.health.title": "Health",
   "screen.medsystem.select_body_part.title": "Select limb to heal",
