@@ -61,11 +61,6 @@ public final class MedSystemConfig {
     public boolean allowInjuryRecoveryScaling = true;
 
     @Configurable
-    @Configurable.Comment("Vanilla tools will have chance to cause some negative effects such as bleeds or fractures")
-    @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
-    public boolean addHitEffectsToVanillaItems = true;
-
-    @Configurable
     @Configurable.Comment("Blood/Unconscious system related configurations")
     public BloodSystemConfig bloodSystem = new BloodSystemConfig();
 

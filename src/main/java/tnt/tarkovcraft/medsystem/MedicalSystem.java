@@ -99,8 +99,7 @@ public final class MedicalSystem {
 
     @Deprecated
     private void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
-        if (config.addHitEffectsToVanillaItems)
-            VanillaItemComponentAssignments.adjustItemData((item, attr) -> event.modify(item, builder -> builder.set(MedSystemItemComponents.SIDE_EFFECTS.get(), attr)));
+        VanillaItemComponentAssignments.adjustItemData((item, attr) -> event.modify(item, builder -> builder.set(MedSystemItemComponents.SIDE_EFFECTS.get(), attr)));
     }
 
     private void registerCustomWeightProviders(RegisterWeightProvidersEvent event) {
