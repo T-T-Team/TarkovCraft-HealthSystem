@@ -11,6 +11,11 @@ public final class BloodSystemConfig {
     public boolean useBloodSystem = true;
 
     @Configurable
+    @Configurable.Synchronized
+    @Configurable.Comment(value = "Enables blood level display in health UI", localize = true)
+    public boolean showBloodLevel = false;
+
+    @Configurable
     @Configurable.Comment(value = {
             "Defines handling of unconscious bleed out stage when the affected player has too low blood level to wake up on their own",
             "When disabled, bleed out damage will be applied immediately after losing ability to wake up"
