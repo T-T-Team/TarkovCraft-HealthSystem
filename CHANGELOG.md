@@ -1,14 +1,7 @@
-# Release 26.1-2.4.0
-- Update for Minecraft 26.1
-- Cleaned up internal health data - might cause issues when upgrading existing worlds from previous versions
-- Unconscious entities no longer receive knockback nor can be pushed by other entities
-- Unconscious mode now depends on internal shock statistic
-  - getting damage, fractures or losing limbs increases its value
-  - shock attribute is decreased naturally over time
-  - shock can be instantly removed using morphines
-- Added two new bleed types: Moderate and Critical
-- Added more config options for bleeds and fractures
-- Removed default bleed/fracture chances from tools, now handled dynamically via item tags
-- Added blood lost statistic
-- Tooltip improvements
-- Fixed bug where armors were not taking damage
+# Release 26.1.1-2.4.1
+- Added keybind to open health UI directly (unbound by default)
+- Added config option to show the current blood level in health UI
+- Removed hardcoded vanilla effects for foods
+  - now controlled via datapacks
+  - added new tag `medsystem:blood_regenerative_foods`
+- Fixed several missing localizations for config
