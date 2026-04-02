@@ -29,18 +29,17 @@ public record AddStatusEffectStatusEffectEventAction(StatusEffectWithDelay effec
     @Override
     public boolean apply(StatusEffectEventContext ctx) {
         DamageContext context = ctx.getParameter(StatusEffectEventParams.DAMAGE_CONTEXT);
-        if (context == null)
-            return false;
         StatusEffect statusEffect = this.effect.createInstance();
         int duration = Mth.floor(StatusEffectEventFunctionType.applyFunctions(statusEffect.getDuration(), ctx, this.durationModifiers));
         statusEffect.setDuration(duration);
-        StatusEffectHelper.setCausingEntityFromSource(statusEffect, context.getSource());
+        if (context != null)
+            StatusEffectHelper.setCausingEntityFromSource(statusEffect, context.getSource());
         boolean isGlobalEffect = statusEffect.getType().isGlobalEffect();
         Limb targetLimb = isGlobalEffect ? null : ctx.getLimb();
         if (!isGlobalEffect && !targetLimb.canApplyStatusEffect(statusEffect.getType()))
             return true;
         // at least 1 tick delay is required to prevent CMEs while ticking
-        int delay = Math.max(1, Mth.floor(StatusEffectEventFunctionType.applyFunctions(this.effect.delay(), ctx, this.delayModifiers)));
+        int delay = Math.max(1, Mth.floor(StatusEffectEventFunctionType.applyFunctions(this.effect.getDelay(), ctx, this.delayModifiers)));
         StatusEffectMap effects = isGlobalEffect ? ctx.getHealthContainer().getGlobalStatusEffects() : targetLimb.getStatusEffects();
         StatusEffectHelper.addEffect(effects, ctx.getEntity(), targetLimb, delay, statusEffect);
         return true;

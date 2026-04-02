@@ -173,9 +173,9 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     private void submitPendingEffects(ListStatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
         submitter.forEach(delayedEffect -> {
             if (limb != null) {
-                StatusEffectHelper.addEffect(this, entity, limb, delayedEffect.delay(), delayedEffect.createInstance());
+                StatusEffectHelper.addEffect(this, entity, limb, delayedEffect.getDelay(), delayedEffect.createInstance());
             } else {
-                StatusEffectHelper.addGlobalEffect(this, entity, delayedEffect.delay(), delayedEffect.createInstance());
+                StatusEffectHelper.addGlobalEffect(this, entity, delayedEffect.getDelay(), delayedEffect.createInstance());
             }
         });
     }
