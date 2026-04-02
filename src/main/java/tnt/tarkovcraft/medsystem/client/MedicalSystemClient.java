@@ -27,7 +27,6 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
-import org.lwjgl.glfw.GLFW;
 import tnt.tarkovcraft.core.api.event.client.RegisterOnScreenHintEvent;
 import tnt.tarkovcraft.core.api.event.client.RegisterPostShaderProgramsEvent;
 import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
@@ -53,6 +52,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
@@ -68,7 +68,14 @@ public final class MedicalSystemClient {
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "give_up"),
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_X,
+            InputConstants.KEY_X,
+            KEYMAPPING_CATEGORY
+    );
+    public static final KeyMapping KEY_OPEN_HEALTH = new KeyMapping(
+            TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "open_health"),
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            InputConstants.UNKNOWN.getValue(),
             KEYMAPPING_CATEGORY
     );
     public static final ParticleLimit BLOOD_PARTICLES_LIMIT = new ParticleLimit(2000);
@@ -76,7 +83,7 @@ public final class MedicalSystemClient {
 
     public static final NavigationEntry HEALTH = new OptionalNavigationEntry(
             TextHelper.createScreenTitle(MedSystemConstants.MOD_ID, "health"),
-            (parent, userId) -> {
+            (_, userId) -> {
                 UUID clientId = Minecraft.getInstance().player.getUUID();
                 return userId.equals(clientId);
             },
@@ -150,14 +157,20 @@ public final class MedicalSystemClient {
 
     private void registerKeyBinds(RegisterKeyMappingsEvent event) {
         event.register(KEY_GIVE_UP);
+        event.register(KEY_OPEN_HEALTH);
     }
 
     private void onKeyInput(InputEvent.Key event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Player player = minecraft.player;
         if (KEY_GIVE_UP.consumeClick()) {
-            Minecraft minecraft = Minecraft.getInstance();
-            Player player = minecraft.player;
             if (BloodSystemManager.canSkipUnconsciousMode(player)) {
                 ClientPacketDistributor.sendToServer(new C2S_RequestGiveUp());
+            }
+        }
+        if (KEY_OPEN_HEALTH.consumeClick()) {
+            if (HealthSystem.hasCustomHealth(player)) {
+                minecraft.setScreen(new HealthScreen(null, player.getUUID()));
             }
         }
     }
