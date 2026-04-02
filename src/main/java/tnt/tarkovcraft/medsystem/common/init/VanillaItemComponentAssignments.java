@@ -10,6 +10,10 @@ import tnt.tarkovcraft.medsystem.common.effect.group.BloodRecoveryEffectGroupIte
 
 import java.util.function.BiConsumer;
 
+/**
+ * @deprecated To be removed in favor of data-driven consume events
+ */
+@Deprecated
 public final class VanillaItemComponentAssignments {
 
     public static void adjustItemData(BiConsumer<ItemLike, SideEffectHolder> registration) {
