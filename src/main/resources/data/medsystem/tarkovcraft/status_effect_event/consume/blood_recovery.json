@@ -1,0 +1,31 @@
+{
+  "event_source": "medsystem:consume",
+  "conditions": [
+    {
+      "type": "medsystem:item_predicate",
+      "predicate": {
+        "items": "#medsystem:blood_regenerative_foods"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "medsystem:add_status_effect",
+      "effect": {
+        "template": {
+          "type": "medsystem:positive_effects_group",
+          "items": [
+            {
+              "duration": 2400,
+              "delay": 1200,
+              "data": {
+                "type": "medsystem:blood_recovery",
+                "amount": 0.002
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
