@@ -41,7 +41,7 @@ public final class MedSystemConfig {
     public ArmorSystem armorSystem = ArmorSystem.SIMULATED;
 
     @Configurable
-    @Configurable.Comment("Uses less hit traces for explosions to save performance")
+    @Configurable.Comment(value = "Uses less hit traces for explosions to save performance", localize = true)
     public boolean useExplosionPerformanceMode = false;
 
     @Configurable
@@ -63,11 +63,6 @@ public final class MedSystemConfig {
     @Configurable
     @Configurable.Comment(value = "Allows scaling of injury recovery status effects when getting the effect repeatedly", localize = true)
     public boolean allowInjuryRecoveryScaling = true;
-
-    @Configurable
-    @Configurable.Comment(value = "Vanilla tools will have chance to cause some negative effects such as bleeds or fractures", localize = true)
-    @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
-    public boolean addHitEffectsToVanillaItems = true;
 
     @Configurable
     @Configurable.Comment(value = "Blood/Unconscious system related configurations", localize = true)
