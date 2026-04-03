@@ -24,6 +24,8 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.LimbHealthWidget;
 import tnt.tarkovcraft.medsystem.client.screen.widget.LimbWidget;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
@@ -77,15 +79,18 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
             Identifier bloodTypeId = bloodSystem.getBloodType();
             BloodConfiguration configuration = MedicalSystem.BLOOD_SYSTEM.getConfig();
             configuration.getOptions(bloodTypeId).ifPresent(options -> {
-                Component styledLabel = options.getStylizedLabel();
+                BloodSystemConfig bloodConfig = MedicalSystem.getConfig().bloodSystem;
                 // blood type label
-                list.add(new IconWithLabel(
-                        DROPLET_ICON,
-                        () -> styledLabel,
-                        ARGB.opaque(options.color()), 0xFFFFFFFF
-                ));
+                if (bloodConfig.showBloodType) {
+                    Component styledLabel = options.getStylizedLabel();
+                    list.add(new IconWithLabel(
+                            DROPLET_ICON,
+                            () -> styledLabel,
+                            ARGB.opaque(options.color()), 0xFFFFFFFF
+                    ));
+                }
                 // blood volume label
-                if (MedicalSystem.getConfig().bloodSystem.showBloodLevel) {
+                if (bloodConfig.showBloodLevel) {
                     float volume = bloodSystem.getBloodVolume();
                     float max = bloodSystem.getDefinition().getMaxBloodVolume();
                     Component valueLabel = Component.literal(String.format(Locale.ROOT, "%.2f/%.2f", volume, max)).withColor(options.color());
