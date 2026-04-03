@@ -18,7 +18,6 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
-import java.util.Locale;
 import java.util.function.Consumer;
 
 public class InjuryRecoveryStatusEffect extends StatusEffect {
@@ -27,8 +26,9 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
             Codec.INT.fieldOf("reduction").forGetter(t -> t.reduction)
     ).apply(instance, InjuryRecoveryStatusEffect::new));
     private static final Component INFO = Component.translatable("status_effect.medsystem.injury_recovery.info").withStyle(ChatFormatting.DARK_GRAY);
+    private static final Identifier REDUCTION_ID = MedicalSystem.createIdentifier("reduction/injury_recovery");
 
-    private int reduction;
+    private final int reduction;
 
     public InjuryRecoveryStatusEffect(int duration) {
         this(duration, 1);
@@ -52,15 +52,14 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         }
         LivingEntity entity = context.entity();
         HealthContainer container = context.container();
-        this.reduction = Math.min((int) limb.getMaxHealth() - 1, this.reduction);
-        AttributeMap map = entity.getAttributes();
-        AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
-        Identifier modifierId = this.getUniqueModifierId(limb);
-        AttributeModifier modifier = instance.getModifier(modifierId);
-        if (modifier == null || modifier.amount() != -this.reduction) {
-            float newMaxHealth = limb.getMaxHealth() - this.reduction;
-            instance.addOrReplacePermanentModifier(new AttributeModifier(modifierId, -this.reduction, AttributeModifier.Operation.ADD_VALUE));
-            limb.setMaxHealth(newMaxHealth);
+        Identifier modifierId = limb.getUniqueIdentifier();
+        float previousReduction = limb.getTotalReduction();
+        limb.addReduction(REDUCTION_ID, this.reduction);
+        float newReduction = limb.getTotalReduction();
+        if (previousReduction != newReduction) {
+            AttributeMap map = entity.getAttributes();
+            AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
+            instance.addOrReplacePermanentModifier(new AttributeModifier(modifierId, -newReduction, AttributeModifier.Operation.ADD_VALUE));
             HealthHelper.synchronizeHealth(entity, container);
             HealthSystem.synchronizeEntity(entity);
         }
@@ -71,10 +70,10 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
         context.ifLimbPresent(limb -> {
             HealthContainer container = context.container();
             LivingEntity entity = context.entity();
-            limb.setMaxHealth(limb.getMaxHealth() + this.reduction);
+            limb.removeReduction(REDUCTION_ID);
             AttributeMap map = entity.getAttributes();
             AttributeInstance instance = map.getInstance(Attributes.MAX_HEALTH);
-            instance.removeModifier(this.getUniqueModifierId(limb));
+            instance.removeModifier(limb.getUniqueIdentifier());
             HealthHelper.synchronizeHealth(entity, container);
             HealthSystem.synchronizeEntity(entity);
         });
@@ -93,10 +92,6 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.INJURY_RECOVERY.value();
-    }
-
-    private Identifier getUniqueModifierId(Limb part) {
-        return MedicalSystem.createIdentifier("health_reduction/" + part.getLimbCode().toLowerCase(Locale.ROOT));
     }
 
     public static InjuryRecoveryStatusEffect merge(InjuryRecoveryStatusEffect initial, InjuryRecoveryStatusEffect additional) {

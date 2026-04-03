@@ -2,16 +2,21 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Object2FloatArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventSources;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 // TODO immutable max health, reduction attribute?
@@ -22,7 +27,8 @@ public final class Limb {
             Codec.STRING.fieldOf("code").forGetter(t -> t.limbCode),
             Codec.FLOAT.fieldOf("health").forGetter(t -> t.health),
             Codec.FLOAT.fieldOf("max_health").forGetter(t -> t.maxHealth),
-            StatusEffectMap.CODEC.fieldOf("status_effects").forGetter(t -> t.statusEffects)
+            StatusEffectMap.CODEC.fieldOf("status_effects").forGetter(t -> t.statusEffects),
+            Codec.unboundedMap(Identifier.CODEC, Codec.FLOAT).optionalFieldOf("reductions", Collections.emptyMap()).forGetter(t -> t.reductions)
     ).apply(instance, Limb::new));
 
     private final LimbDefinition definition;
@@ -31,6 +37,7 @@ public final class Limb {
     private float maxHealth;
     private final Component displayName;
     private final StatusEffectMap statusEffects;
+    private final Object2FloatMap<Identifier> reductions;
 
     Limb(LimbDefinition definition, String code) {
         this.definition = definition;
@@ -39,15 +46,21 @@ public final class Limb {
         this.maxHealth = this.definition.baseHealth();
         this.displayName = getDisplayName(this.limbCode);
         this.statusEffects = new StatusEffectMap();
+        this.reductions = new Object2FloatArrayMap<>();
     }
 
-    private Limb(LimbDefinition definition, String limbCode, float health, float maxHealth, StatusEffectMap statusEffects) {
+    private Limb(LimbDefinition definition, String limbCode, float health, float maxHealth, StatusEffectMap statusEffects, Map<Identifier, Float> reductions) {
         this.definition = definition;
         this.limbCode = limbCode;
         this.health = health;
         this.maxHealth = maxHealth;
         this.displayName = getDisplayName(this.limbCode);
         this.statusEffects = statusEffects;
+        this.reductions = new Object2FloatArrayMap<>(reductions);
+    }
+
+    public Identifier getUniqueIdentifier() {
+        return MedicalSystem.createIdentifier("limb/" + this.limbCode);
     }
 
     public String getLimbCode() {
@@ -99,7 +112,11 @@ public final class Limb {
     }
 
     public float getMaxHealth() {
-        return maxHealth;
+        return this.getRawMaxHealth() - this.getTotalReduction();
+    }
+
+    public float getRawMaxHealth() {
+        return this.maxHealth;
     }
 
     public float getInitialHealth() {
@@ -151,6 +168,23 @@ public final class Limb {
 
     public boolean isLeg() {
         return this.is(LimbType.LEG);
+    }
+
+    public void addReduction(Identifier identifier, float amount) {
+        this.reductions.put(identifier, amount);
+    }
+
+    public void removeReduction(Identifier identifier) {
+        this.reductions.removeFloat(identifier);
+    }
+
+    public float getReduction(Identifier identifier) {
+        return this.reductions.getFloat(identifier);
+    }
+
+    public float getTotalReduction() {
+        float reductionsSum = (float) this.reductions.values().doubleStream().sum();
+        return Math.min(this.maxHealth - 1, reductionsSum);
     }
 
     @Override
