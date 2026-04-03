@@ -166,23 +166,23 @@ public class HealingItem extends InteractableItem {
         }
 
         HealthContainer container = HealthContainer.getAttached(target);
-        Limb part = container.hasLimb(targetLimb) ? container.getLimbByCode(targetLimb) : null;
+        Limb limb = container.hasLimb(targetLimb) ? container.getLimbByCode(targetLimb) : null;
         int consume = 0;
         // dead limb recovery
         if (attributes.isSurgeryItem()) {
             Surgery surgery = attributes.surgery();
             consume++; // dead limb fix has hardcoded consumption value of 1
-            if (part.isDead()) {
+            if (limb.isDead()) {
                 SkillSystem.trigger(MedSystemSkillEvents.LIMB_FIXED, origin); // reward the healer
-                part.setHealth(surgery.healthAfterHeal());
-                surgery.addRecoveryAttributes(target, part);
+                limb.setHealth(surgery.recoveryHealth());
+                surgery.onSurgeryFinished(target, limb);
             }
         }
         // effect recovery + consumption for recovery
         List<EffectRecovery> recoveries = attributes.recoveries();
         for (EffectRecovery recovery : recoveries) {
-            if (recovery.canRecover(container, part) && checkDurability(itemStack, consume + recovery.consumption())) {
-                recovery.recover(container, part);
+            if (recovery.canRecover(container, limb) && checkDurability(itemStack, consume + recovery.consumption())) {
+                recovery.recover(container, limb);
                 consume += recovery.consumption();
             }
         }

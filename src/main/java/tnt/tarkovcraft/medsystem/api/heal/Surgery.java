@@ -24,45 +24,43 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemAttributes;
 
 import java.util.function.Consumer;
 
-public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float minLimbHealth,
-                      int recoveryTime, int useTime) implements TooltipProvider {
+public record Surgery(float recoveryHealth, float healthMultiplier, int recoveryTime, int useTime) implements TooltipProvider {
 
     public static final Codec<Surgery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("recovery_health", 1.0F).forGetter(Surgery::healthAfterHeal),
-            ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("health_multiplier", 1.0F).forGetter(Surgery::maxHealthMultiplier),
-            Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("min_health", 0.0F).forGetter(Surgery::minLimbHealth),
+            ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("recovery_health", 1.0F).forGetter(Surgery::recoveryHealth),
+            ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("health_multiplier", 1.0F).forGetter(Surgery::healthMultiplier),
             Codecs.NON_NEGATIVE_INT.optionalFieldOf("recovery_duration", Duration.minutes(10).tickValue()).forGetter(Surgery::recoveryTime),
             Codecs.NON_NEGATIVE_INT.fieldOf("use_duration").forGetter(Surgery::useTime)
     ).apply(instance, Surgery::new));
 
     public boolean canHeal(HealthContainer container) {
         LimbContainer limbContainer = container.getLimbContainer();
-        return limbContainer.hasLimb(limb -> limb.isDead() && limb.getMaxHealth() >= this.minLimbHealth);
+        return limbContainer.hasLimb(Limb::isDead);
     }
 
     public boolean hasPostRecovery() {
-        return this.recoveryTime > 0 && this.maxHealthMultiplier < 1.0F;
+        return this.recoveryTime > 0 && this.healthMultiplier < 1.0F;
     }
 
-    public void addRecoveryAttributes(LivingEntity entity, Limb part) {
+    public void onSurgeryFinished(LivingEntity entity, Limb limb) {
         if (this.hasPostRecovery()) {
             float reductionScale = AttributeSystem.getFloatValue(entity, MedSystemAttributes.INJURY_RECOVERY_AMOUNT, 1.0F);
             float durationScale = AttributeSystem.getFloatValue(entity, MedSystemAttributes.INJURY_RECOVERY_DURATION, 1.0F);
             if (durationScale > 0.0F && reductionScale > 0.0F) {
-                int reduction = Mth.ceil(part.getMaxHealth() * (1.0F - this.maxHealthMultiplier) * reductionScale);
+                int reduction = Mth.ceil(limb.getRawMaxHealth() * (1.0F - this.healthMultiplier) * reductionScale);
                 int duration = Mth.ceil(this.recoveryTime * durationScale);
                 InjuryRecoveryStatusEffect effect = InjuryRecoveryStatusEffect.createTemplate(reduction);
                 effect.setDuration(duration);
-                StatusEffectHelper.addImmediateEffect(part.getStatusEffects(), entity, part, effect);
+                StatusEffectHelper.addImmediateEffect(limb.getStatusEffects(), entity, limb, effect);
             }
         }
     }
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
-        Component health = Component.literal(String.valueOf(Mth.ceil(healthAfterHeal))).withStyle(ChatFormatting.GRAY);
+        Component health = Component.literal(String.valueOf(Mth.ceil(recoveryHealth))).withStyle(ChatFormatting.GRAY);
         tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.recovery", health).withStyle(ChatFormatting.DARK_GRAY));
-        Component maxHealth = Component.literal((int) ((1.0F - maxHealthMultiplier) * 100) + "%").withStyle(ChatFormatting.GRAY);
+        Component maxHealth = Component.literal((int) ((1.0F - healthMultiplier) * 100) + "%").withStyle(ChatFormatting.GRAY);
         if (this.hasPostRecovery()) {
             Component duration = Duration.format(recoveryTime).copy().withStyle(ChatFormatting.GRAY);
             tooltipAdder.accept(Component.translatable("tooltip.medsystem.heal_attributes.dead_limb.max_health", maxHealth, duration).withStyle(ChatFormatting.DARK_GRAY));
@@ -73,7 +71,6 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
 
         private float healthAfterHeal = 1.0F;
         private float maxHealthMultiplier = 1.0F;
-        private float minLimbHealth = 0.0F;
         private int recoveryTime = 0;
         private int useTime = 100;
 
@@ -86,28 +83,23 @@ public record Surgery(float healthAfterHeal, float maxHealthMultiplier, float mi
             return this.useTime(useTime.tickValue());
         }
 
-        public SurgeryBuilder recoverHealth(float healthAfterHeal) {
+        public SurgeryBuilder recoversTo(float healthAfterHeal) {
             this.healthAfterHeal = healthAfterHeal;
             return this;
         }
 
-        public SurgeryBuilder minLimbHealth(float minLimbHealth) {
-            this.minLimbHealth = minLimbHealth;
-            return this;
-        }
-
-        public SurgeryBuilder recovery(int recoveryTime, float maxHealthMultiplier) {
+        public SurgeryBuilder postSurgeryRecovery(int recoveryTime, float maxHealthMultiplier) {
             this.recoveryTime = recoveryTime;
             this.maxHealthMultiplier = maxHealthMultiplier;
             return this;
         }
 
-        public SurgeryBuilder recovery(TickValue duration, float maxHealthMultiplier) {
-            return this.recovery(duration.tickValue(), maxHealthMultiplier);
+        public SurgeryBuilder postSurgeryRecovery(TickValue duration, float maxHealthMultiplier) {
+            return this.postSurgeryRecovery(duration.tickValue(), maxHealthMultiplier);
         }
 
         Surgery buildSurgeryAttributes() {
-            return new Surgery(this.healthAfterHeal, this.maxHealthMultiplier, this.minLimbHealth, this.recoveryTime, this.useTime);
+            return new Surgery(this.healthAfterHeal, this.maxHealthMultiplier, this.recoveryTime, this.useTime);
         }
     }
 }
