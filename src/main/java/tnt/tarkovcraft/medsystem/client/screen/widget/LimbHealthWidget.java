@@ -23,6 +23,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,6 +143,9 @@ public class LimbHealthWidget extends AbstractWidget {
                     effect.addAdditionalInfo(tooltip::add);
                     if (effect.hasVisibleDuration() && !effect.isInfinite()) {
                         tooltip.add(StatusEffect.getDurationLabel(effect.getDuration()));
+                    }
+                    if (type.is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING)) {
+                        tooltip.add(StatusEffect.PAINFUL_LABEL);
                     }
                     this.parent.setTooltipForNextRenderPass(RenderUtils.splitTooltip(tooltip, this.font));
                 }

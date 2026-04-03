@@ -19,6 +19,7 @@ import java.util.function.IntFunction;
 
 public abstract class StatusEffect {
 
+    public static final Component PAINFUL_LABEL = Component.translatable("label.medsystem.painful").withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY);
     public static final DurationFormatSettings DURATION_SETTINGS = new DurationFormatSettings();
     public static final int INFINITE_DURATION = -1;
 
