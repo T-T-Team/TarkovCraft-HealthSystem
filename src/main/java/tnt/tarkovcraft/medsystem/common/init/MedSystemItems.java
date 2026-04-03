@@ -33,9 +33,8 @@ public final class MedSystemItems {
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .surgeryItem(builder -> builder
                                             .useTime(Duration.seconds(15))
-                                            .recoverHealth(1.0F)
-                                            .minLimbHealth(1.0F)
-                                            .recovery(Duration.minutes(15), 0.7F)
+                                            .recoversTo(1.0F)
+                                            .postSurgeryRecovery(Duration.minutes(15), 0.7F)
                                     )
                                     .build()
                             )

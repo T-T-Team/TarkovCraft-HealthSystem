@@ -129,13 +129,10 @@ public final class HealthHelper {
         float containerMaxHealth = container.getMaxHealth();
         float originalContainerMaxHealth = limbConfiguration.getMaxHealth();
         if (playerMaxHealth != containerMaxHealth) {
-            MedicalSystem.LOGGER.debug("Health pool changed for {}, entity max health: {}, health container max health: {}", entity, playerMaxHealth, containerMaxHealth);
             if (playerMaxHealth == originalContainerMaxHealth) {
-                MedicalSystem.LOGGER.debug("Restoring original container max health for {}", entity);
                 container.restoreHealthLimits();
             } else {
                 double diff = playerMaxHealth - originalContainerMaxHealth;
-                MedicalSystem.LOGGER.debug("Recalculating container max health for {} - changing by {} health points", entity, diff);
                 int limbs = container.getLimbCount();
                 double perLimb = diff / limbs;
                 for (Limb limb : container) {
