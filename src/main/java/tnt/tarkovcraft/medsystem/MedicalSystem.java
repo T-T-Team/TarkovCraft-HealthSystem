@@ -19,7 +19,7 @@ import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventManager;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
@@ -31,7 +31,7 @@ public final class MedicalSystem {
     public static final Logger LOGGER = LogManager.getLogger("MedicalSystem");
 
     public static final HealthSystem HEALTH_SYSTEM = new HealthSystem();
-    public static final StatusEffectEventManager STATUS_EFFECT_EVENTS = new StatusEffectEventManager();
+    public static final HealthEventManager STATUS_EFFECT_EVENTS = new HealthEventManager();
     public static final BloodSystemManager BLOOD_SYSTEM = new BloodSystemManager();
 
     private static MedSystemConfig config;
@@ -58,10 +58,10 @@ public final class MedicalSystem {
         MedSystemStatusEffectPredicates.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
         MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
-        MedSystemStatusEffectEventSources.REGISTRY.register(modEventBus);
-        MedSystemStatusEffectEventFunctions.REGISTRY.register(modEventBus);
-        MedSystemStatusEffectEventConditions.REGISTRY.register(modEventBus);
-        MedSystemStatusEffectEventActions.REGISTRY.register(modEventBus);
+        MedSystemHealthEventSources.REGISTRY.register(modEventBus);
+        MedSystemHealthEventFunctions.REGISTRY.register(modEventBus);
+        MedSystemHealthEventConditions.REGISTRY.register(modEventBus);
+        MedSystemHealthEventActions.REGISTRY.register(modEventBus);
         MedSystemStateFilters.REGISTRY.register(modEventBus);
         MedSystemParticleTypes.REGISTRY.register(modEventBus);
         MedSystemArgumentTypes.REGISTRY.register(modEventBus);
@@ -78,10 +78,10 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
         event.register(MedSystemRegistries.STATE_MATCHER);
         event.register(MedSystemRegistries.STATUS_EFFECT_PREDICATE);
-        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_SOURCE);
-        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_FUNCTION);
-        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_CONDITION);
-        event.register(MedSystemRegistries.STATUS_EFFECT_EVENT_ACTION);
+        event.register(MedSystemRegistries.HEALTH_EVENT_TRIGGER_SOURCE);
+        event.register(MedSystemRegistries.HEALTH_EVENT_FUNCTION);
+        event.register(MedSystemRegistries.HEALTH_EVENT_CONDITION);
+        event.register(MedSystemRegistries.HEALTH_EVENT_ACTION);
         event.register(MedSystemRegistries.BLOOD_LEVEL_EFFECT);
     }
 

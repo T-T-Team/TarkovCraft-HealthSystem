@@ -30,8 +30,8 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
-import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventParams;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.init.*;
@@ -182,23 +182,23 @@ public final class DamageHandler {
 
     private void triggerStatusEffectEvent(LivingEntity entity, HealthContainer container, DamageContext context, Map<Limb, Float> damage, float total, int lostLimbs) {
         // global damage event
-        StatusEffectEventContext globalCtx = StatusEffectEventContext.withParams(entity, container, container.getRootLimb(), builder -> {
-            builder.add(StatusEffectEventParams.DAMAGE_CONTEXT, context);
-            builder.add(StatusEffectEventParams.DAMAGE_AMOUNT, total);
-            builder.add(StatusEffectEventParams.LIMBS_LOST, lostLimbs);
+        HealthEventContext globalCtx = HealthEventContext.withParams(entity, container, container.getRootLimb(), builder -> {
+            builder.add(HealthEventParams.DAMAGE_CONTEXT, context);
+            builder.add(HealthEventParams.DAMAGE_AMOUNT, total);
+            builder.add(HealthEventParams.LIMBS_LOST, lostLimbs);
         });
-        MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemStatusEffectEventSources.INCOMING_DAMAGE_GLOBAL, globalCtx);
+        MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.INCOMING_DAMAGE_GLOBAL, globalCtx);
 
         // per limb damage triggers
         for (Map.Entry<Limb, Float> entry : damage.entrySet()) {
             Limb limb = entry.getKey();
             float localDamage = entry.getValue();
-            StatusEffectEventContext ctx = StatusEffectEventContext.withParams(entity, container, limb, builder -> {
-                builder.add(StatusEffectEventParams.DAMAGE_CONTEXT, context);
-                builder.add(StatusEffectEventParams.DAMAGE_AMOUNT, total);
-                builder.add(StatusEffectEventParams.DAMAGE_AMOUNT_LIMB, localDamage);
+            HealthEventContext ctx = HealthEventContext.withParams(entity, container, limb, builder -> {
+                builder.add(HealthEventParams.DAMAGE_CONTEXT, context);
+                builder.add(HealthEventParams.DAMAGE_AMOUNT, total);
+                builder.add(HealthEventParams.DAMAGE_AMOUNT_LIMB, localDamage);
             });
-            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemStatusEffectEventSources.INCOMING_DAMAGE, ctx);
+            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.INCOMING_DAMAGE, ctx);
         }
     }
 

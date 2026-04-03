@@ -39,9 +39,8 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
-import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
-import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventManager;
-import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventParams;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.*;
@@ -223,8 +222,8 @@ public final class MedicalSystemEventHandler {
         if (HealthSystem.hasCustomHealth(entity)) {
             HealthContainer container = HealthContainer.getAttached(entity);
             Limb limb = container.getRootLimb();
-            StatusEffectEventContext context = StatusEffectEventContext.withParams(entity, container, limb, builder -> builder.add(StatusEffectEventParams.ITEM, stack));
-            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemStatusEffectEventSources.CONSUME, context);
+            HealthEventContext context = HealthEventContext.withParams(entity, container, limb, builder -> builder.add(HealthEventParams.ITEM, stack));
+            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.CONSUME, context);
         }
     }
 
