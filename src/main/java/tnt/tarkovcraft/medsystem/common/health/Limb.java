@@ -8,9 +8,9 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.effect.event.StatusEffectEventContext;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectEventSources;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventSources;
 
 import java.util.Objects;
 
@@ -136,8 +136,8 @@ public final class Limb {
         LivingEntity entity = context.entity();
         if (entity.level().getGameTime() % 20 == 0) {
             HealthContainer container = context.container();
-            StatusEffectEventContext ctx = StatusEffectEventContext.simple(entity, container, this);
-            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemStatusEffectEventSources.UPDATE, ctx);
+            HealthEventContext ctx = HealthEventContext.simple(entity, container, this);
+            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.UPDATE, ctx);
         }
     }
 
