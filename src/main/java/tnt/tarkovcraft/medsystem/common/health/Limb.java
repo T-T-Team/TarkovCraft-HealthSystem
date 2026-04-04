@@ -154,7 +154,7 @@ public final class Limb {
         if (entity.level().getGameTime() % 20 == 0) {
             HealthContainer container = context.container();
             HealthEventContext ctx = HealthEventContext.simple(entity, container, this);
-            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.UPDATE, ctx);
+            MedicalSystem.HEALTH_EVENT.triggerEvent(MedSystemHealthEventSources.UPDATE, ctx);
         }
     }
 
