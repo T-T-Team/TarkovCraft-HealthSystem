@@ -1,0 +1,24 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "receive_bleed": {
+      "conditions": {
+        "effects": "#medsystem:is_bleed"
+      },
+      "trigger": "medsystem:receive_status_effect"
+    }
+  },
+  "requirements": [
+    [
+      "receive_bleed"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "medsystem:first_aid_kit",
+      "medsystem:bandage",
+      "medsystem:tourniquet",
+      "medsystem:bloodbag"
+    ]
+  }
+}
