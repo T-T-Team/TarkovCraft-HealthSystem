@@ -57,10 +57,6 @@ public final class MedSystemConfig {
     public float vitalBodyPartHealthTrigger = 0.75F;
 
     @Configurable
-    @Configurable.Comment("Allows scaling of injury recovery status effects when getting the effect repeatedly")
-    public boolean allowInjuryRecoveryScaling = true;
-
-    @Configurable
     @Configurable.Comment("Blood/Unconscious system related configurations")
     public BloodSystemConfig bloodSystem = new BloodSystemConfig();
 
