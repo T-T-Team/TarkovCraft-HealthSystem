@@ -227,7 +227,7 @@ public final class MedicalSystemEventHandler {
             HealthContainer container = HealthContainer.getAttached(entity);
             Limb limb = container.getRootLimb();
             HealthEventContext context = HealthEventContext.withParams(entity, container, limb, builder -> builder.add(HealthEventParams.ITEM, stack));
-            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.CONSUME, context);
+            MedicalSystem.HEALTH_EVENT.triggerEvent(MedSystemHealthEventSources.CONSUME, context);
         }
     }
 
