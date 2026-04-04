@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.event.StatusEffectEvent;
+import tnt.tarkovcraft.medsystem.common.advancements.criterion.ReceiveStatusEffectTrigger;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
@@ -17,6 +19,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.StatusEffectQueue;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemCriterionTriggers;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -60,6 +63,9 @@ public final class StatusEffectHelper {
         effects.addEffect(effect);
         HealthContainer container = HealthContainer.getAttached(entity);
         StatusEffectMap globalEffects = container.getGlobalStatusEffects();
+        if (entity instanceof ServerPlayer player) {
+            ReceiveStatusEffectTrigger.triggerCriterion(player, effect);
+        }
         globalEffects.painEffectTick(entity, 5, true);
     }
 

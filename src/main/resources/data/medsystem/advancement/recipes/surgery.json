@@ -1,20 +1,20 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "take_damage": {
-      "trigger": "minecraft:entity_hurt_player"
+    "lose_any_limb": {
+      "trigger": "medsystem:lose_limb"
     }
   },
   "requirements": [
     [
-      "take_damage"
+      "lose_any_limb"
     ]
   ],
   "rewards": {
     "recipes": [
+      "medsystem:emergency_surgery_kit",
       "medsystem:painkillers",
-      "medsystem:morphine_injector",
-      "medsystem:regenerative_injector"
+      "medsystem:morphine_injector"
     ]
   }
 }

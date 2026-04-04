@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -56,6 +57,10 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public boolean is(TagKey<StatusEffectType<?>> tag) {
         return this.intrusiveHolder.is(tag);
+    }
+
+    public boolean is(HolderSet<StatusEffectType<?>> holderSet) {
+        return holderSet.contains(this.intrusiveHolder);
     }
 
     public boolean isDisabled() {

@@ -1,9 +1,12 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.common.advancements.criterion.LoseLimbTrigger;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationContext;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationResult;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitInfo;
@@ -73,6 +76,12 @@ public final class DamageContext {
 
     public int getLostLimbsCount() {
         return this.lostLimbs.size();
+    }
+
+    public void triggerAdvancements(LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer player))
+            return;
+        this.lostLimbs.forEach(limb -> LoseLimbTrigger.triggerCriterion(player, limb));
     }
 
     public void reset() {

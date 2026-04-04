@@ -131,6 +131,9 @@ public final class DamageHandler {
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         int lostLimbCount = context.getLostLimbsCount();
         if (totalDamage > 0.0F) {
+            context.triggerAdvancements(entity);
+            // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
+            // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
             if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
                 // apply post-damage effects
@@ -139,7 +142,6 @@ public final class DamageHandler {
                 this.addBloodParticles(entity, source, container, context, totalDamage);
             }
         }
-
 
         // Clean data and apply
         entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)

@@ -67,6 +67,7 @@ public final class MedicalSystem {
         MedSystemArgumentTypes.REGISTRY.register(modEventBus);
         MedSystemBloodLevelEffects.REGISTRY.register(modEventBus);
         MedSystemEntityPoses.REGISTRY.register(modEventBus);
+        MedSystemCriterionTriggers.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {

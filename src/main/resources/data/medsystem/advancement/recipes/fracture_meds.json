@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "receive_fracture": {
+      "conditions": {
+        "effects": "#medsystem:is_fracture"
+      },
+      "trigger": "medsystem:receive_status_effect"
+    }
+  },
+  "requirements": [
+    [
+      "receive_fracture"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "medsystem:splint",
+      "medsystem:painkillers",
+      "medsystem:morphine_injector"
+    ]
+  }
+}
