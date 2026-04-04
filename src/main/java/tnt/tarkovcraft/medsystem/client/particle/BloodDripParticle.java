@@ -25,18 +25,21 @@ import java.util.Optional;
 
 public final class BloodDripParticle extends SingleQuadParticle {
 
-    public BloodDripParticle(ClientLevel level, int inputColor, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
+    private int decalAge;
+
+    public BloodDripParticle(ClientLevel level, BloodDripParticleOptions options, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
         this.xd = xSpeed;
         this.yd = ySpeed;
         this.zd = zSpeed;
-        int color = getParticleColor(inputColor);
+        int color = getParticleColor(options.color());
         this.rCol = ARGB.redFloat(color);
         this.gCol = ARGB.greenFloat(color);
         this.bCol = ARGB.blueFloat(color);
         this.gravity = 0.4F;
         this.quadSize = 0.075F;
         this.setLifetime(300);
+        this.decalAge = options.decalAge();
     }
 
     @Override
@@ -69,7 +72,7 @@ public final class BloodDripParticle extends SingleQuadParticle {
 
     private void onCollision(double x, double y, double z, Direction direction, BlockPos position) {
         int color = ARGB.colorFromFloat(1.0F, this.rCol, this.gCol, this.bCol);
-        BloodDecalParticleOptions options = new BloodDecalParticleOptions(MedSystemParticleTypes.BLOOD_DECAL, direction, position, color);
+        BloodDecalParticleOptions options = new BloodDecalParticleOptions(MedSystemParticleTypes.BLOOD_DECAL, direction, position, color, this.decalAge);
         this.level.addParticle(options, true, true, x, y, z, 0, 0, 0);
         this.remove();
     }
@@ -89,7 +92,7 @@ public final class BloodDripParticle extends SingleQuadParticle {
 
         @Override
         public @Nullable Particle createParticle(BloodDripParticleOptions options, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
-            return new BloodDripParticle(level, options.color(), x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet.get(random));
+            return new BloodDripParticle(level, options, x, y, z, xSpeed, ySpeed, zSpeed, this.spriteSet.get(random));
         }
     }
 }
