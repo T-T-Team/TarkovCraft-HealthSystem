@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
@@ -95,10 +96,11 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
     }
 
     public static InjuryRecoveryStatusEffect merge(InjuryRecoveryStatusEffect initial, InjuryRecoveryStatusEffect additional) {
-        boolean allowScaling = MedicalSystem.getConfig().allowInjuryRecoveryScaling;
+        StatusEffectConfig config = MedicalSystem.getConfig().statusEffects;
+        boolean allowScaling = config.allowInjuryRecoveryScaling;
         if (allowScaling) {
             return new InjuryRecoveryStatusEffect(
-                    initial.getDuration() + additional.getDuration(),
+                    StatusEffectConfig.getStackedDuration(initial.getDuration() + additional.getDuration(), config.maxInjuryRecoveryDuration),
                     initial.reduction + additional.reduction
             );
         } else {

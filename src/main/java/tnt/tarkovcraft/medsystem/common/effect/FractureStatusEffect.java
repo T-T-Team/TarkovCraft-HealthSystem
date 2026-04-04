@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Optional;
@@ -48,5 +50,12 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
     @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.FRACTURE.value();
+    }
+
+    public static FractureStatusEffect mergeWithDurationLimits(FractureStatusEffect f1, FractureStatusEffect f2) {
+        FractureStatusEffect effect = maxDuration(f1, f2);
+        StatusEffectConfig config = MedicalSystem.getConfig().statusEffects;
+        effect.setDuration(StatusEffectConfig.getStackedDuration(effect.getDuration(), config.maxFractureDuration));
+        return effect;
     }
 }

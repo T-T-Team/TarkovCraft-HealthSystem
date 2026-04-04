@@ -32,7 +32,7 @@ public final class MedSystemStatusEffects {
     public static final Holder<StatusEffectType<?>> FRACTURE = REGISTRY.register("fracture", key -> StatusEffectType.builder(key, FractureStatusEffect::new)
             .persist(FractureStatusEffect.CODEC)
             .type(EffectType.NEGATIVE)
-            .combineEffects(StatusEffect::maxDuration)
+            .combineEffects(FractureStatusEffect::mergeWithDurationLimits)
             .healPriority(MedSystemConstants.HEAL_EFFECT_MAJOR)
             .build()
     );

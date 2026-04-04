@@ -23,6 +23,7 @@ import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.BleedConfiguration;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
@@ -180,7 +181,8 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
     }
 
     public static BleedStatusEffect higherStage(BleedStatusEffect ef1, BleedStatusEffect ef2) {
-        int duration = sumEffectDurations(ef1, ef2);
+        StatusEffectConfig config = MedicalSystem.getConfig().statusEffects;
+        int duration = StatusEffectConfig.getStackedDuration(sumEffectDurations(ef1, ef2), config.maxBleedDuration);
         BleedType bleedType = ef1.bleedType.ordinal() > ef2.bleedType.ordinal() ? ef1.bleedType : ef2.bleedType;
         UUID causingEntity = ef1.getCausingEntity() != null ? ef1.getCausingEntity() : ef2.getCausingEntity();
         return new BleedStatusEffect(duration, Optional.ofNullable(causingEntity), bleedType);
