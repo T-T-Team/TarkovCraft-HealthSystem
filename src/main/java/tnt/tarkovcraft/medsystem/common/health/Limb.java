@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-// TODO immutable max health, reduction attribute?
 public final class Limb {
 
     public static final Codec<Limb> CODEC = RecordCodecBuilder.create(instance -> instance.group(

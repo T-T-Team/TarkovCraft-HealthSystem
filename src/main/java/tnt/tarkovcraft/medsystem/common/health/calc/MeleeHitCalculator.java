@@ -22,7 +22,6 @@ public final class MeleeHitCalculator implements HitCalculator {
         LivingEntity entity = context.entity();
         double distance = attacker.distanceTo(entity) + Math.max(entity.getBbWidth(), entity.getBbHeight());
 
-        // TODO improve logic for non player entities
         Vec3 from = attacker.getType() == EntityType.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
         Vec3 to = from.add(attacker.getHeadLookAngle().scale(distance));
         Ray ray = new Ray(from, to);

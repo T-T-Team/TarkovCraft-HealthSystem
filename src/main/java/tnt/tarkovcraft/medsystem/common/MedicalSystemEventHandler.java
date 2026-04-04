@@ -41,11 +41,11 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.*;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.item.InteractionTarget;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;

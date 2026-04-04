@@ -20,7 +20,6 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.StatusEffectQueue;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemCriterionTriggers;
 
 import java.util.Optional;
 

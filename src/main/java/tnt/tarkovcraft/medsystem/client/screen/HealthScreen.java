@@ -25,7 +25,6 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.LimbWidget;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;

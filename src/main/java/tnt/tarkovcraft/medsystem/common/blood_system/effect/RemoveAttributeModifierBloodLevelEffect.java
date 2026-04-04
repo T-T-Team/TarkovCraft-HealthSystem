@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.blood_system.effect;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,8 +12,6 @@ import tnt.tarkovcraft.core.common.attribute.EntityAttributeData;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
-
-import java.util.UUID;
 
 public record RemoveAttributeModifierBloodLevelEffect(Holder<Attribute> attribute, Identifier modifier) implements BloodLevelEffect {
 

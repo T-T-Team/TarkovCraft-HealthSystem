@@ -30,7 +30,6 @@ import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener<HealthContainerDefinition> {
 

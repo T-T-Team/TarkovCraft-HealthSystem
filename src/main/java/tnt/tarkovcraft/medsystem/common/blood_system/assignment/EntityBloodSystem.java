@@ -217,7 +217,6 @@ public final class EntityBloodSystem {
         return this.definition.get();
     }
 
-    // TODO 26.1 use immutable itemstack
     public boolean canRescueUnconsciousEntity(LivingEntity entity, LivingEntity rescuer, ItemStack stack) {
         if (!this.isUnconscious() || !this.getActiveUnconsciousModeOptions().allowRescue()) {
             return false;
