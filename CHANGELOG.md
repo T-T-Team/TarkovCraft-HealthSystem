@@ -1,7 +1,11 @@
-# Release 26.1.1-2.4.1
-- Added keybind to open health UI directly (unbound by default)
-- Added config option to show the current blood level in health UI
-- Removed hardcoded vanilla effects for foods
-  - now controlled via datapacks
-  - added new tag `medsystem:blood_regenerative_foods`
-- Fixed several missing localizations for config
+# Release 2.5.0+26.1.1
+- Added config options for setting max duration of some effects
+  - Injury recovery scaling option has been moved under status effects section
+- Improvements to entity hitbox debug renderer
+- Reworked crafting advancements
+  - splints/bandages now unlock once you receive first bleed or fracture
+  - surgery kit now unlocks after losing first limb
+  - the rest of craftings is still dependent on receiving damage
+- Fixed incorrectly missed hits on moving entities
+- Fixed blood decals falling through blocks such as snow or soul sand
+- Fixed blood decal color being reset when its attached block changed
