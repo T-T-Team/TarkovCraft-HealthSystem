@@ -27,6 +27,7 @@ public class HitResultInfoDebugRenderer implements DebugRenderer.SimpleDebugRend
         if (debugInfo == null)
             return;
 
+        Gizmos.cuboid(debugInfo.entityAABB(), GizmoStyle.stroke(0x66FFFFFF));
         for (AABB aabb : debugInfo.entityAABBs()) {
             Gizmos.cuboid(aabb, GizmoStyle.stroke(0xFFFFFFFF));
         }
