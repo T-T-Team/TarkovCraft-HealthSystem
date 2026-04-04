@@ -124,7 +124,7 @@ tasks.register('publishToCurseForge', TaskPublishCurseForge) {
     uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
     uploadFile.changelog = file("./CHANGELOG.md").exists() ? file('./CHANGELOG.md') : "-- No changelog provided --"
     uploadFile.releaseType = getReleaseChannel()
-    uploadFile.displayName = "${mod_id}-neoforge-${minecraft_version}-${version}"
+    uploadFile.displayName = "${mod_id}-neoforge-${version}"
     uploadFile.addModLoader('NeoForge')
     uploadFile.addEnvironment('Client', 'Server')
     uploadFile.addJavaVersion("Java 21")
@@ -140,7 +140,7 @@ modrinth {
     token.set(project.hasProperty("MODRINTH_TOKEN") ? project.findProperty("MODRINTH_TOKEN").toString() : "")
     projectId.set(modrinth_project_id)
     versionNumber.set("${version}")
-    versionName.set("${mod_id}-neoforge-${minecraft_version}-${version}")
+    versionName.set("${mod_id}-neoforge-${version}")
     versionType.set(getReleaseChannel())
     uploadFile.set(jar)
     gameVersions.set(compatibleVersions)
