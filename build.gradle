@@ -13,7 +13,7 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = mod_version
+version = "${project.mod_version}+${project.minecraft_version}"
 group = mod_group_id
 
 repositories {
@@ -25,10 +25,6 @@ repositories {
     flatDir {
         dir './library'
     }
-}
-
-base {
-    archivesName = "${mod_id}-${minecraft_version}"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
@@ -72,10 +68,14 @@ configurations {
 
 dependencies {
     // Configuration
-    implementation "dev.toma.configuration:configuration-26.1:${project.configuration}-neoforge"
+    implementation "dev.toma.configuration:configuration-${project.minecraft_version}:${project.configuration}-neoforge"
 
     // Core library
-    implementation name: "tarkovcraft_core-26.1.1-${core}"
+    implementation name: "tarkovcraft_core-neoforge-${core}"
+}
+
+jar {
+    archiveFileName = "${mod_id}-neoforge-${project.version}.jar"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
