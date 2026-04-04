@@ -38,7 +38,7 @@ public final class BloodDripParticle extends TextureSheetParticle {
     public void move(double x, double y, double z) {
         if (!this.stoppedByCollision) {
             if (this.hasPhysics && (x != 0.0 || y != 0.0 || z != 0.0) && x * x + y * y + z * z < MAXIMUM_COLLISION_VELOCITY_SQUARED) {
-                BlockHitResult result = this.level.clip(new ClipContext(this.getPos(), this.getPos().add(x, y, z), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
+                BlockHitResult result = this.level.clip(new ClipContext(this.getPos(), this.getPos().add(x, y, z), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, CollisionContext.empty()));
                 if (result.getType() != BlockHitResult.Type.MISS) {
                     Vec3 hit = result.getLocation();
                     Direction direction = result.getDirection();
