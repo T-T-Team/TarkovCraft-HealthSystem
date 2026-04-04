@@ -13,7 +13,7 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = mod_version
+version = "${project.mod_version}+${project.minecraft_version}"
 group = mod_group_id
 
 repositories {
@@ -25,10 +25,6 @@ repositories {
     flatDir {
         dir './library'
     }
-}
-
-base {
-    archivesName = "${mod_id}-${minecraft_version}"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -82,6 +78,10 @@ dependencies {
 
     // Core library
     implementation "tnt.tarkovcraft:tarkovcraft_core:${project.core}"
+}
+
+jar {
+    archiveFileName = "${mod_id}-neoforge-${project.version}.jar"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
