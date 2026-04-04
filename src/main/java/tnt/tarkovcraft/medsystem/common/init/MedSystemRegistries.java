@@ -7,12 +7,12 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicateType;
 import tnt.tarkovcraft.medsystem.common.blood_system.effect.BloodLevelEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
+import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupItemType;
+import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcherType;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventTriggerSource;
 import tnt.tarkovcraft.medsystem.common.health_event.action.HealthEventActionType;
 import tnt.tarkovcraft.medsystem.common.health_event.condition.HealthEventConditionType;
 import tnt.tarkovcraft.medsystem.common.health_event.function.HealthEventFunctionType;
-import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupItemType;
-import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcherType;
 
 public final class MedSystemRegistries {
 

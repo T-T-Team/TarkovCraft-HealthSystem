@@ -1,9 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.config;
 
 import dev.toma.configuration.config.Configurable;
-import dev.toma.configuration.config.validate.ValidationResult;
-import dev.toma.configuration.config.validate.Validator;
-import dev.toma.configuration.config.value.IConfigValueReadable;
 
 public final class StatusEffectConfig {
 

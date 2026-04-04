@@ -9,10 +9,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 import java.util.Optional;

@@ -30,10 +30,10 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 

@@ -2,11 +2,11 @@ package tnt.tarkovcraft.medsystem.common.health_event.condition;
 
 import com.mojang.serialization.MapCodec;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 import java.util.Set;

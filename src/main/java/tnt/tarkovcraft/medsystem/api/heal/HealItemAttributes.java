@@ -121,7 +121,6 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             if (!limb.isDead() && limb.getHealth() < limb.getMaxHealth()) {
                 return true;
             }
-            // TODO why is root limb required?
             if (!selfHealing && BloodSystemManager.isEnabled(target) && container.getRootLimb().equals(limb)) {
                 EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
                 UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();

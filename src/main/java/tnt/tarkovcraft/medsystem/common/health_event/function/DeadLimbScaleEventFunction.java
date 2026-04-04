@@ -5,10 +5,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.core.util.NumberOperator;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventFunctions;
 
 import java.util.Set;
