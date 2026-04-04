@@ -26,7 +26,6 @@ import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
@@ -121,7 +120,7 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                     Integer color = settings.getColor(entity);
                     if (color == null)
                         return;
-                    level.addParticle(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, color), position.x, position.y, position.z, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.x, 0.1F + direction.y, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.z);
+                    level.addParticle(new BloodDripParticleOptions(color), position.x, position.y, position.z, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.x, 0.1F + direction.y, random.nextFloat() * (baseDir * 2.0F) - baseDir + direction.z);
                 }
             }
         }

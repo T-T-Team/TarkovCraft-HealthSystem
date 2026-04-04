@@ -13,18 +13,23 @@ import tnt.tarkovcraft.core.client.particle.DecalParticleOptions;
 
 import java.util.function.Supplier;
 
-public record BloodDecalParticleOptions(ParticleType<BloodDecalParticleOptions> type, Direction attachDirection, BlockPos position, int color) implements DecalParticleOptions {
+public record BloodDecalParticleOptions(ParticleType<BloodDecalParticleOptions> type, Direction attachDirection, BlockPos position, int color, int decalAge) implements DecalParticleOptions {
+
+    public BloodDecalParticleOptions(Supplier<ParticleType<BloodDecalParticleOptions>> type, Direction attachDirection, BlockPos position, int color, int decalAge) {
+        this(type.get(), attachDirection, position, color, decalAge);
+    }
 
     public BloodDecalParticleOptions(Supplier<ParticleType<BloodDecalParticleOptions>> type, Direction attachDirection, BlockPos position, int color) {
-        this(type.get(), attachDirection, position, color);
+        this(type.get(), attachDirection, position, color, 0);
     }
 
     public static MapCodec<BloodDecalParticleOptions> codec(ParticleType<BloodDecalParticleOptions> type) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Direction.CODEC.fieldOf("attachDirection").forGetter(DecalParticleOptions::attachDirection),
                 BlockPos.CODEC.fieldOf("position").forGetter(DecalParticleOptions::position),
-                Codec.INT.fieldOf("color").forGetter(BloodDecalParticleOptions::color)
-        ).apply(instance, (direction, blockPos, integer) -> new BloodDecalParticleOptions(type, direction, blockPos, integer)));
+                Codec.INT.fieldOf("color").forGetter(BloodDecalParticleOptions::color),
+                Codec.INT.fieldOf("decal_age").forGetter(BloodDecalParticleOptions::decalAge)
+        ).apply(instance, (direction, blockPos, color, age) -> new BloodDecalParticleOptions(type, direction, blockPos, color, age)));
     }
 
     public static StreamCodec<ByteBuf, BloodDecalParticleOptions> streamCodec(ParticleType<BloodDecalParticleOptions> type) {
@@ -32,7 +37,8 @@ public record BloodDecalParticleOptions(ParticleType<BloodDecalParticleOptions> 
                 Direction.STREAM_CODEC, BloodDecalParticleOptions::attachDirection,
                 BlockPos.STREAM_CODEC, BloodDecalParticleOptions::position,
                 ByteBufCodecs.INT, BloodDecalParticleOptions::color,
-                (direction, blockPos, integer) -> new BloodDecalParticleOptions(type, direction, blockPos, integer)
+                ByteBufCodecs.INT, BloodDecalParticleOptions::decalAge,
+                (direction, blockPos, color, age) -> new BloodDecalParticleOptions(type, direction, blockPos, color, age)
         );
     }
 

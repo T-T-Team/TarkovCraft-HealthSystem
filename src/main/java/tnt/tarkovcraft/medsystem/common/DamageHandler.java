@@ -34,7 +34,10 @@ import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
-import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventSources;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.ArrayList;
@@ -125,9 +128,6 @@ public final class DamageHandler {
         // apply health container damage
         LimbContainer limbContainer = container.getLimbContainer();
         limbContainer.hurt(context, damage);
-
-        // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
-        // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
         float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
         int lostLimbCount = context.getLostLimbsCount();
         if (totalDamage > 0.0F) {
@@ -241,7 +241,7 @@ public final class DamageHandler {
         Integer color = settings.getColor(entity);
         if (color == null)
             return;
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(new BloodDripParticleOptions(MedSystemParticleTypes.BLOOD_DRIP, color), pos.x, pos.y, pos.z, true, true, directions));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(new BloodDripParticleOptions(color), pos.x, pos.y, pos.z, true, true, directions));
     }
 
     public static HitCalculationResultDebugInfo getHitDebugInfo() {
