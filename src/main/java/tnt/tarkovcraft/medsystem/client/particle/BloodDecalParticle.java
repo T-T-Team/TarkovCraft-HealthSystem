@@ -31,6 +31,8 @@ public final class BloodDecalParticle extends DecalParticle {
         this.setFadeOutStartTime(config.bloodDecalFadeOutAt);
         this.setRoll(this.random.nextFloat() * Mth.PI);
         this.setLifetime(config.bloodDecalLifetime);
+        this.age = options.decalAge();
+        this.updateColor(this.age / (float) this.lifetime);
     }
 
     @Override
@@ -48,7 +50,7 @@ public final class BloodDecalParticle extends DecalParticle {
 
     @Override
     protected void handleAttachedBlockRemoved(BlockState state) {
-        this.level.addParticle(new BloodDripParticleOptions(this.inputColor), true, true, this.x, this.y, this.z, 0, 0, 0);
+        this.level.addParticle(new BloodDripParticleOptions(this.inputColor, this.age), true, true, this.x, this.y, this.z, 0, 0, 0);
         super.handleAttachedBlockRemoved(state);
     }
 
