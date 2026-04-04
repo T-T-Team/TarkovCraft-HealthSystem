@@ -50,9 +50,10 @@ public record HitCalculationContext(LivingEntity entity, HealthContainer contain
     }
 
     public HitCalculationResult approximate(Ray ray) {
-        if (!this.allowHitApproximation()) {
+        // fixme disabled for now due to being problematic with moving entities
+        /*if (!this.allowHitApproximation()) {
             return HitCalculationResult.miss(ray);
-        }
+        }*/
         HitInfo info = HitboxHelper.approximateHits(ray, this.entity, this.container)
                 .findFirst()
                 .orElse(null);
