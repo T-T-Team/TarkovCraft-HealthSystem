@@ -23,11 +23,11 @@ import java.util.function.Supplier;
 public final class HealthEventManager extends SimpleJsonResourceReloadListener {
 
     public static final Marker MARKER = MarkerManager.getMarker("StatusEffectEventManager");
-    public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("status_effect_events");
+    public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_event");
     private final Multimap<HealthEventTriggerSource, NamedStatusEffectEvent> eventMappings = ArrayListMultimap.create();
 
     public HealthEventManager() {
-        super(new Gson(), "tarkovcraft/status_effect_event");
+        super(new Gson(), "tarkovcraft/health_event");
     }
 
     @Override

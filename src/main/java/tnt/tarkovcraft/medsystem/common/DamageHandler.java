@@ -187,7 +187,7 @@ public final class DamageHandler {
             builder.add(HealthEventParams.DAMAGE_AMOUNT, total);
             builder.add(HealthEventParams.LIMBS_LOST, lostLimbs);
         });
-        MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.INCOMING_DAMAGE_GLOBAL, globalCtx);
+        MedicalSystem.HEALTH_EVENT.triggerEvent(MedSystemHealthEventSources.INCOMING_DAMAGE_GLOBAL, globalCtx);
 
         // per limb damage triggers
         for (Map.Entry<Limb, Float> entry : damage.entrySet()) {
@@ -198,7 +198,7 @@ public final class DamageHandler {
                 builder.add(HealthEventParams.DAMAGE_AMOUNT, total);
                 builder.add(HealthEventParams.DAMAGE_AMOUNT_LIMB, localDamage);
             });
-            MedicalSystem.STATUS_EFFECT_EVENTS.triggerEvent(MedSystemHealthEventSources.INCOMING_DAMAGE, ctx);
+            MedicalSystem.HEALTH_EVENT.triggerEvent(MedSystemHealthEventSources.INCOMING_DAMAGE, ctx);
         }
     }
 
