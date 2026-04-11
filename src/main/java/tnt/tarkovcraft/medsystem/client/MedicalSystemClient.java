@@ -83,7 +83,7 @@ public final class MedicalSystemClient {
 
     public static final NavigationEntry HEALTH = new OptionalNavigationEntry(
             TextHelper.createScreenTitle(MedSystemConstants.MOD_ID, "health"),
-            (_, userId) -> {
+            (parent, userId) -> {
                 UUID clientId = Minecraft.getInstance().player.getUUID();
                 return userId.equals(clientId);
             },
