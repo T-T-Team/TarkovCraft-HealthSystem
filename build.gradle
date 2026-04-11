@@ -19,15 +19,18 @@ group = mod_group_id
 repositories {
     mavenLocal()
     maven {
-        name 'Configuration'
+        name 'Toma'
         url 'https://repo.repsy.io/mvn/toma/public/'
-    }
-    flatDir {
-        dir './library'
     }
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java {
+    withSourcesJar()
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
 
 neoForge {
     version = project.neo_version
@@ -80,10 +83,6 @@ dependencies {
     implementation "tnt.tarkovcraft:tarkovcraft_core:${project.core}"
 }
 
-jar {
-    archiveFileName = "${mod_id}-neoforge-${project.version}.jar"
-}
-
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
             minecraft_version      : minecraft_version,
@@ -113,6 +112,10 @@ neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+tasks.withType(Jar).configureEach {
+    archiveBaseName = "${mod_id}-neoforge"
 }
 
 tasks.register('publishToCurseForge', TaskPublishCurseForge) {
@@ -162,12 +165,35 @@ tasks.modrinth.dependsOn(tasks.jar)
 tasks.register('publishMod') {
     group = "publishing"
 }
-tasks.publishMod.dependsOn(tasks.publishToCurseForge, tasks.modrinth)
+tasks.publishMod.dependsOn(tasks.publish, tasks.publishToCurseForge, tasks.modrinth)
 
 idea {
     module {
         downloadSources = true
         downloadJavadoc = true
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "${mod_group_id}"
+            artifactId = "${project.mod_id}"
+            version ="${project.version}"
+
+            artifact jar
+            artifact sourcesJar
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri(project.findProperty("MAVEN_PUBLIC_URL").toString() ?: "")
+            credentials {
+                username project.findProperty("MAVEN_USERNAME").toString() ?: ""
+                password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
+            }
+        }
     }
 }
 
