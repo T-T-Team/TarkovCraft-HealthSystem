@@ -1,17 +1,30 @@
-# Release 1.21.11-2.3.0
-- Requires TarkovCraft Core version 2.1+
-- New blood system for entities
-  - Can be applied to any entity (currently enabled only for players)
-  - Added all common blood types. By default, only AB+ is used and other types need to be enabled via datapack
-  - Receiving an incompatible blood type will lead to death
-  - Added support for various blood colors per entity
-- Unconscious mode changes
-  - Unconscious entities can no longer be pushed around
-  - Disabled hotbar item changes while unconscious
-  - Disabled item pickup while unconscious
-  - Held items are now dropped when entering the unconscious state (configurable)
-  - All sounds have changed volume and pitch when unconscious (configurable)
-  - Added config to change the unconscious state overlay render type
-- Disabled limbs and injury recovery effect after surgery now cause pain 
-- Command `/tarkovcraft` now offers suggestions for limbs based on selected entities
-- Added several missing localizations
+# Release 2.5.0+1.21.11
+- Content backport from 26.1
+- Added config options for setting max duration of some effects
+  - Injury recovery scaling option has been moved under status effects section
+- Improvements to entity hitbox debug renderer
+- Reworked crafting advancements
+  - splints/bandages now unlock once you receive first bleed or fracture
+  - surgery kit now unlocks after losing first limb
+  - the rest of craftings is still dependent on receiving damage
+- Fixed incorrectly missed hits on moving entities
+- Fixed blood decals falling through blocks such as snow or soul sand
+- Fixed blood decal color being reset when its attached block changed
+- Cleaned up internal health data - might cause issues when upgrading existing worlds from previous versions
+- Unconscious entities no longer receive knockback nor can be pushed by other entities
+- Unconscious mode now depends on internal shock statistic
+  - getting damage, fractures or losing limbs increases its value
+  - shock attribute is decreased naturally over time
+  - shock can be instantly removed using morphines
+- Added two new bleed types: Moderate and Critical
+- Added more config options for bleeds and fractures
+- Removed default bleed/fracture chances from tools, now handled dynamically via item tags
+- Added blood lost statistic
+- Tooltip improvements
+- Fixed bug where armors were not taking damage
+- Added keybind to open health UI directly (unbound by default)
+- Added config option to show the current blood level in health UI
+- Removed hardcoded vanilla effects for foods
+  - now controlled via datapacks
+  - added new tag `medsystem:blood_regenerative_foods`
+- Fixed several missing localizations for config
