@@ -9,6 +9,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.common.config.HealthConfig;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -140,7 +141,9 @@ public final class Limb {
     }
 
     public float getScaledDamage(float incomingDamage) {
-        return incomingDamage * this.definition.damageConfiguration().scale();
+        HealthConfig config = MedicalSystem.getConfig().health;
+        float configuredScaledDamage = incomingDamage * this.definition.damageConfiguration().scale();
+        return config.applyDamageMultipliers(configuredScaledDamage, this.definition.type());
     }
 
     public float getScaledTransferDamage(float leftoverDamage) {
