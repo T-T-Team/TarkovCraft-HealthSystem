@@ -94,12 +94,12 @@ public final class HealthHelper {
         Limb targetPart = null;
         float targetPercentage = 1.0F;
         MedSystemConfig config = MedicalSystem.getConfig();
-        if (config.prioritizeVitalHealing) {
+        if (config.health.prioritizeVitalHealing) {
             for (Limb vitalPart : container.getVitalLimbs()) {
                 if (vitalPart.isDead())
                     continue;
                 float percentage = vitalPart.getHealthPercent();
-                if (percentage < config.vitalBodyPartHealthTrigger && percentage < targetPercentage) {
+                if (percentage < config.health.vitalBodyPartHealthTrigger && percentage < targetPercentage) {
                     targetPercentage = percentage;
                     targetPart = vitalPart;
                 }

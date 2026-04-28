@@ -45,20 +45,13 @@ public final class MedSystemConfig {
     public boolean useExplosionPerformanceMode = false;
 
     @Configurable
-    @Configurable.Comment(value = "Health will be primarily recovered into vital parts", localize = true)
-    public boolean prioritizeVitalHealing = true;
-
-    @Configurable
     @Configurable.Comment(value = "Allows interactions (such as healing) with other entities", localize = true)
     @Configurable.Synchronized
     public boolean allowThirdPartyEntityInteractions = true;
 
     @Configurable
-    @Configurable.DecimalRange(min = 0, max = 1.0)
-    @Configurable.Gui.Slider
-    @Configurable.Gui.NumberFormat("0.0##")
-    @Configurable.Comment(value = "Threshold for prioritized vital limb health recovery", localize = true)
-    public float vitalBodyPartHealthTrigger = 0.75F;
+    @Configurable.Comment(value = "Health related configurations", localize = true)
+    public HealthConfig health = new HealthConfig();
 
     @Configurable
     @Configurable.Comment(value = "Blood/Unconscious system related configurations", localize = true)
