@@ -87,10 +87,18 @@ public final class HealthHelper {
     }
 
     public static @Nullable Limb selectLimbForHealing(HealthContainer container) {
-        return selectLimbForHealing(container.getLimbContainer());
+        return selectLimbForHealing(container, false);
+    }
+
+    public static @Nullable Limb selectLimbForHealing(HealthContainer container, boolean allowDisabledLimbs) {
+        return selectLimbForHealing(container.getLimbContainer(), allowDisabledLimbs);
     }
 
     public static @Nullable Limb selectLimbForHealing(LimbContainer container) {
+        return selectLimbForHealing(container, false);
+    }
+
+    public static @Nullable Limb selectLimbForHealing(LimbContainer container, boolean allowDisabledLimbs) {
         Limb targetPart = null;
         float targetPercentage = 1.0F;
         MedSystemConfig config = MedicalSystem.getConfig();
@@ -110,7 +118,7 @@ public final class HealthHelper {
         }
         Limb target = null;
         for (Limb part : container) {
-            if (part.isDead())
+            if (!allowDisabledLimbs && part.isDead())
                 continue;
             float percentage = part.getHealthPercent();
             if (percentage < 1.0F && percentage < targetPercentage) {

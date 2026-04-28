@@ -36,6 +36,7 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -157,6 +158,33 @@ public final class TarkovCraftCommand {
                                                         )
                                         )
 
+                        )
+                        .then(
+                                Commands.literal("heal")
+                                        .requires(src -> src.hasPermission(2))
+                                        .then(
+                                                Commands.argument("target", EntityArgument.entities())
+                                                        .then(
+                                                                Commands.argument("limb", StringArgumentType.word())
+                                                                        .suggests(TarkovCraftCommand::suggestAllEntityLimbs)
+                                                                        .then(
+                                                                                Commands.argument("amount", FloatArgumentType.floatArg(0.01F))
+                                                                                        .executes(ctx -> healEntityLimb(ctx, false))
+                                                                                        .then(
+                                                                                                Commands.literal("includeDisabledLimbs")
+                                                                                                        .executes(TarkovCraftCommand::healDisabledEntityLimb)
+                                                                                        )
+                                                                        )
+                                                        )
+                                                        .then(
+                                                                Commands.argument("amount", FloatArgumentType.floatArg(0.01F))
+                                                                        .executes(ctx -> healEntity(ctx, false))
+                                                                        .then(
+                                                                                Commands.literal("includeDisabledLimbs")
+                                                                                        .executes(TarkovCraftCommand::healEntityIgnoringDisabledLimbs)
+                                                                        )
+                                                        )
+                                        )
                         )
                         .then(
                                 Commands.literal("blood")
@@ -287,6 +315,62 @@ public final class TarkovCraftCommand {
         DamageSource damageSource = new LimbDamageSource(damageTypeHolder, projectile, source, limb);
         for (LivingEntity entity : entities) {
             entity.hurt(damageSource, amount);
+        }
+        return 0;
+    }
+
+    private static int healEntityIgnoringDisabledLimbs(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        return healEntity(ctx, true);
+    }
+
+    private static int healEntity(CommandContext<CommandSourceStack> ctx, boolean allowDisabled) throws CommandSyntaxException {
+        Collection<? extends Entity> targets = EntityArgument.getEntities(ctx, "target");
+        List<LivingEntity> entities = targets.stream()
+                .filter(HealthSystem::hasCustomHealth)
+                .map(entity -> (LivingEntity) entity)
+                .toList();
+        if (entities.isEmpty())
+            throw NO_VALID_TARGET_FOUND.create();
+        float amount = FloatArgumentType.getFloat(ctx, "amount");
+        for (LivingEntity entity : entities) {
+            HealthContainer container = HealthContainer.getAttached(entity);
+            float remainingAmount = amount;
+            while (remainingAmount > 0.0F) {
+                Limb limb = HealthHelper.selectLimbForHealing(container, allowDisabled);
+                if (limb == null)
+                    break;
+                float healAmount = Math.min(remainingAmount, limb.getMaxHealAmount());
+                remainingAmount -= healAmount;
+                limb.heal(healAmount);
+            }
+            HealthHelper.synchronizeHealth(entity, container);
+            HealthSystem.synchronizeEntity(entity);
+        }
+        return 0;
+    }
+
+    private static int healDisabledEntityLimb(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        return healEntityLimb(ctx, true);
+    }
+
+    private static int healEntityLimb(CommandContext<CommandSourceStack> ctx, boolean allowDisabled) throws CommandSyntaxException {
+        Collection<? extends Entity> targets = EntityArgument.getEntities(ctx, "target");
+        List<LivingEntity> entities = targets.stream()
+                .filter(HealthSystem::hasCustomHealth)
+                .map(entity -> (LivingEntity) entity)
+                .toList();
+        if (entities.isEmpty())
+            throw NO_VALID_TARGET_FOUND.create();
+        String limbCode = StringArgumentType.getString(ctx, "limb");
+        float amount = FloatArgumentType.getFloat(ctx, "amount");
+        for (LivingEntity entity : entities) {
+            HealthContainer container = HealthContainer.getAttached(entity);
+            Limb limb = container.getLimbByCode(limbCode);
+            if (limb != null && (allowDisabled || !limb.isDead())) {
+                limb.heal(amount);
+            }
+            HealthHelper.synchronizeHealth(entity, container);
+            HealthSystem.synchronizeEntity(entity);
         }
         return 0;
     }
