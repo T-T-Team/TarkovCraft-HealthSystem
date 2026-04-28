@@ -22,6 +22,14 @@ repositories {
         name 'Toma'
         url 'https://repo.repsy.io/mvn/toma/public/'
     }
+    maven {
+        name 'Toma development'
+        url 'https://repo.repsy.io/mvn/toma/development/'
+        credentials {
+            username project.findProperty("MAVEN_USERNAME").toString() ?: ""
+            password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
+        }
+    }
 }
 
 java {
@@ -186,8 +194,9 @@ publishing {
     }
 
     repositories {
+        String mavenType = getReleaseChannel() == null ? "MAVEN_PRIVATE_URL" : "MAVEN_PUBLIC_URL"
         maven {
-            url = uri(project.findProperty("MAVEN_PUBLIC_URL").toString() ?: "")
+            url = uri(project.findProperty(mavenType).toString() ?: "")
             credentials {
                 username project.findProperty("MAVEN_USERNAME").toString() ?: ""
                 password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
@@ -207,7 +216,8 @@ def getReleaseChannel() {
     } else if (versionString.contains("alpha")) {
         return Constants.RELEASE_TYPE_ALPHA
     } else if (versionString.contains("dev")) {
-        if (isPublishing())
+        boolean devChannelAllowed = project.hasProperty("IGNORE_CHANNEL") ? Boolean.parseBoolean(project.findProperty("IGNORE_CHANNEL").toString()) : false
+        if (isPublishing() && !devChannelAllowed)
             throw new GradleException("Attempted to publish development version: " + versionString)
         return null
     } else {
