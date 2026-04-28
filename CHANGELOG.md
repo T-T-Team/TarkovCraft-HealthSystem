@@ -1,11 +1,12 @@
-# Release 2.5.0+26.1.1
-- Added config options for setting max duration of some effects
-  - Injury recovery scaling option has been moved under status effects section
-- Improvements to entity hitbox debug renderer
-- Reworked crafting advancements
-  - splints/bandages now unlock once you receive first bleed or fracture
-  - surgery kit now unlocks after losing first limb
-  - the rest of craftings is still dependent on receiving damage
-- Fixed incorrectly missed hits on moving entities
-- Fixed blood decals falling through blocks such as snow or soul sand
-- Fixed blood decal color being reset when its attached block changed
+# Release 2.5.1+26.1.2
+- Config changes
+  - Added new `Health system` category
+  - `Vital part heal priority` - moved under the new category
+  - `Vital part heal priority threshold` - moved under the new category
+  - Added damage multiplier config for each limb type along with a global multiplier
+- Extended `/tarkovcraft` command with `heal` subcommand
+  - Allows you to heal a specific limb of any entity and also recover disabled limbs
+  - To heal specific live limb: `/tarkovcraft heal <entity> <limb> <amount>`
+  - To heal specific live/disabled limbs: `/tarkovcraft heal <entity> <limb> <amount> includeDisabledLimbs`
+  - To heal all live limbs: `/tarkovcraft heal <entity> <amount>`
+  - To heal all live/disabled limbs: `/tarkovcraft heal <entity> <amount> includeDisabledLimbs`
