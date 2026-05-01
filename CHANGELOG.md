@@ -1,30 +1,12 @@
-# Release 2.5.0+1.21.11
-- Content backport from 26.1
-- Added config options for setting max duration of some effects
-  - Injury recovery scaling option has been moved under status effects section
-- Improvements to entity hitbox debug renderer
-- Reworked crafting advancements
-  - splints/bandages now unlock once you receive first bleed or fracture
-  - surgery kit now unlocks after losing first limb
-  - the rest of craftings is still dependent on receiving damage
-- Fixed incorrectly missed hits on moving entities
-- Fixed blood decals falling through blocks such as snow or soul sand
-- Fixed blood decal color being reset when its attached block changed
-- Cleaned up internal health data - might cause issues when upgrading existing worlds from previous versions
-- Unconscious entities no longer receive knockback nor can be pushed by other entities
-- Unconscious mode now depends on internal shock statistic
-  - getting damage, fractures or losing limbs increases its value
-  - shock attribute is decreased naturally over time
-  - shock can be instantly removed using morphines
-- Added two new bleed types: Moderate and Critical
-- Added more config options for bleeds and fractures
-- Removed default bleed/fracture chances from tools, now handled dynamically via item tags
-- Added blood lost statistic
-- Tooltip improvements
-- Fixed bug where armors were not taking damage
-- Added keybind to open health UI directly (unbound by default)
-- Added config option to show the current blood level in health UI
-- Removed hardcoded vanilla effects for foods
-  - now controlled via datapacks
-  - added new tag `medsystem:blood_regenerative_foods`
-- Fixed several missing localizations for config
+# Release 2.5.1+1.21.11
+- Config changes
+  - Added new `Health system` category
+  - `Vital part heal priority` - moved under the new category
+  - `Vital part heal priority threshold` - moved under the new category
+  - Added damage multiplier config for each limb type along with a global multiplier
+- Extended `/tarkovcraft` command with `heal` subcommand
+  - Allows you to heal a specific limb of any entity and also recover disabled limbs
+  - To heal specific live limb: `/tarkovcraft heal <entity> <limb> <amount>`
+  - To heal specific live/disabled limbs: `/tarkovcraft heal <entity> <limb> <amount> includeDisabledLimbs`
+  - To heal all live limbs: `/tarkovcraft heal <entity> <amount>`
+  - To heal all live/disabled limbs: `/tarkovcraft heal <entity> <amount> includeDisabledLimbs`
