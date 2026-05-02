@@ -23,7 +23,8 @@
           "tag": "medsystem:blunt_tools",
           "multiplier": {
             "type": "tarkovcraft_core:config",
-            "location": "medsystem:statusEffects/bluntToolFractureMultiplier",
+            "config": "medsystem",
+            "field": "statusEffects.bluntToolFractureMultiplier",
             "default": 2.5
           }
         }
@@ -59,7 +60,8 @@
       "type": "medsystem:add_shock",
       "amount": {
         "type": "tarkovcraft_core:config",
-        "location": "medsystem:bloodSystem/shockPerFracture",
+        "config": "medsystem",
+        "field": "bloodSystem.shockPerLimbLoss",
         "default": 0.1
       }
     }

@@ -3,9 +3,7 @@
   "conditions": [
     {
       "type": "medsystem:item_predicate",
-      "predicate": {
-        "items": "#medsystem:blood_regenerative_foods"
-      }
+      "predicate": "medsystem:blood_regenerative_foods"
     }
   ],
   "actions": [

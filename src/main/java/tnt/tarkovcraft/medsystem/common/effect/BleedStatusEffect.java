@@ -106,7 +106,6 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                     entity.hurt(damageSource, damage);
                 }
                 StatisticTracker.incrementOptional(entity, MedSystemStats.BLOOD_LOST, Mth.floor(stageConfig.bleedAmount * 1000));
-                // TODO bloodloss statistic
             } else {
                 if (!MedicalSystem.getConfig().bloodDecals.enableBloodDecals)
                     return;

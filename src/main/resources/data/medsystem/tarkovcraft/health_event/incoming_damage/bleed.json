@@ -10,7 +10,7 @@
       "base_chance": {
         "type": "tarkovcraft_core:config",
         "config": "medsystem",
-        "field": "statusEffects.playerBleedChance",
+        "field": "statusEffects.bleedChance",
         "default": 0.025
       },
       "functions": [
@@ -90,7 +90,8 @@
               "type": "medsystem:set_value",
               "value": {
                 "type": "tarkovcraft_core:config",
-                "location": "medsystem:statusEffects/bleedDuration",
+                "config": "medsystem",
+                "field": "statusEffects.bleedDuration",
                 "default": -1
               }
             }
@@ -112,7 +113,8 @@
               "type": "medsystem:set_value",
               "value": {
                 "type": "tarkovcraft_core:config",
-                "location": "medsystem:statusEffects/bleedDuration",
+                "config": "medsystem",
+                "field": "statusEffects.bleedDuration",
                 "default": -1
               }
             }

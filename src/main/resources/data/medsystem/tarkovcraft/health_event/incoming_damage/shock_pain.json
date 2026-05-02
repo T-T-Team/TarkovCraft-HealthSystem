@@ -15,7 +15,8 @@
     ],
     "amount": {
       "type": "tarkovcraft_core:config",
-      "location": "medsystem:bloodSystem/shockPerHpLoss",
+      "config": "medsystem",
+      "field": "bloodSystem.shockPerHpLoss",
       "default": 0.04
     }
   }

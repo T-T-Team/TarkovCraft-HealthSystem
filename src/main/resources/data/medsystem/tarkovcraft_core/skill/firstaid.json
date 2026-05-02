@@ -39,10 +39,9 @@
         "attribute": "medsystem:positive_effect_duration",
         "id": "medsystem:skill/firstaid",
         "per_level_value": 0.004,
-        "display_format": {
-          "decimal_places": 2,
-          "multiplier": 100,
-          "suffix": "%"
+        "formatter": {
+          "format": "%.2f%%",
+          "multiplier": 100
         }
       }
     },
@@ -65,10 +64,9 @@
         "attribute": "medsystem:positive_effect_chance",
         "id": "medsystem:skill/firstaid",
         "per_level_value": 0.005,
-        "display_format": {
-          "decimal_places": 2,
-          "multiplier": 100,
-          "suffix": "%"
+        "formatter": {
+          "format": "%.2f%%",
+          "multiplier": 100
         }
       }
     },
@@ -91,10 +89,9 @@
         "attribute": "medsystem:negative_effect_duration",
         "id": "medsystem:skill/firstaid",
         "per_level_value": -0.004,
-        "display_format": {
-          "decimal_places": 2,
-          "multiplier": -100,
-          "suffix": "%"
+        "formatter": {
+          "format": "%.2f%%",
+          "multiplier": -100
         }
       }
     },
@@ -117,10 +114,9 @@
         "attribute": "medsystem:negative_effect_chance",
         "id": "medsystem:skill/firstaid",
         "per_level_value": -0.005,
-        "display_format": {
-          "decimal_places": 2,
-          "multiplier": -100,
-          "suffix": "%"
+        "formatter": {
+          "format": "%.2f%%",
+          "multiplier": -100
         }
       }
     }
