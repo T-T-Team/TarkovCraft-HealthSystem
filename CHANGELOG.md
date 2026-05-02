@@ -1,17 +1,2 @@
-# Release 1.21.1-2.3.0
-- Requires TarkovCraft Core version 2.1+
-- New blood system for entities
-  - Can be applied to any entity (currently enabled only for players)
-  - Added all common blood types. By default, only AB+ is used and other types need to be enabled via datapack
-  - Receiving an incompatible blood type will lead to death
-  - Added support for various blood colors per entity
-- Unconscious mode changes
-  - Unconscious entities can no longer be pushed around
-  - Disabled hotbar item changes while unconscious
-  - Disabled item pickup while unconscious
-  - Held items are now dropped when entering the unconscious state (configurable)
-  - All sounds have changed volume and pitch when unconscious (configurable)
-  - Added config to change the unconscious state overlay render type
-- Disabled limbs and injury recovery effect after surgery now cause pain
-- Command `/tarkovcraft` now offers suggestions for limbs based on selected entities
-- Added several missing localizations
+# Release 2.5.1+1.21.1
+- Content backport from 2.4.x and 2.5.x versions to 1.21.1
