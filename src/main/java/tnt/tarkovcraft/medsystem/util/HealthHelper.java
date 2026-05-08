@@ -1,15 +1,19 @@
 package tnt.tarkovcraft.medsystem.util;
 
 import com.mojang.serialization.DataResult;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import tnt.tarkovcraft.core.network.message.S2C_MakeParticles;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public final class HealthHelper {
@@ -152,6 +156,33 @@ public final class HealthHelper {
         }
         float health = container.getHealth();
         entity.setHealth(health);
+    }
+
+    public static void submitServerBleedParticles(@NonNull BloodDripParticleOptions options, int count, double x, double y, double z, double mx, double my, double mz, LivingEntity entity) {
+        submitServerBleedParticles(options, count, x, y, z, mx, my, mz, 0.5, entity);
+    }
+
+    public static void submitServerBleedParticles(@NonNull BloodDripParticleOptions options, int count, double x, double y, double z, double mx, double my, double mz, double spreadFactor, LivingEntity entity) {
+        if (entity.level().isClientSide() || count < 1)
+            return;
+        if (!MedicalSystem.getConfig().bloodDecals.enableBloodDecals)
+            return;
+        RandomSource random = entity.getRandom();
+        List<Vec3> movements = count > 1
+                ? randomizeParticleMovements(random, mx, my, mz, spreadFactor, count)
+                : Collections.singletonList(new Vec3(mx, my, mz));
+        S2C_MakeParticles message = new S2C_MakeParticles(options, x, y, z, true, true, movements);
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, message);
+    }
+
+    private static List<Vec3> randomizeParticleMovements(RandomSource random, double x, double y, double z, double randomizeFactor, int outputSize) {
+        List<Vec3> list = new ArrayList<>(outputSize);
+        for (int i = 0; i < outputSize; i++) {
+            double mx = (random.nextDouble() * randomizeFactor) * x;
+            double mz = (random.nextDouble() * randomizeFactor) * z;
+            list.add(new Vec3(mx, y, mz));
+        }
+        return list;
     }
 
     private HealthHelper() {
