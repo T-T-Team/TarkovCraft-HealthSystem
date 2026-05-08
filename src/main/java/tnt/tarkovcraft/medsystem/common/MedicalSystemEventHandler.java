@@ -10,9 +10,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.Brain;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,6 +36,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.config.UnconsciousEntityTargeting;
 import tnt.tarkovcraft.medsystem.common.effect.OverweightStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -171,9 +169,6 @@ public final class MedicalSystemEventHandler {
                 // recover vital body part health - otherwise entity would immediately "die" again
                 HealthHelper.recoverVitalLimbs(container, 1.0F);
 
-                // make other mobs peaceful towards this entity
-                this.clearAttackTargetsAround(entity, 48.0D);
-
                 HealthHelper.synchronizeHealth(entity, container);
                 HealthSystem.synchronizeEntity(entity);
 
@@ -258,8 +253,8 @@ public final class MedicalSystemEventHandler {
         LivingEntity newTarget = event.getNewAboutToBeSetTarget();
         if (!event.isCanceled() && newTarget != null && BloodSystemManager.isEnabled(newTarget)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(newTarget);
-            UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
-            if (bloodSystem.isUnconscious() && options.allowRescue()) {
+            UnconsciousEntityTargeting entityTargeting = MedicalSystem.getConfig().bloodSystem.unconsciousEntityTargeting;
+            if (bloodSystem.isUnconscious() && !entityTargeting.canTargetEntity(newTarget, bloodSystem)) {
                 event.setNewAboutToBeSetTarget(null);
             }
         }
@@ -272,25 +267,6 @@ public final class MedicalSystemEventHandler {
         Player player = event.getPlayer();
         if (BloodSystemManager.isUnconscious(player)) {
             event.setCanPickup(TriState.FALSE);
-        }
-    }
-
-    private void clearAttackTargetsAround(LivingEntity victim, double range) {
-        Level level = victim.level();
-        List<Mob> mobs = level.getEntitiesOfClass(Mob.class, victim.getBoundingBox().inflate(range));
-        for (Mob mob : mobs) {
-            if (mob.getTarget() == victim) {
-                mob.setTarget(null);
-                Brain<?> brain = mob.getBrain();
-                this.eraseMemory(brain, MemoryModuleType.ANGRY_AT);
-                this.eraseMemory(brain, MemoryModuleType.ATTACK_TARGET);
-            }
-        }
-    }
-
-    private void eraseMemory(Brain<?> brain, MemoryModuleType<?> type) {
-        if (brain.hasMemoryValue(type)) {
-            brain.eraseMemory(type);
         }
     }
 }

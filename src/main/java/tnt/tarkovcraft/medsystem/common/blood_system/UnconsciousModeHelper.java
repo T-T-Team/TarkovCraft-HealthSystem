@@ -5,7 +5,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.init.CoreAttributes;
@@ -18,6 +22,8 @@ import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
 import tnt.tarkovcraft.medsystem.common.pose.UnconsciousEntityPose;
 import tnt.tarkovcraft.medsystem.common.pose.UnconsciousSittingEntityPose;
 import tnt.tarkovcraft.medsystem.network.message.S2C_RefreshEntityDimensions;
+
+import java.util.List;
 
 import static tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier.multiplier;
 
@@ -63,6 +69,10 @@ public final class UnconsciousModeHelper {
             EntityHelper.dropEquippedItem(entity, EquipmentSlot.OFFHAND);
         }
 
+        if (!config.unconsciousEntityTargeting.canTargetEntity(entity, bloodSystem)) {
+            clearAttackTargetsAround(entity);
+        }
+
         AttributeMap attributes = entity.getAttributes();
         addUnconsciousAttributeModifier(attributes, Attributes.MOVEMENT_SPEED);
         addUnconsciousAttributeModifier(attributes, Attributes.JUMP_STRENGTH);
@@ -106,6 +116,25 @@ public final class UnconsciousModeHelper {
         AttributeInstance instance = attributes.getInstance(attribute);
         if (instance.hasModifier(UNCONSCIOUS_ATTRIBUTE_MODIFIER)) {
             instance.removeModifier(UNCONSCIOUS_ATTRIBUTE_MODIFIER);
+        }
+    }
+
+    private static void clearAttackTargetsAround(LivingEntity victim) {
+        Level level = victim.level();
+        List<Mob> mobs = level.getEntitiesOfClass(Mob.class, victim.getBoundingBox().inflate(48.0D));
+        for (Mob mob : mobs) {
+            if (mob.getTarget() == victim) {
+                mob.setTarget(null);
+                Brain<?> brain = mob.getBrain();
+                eraseMemory(brain, MemoryModuleType.ANGRY_AT);
+                eraseMemory(brain, MemoryModuleType.ATTACK_TARGET);
+            }
+        }
+    }
+
+    private static void eraseMemory(Brain<?> brain, MemoryModuleType<?> type) {
+        if (brain.hasMemoryValue(type)) {
+            brain.eraseMemory(type);
         }
     }
 }
