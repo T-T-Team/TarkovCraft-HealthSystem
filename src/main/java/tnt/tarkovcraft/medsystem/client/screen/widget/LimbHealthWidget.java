@@ -212,29 +212,56 @@ public class LimbHealthWidget extends AbstractWidget {
             public void extractContents(GuiGraphicsExtractor graphics, LimbHealthWidget parent) {
                 Limb limb = parent.limb;
                 if (parent.isHovered) {
-                    Component displayName = limb.getDisplayName();
-                    int width = parent.font.width(displayName);
-                    int left = parent.getX() + parent.frameSize + (parent.width - width - parent.frameSize) / 2;
-                    graphics.text(parent.font, displayName, left, parent.getY() + parent.frameSize + 5, parent.textHoverColor);
+                    this.renderLimbName(graphics, parent, limb);
                 } else {
-                    int maxHealth = Mth.ceil(limb.getMaxHealth());
-                    int health = Mth.ceil(limb.getHealth());
-                    int hearts = Mth.ceil(maxHealth / 2.0F);
-                    boolean vital = limb.isVital();
-                    for (int i = 0; i < hearts; i++) {
-                        // background
-                        int left = parent.getX() + parent.frameSize + 1 + i * 9;
-                        int top = parent.getY() + parent.frameSize + 5;
-                        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.CONTAINER.getSprite(vital, false, false), left, top, 9, 9);
+                    this.renderLimbHealth(graphics, parent, limb);
+                }
+            }
 
-                        // health
-                        int healthOffset = 2 * i;
-                        if (health > healthOffset) {
-                            boolean halfHeart = health - healthOffset == 1;
-                            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.NORMAL.getSprite(vital, halfHeart, false), left, top, 9, 9);
-                        }
+            private void renderLimbName(GuiGraphicsExtractor graphics, LimbHealthWidget parent, Limb limb) {
+                Component displayName = limb.getDisplayName();
+                int width = parent.font.width(displayName);
+                int left = parent.getX() + parent.frameSize + (parent.width - width - parent.frameSize) / 2;
+                graphics.text(parent.font, displayName, left, parent.getY() + parent.frameSize + 5, parent.textHoverColor);
+            }
+
+            private void renderLimbHealth(GuiGraphicsExtractor graphics, LimbHealthWidget parent, Limb limb) {
+                int maxHealth = Mth.ceil(limb.getMaxHealth());
+                int health = Mth.ceil(limb.getHealth());
+                int hearts = Mth.ceil(maxHealth / 2.0F);
+                boolean vital = limb.isVital();
+                int heartsWidth = hearts * 9;
+                if (heartsWidth + parent.frameSize * 2 + 2 > parent.width) {
+                    this.renderSimplifiedDisplay(graphics, parent, health, vital);
+                } else {
+                    this.renderFullDisplay(graphics, parent, hearts, health, vital);
+                }
+            }
+
+            private void renderFullDisplay(GuiGraphicsExtractor graphics, LimbHealthWidget parent, int hearts, int health, boolean vital) {
+                for (int i = 0; i < hearts; i++) {
+                    // background
+                    int left = parent.getX() + parent.frameSize + 1 + i * 9;
+                    int top = parent.getY() + parent.frameSize + 5;
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.CONTAINER.getSprite(vital, false, false), left, top, 9, 9);
+
+                    // health
+                    int healthOffset = 2 * i;
+                    if (health > healthOffset) {
+                        boolean halfHeart = health - healthOffset == 1;
+                        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.NORMAL.getSprite(vital, halfHeart, false), left, top, 9, 9);
                     }
                 }
+            }
+
+            private void renderSimplifiedDisplay(GuiGraphicsExtractor graphics, LimbHealthWidget parent, int health, boolean vital) {
+                int left = parent.getX() + parent.frameSize + 1;
+                int top = parent.getY() + parent.frameSize + 5;
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.CONTAINER.getSprite(vital, false, false), left, top, 9, 9);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.NORMAL.getSprite(vital, true, false), left, top, 9, 9);
+
+                Component text = Component.literal(health + "x");
+                graphics.text(parent.font, text, left + 12, top, ColorPalette.WHITE);
             }
         }
     }
