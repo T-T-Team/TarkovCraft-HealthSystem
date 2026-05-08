@@ -155,15 +155,15 @@ public final class EntityBloodSystem {
         NeoForge.EVENT_BUS.post(new BloodSystemEvent.EntityRescued(entity, this, rescuer, stack));
     }
 
-    public void causeBloodLoss(float amount) {
-        this.bloodVolume = Math.max(0, this.bloodVolume - amount);
+    public float causeBloodLoss(float amount) {
+        float loseAmount = Math.min(this.bloodVolume, amount);
+        this.bloodVolume = this.bloodVolume - loseAmount;
         this.markForUpdate();
+        return loseAmount;
     }
 
     public float extractBlood(float requestedAmount) {
-        float extractedAmount = Math.min(this.bloodVolume, requestedAmount);
-        this.causeBloodLoss(extractedAmount);
-        return extractedAmount;
+        return this.causeBloodLoss(requestedAmount);
     }
 
     public float performTransfusion(LivingEntity entity, float transfusionAmount, ResourceLocation bloodType) {
