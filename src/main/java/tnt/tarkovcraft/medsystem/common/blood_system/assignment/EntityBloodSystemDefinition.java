@@ -171,8 +171,8 @@ public final class EntityBloodSystemDefinition {
         return AttributeSystem.getFloatValue(entity, MedSystemAttributes.SHOCK_SCALE, 1.0F) * (incoming * this.shockData.receptionMultiplier());
     }
 
-    public boolean isInShock(float value) {
-        return this.shockData.isUnconscious(value);
+    public boolean isInShock(boolean unconscious, float value) {
+        return this.shockData.isUnconscious(unconscious, value);
     }
 
     private WeightedList<ResourceLocation> computeWeightedList() {
