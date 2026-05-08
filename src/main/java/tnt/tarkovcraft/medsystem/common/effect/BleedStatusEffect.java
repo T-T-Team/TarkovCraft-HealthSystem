@@ -101,28 +101,32 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
         if (limb != null && (time - this.addedAt) % stageConfig.bleedInterval == 0L) {
             if (level instanceof ServerLevel serverLevel) {
                 // blood loss
-                if (!BloodSystemManager.causeBloodLoss(entity, stageConfig.bleedAmount)) {
+                float bloodLost = BloodSystemManager.causeBloodLoss(entity, stageConfig.bleedAmount);
+                if (bloodLost < 0.0F) { // negative -> no blood container exists
                     RegistryAccess access = serverLevel.registryAccess();
                     DamageSource damageSource = MedSystemDamageTypes.causeBleedDamage(access, this.getCausingEntity(serverLevel));
                     float damage = stageConfig.bleedAmount * RAW_DAMAGE_SCALE;
                     entity.hurtServer(serverLevel, damageSource, damage);
                 }
-                // TODO count actual blood loss
-                // blood loss stat
-                StatisticTracker.incrementOptional(entity, MedSystemStats.BLOOD_LOST, Mth.floor(stageConfig.bleedAmount * 1000));
-                // bleed particles
-                HealthContainer container = context.container();
-                Integer particleColor = container.getDefinition().decalSettings().getColor(entity);
-                if (particleColor != null) {
-                    RandomSource random = level.getRandom();
-                    BloodDripParticleOptions options = new BloodDripParticleOptions(particleColor);
-                    Vec3 position = this.getParticlePosition(entity, container, limb);
-                    Vec3 delta = entity.getDeltaMovement();
-                    double baseDelta = 0.025;
-                    double xd = random.nextFloat() * (baseDelta * 2.0F) - baseDelta + delta.x;
-                    double yd = 0.1F + delta.y;
-                    double zd = random.nextFloat() * (baseDelta * 2.0F) - baseDelta + delta.z;
-                    HealthHelper.submitServerBleedParticles(options, stageConfig.decalCount, position.x, position.y, position.z, xd, yd, zd, 1.5, entity);
+
+                if (bloodLost > 0.0F) {
+                    // blood loss stat
+                    StatisticTracker.incrementOptional(entity, MedSystemStats.BLOOD_LOST, Mth.floor(bloodLost * 1000));
+                    // bleed particles
+                    float decalMultiplier = bloodLost / stageConfig.bleedAmount;
+                    HealthContainer container = context.container();
+                    Integer particleColor = container.getDefinition().decalSettings().getColor(entity);
+                    if (particleColor != null) {
+                        RandomSource random = level.getRandom();
+                        BloodDripParticleOptions options = new BloodDripParticleOptions(particleColor);
+                        Vec3 position = this.getParticlePosition(entity, container, limb);
+                        Vec3 delta = entity.getDeltaMovement();
+                        double baseDelta = 0.025;
+                        double xd = random.nextFloat() * (baseDelta * 2.0F) - baseDelta + delta.x;
+                        double yd = 0.1F + delta.y;
+                        double zd = random.nextFloat() * (baseDelta * 2.0F) - baseDelta + delta.z;
+                        HealthHelper.submitServerBleedParticles(options, Mth.ceil(stageConfig.decalCount * decalMultiplier), position.x, position.y, position.z, xd, yd, zd, 1.5, entity);
+                    }
                 }
             }
         }

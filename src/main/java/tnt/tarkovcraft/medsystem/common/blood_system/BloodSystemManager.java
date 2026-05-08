@@ -83,14 +83,14 @@ public final class BloodSystemManager {
         return !bloodSystem.hasBledOut() && bloodSystem.isUnconscious() && options.allowSkip() && !EntityHelper.isCreativeOrSpectator(entity);
     }
 
-    public static boolean causeBloodLoss(LivingEntity entity, float amount) {
+    public static float causeBloodLoss(LivingEntity entity, float amount) {
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
         if (bloodSystem != null && !EntityHelper.isCreativeOrSpectator(entity)) {
-            bloodSystem.causeBloodLoss(amount);
+            float amountLost = bloodSystem.causeBloodLoss(amount);
             bloodSystem.synchronizeImmediately(entity);
-            return true;
+            return amountLost;
         }
-        return false;
+        return -1.0F;
     }
 
     public void registerServerDataListeners(AddServerReloadListenersEvent event) {
