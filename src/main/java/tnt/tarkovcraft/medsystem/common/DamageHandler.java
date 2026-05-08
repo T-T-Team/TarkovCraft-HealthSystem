@@ -102,10 +102,6 @@ public final class DamageHandler {
         ArmorComponent component = armorSystem.getComponent();
         entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT).ifPresent(context -> {
             component.applyDamageReduction(event, context);
-            float armorReduction = event.getContainer().getReduction(DamageContainer.Reduction.ARMOR);
-            if (armorReduction > 0.0F) {
-                SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, armorReduction);
-            }
         });
     }
 
@@ -121,6 +117,12 @@ public final class DamageHandler {
                 .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
         float damage = event.getNewDamage();
         Map<Limb, Float> distributedDamage = context.getDamage(damage);
+
+        // apply armor skill based on armor reduction
+        float armorReduction = event.getReduction(DamageContainer.Reduction.ARMOR);
+        if (armorReduction > 0.0F) {
+            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, armorReduction);
+        }
 
         // apply health container damage
         LimbContainer limbContainer = container.getLimbContainer();
