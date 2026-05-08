@@ -67,6 +67,7 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         }
     }
 
+    // TODO add in about to attack event directly instead of relying on backward recognition
     public static SideEffectHolder fromDamage(DamageSource source) {
         if (source.isDirect()) {
             ItemStack stack = source.getWeaponItem();

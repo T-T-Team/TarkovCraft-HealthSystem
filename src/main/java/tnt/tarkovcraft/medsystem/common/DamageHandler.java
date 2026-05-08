@@ -218,7 +218,6 @@ public final class DamageHandler {
         double length = direction.horizontalDistance();
         boolean projectile = source.is(DamageTypeTags.IS_PROJECTILE);
         float motionScale = projectile ? config.projectileDamageMotionScale : config.damageMotionScale;
-        RandomSource random = entity.getRandom();
         direction = new Vec3(direction.x / length * motionScale, 0.0, direction.z / length * motionScale);
         HitInfo result = context.getHits().getFirst();
         Limb mainDamagedLimb = result.limb();
@@ -232,18 +231,17 @@ public final class DamageHandler {
             AABB aabb = hitboxContainer.getLimbHitbox(mainDamagedLimb.getLimbCode(), entityState).toWorldSpaceHitbox(entity);
             pos = aabb.getCenter();
         }
-        List<Vec3> directions = new ArrayList<>();
         float deviateAmount = 0.05F;
-        for (int i = 0; i < particleCount; i++) {
-            double deviateX = random.nextFloat() * (deviateAmount * 2.0F) - deviateAmount;
-            double deviateZ = random.nextFloat() * (deviateAmount * 2.0F) - deviateAmount;
-            directions.add(new Vec3(direction.x + deviateX, 0.05F, direction.z + deviateZ));
-        }
         BloodDecalSettings settings = definition.decalSettings();
         Integer color = settings.getColor(entity);
         if (color == null)
             return;
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new S2C_MakeParticles(new BloodDripParticleOptions(color), pos.x, pos.y, pos.z, true, true, directions));
+        BloodDripParticleOptions options = new BloodDripParticleOptions(color);
+        double baseDelta = (deviateAmount * 2.0F) - deviateAmount;
+        double dx = direction.x + baseDelta;
+        double dy = 0.05F;
+        double dz = direction.z + baseDelta;
+        HealthHelper.submitServerBleedParticles(options, particleCount, pos.x, pos.y, pos.z, dx, dy, dz, entity);
     }
 
     public static HitCalculationResultDebugInfo getHitDebugInfo() {
