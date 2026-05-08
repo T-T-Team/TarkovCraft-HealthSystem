@@ -8,6 +8,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
+import tnt.tarkovcraft.core.api.shader.ShaderType;
 import tnt.tarkovcraft.core.client.shader.ShaderHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
@@ -60,6 +61,11 @@ public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
     @Override
     public Identifier postChainId() {
         return IDENTIFIER;
+    }
+
+    @Override
+    public ShaderType getShaderType() {
+        return ShaderType.COSMETIC;
     }
 
     @Override

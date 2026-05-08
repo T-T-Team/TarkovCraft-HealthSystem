@@ -35,7 +35,7 @@
   "skill.medsystem.surgery.bonus.injury_scale.description": "Decreases injury health debuff by %s",
 
   "skill.trigger.medsystem.armor_use.info": "On armor damaged",
-  "skill.trigger.medsystem.healing_used.info": "On healing item consumed",
+  "skill.trigger.medsystem.healing_used.info": "On healing item used",
   "skill.trigger.medsystem.damage_taken.info": "On damage taken",
   "skill.trigger.medsystem.limb_fixed.info": "On limb fixed",
 
