@@ -76,6 +76,8 @@ public final class MedicalSystemEventHandler {
             return;
         if (amount > 0.0F && HealthSystem.hasCustomHealth(entity)) {
             HealthContainer container = HealthContainer.getAttachedValid(entity);
+            if (container == null)
+                return;
             LimbContainer limbContainer = container.getLimbContainer();
             float leftover = limbContainer.heal(amount, null);
             if (leftover > 0.0F) {
