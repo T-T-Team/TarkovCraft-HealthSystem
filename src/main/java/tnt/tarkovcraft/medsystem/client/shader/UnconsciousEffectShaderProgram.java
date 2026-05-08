@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.api.shader.PostEffectShaderProgram;
+import tnt.tarkovcraft.core.api.shader.ShaderType;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -29,6 +30,11 @@ public final class UnconsciousEffectShaderProgram implements PostEffectShaderPro
     @Override
     public boolean active() {
         return this.unconscious;
+    }
+
+    @Override
+    public ShaderType getShaderType() {
+        return ShaderType.GAME;
     }
 
     @Override

@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.client.shader;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.EasingType;
+import tnt.tarkovcraft.core.api.shader.ShaderType;
 import tnt.tarkovcraft.core.client.shader.ShaderHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
@@ -31,6 +32,11 @@ public class ConcussionEffectShaderProgram extends SimpleEffectShaderProgram {
     @Override
     public Identifier postChainId() {
         return IDENTIFIER;
+    }
+
+    @Override
+    public ShaderType getShaderType() {
+        return ShaderType.COSMETIC;
     }
 
     @Override
