@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.client.shader;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.core.api.shader.ShaderType;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -34,6 +35,11 @@ public class PainReliefEffectShaderProgram extends StatusEffectShaderProgram {
     @Override
     public ResourceLocation postChainId() {
         return IDENTIFIER;
+    }
+
+    @Override
+    public ShaderType getShaderType() {
+        return ShaderType.COSMETIC;
     }
 
     @Override

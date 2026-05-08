@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.client.shader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.core.api.shader.ShaderType;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
@@ -43,5 +44,10 @@ public final class BloodLossEffectShaderProgram extends SimpleScalingShaderProgr
     @Override
     public ResourceLocation postChainId() {
         return IDENTIFIER;
+    }
+
+    @Override
+    public ShaderType getShaderType() {
+        return ShaderType.COSMETIC;
     }
 }

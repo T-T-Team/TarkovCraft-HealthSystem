@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.client.shader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.core.api.shader.ShaderType;
 import tnt.tarkovcraft.core.util.Easing;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
@@ -40,6 +41,11 @@ public final class ConcussionEffectShaderProgram extends StatusEffectShaderProgr
     public void onRender(float delta, UniformSetter uniformSetter) {
         super.onRender(delta, uniformSetter);
         uniformSetter.setUniform("GameTime", this.gameTime / 24000.0F);
+    }
+
+    @Override
+    public ShaderType getShaderType() {
+        return ShaderType.COSMETIC;
     }
 
     @Override
