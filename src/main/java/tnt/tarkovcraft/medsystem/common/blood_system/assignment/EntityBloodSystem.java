@@ -274,8 +274,9 @@ public final class EntityBloodSystem {
     private void shockTick() {
         if (this.shockAmount > 0) {
             EntityBloodSystemDefinition definition = this.getDefinition();
-            boolean inShock = definition.isInShock(this.shockAmount);
-            if (inShock && (!this.isUnconscious() || this.unconsciousOptions == UnconsciousOptions.PAIN_SHOCK)) {
+            boolean isUnconscious = this.isUnconscious();
+            boolean inShock = definition.isInShock(isUnconscious, this.shockAmount);
+            if (inShock && (!isUnconscious || this.unconsciousOptions == UnconsciousOptions.PAIN_SHOCK)) {
                 this.setOrExtendedUnconscious(50, UnconsciousOptions.PAIN_SHOCK);
             }
             float recoveryRate = definition.getShockRecoveryRate(inShock);
