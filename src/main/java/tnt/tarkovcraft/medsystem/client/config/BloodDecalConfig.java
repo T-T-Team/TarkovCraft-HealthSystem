@@ -49,20 +49,6 @@ public final class BloodDecalConfig {
     public float bloodDecalFadeOutAt = 0.25F;
 
     @Configurable
-    @Configurable.Range(min = 0, max = 5)
-    @Configurable.Gui.Slider
-    @Configurable.Comment("How many decals will be spawned by each heavy bleed tick")
-    @Configurable.Synchronized
-    public int heavyBleedDecalCount = 3;
-
-    @Configurable
-    @Configurable.Range(min = 0, max = 5)
-    @Configurable.Gui.Slider
-    @Configurable.Comment("How many decals will be spawned by each light bleed tick")
-    @Configurable.Synchronized
-    public int lightBleedDecalCount = 1;
-
-    @Configurable
     @Configurable.DecimalRange(min = 0.25F)
     @Configurable.Gui.NumberFormat("0.0##")
     @Configurable.Comment({"How much damage entity needs to receive in order for decal to appear"})
