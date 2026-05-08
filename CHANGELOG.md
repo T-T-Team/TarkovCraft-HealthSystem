@@ -1,12 +1,16 @@
-# Release 2.5.1+1.21.11
-- Config changes
-  - Added new `Health system` category
-  - `Vital part heal priority` - moved under the new category
-  - `Vital part heal priority threshold` - moved under the new category
-  - Added damage multiplier config for each limb type along with a global multiplier
-- Extended `/tarkovcraft` command with `heal` subcommand
-  - Allows you to heal a specific limb of any entity and also recover disabled limbs
-  - To heal specific live limb: `/tarkovcraft heal <entity> <limb> <amount>`
-  - To heal specific live/disabled limbs: `/tarkovcraft heal <entity> <limb> <amount> includeDisabledLimbs`
-  - To heal all live limbs: `/tarkovcraft heal <entity> <amount>`
-  - To heal all live/disabled limbs: `/tarkovcraft heal <entity> <amount> includeDisabledLimbs`
+# Release 2.5.2+1.21.11
+- Now requires TarkovCraft: Core 2.4+ version
+- Adjusted pain shock unconscious handling
+  - You now wake up only once reaching wake up threshold, previously you woke up as soon as you were below unconscious threshold
+  - This means that unconscious mode from pain shock now lasts much longer in general
+  - Can be adjusted in blood system data files for each entity (see wiki for more details)
+- Added config option for unconscious entity targeting
+  - By default no entities should target you when you are unconscious
+  - Added under Blood System section
+- Removed unused config options
+  - light bleed decal count
+  - heavy bleed decal count
+- Fixed Armor skill not being leveled up
+- Fixed Blood lost statistic not counting actual blood lost amount
+- Fixed several issues with blood particle spawning
+- Fixed icon health display overflowing its display section when player had a lot of health
