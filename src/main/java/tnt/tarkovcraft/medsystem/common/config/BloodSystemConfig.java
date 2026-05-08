@@ -28,6 +28,15 @@ public final class BloodSystemConfig {
     public UnconsciousMode bleedOutUnconsciousness = UnconsciousMode.ALLOW;
 
     @Configurable
+    @Configurable.Comment(value = {
+            "Specifies when entities can target unconscious players",
+            "ALWAYS - unconscious players will always be attacked",
+            "IGNORE_RESCUE - unconscious players will be attacked as long as they're not in rescue mode",
+            "NEVER - unconscious players will never be attacked"
+    }, localize = true)
+    public UnconsciousEntityTargeting unconsciousEntityTargeting = UnconsciousEntityTargeting.NEVER;
+
+    @Configurable
     @Configurable.DecimalRange(min = 0.0, max = 1.0)
     @Configurable.Gui.NumberFormat("0.00")
     @Configurable.Gui.Slider
