@@ -14,12 +14,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.item.LeftClickListener;
-import tnt.tarkovcraft.core.network.message.S2C_MakeParticles;
 import tnt.tarkovcraft.core.util.UserActionResult;
 import tnt.tarkovcraft.core.util.helper.EntityHelper;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -30,8 +27,8 @@ import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
+import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -101,8 +98,7 @@ public class BloodBagItem extends InteractableItem implements LeftClickListener 
                 container.bloodType().flatMap(id -> MedicalSystem.BLOOD_SYSTEM.getConfig().getOptions(id)).ifPresent(options -> {
                     int color = options.color();
                     BloodDripParticleOptions particleOptions = new BloodDripParticleOptions(color);
-                    S2C_MakeParticles particles = new S2C_MakeParticles(particleOptions, origin.getX(), origin.getEyeY(), origin.getZ(), true, true, Collections.singletonList(Vec3.ZERO));
-                    PacketDistributor.sendToPlayersTrackingEntityAndSelf(origin, particles);
+                    HealthHelper.submitServerBleedParticles(particleOptions, 1, origin.getX(), origin.getEyeY(), origin.getZ(), 0.0, 0.0, 0.0, origin);
                 });
             }
             if (drained.isEmpty() && !drained.refillable()) {
