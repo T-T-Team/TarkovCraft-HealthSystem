@@ -1,16 +1,5 @@
-# Release 2.5.2+1.21.1
-- Now requires TarkovCraft: Core 2.4+ version
-- Adjusted pain shock unconscious handling
-  - You now wake up only once reaching wake up threshold, previously you woke up as soon as you were below unconscious threshold
-  - This means that unconscious mode from pain shock now lasts much longer in general
-  - Can be adjusted in blood system data files for each entity (see wiki for more details)
-- Added config option for unconscious entity targeting
-  - By default no entities should target you when you are unconscious
-  - Added under Blood System section
-- Removed unused config options
-  - light bleed decal count
-  - heavy bleed decal count
-- Fixed Armor skill not being leveled up
-- Fixed Blood lost statistic not counting actual blood lost amount
-- Fixed several issues with blood particle spawning
-- Fixed icon health display overflowing its display section when player had a lot of health
+# Release 2.5.3+1.21.1
+- Fixed crash with latest version of TarkovCraft Core
+- Rebalanced skill leveling
+- Added limit to max pain shock amount to prevent long unconsciousness
+- Increased pain shock recovery multiplier to 50% from 35% while unconscious
