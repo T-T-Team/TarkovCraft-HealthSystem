@@ -27,7 +27,7 @@
   "shock_attributes": {
     "reception_multiplier": 1.0,
     "recovery_rate": 0.0025,
-    "in_shock_recovery_multiplier": 0.35,
+    "in_shock_recovery_multiplier": 0.5,
     "unconscious_threshold": 0.75,
     "unconscious_wake_up_threshold": 0.15
   },
