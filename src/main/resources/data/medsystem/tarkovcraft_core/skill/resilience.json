@@ -15,7 +15,7 @@
       "event": "medsystem:damage_taken",
       "tracker": {
         "type": "tarkovcraft_core:simple",
-        "value": 0.025
+        "value": 0.1
       }
     }
   ],
