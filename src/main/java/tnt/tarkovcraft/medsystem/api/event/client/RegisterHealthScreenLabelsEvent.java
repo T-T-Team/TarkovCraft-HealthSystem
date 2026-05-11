@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.api.event.client;
 
 import net.neoforged.bus.api.Event;
-import tnt.tarkovcraft.core.client.IconWithLabel;
+import tnt.tarkovcraft.core.client.util.IconWithLabel;
 
 import java.util.List;
 

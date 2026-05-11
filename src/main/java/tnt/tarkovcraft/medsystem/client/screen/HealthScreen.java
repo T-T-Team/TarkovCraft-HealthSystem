@@ -9,7 +9,7 @@ import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
-import tnt.tarkovcraft.core.client.IconWithLabel;
+import tnt.tarkovcraft.core.client.util.IconWithLabel;
 import tnt.tarkovcraft.core.client.screen.CharacterSubScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.renderable.IconWithLabelRenderable;
