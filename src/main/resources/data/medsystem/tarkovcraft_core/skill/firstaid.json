@@ -14,7 +14,7 @@
       "event": "medsystem:healing_used",
       "tracker": {
         "type": "tarkovcraft_core:simple",
-        "value": 0.25
+        "value": 1.25
       }
     }
   ],
