@@ -96,7 +96,7 @@ public final class EntityBloodSystem {
     }
 
     public void addShock(float amount) {
-        this.shockAmount = Math.max(0, this.shockAmount + amount);
+        this.shockAmount = Mth.clamp(this.shockAmount + amount, 0.0F, 1.5F);
         this.markForUpdate();
     }
 
