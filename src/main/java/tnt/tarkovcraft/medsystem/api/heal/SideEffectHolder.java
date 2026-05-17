@@ -13,7 +13,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
+import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
+import tnt.tarkovcraft.medsystem.common.consume_effect.ConsumeEffect;
 import tnt.tarkovcraft.medsystem.common.effect.NegativeEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.NeutralEffectsGroup;
 import tnt.tarkovcraft.medsystem.common.effect.PositiveEffectsGroup;
@@ -30,17 +32,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideEffects, List<Component> additionalLabels, boolean hideTooltip) implements TooltipProvider {
+public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideEffects, List<ConsumeEffect> effects, List<Component> additionalLabels, boolean hideTooltip) implements TooltipProvider {
 
     public static final Component DEFAULT_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title").withStyle(ChatFormatting.GRAY);
     public static final Component ITEM_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title_item").withStyle(ChatFormatting.GRAY);
     public static final Component USAGE_TITLE = Component.translatable("tooltip.medsystem.heal_attributes.side_effects.title_usage").withStyle(ChatFormatting.GRAY);
-    public static final SideEffectHolder EMPTY = new SideEffectHolder(Optional.empty(), Collections.emptyList(), Collections.emptyList(), true);
+    public static final SideEffectHolder EMPTY = new SideEffectHolder(Optional.empty(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), true);
 
     public static final Codec<SideEffectHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ComponentSerialization.CODEC.optionalFieldOf("title").forGetter(t -> t.title),
             SideEffect.CODEC.listOf().fieldOf("effects").forGetter(t -> t.sideEffects),
+            ConsumeEffect.CODEC.listOf().optionalFieldOf("consume_effects", Collections.emptyList()).forGetter(t -> t.effects),
             ComponentSerialization.CODEC.listOf().optionalFieldOf("additional_labels", Collections.emptyList()).forGetter(t -> t.additionalLabels),
             Codec.BOOL.optionalFieldOf("hide_tooltip", false).forGetter(t -> t.hideTooltip)
     ).apply(instance, SideEffectHolder::new));
@@ -57,8 +61,10 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         return EMPTY;
     }
 
-    public void onConsume(LivingEntity target, HealthContainer container, @Nullable Limb part) {
+    public void onConsume(ItemStack itemStack, LivingEntity target, HealthContainer container, @Nullable Limb part) {
         this.apply(target, null, container, part);
+        Level level = target.level();
+        this.effects.forEach(effect -> effect.apply(level, itemStack, target));
     }
 
     public void apply(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable Limb part) {
@@ -96,6 +102,7 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
 
         private Component title;
         private final List<SideEffect> sideEffects = new ArrayList<>();
+        private final List<ConsumeEffect> consumeEffects = new ArrayList<>();
         private final List<Component> additionalLabels = new ArrayList<>();
         private boolean hideTooltip = false;
 
@@ -194,14 +201,23 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
             return this.infinite(NegativeEffectsGroup.createTemplate(builder));
         }
 
+        public Builder consumeEffect(ConsumeEffect effect) {
+            this.consumeEffects.add(effect);
+            return this;
+        }
+
         public Builder label(Component label) {
             this.additionalLabels.add(label);
             return this;
         }
 
+        public <E extends ConsumeEffect> Builder consumeEffectWithLabel(E effect, Function<E, Component> label) {
+            return this.consumeEffect(effect).label(label.apply(effect));
+        }
+
         public SideEffectHolder build() {
             Preconditions.checkState(!sideEffects.isEmpty(), "sideEffects cannot be empty");
-            return new SideEffectHolder(Optional.ofNullable(this.title), this.sideEffects, this.additionalLabels, this.hideTooltip);
+            return new SideEffectHolder(Optional.ofNullable(this.title), this.sideEffects, this.consumeEffects, this.additionalLabels, this.hideTooltip);
         }
     }
 }

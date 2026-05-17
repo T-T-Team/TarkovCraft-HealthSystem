@@ -68,6 +68,7 @@ public final class MedicalSystem {
         MedSystemBloodLevelEffects.REGISTRY.register(modEventBus);
         MedSystemEntityPoses.REGISTRY.register(modEventBus);
         MedSystemCriterionTriggers.REGISTRY.register(modEventBus);
+        MedSystemConsumeEffects.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -84,6 +85,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.HEALTH_EVENT_CONDITION);
         event.register(MedSystemRegistries.HEALTH_EVENT_ACTION);
         event.register(MedSystemRegistries.BLOOD_LEVEL_EFFECT);
+        event.register(MedSystemRegistries.CONSUME_EFFECT);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {

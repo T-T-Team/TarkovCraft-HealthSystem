@@ -213,7 +213,7 @@ public final class MedicalSystemEventHandler {
                 return;
             HealthContainer container = HealthContainer.getAttached(targetEntity);
             Limb part = container.getLimbByCode(targetLimb);
-            holder.onConsume(targetEntity, container, part);
+            holder.onConsume(stack, targetEntity, container, part);
         }
 
         if (HealthSystem.hasCustomHealth(entity)) {

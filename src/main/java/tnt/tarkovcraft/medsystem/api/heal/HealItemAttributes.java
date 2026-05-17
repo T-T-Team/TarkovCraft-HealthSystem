@@ -18,6 +18,7 @@ import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicate;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.consume_effect.ConsumeEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
@@ -32,7 +33,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Surgery surgery,
-                                 HealthRecovery health, List<EffectRecovery> recoveries, List<Component> additionalLabels) implements TooltipProvider {
+                                 HealthRecovery health, List<EffectRecovery> recoveries, List<ConsumeEffect> effects, List<Component> additionalLabels) implements TooltipProvider {
 
     public static final Codec<HealItemAttributes> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.optionalFieldOf("apply_globally", true).forGetter(HealItemAttributes::applyGlobally),
@@ -41,15 +42,16 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             Surgery.CODEC.optionalFieldOf("surgery").forGetter(t -> Optional.ofNullable(t.surgery)),
             HealthRecovery.CODEC.optionalFieldOf("health").forGetter(t -> Optional.ofNullable(t.health)),
             EffectRecovery.CODEC.listOf().optionalFieldOf("recovers", Collections.emptyList()).forGetter(HealItemAttributes::recoveries),
+            ConsumeEffect.CODEC.listOf().optionalFieldOf("consume_effects", Collections.emptyList()).forGetter(HealItemAttributes::effects),
             ComponentSerialization.CODEC.listOf().optionalFieldOf("additional_labels", Collections.emptyList()).forGetter(HealItemAttributes::additionalLabels)
     ).apply(instance, HealItemAttributes::new));
 
     private HealItemAttributes(Builder builder) {
-        this(!builder.requiresLimb, builder.alwaysConsumable, builder.minUseTime, builder.surgery, builder.healthRecovery, builder.recoveries, builder.additionalLabels);
+        this(!builder.requiresLimb, builder.alwaysConsumable, builder.minUseTime, builder.surgery, builder.healthRecovery, builder.recoveries, builder.effects, builder.additionalLabels);
     }
 
-    private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<Surgery> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<Component> additionalLabels) {
-        this(applyGlobally, alwaysConsumable, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries, additionalLabels);
+    private HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable, int minUseTime, Optional<Surgery> deadLimbHealing, Optional<HealthRecovery> healthRecovery, List<EffectRecovery> recoveries, List<ConsumeEffect> effects, List<Component> additionalLabels) {
+        this(applyGlobally, alwaysConsumable, minUseTime, deadLimbHealing.orElse(null), healthRecovery.orElse(null), recoveries, effects, additionalLabels);
     }
 
     public static Builder builder() {
@@ -164,6 +166,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         private Surgery surgery;
         private HealthRecovery healthRecovery;
         private final List<EffectRecovery> recoveries = new ArrayList<>();
+        private final List<ConsumeEffect> effects = new ArrayList<>();
         private final List<Component> additionalLabels = new ArrayList<>();
 
         private Builder() {
@@ -236,9 +239,18 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
             return this.removesEffect(effect, AnyEffectPredicate.INSTANCE, CommonComponents.EMPTY);
         }
 
+        public Builder consumeEffect(ConsumeEffect effect) {
+            this.effects.add(effect);
+            return this;
+        }
+
         public Builder label(Component label) {
             this.additionalLabels.add(label);
             return this;
+        }
+
+        public <E extends ConsumeEffect> Builder consumeEffectWithLabel(E effect, Function<E, Component> label) {
+            return this.consumeEffect(effect).label(label.apply(effect));
         }
 
         public HealItemAttributes build() {

@@ -25,6 +25,7 @@ import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.HealthRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.Surgery;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.consume_effect.ConsumeEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -183,8 +184,13 @@ public class HealingItem extends InteractableItem {
                 consume += recovery.consumption();
             }
         }
-        // Apply durability reduction
+        // Consume effect application
         Level level = origin.level();
+        List<ConsumeEffect> consumeEffects = attributes.effects();
+        for (ConsumeEffect effect : consumeEffects) {
+            effect.apply(level, itemStack, target);
+        }
+        // Apply durability reduction
         if (!level.isClientSide()) {
             int consumeAmount = Math.max(1, consume);
             SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, origin, consumeAmount);

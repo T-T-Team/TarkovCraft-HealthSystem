@@ -6,6 +6,7 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicateType;
 import tnt.tarkovcraft.medsystem.common.blood_system.effect.BloodLevelEffectType;
+import tnt.tarkovcraft.medsystem.common.consume_effect.ConsumeEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventTriggerSource;
 import tnt.tarkovcraft.medsystem.common.health_event.action.HealthEventActionType;
@@ -28,6 +29,8 @@ public final class MedSystemRegistries {
 
     public static final Registry<BloodLevelEffectType<?>> BLOOD_LEVEL_EFFECT = new RegistryBuilder<>(Keys.BLOOD_LEVEL_EFFECT).create();
 
+    public static final Registry<ConsumeEffectType<?>> CONSUME_EFFECT = new RegistryBuilder<>(Keys.CONSUME_EFFECT).create();
+
     public static final class Keys {
 
         public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect"));
@@ -39,5 +42,6 @@ public final class MedSystemRegistries {
         public static final ResourceKey<Registry<HealthEventActionType<?>>> HEALTH_EVENT_ACTION = ResourceKey.createRegistryKey(MedicalSystem.resource("health_event/action"));
         public static final ResourceKey<Registry<HealthEventFunctionType<?>>> HEALTH_EVENT_FUNCTION = ResourceKey.createRegistryKey(MedicalSystem.resource("health_event/function"));
         public static final ResourceKey<Registry<BloodLevelEffectType<?>>> BLOOD_LEVEL_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("blood_system/effect"));
+        public static final ResourceKey<Registry<ConsumeEffectType<?>>> CONSUME_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("consume_effect"));
     }
 }
