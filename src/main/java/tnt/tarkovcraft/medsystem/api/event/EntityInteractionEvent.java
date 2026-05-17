@@ -1,9 +1,13 @@
 package tnt.tarkovcraft.medsystem.api.event;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
+import org.jetbrains.annotations.ApiStatus;
+import tnt.tarkovcraft.core.util.UserActionResult;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteraction;
 
 public abstract class EntityInteractionEvent extends Event {
 
@@ -37,6 +41,52 @@ public abstract class EntityInteractionEvent extends Event {
 
         public CanInteract(ItemStack itemStack, LivingEntity interactionEntity, LivingEntity originEntity) {
             super(itemStack, interactionEntity, originEntity);
+        }
+    }
+
+    public static final class UnconsciousInteractionEvaluation extends EntityInteractionEvent {
+
+        private final EntityInteraction interaction;
+        private UserActionResult<Void> interactionResult = UserActionResult.successEmpty();
+
+        public UnconsciousInteractionEvaluation(ItemStack itemStack, LivingEntity interactionEntity, LivingEntity originEntity, EntityInteraction interaction) {
+            super(itemStack, interactionEntity, originEntity);
+            this.interaction = interaction;
+        }
+
+        public EntityInteraction getInteraction() {
+            return interaction;
+        }
+
+        public boolean isSuccessful() {
+            return this.interactionResult.isSuccess();
+        }
+
+        public boolean isFailed() {
+            return this.interactionResult.isFailure();
+        }
+
+        public void setFailure(Component reason) {
+            this.interactionResult = UserActionResult.failure(reason);
+        }
+
+        @ApiStatus.Internal
+        public UserActionResult<Void> getInteractionResult() {
+            return this.interactionResult;
+        }
+    }
+
+    public static final class UnconsciousInteractionFinished extends EntityInteractionEvent {
+
+        private final EntityInteraction interaction;
+
+        public UnconsciousInteractionFinished(ItemStack itemStack, LivingEntity interactionEntity, LivingEntity originEntity, EntityInteraction interaction) {
+            super(itemStack, interactionEntity, originEntity);
+            this.interaction = interaction;
+        }
+
+        public EntityInteraction getInteraction() {
+            return interaction;
         }
     }
 }

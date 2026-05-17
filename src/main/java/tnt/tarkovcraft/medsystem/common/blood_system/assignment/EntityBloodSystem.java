@@ -13,15 +13,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.common.NeoForge;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.util.Cached;
 import tnt.tarkovcraft.core.util.EventHandler;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.event.BloodSystemEvent;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousModeHelper;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
@@ -149,11 +146,6 @@ public final class EntityBloodSystem {
         this.setUnconsciousPrevention(Math.max(this.unconsciousInvulnerability, duration));
     }
 
-    public void rescueDownedEntity(LivingEntity entity, LivingEntity rescuer, ItemStack stack) {
-        this.setUnconscious(100, UnconsciousOptions.RESCUE_DELAY);
-        NeoForge.EVENT_BUS.post(new BloodSystemEvent.EntityRescued(entity, this, rescuer, stack));
-    }
-
     public float causeBloodLoss(float amount) {
         float loseAmount = Math.min(this.bloodVolume, amount);
         this.bloodVolume = this.bloodVolume - loseAmount;
@@ -217,12 +209,9 @@ public final class EntityBloodSystem {
         return this.definition.get();
     }
 
-    public boolean canRescueUnconsciousEntity(LivingEntity entity, LivingEntity rescuer, ItemStack stack) {
-        if (!this.isUnconscious() || !this.getActiveUnconsciousModeOptions().allowRescue()) {
-            return false;
-        }
-        BloodSystemEvent.EntityRescueAttempt rescueAttempt = NeoForge.EVENT_BUS.post(new BloodSystemEvent.EntityRescueAttempt(entity, this, rescuer, stack));
-        return rescueAttempt.canRescue();
+    public void rescueDownedEntity() {
+        this.setUnconscious(100, UnconsciousOptions.RESCUE_DELAY);
+        this.shockAmount = 0.0F;
     }
 
     private EntityBloodSystemDefinition loadDefinition() {

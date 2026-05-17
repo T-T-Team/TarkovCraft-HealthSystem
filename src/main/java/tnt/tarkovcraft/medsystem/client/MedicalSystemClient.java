@@ -47,6 +47,7 @@ import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.client.screen.UnconsciousActionScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
@@ -126,6 +127,11 @@ public final class MedicalSystemClient {
         if (screen instanceof HealthContainerScreen healthContainerScreen) {
             healthContainerScreen.onHealthContainerUpdated(holder, container);
         }
+    }
+
+    public static void openUnconsciousActionScreen(LivingEntity entity) {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.setScreen(new UnconsciousActionScreen(entity));
     }
 
     @SuppressWarnings({"RedundantCast", "unchecked"})

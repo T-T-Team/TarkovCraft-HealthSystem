@@ -26,7 +26,6 @@ import tnt.tarkovcraft.medsystem.api.heal.EffectRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.HealthRecovery;
 import tnt.tarkovcraft.medsystem.api.heal.Surgery;
-import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
@@ -126,7 +125,6 @@ public class HealingItem extends InteractableItem {
 
                 SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.HEALING_USED, origin);
 
-                ItemStack originalItemStack = itemStack.copy();
                 EntityHelper.hurtOrConsumeEquipmentItem(origin, itemStack, 1, EquipmentSlot.MAINHAND);
 
                 // add health and cancel using item if fully healed
@@ -137,11 +135,6 @@ public class HealingItem extends InteractableItem {
                 }
                 if (leftover > 0 && HealthHelper.canHeal(container)) {
                     limbContainer.heal(amount, null);
-                }
-                // rescue logic
-                EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
-                if (!interaction.self() && bloodSystem != null && bloodSystem.canRescueUnconsciousEntity(target, origin, originalItemStack)) {
-                    bloodSystem.rescueDownedEntity(target, origin, originalItemStack);
                 }
 
                 // adjust vanilla health pool

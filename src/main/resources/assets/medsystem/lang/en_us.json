@@ -105,6 +105,10 @@
   "medsystem.limb.left_leg": "Left Leg",
   "medsystem.limb.legs": "Legs",
 
+  "entity_interaction.medsystem.shared.response.entity_too_far": "Entity is too far",
+  "entity_interaction.medsystem.rescue_downed_entity": "Rescue",
+  "entity_interaction.medsystem.rescue_downed_entity.response.unable_to_rescue": "Entity is not in rescue state",
+
   "key.category.medsystem.keymap": "Medical system",
   "key.medsystem.give_up": "Give up",
   "key.medsystem.open_health": "Show health UI",
@@ -114,6 +118,7 @@
   "screen.medsystem.select_body_part.error.invalid_item": "Invalid item for healing",
   "screen.medsystem.select_body_part.error.not_healable": "Cannot be healed using this item",
   "screen.medsystem.select_body_part.text.click_to_select": "Click to select",
+  "screen.medsystem.entity_interaction.title": "Select action",
 
   "label.medsystem.validation.config.decal_lifetime": "Large decal lifetime might introduce issues as decals are limited to 2000 active particles. Once the limit is reached, no new decals will appear",
   "label.medsystem.health_recovery": "Health recovery (%s/s)",
