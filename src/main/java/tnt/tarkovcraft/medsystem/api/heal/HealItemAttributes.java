@@ -15,9 +15,6 @@ import net.minecraft.world.item.component.TooltipProvider;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.AnyEffectPredicate;
 import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicate;
-import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
-import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
-import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.consume_effect.ConsumeEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
@@ -89,17 +86,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         if (this.isSurgeryItem() && this.surgery.canHeal(container)) {
             return true;
         }
-        if (this.health != null) {
-            if (entity.getHealth() < entity.getMaxHealth())
-                return true;
-            // rescue
-            if (origin != entity && BloodSystemManager.isEnabled(entity)) {
-                EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
-                UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
-                return bloodSystem.isUnconscious() && options.allowRescue();
-            }
-        }
-        return false;
+        return this.health != null && entity.getHealth() < entity.getMaxHealth();
     }
 
     public boolean canUseOnLimb(Limb limb, ItemStack stack, HealthContainer container, boolean selfHealing, LivingEntity target) {
@@ -116,18 +103,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         if (this.isSurgeryItem() && limb.isDead()) {
             return true;
         }
-        if (this.health != null) {
-            if (!limb.isDead() && limb.getHealth() < limb.getMaxHealth()) {
-                return true;
-            }
-            // TODO why is root limb required?
-            if (!selfHealing && BloodSystemManager.isEnabled(target) && container.getRootLimb().equals(limb)) {
-                EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
-                UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
-                return bloodSystem.isUnconscious() && options.allowRescue();
-            }
-        }
-        return false;
+        return this.health != null && !limb.isDead() && limb.getHealth() < limb.getMaxHealth();
     }
 
     public boolean isSurgeryItem() {

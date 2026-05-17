@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -42,6 +43,7 @@ import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
+import tnt.tarkovcraft.medsystem.client.screen.UnconsciousActionScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
@@ -119,6 +121,11 @@ public final class MedicalSystemClient {
         if (screen instanceof HealthContainerScreen healthContainerScreen) {
             healthContainerScreen.onHealthContainerUpdated(holder, container);
         }
+    }
+
+    public static void openUnconsciousActionScreen(LivingEntity entity) {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.setScreen(new UnconsciousActionScreen(entity));
     }
 
     private void setup(FMLClientSetupEvent event) {

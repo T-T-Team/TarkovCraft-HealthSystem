@@ -4,6 +4,8 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.TriState;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -25,10 +27,12 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
+import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
@@ -227,6 +231,7 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void canMountEntity(EntityMountEvent event) {
         Entity entity = event.getEntity();
+        // TODO block mount/dismount unless initiated by other entity
         if (entity instanceof LivingEntity livingEntity && BloodSystemManager.isUnconscious(livingEntity)) {
             event.setCanceled(true);
         }
@@ -263,6 +268,20 @@ public final class MedicalSystemEventHandler {
         Player player = event.getPlayer();
         if (BloodSystemManager.isUnconscious(player)) {
             event.setCanPickup(TriState.FALSE);
+        }
+    }
+
+    @SubscribeEvent
+    private void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        Entity targetEntity = event.getTarget();
+        Player player = event.getEntity();
+        if (player.isCrouching() && targetEntity instanceof LivingEntity entity && HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isUnconscious(entity)) {
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+
+            if (entity.level().isClientSide()) {
+                MedicalSystemClient.openUnconsciousActionScreen(entity);
+            }
         }
     }
 }
