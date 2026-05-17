@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 import net.minecraft.world.item.consume_effects.ConsumeEffect;
+import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.NegativeEffectsGroup;
@@ -63,8 +64,10 @@ public record SideEffectHolder(Optional<Component> title, List<SideEffect> sideE
         return EMPTY;
     }
 
-    public void onConsume(LivingEntity target, HealthContainer container, @Nullable Limb part) {
+    public void onConsume(ItemStack itemStack, LivingEntity target, HealthContainer container, @Nullable Limb part) {
         this.apply(target, null, container, part);
+        Level level = target.level();
+        this.consumeEffects.forEach(effect -> effect.apply(level, itemStack, target));
     }
 
     public void apply(LivingEntity target, @Nullable DamageSource source, HealthContainer container, @Nullable Limb part) {
