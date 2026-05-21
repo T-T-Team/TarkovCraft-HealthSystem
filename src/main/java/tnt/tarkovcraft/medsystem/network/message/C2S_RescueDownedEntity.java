@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -13,13 +13,13 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tnt.tarkovcraft.core.util.UserActionResult;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 public record C2S_RescueDownedEntity(int entityId) implements CustomPacketPayload {
 
-    public static final Identifier PACKET_ID = MedicalSystemNetwork.createId(C2S_RescueDownedEntity.class);
+    public static final ResourceLocation PACKET_ID = MedicalSystemNetwork.createId(C2S_RescueDownedEntity.class);
     public static final Type<C2S_RescueDownedEntity> TYPE = new Type<>(PACKET_ID);
     public static final StreamCodec<ByteBuf, C2S_RescueDownedEntity> CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, C2S_RescueDownedEntity::entityId,
@@ -37,7 +37,7 @@ public record C2S_RescueDownedEntity(int entityId) implements CustomPacketPayloa
                 bloodSystem.rescueDownedEntity();
                 EntityInteractions.onInteractionCompletedCallback(player, livingEntity, EntityInteractions.RESCUE_DOWNED);
             } else {
-                player.sendOverlayMessage(result.message());
+                player.displayClientMessage(result.message(), true);
             }
         }
     }

@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.common.interaction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import tnt.tarkovcraft.core.util.UserActionResult;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
@@ -30,7 +30,7 @@ public final class RescueDownedEntityInteraction implements EntityInteraction {
 
     @Override
     public void onActionPerformed(Player origin, LivingEntity target) {
-        ClientPacketDistributor.sendToServer(new C2S_RescueDownedEntity(target.getId()));
+        PacketDistributor.sendToServer(new C2S_RescueDownedEntity(target.getId()));
     }
 
     @Override

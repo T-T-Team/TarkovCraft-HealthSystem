@@ -3,12 +3,11 @@ package tnt.tarkovcraft.medsystem.client.screen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -52,11 +51,11 @@ public class UnconsciousActionScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractBackground(graphics, mouseX, mouseY, a);
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+        super.renderBackground(graphics, mouseX, mouseY, a);
 
         int titleWidth = this.font.width(TITLE);
-        graphics.text(this.font, TITLE, (this.width - titleWidth) / 2, 15, ColorPalette.WHITE);
+        graphics.drawString(this.font, TITLE, (this.width - titleWidth) / 2, 15, ColorPalette.WHITE);
     }
 
     @Override
@@ -108,7 +107,7 @@ public class UnconsciousActionScreen extends Screen {
         }
 
         @Override
-        public void onPress(InputWithModifiers input) {
+        public void onPress() {
             if (this.pressStartTs > 0) {
                 this.pressStartTs = -1;
                 return;
@@ -121,12 +120,12 @@ public class UnconsciousActionScreen extends Screen {
         }
 
         @Override
-        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-            this.extractDefaultSprite(graphics);
+        protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float a) {
+            graphics.blitSprite(SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
             Font font = Minecraft.getInstance().font;
             Component content = this.getDisplayContent();
             int contentWidth = font.width(content);
-            graphics.text(font, content, this.getX() + (this.width - contentWidth) / 2, this.getY() + (this.height - 8) / 2, this.active ? 0xFFFFFFFF : 0xFFAAAAAA);
+            graphics.drawString(font, content, this.getX() + (this.width - contentWidth) / 2, this.getY() + (this.height - 8) / 2, this.active ? 0xFFFFFFFF : 0xFFAAAAAA);
 
             if (this.isPressed() && this.isFinished()) {
                 this.callback.accept(this.interaction);
