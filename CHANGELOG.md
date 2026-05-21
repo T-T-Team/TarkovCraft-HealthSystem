@@ -1,5 +1,7 @@
-# Release 2.5.3+1.21.1
-- Fixed crash with latest version of TarkovCraft Core
-- Rebalanced skill leveling
-- Added limit to max pain shock amount to prevent long unconsciousness
-- Increased pain shock recovery multiplier to 50% from 35% while unconscious
+# Release 2.6.1+1.21.1
+- Requires `TarkovCraft: Core` 2.5.0 or higher
+- Reworked revive system
+  - Players are no longer revived by applying first-aid kits
+  - Now you need to crouch-right-click on a downed player and select the Rescue option in UI to revive them
+  - Revive takes 5 seconds
+- Fixed morphine not removing pain shock
