@@ -7,7 +7,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.EquipmentSlot;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -16,12 +18,12 @@ import java.util.function.IntFunction;
 
 public enum LimbType implements StringRepresentable {
 
-    HEAD("head", 0, 0xFF0000, EquipmentSlot.HEAD),
-    TORSO("torso", 0, 0xFFFF00, EquipmentSlot.CHEST),
-    STOMACH("stomach", MedSystemConstants.HEAL_SURGERY_HEALTH, 0xFF00, EquipmentSlot.CHEST),
+    HEAD("head", 0, 0xFF0000),
+    TORSO("torso", 0, 0xFFFF00),
+    STOMACH("stomach", MedSystemConstants.HEAL_SURGERY_HEALTH, 0xFF00),
     ARM("arm", MedSystemConstants.HEAL_SURGERY_OTHER, 0xFFFF),
-    LEG("leg", MedSystemConstants.HEAL_SURGERY_MOVEMENT, 0xFF, EquipmentSlot.LEGS, EquipmentSlot.FEET),
-    ANIMAL("animal", 0, 0x00FF00, EquipmentSlot.BODY),
+    LEG("leg", MedSystemConstants.HEAL_SURGERY_MOVEMENT, 0xFF),
+    ANIMAL("animal", 0, 0x00FF00),
     OTHER("other", 0, 0x444444);
 
     public static final Codec<LimbType> CODEC = StringRepresentable.fromEnum(LimbType::values);
@@ -31,27 +33,11 @@ public enum LimbType implements StringRepresentable {
     private final String serializedName;
     private final int surgeryPriority;
     private final int hitboxColor;
-    private final Set<EquipmentSlot> armorSlots;
 
     LimbType(String serializedName, int surgeryPriority, int hitboxColor) {
-        this(serializedName, surgeryPriority, hitboxColor, null);
-    }
-
-    LimbType(String serializedName, int surgeryPriority, int hitboxColor, EquipmentSlot first, EquipmentSlot... other) {
         this.serializedName = serializedName;
         this.surgeryPriority = surgeryPriority;
         this.hitboxColor = hitboxColor;
-        this.armorSlots = first != null ? EnumSet.of(first, other) : Collections.emptySet();
-    }
-
-    public static EnumSet<LimbType> getProtectedByEquipment(EquipmentSlot slot) {
-        EnumSet<LimbType> set = EnumSet.noneOf(LimbType.class);
-        for (LimbType group : LimbType.values()) {
-            if (group.armorSlots.contains(slot)) {
-                set.add(group);
-            }
-        }
-        return set;
     }
 
     @Override
@@ -60,7 +46,8 @@ public enum LimbType implements StringRepresentable {
     }
 
     public Set<EquipmentSlot> getArmorSlots() {
-        return armorSlots;
+        MedSystemConfig config = MedicalSystem.getConfig();
+        return config.armor.getProtectedAreasForLimb(this);
     }
 
     public int getHitboxColor() {
