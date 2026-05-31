@@ -198,8 +198,6 @@ public final class MedicalSystemEventHandler {
         TooltipFlag flag = event.getFlags();
         Consumer<Component> adder = tooltip::add;
 
-        stack.addToTooltip(MedSystemItemComponents.ARMOR_MATERIAL, context, TooltipDisplay.DEFAULT, adder, flag);
-        stack.addToTooltip(MedSystemItemComponents.ARMOR_RATING, context, TooltipDisplay.DEFAULT, adder, flag);
         stack.addToTooltip(MedSystemItemComponents.HEAL_ATTRIBUTES, context, TooltipDisplay.DEFAULT, adder, flag);
         stack.addToTooltip(MedSystemItemComponents.SIDE_EFFECTS, context, TooltipDisplay.DEFAULT, adder, flag);
     }
