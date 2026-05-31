@@ -49,7 +49,7 @@ public final class HealthHelper {
     public static void recoverVitalLimbs(HealthContainer container, float health) {
         container.getLimbContainer().getVitalLimbs().forEach(limb -> {
             if (limb.isDead()) {
-                limb.setHealth(health);
+                limb.healUpTo(health);
             }
         });
     }

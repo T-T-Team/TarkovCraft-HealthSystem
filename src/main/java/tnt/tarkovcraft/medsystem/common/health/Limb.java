@@ -107,6 +107,10 @@ public final class Limb {
         this.setHealth(this.health + amount);
     }
 
+    public void healUpTo(float amount) {
+        this.setHealth(Math.max(amount, this.health));
+    }
+
     public void hurt(float amount) {
         this.setHealth(this.health - amount);
     }
