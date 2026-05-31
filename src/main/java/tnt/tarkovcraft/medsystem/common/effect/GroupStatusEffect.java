@@ -18,11 +18,7 @@ public abstract class GroupStatusEffect extends StatusEffect {
     public GroupStatusEffect(List<EffectGroupHolder> items) {
         super(-1);
         this.items.addAll(items);
-        int duration = 0;
-        for (EffectGroupHolder item : this.items) {
-            duration = Math.max(duration, item.getRequiredGroupLifetime());
-        }
-        this.setDuration(duration);
+        this.updateDuration();
     }
 
     protected GroupStatusEffect(int duration, List<EffectGroupHolder> items) {
@@ -90,6 +86,14 @@ public abstract class GroupStatusEffect extends StatusEffect {
     @Override
     public boolean isVisible() {
         return this.items.stream().anyMatch(EffectGroupHolder::isActiveAndVisible);
+    }
+
+    public void updateDuration() {
+        int duration = 0;
+        for (EffectGroupHolder item : this.items) {
+            duration = Math.max(duration, item.getRequiredGroupLifetime());
+        }
+        this.setDuration(duration);
     }
 
     @SuppressWarnings("unchecked")

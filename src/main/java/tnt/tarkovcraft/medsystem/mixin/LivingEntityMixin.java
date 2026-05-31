@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.common.effect.NegativeEffectProtectionStatusEffect;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
@@ -67,6 +69,7 @@ public abstract class LivingEntityMixin extends Entity {
         HealthContainer container = HealthContainer.getAttached(entity);
         LimbContainer limbContainer = container.getLimbContainer();
         limbContainer.forEach(limb -> limb.healUpTo(1.0F));
+        StatusEffectHelper.addGlobalEffect(container.getGlobalStatusEffects(), entity, 10, new NegativeEffectProtectionStatusEffect(100));
         HealthHelper.synchronizeHealth(entity, container);
         HealthSystem.synchronizeEntity(entity);
 

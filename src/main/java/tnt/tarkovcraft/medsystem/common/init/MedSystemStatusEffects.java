@@ -133,4 +133,13 @@ public final class MedSystemStatusEffects {
             .combineEffects(BloodImmuneReactionStatusEffect::mergeImmuneEffect)
             .build()
     );
+    public static final Holder<StatusEffectType<?>> NEGATIVE_EFFECT_PROTECTION = REGISTRY.register("negative_effect_protection", key -> StatusEffectType.builder(key, NegativeEffectProtectionStatusEffect::new)
+            .persist(NegativeEffectProtectionStatusEffect.CODEC)
+            .type(EffectType.POSITIVE)
+            .visibility(EffectVisibility.NEVER)
+            .setGlobal()
+            .setSpecial()
+            .combineEffects(StatusEffect::maxDuration)
+            .build()
+    );
 }
