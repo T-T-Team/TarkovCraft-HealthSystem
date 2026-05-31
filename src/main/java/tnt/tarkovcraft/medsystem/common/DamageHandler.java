@@ -101,7 +101,7 @@ public final class DamageHandler {
             return;
         if (entity.level().isClientSide())
             return;
-        ArmorSystem armorSystem = MedicalSystem.getConfig().armorSystem;
+        ArmorSystem armorSystem = MedicalSystem.getConfig().armor.armorSystem;
         ArmorComponent component = armorSystem.getComponent();
         entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT).ifPresent(context -> {
             component.applyDamageReduction(event, context);
@@ -178,7 +178,7 @@ public final class DamageHandler {
         if (!HealthSystem.hasCustomHealth(entity))
             return;
         MedSystemConfig config = MedicalSystem.getConfig();
-        ArmorSystem system = config.armorSystem;
+        ArmorSystem system = config.armor.armorSystem;
         ArmorComponent component = system.getComponent();
         entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
                 .ifPresent(context -> component.applyItemDamage(event, context));

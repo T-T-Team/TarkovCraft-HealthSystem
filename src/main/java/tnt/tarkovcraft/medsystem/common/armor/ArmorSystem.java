@@ -3,8 +3,8 @@ package tnt.tarkovcraft.medsystem.common.armor;
 public enum ArmorSystem {
 
     SIMULATED(SimulatedArmorComponent.INSTANCE),
-    MODULAR(new ModularArmorComponent(1.0F)),
-    MODULAR_BOOSTED(new ModularArmorComponent(2.5F)),
+    MODULAR(ModularArmorComponent.INSTANCE),
+    MODULAR_BOOSTED(ModularBoostedArmorComponent.INSTANCE),
     VANILLA(VanillaArmorComponent.INSTANCE);
 
     private final ArmorComponent component;

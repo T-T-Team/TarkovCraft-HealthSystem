@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.mixin;
 
 import net.minecraft.core.Holder;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,10 +12,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
@@ -50,6 +53,27 @@ public abstract class LivingEntityMixin extends Entity {
         if (BloodSystemManager.isEnabled(livingEntity)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
             bloodSystem.tick(livingEntity);
+        }
+    }
+
+    @Inject(
+            method = "checkTotemDeathProtection",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;removeEffectsCuredBy(Lnet/neoforged/neoforge/common/EffectCure;)Z")
+    )
+    private void medsystem$checkTotemDeathProtection(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (!HealthSystem.hasCustomHealth(entity))
+            return;
+        HealthContainer container = HealthContainer.getAttached(entity);
+        LimbContainer limbContainer = container.getLimbContainer();
+        limbContainer.forEach(limb -> limb.healUpTo(1.0F));
+        HealthHelper.synchronizeHealth(entity, container);
+        HealthSystem.synchronizeEntity(entity);
+
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        if (bloodSystem != null) {
+            bloodSystem.removeShock(bloodSystem.getShockAmount());
+            bloodSystem.synchronizeImmediately(entity);
         }
     }
 }

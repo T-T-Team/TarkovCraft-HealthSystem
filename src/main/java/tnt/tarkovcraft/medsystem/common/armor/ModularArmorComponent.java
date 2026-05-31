@@ -29,10 +29,10 @@ import java.util.Set;
 
 public class ModularArmorComponent implements ArmorComponent {
 
-    private final float armorValueMultiplier;
+    public static final ModularArmorComponent INSTANCE = new ModularArmorComponent();
 
-    protected ModularArmorComponent(float armorValueMultiplier) {
-        this.armorValueMultiplier = armorValueMultiplier;
+    protected float getArmorValueMultiplier() {
+        return 1.0F;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ModularArmorComponent implements ArmorComponent {
 
         // apply armor reduction
         float toughness = (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
-        float damageAfterAbsorb = CombatRules.getDamageAfterAbsorb(entity, event.getAmount(), context.getSource(), armorValue.floatValue() * this.armorValueMultiplier, toughness);
+        float damageAfterAbsorb = CombatRules.getDamageAfterAbsorb(entity, event.getAmount(), context.getSource(), armorValue.floatValue() * this.getArmorValueMultiplier(), toughness);
         float armorReduction = event.getAmount() - damageAfterAbsorb;
         if (armorReduction > 0.0F) {
             event.addReductionModifier(DamageContainer.Reduction.ARMOR, new ForcedReductionFunction(armorReduction));
