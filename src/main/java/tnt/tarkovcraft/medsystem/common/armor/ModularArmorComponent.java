@@ -93,6 +93,8 @@ public class ModularArmorComponent implements ArmorComponent {
     private void calculateReductions(Collection<EquipmentSlot> slots, DamageContext ctx, LivingEntity entity, MutableFloat armor, MutableFloat enchants) {
         double armorAttribute = entity.getAttribute(Attributes.ARMOR).getBaseValue();
         for (EquipmentSlot slot : slots) {
+            if (!slot.isArmor())
+                continue;
             ItemStack itemStack = entity.getItemBySlot(slot);
             if (itemStack.isEmpty())
                 continue;
