@@ -80,6 +80,7 @@
   "status_effect.medsystem.unconscious": "Unconscious",
   "status_effect.medsystem.concussion": "Concussion",
   "status_effect.medsystem.blood_immune_reaction": "Blood Immunity Reaction",
+  "status_effect.medsystem.negative_effect_protection": "Negative Effect Protection",
 
   "tooltip.medsystem.item.durability": "Uses: %s",
   "tooltip.medsystem.heal_attributes.heal.limited": "Heals %s health points every %s with limit of %s total health points",

@@ -80,6 +80,10 @@ public final class EffectGroupHolder {
         return duration;
     }
 
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
     public int getDelay() {
         return delay;
     }
