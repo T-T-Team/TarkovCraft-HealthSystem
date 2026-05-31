@@ -3,10 +3,8 @@ package tnt.tarkovcraft.medsystem.common.config;
 import dev.toma.configuration.config.Config;
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.FieldVisibility;
-import dev.toma.configuration.config.UpdateRestrictions;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
-import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 
 @Config(id = MedSystemConstants.MOD_ID, filename = "medicalsystem")
 public final class MedSystemConfig {
@@ -26,17 +24,6 @@ public final class MedSystemConfig {
     public float defaultEntityHitboxInflation = 0.2F;
 
     @Configurable
-    @Configurable.Comment({
-            "Defines armor calculation logic with custom health system",
-            "SIMULATED - modular armor with fully simulated logic such as deflections, blunt damage and so on",
-            "MODULAR - modular armor - getting entryPoint in head damages only helmet",
-            "MODULAR_BOOSTED - same as above, but each armor piece has 150% additional protection",
-            "VANILLA - vanilla armor calculation, full armor is used for any damage calculations"
-    })
-    @Configurable.UpdateRestriction(UpdateRestrictions.MAIN_MENU)
-    public ArmorSystem armorSystem = ArmorSystem.SIMULATED;
-
-    @Configurable
     @Configurable.Comment("Uses less hit traces for explosions to save performance")
     public boolean useExplosionPerformanceMode = false;
 
@@ -48,6 +35,9 @@ public final class MedSystemConfig {
     @Configurable
     @Configurable.Comment("Health related configurations")
     public HealthConfig health = new HealthConfig();
+
+    @Configurable
+    public ArmorSystemConfig armor = new ArmorSystemConfig();
 
     @Configurable
     @Configurable.Comment("Blood/Unconscious system related configurations")

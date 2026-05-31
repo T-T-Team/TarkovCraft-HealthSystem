@@ -9,10 +9,6 @@ public class SimulatedArmorComponent extends ModularArmorComponent {
     public static final float UNCONSCIOUS_ENERGY_THRESHOLD = 40.0F;
     public static final float CONCUSSION_ENERGY_THRESHOLD = 10.0F;
 
-    SimulatedArmorComponent() {
-        super(1.0F);
-    }
-
     /*@Override
     public boolean shouldDeflectIncomingHit(DamageSource source, LivingEntity entity, List<HitResult> hits) {
         HitResult first = hits.getFirst();
