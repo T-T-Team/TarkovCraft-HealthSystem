@@ -9,7 +9,8 @@
   "mixins": [
     "LivingEntityMixin",
     "FoodDataMixin",
-    "ProjectileUtilMixin"
+    "ProjectileUtilMixin",
+    "DeathProtectionMixin"
   ],
   "client": [
     "client.LivingEntityRendererMixin",
