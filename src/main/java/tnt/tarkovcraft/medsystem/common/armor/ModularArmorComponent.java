@@ -66,7 +66,10 @@ public class ModularArmorComponent implements ArmorComponent {
         // calculate reductions
         LimbType type = limb.getType();
         DamageSource source = event.getSource();
+        // TODO armor from custom slots such as curio compat?
         Set<EquipmentSlot> slots = type.getArmorSlots();
+        ArmorProtectionArea.checkCustomProtectionAreas(entity, type, slots);
+
         MutableFloat armorValue = new MutableFloat(0.0F);
         MutableFloat enchantmentValue = new MutableFloat(0.0F);
         this.calculateReductions(slots, context, entity, armorValue, enchantmentValue);
