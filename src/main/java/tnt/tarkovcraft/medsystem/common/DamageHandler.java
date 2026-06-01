@@ -115,7 +115,7 @@ public final class DamageHandler {
         DamageSource source = event.getSource();
         DamageContext context = entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
                 .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
-        float damage = event.getNewDamage();
+        float damage = event.getHealthDamage();
         Map<Limb, Float> distributedDamage = context.getDamage(damage);
 
         // apply armor skill based on armor reduction
