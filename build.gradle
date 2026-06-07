@@ -30,6 +30,17 @@ repositories {
             password project.findProperty("MAVEN_PASSWORD").toString() ?: ""
         }
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 java {
@@ -89,6 +100,9 @@ dependencies {
 
     // Core library
     implementation "tnt.tarkovcraft:tarkovcraft_core:${project.core}"
+
+    // Carry on
+    compileOnly "maven.modrinth:carry-on:${project.carryon}"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

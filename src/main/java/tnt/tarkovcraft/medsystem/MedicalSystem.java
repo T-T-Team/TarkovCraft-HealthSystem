@@ -5,7 +5,9 @@ import dev.toma.configuration.config.format.ConfigFormats;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -18,11 +20,12 @@ import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
-import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.health_event.HealthEventManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventManager;
 import tnt.tarkovcraft.medsystem.common.init.*;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
+import tnt.tarkovcraft.medsystem.integration.carryon.CarryOnIntegration;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
@@ -40,6 +43,7 @@ public final class MedicalSystem {
     public MedicalSystem(IEventBus modEventBus, ModContainer container) {
         config = Configuration.registerConfig(MedSystemConfig.class, ConfigFormats.YAML).getConfigInstance();
 
+        modEventBus.addListener(this::setup);
         modEventBus.addListener(this::createRegistries);
         modEventBus.addListener(this::registerCustomWeightProviders);
         modEventBus.register(new MedicalSystemNetwork());
@@ -76,6 +80,15 @@ public final class MedicalSystem {
 
     public static MedSystemConfig getConfig() {
         return config;
+    }
+
+    private void setup(FMLCommonSetupEvent event) {
+        LOGGER.info("Checking loaded mods for compatibility...");
+        ModList modList = ModList.get();
+        if (modList.isLoaded("carryon")) {
+            LOGGER.info("'Carry On' mod detected, enabling integration");
+            CarryOnIntegration.initCommon();
+        }
     }
 
     private void createRegistries(NewRegistryEvent event) {
