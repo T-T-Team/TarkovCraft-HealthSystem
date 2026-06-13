@@ -22,7 +22,7 @@ public enum EffectType implements UnaryOperator<Style>, StringRepresentable {
 
     @Override
     public Style apply(Style style) {
-        return style.applyFormat(this == POSITIVE ? ChatFormatting.GREEN : this == NEGATIVE ? ChatFormatting.RED : ChatFormatting.DARK_GRAY);
+        return style.applyFormat(this == POSITIVE ? ChatFormatting.GREEN : this == NEGATIVE ? ChatFormatting.RED : ChatFormatting.YELLOW);
     }
 
     @Override

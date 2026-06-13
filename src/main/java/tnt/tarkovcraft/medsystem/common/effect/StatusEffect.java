@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.*;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import java.util.function.IntFunction;
 public abstract class StatusEffect {
 
     public static final Component PAINFUL_LABEL = Component.translatable("label.medsystem.painful").withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY);
+    public static final Component RECOVERING_LABEL = Component.translatable("label.medsystem.recovering").withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY);
     public static final DurationFormatSettings DURATION_SETTINGS = new DurationFormatSettings();
     public static final int INFINITE_DURATION = -1;
 
@@ -108,11 +110,16 @@ public abstract class StatusEffect {
         return this.getDuration() < 0;
     }
 
-    public Component getCustomDisplayName() {
+    public @Nullable Component getCustomDisplayName() {
         return null;
     }
 
-    public Identifier getCustomIcon() {
+    public @Nullable Identifier getCustomIcon() {
+        return null;
+    }
+
+    // allows override of effect type for display purposes
+    public @Nullable EffectType getEffectType() {
         return null;
     }
 

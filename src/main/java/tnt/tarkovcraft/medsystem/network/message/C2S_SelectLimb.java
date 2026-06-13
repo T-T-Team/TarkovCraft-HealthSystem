@@ -48,7 +48,7 @@ public record C2S_SelectLimb(InteractionTarget target) implements CustomPacketPa
         }
         HealthContainer container = HealthContainer.getAttached(targetEntity);
         Limb limb = container.getLimbByCode(this.target.limbCode());
-        if (attributes != null && attributes.canUseOnLimb(limb, stack, container, this.target.self(), targetEntity)) {
+        if (attributes != null && attributes.canUseOnLimb(limb, stack, container, targetEntity)) {
             stack.set(MedSystemItemComponents.INTERACTION_TARGET, this.target);
         }
     }

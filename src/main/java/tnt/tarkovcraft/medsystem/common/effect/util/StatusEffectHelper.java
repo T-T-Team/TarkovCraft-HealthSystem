@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
@@ -97,5 +98,17 @@ public final class StatusEffectHelper {
         return container.getLimbContainer().getStatusEffects()
                 .filter(effect -> effect.getType().is(tag))
                 .findAny();
+    }
+
+    public static Identifier getTextureResource(StatusEffectType<?> type) {
+        return getTextureResource(type.getIdentifier());
+    }
+
+    public static Identifier getTextureResource(Identifier baseId) {
+        return getTextureResource(baseId.getNamespace(), baseId.getPath());
+    }
+
+    public static Identifier getTextureResource(String namespace, String name) {
+        return Identifier.fromNamespaceAndPath(namespace, "textures/icons/status_effect/" + name + ".png");
     }
 }

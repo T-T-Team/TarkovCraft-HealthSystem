@@ -4,8 +4,13 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
+import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.Optional;
@@ -16,6 +21,7 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
 
     public static final MapCodec<FractureStatusEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> commonEntity(instance).apply(instance, FractureStatusEffect::new));
     private static final Component HINT = Component.translatable("status_effect.medsystem.fracture.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
+    private static final Identifier RECOVERING_ICON = StatusEffectHelper.getTextureResource(MedSystemConstants.MOD_ID, "fracture_recovering");
 
     public FractureStatusEffect(int duration, Optional<UUID> owner) {
         super(duration, owner);
@@ -44,7 +50,24 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
 
     @Override
     public void addAdditionalInfo(Consumer<Component> tooltip) {
-        tooltip.accept(HINT);
+        if (this.isInfinite()) {
+            tooltip.accept(HINT);
+        } else {
+            tooltip.accept(RECOVERING_LABEL);
+        }
+    }
+
+    @Override
+    public @Nullable Identifier getCustomIcon() {
+        if (!this.isInfinite()) {
+            return RECOVERING_ICON;
+        }
+        return null;
+    }
+
+    @Override
+    public @Nullable EffectType getEffectType() {
+        return this.isInfinite() ? super.getEffectType() : EffectType.NEUTRAL;
     }
 
     @Override

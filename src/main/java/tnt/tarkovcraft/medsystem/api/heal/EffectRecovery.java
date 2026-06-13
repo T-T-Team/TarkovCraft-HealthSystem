@@ -3,81 +3,55 @@ package tnt.tarkovcraft.medsystem.api.heal;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentGetter;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipProvider;
 import org.jspecify.annotations.Nullable;
-import tnt.tarkovcraft.medsystem.api.heal.predicate.AnyEffectPredicate;
-import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicate;
-import tnt.tarkovcraft.medsystem.api.heal.predicate.StatusEffectPredicateType;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
-import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
-import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
-public record EffectRecovery(int consumption, Holder<StatusEffectType<?>> effect, StatusEffectPredicate predicate, Component displayName, boolean extendedTooltip) implements TooltipProvider {
+public record EffectRecovery(int consumption, EffectRecoveryApplicator applicator, boolean extendedTooltip) implements TooltipProvider {
 
     public static final Codec<EffectRecovery> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ExtraCodecs.POSITIVE_INT.optionalFieldOf("consumption", 1).forGetter(EffectRecovery::consumption),
-            MedSystemRegistries.STATUS_EFFECT.holderByNameCodec().fieldOf("effect").forGetter(EffectRecovery::effect),
-            StatusEffectPredicateType.CODEC.optionalFieldOf("predicate", AnyEffectPredicate.INSTANCE).forGetter(EffectRecovery::predicate),
-            ComponentSerialization.CODEC.optionalFieldOf("display_name", CommonComponents.EMPTY).forGetter(EffectRecovery::displayName),
+            EffectRecoveryApplicator.CODEC.fieldOf("applicator").forGetter(EffectRecovery::applicator),
             Codec.BOOL.optionalFieldOf("extended_tooltip", true).forGetter(EffectRecovery::extendedTooltip)
     ).apply(instance, EffectRecovery::new));
 
-    public boolean canRecover(HealthContainer container, @Nullable Limb part) {
-        StatusEffectType<?> type = this.effect.value();
-        if (type.isGlobalEffect() && part == null) {
-            return false;
-        }
-        StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-        return this.findEffect(effects).isPresent();
+    public boolean canRecover(HealthContainer container, LivingEntity entity, @Nullable Limb limb) {
+        return limb != null
+                ? this.applicator.findRecoverableEffect(container, entity, limb).isPresent()
+                : this.canUse(container, entity);
     }
 
-    public boolean canUse(HealthContainer container) {
-        StatusEffectType<?> type = this.effect.value();
-        if (type.isGlobalEffect()) {
-            return this.findEffect(container.getGlobalStatusEffects()).isPresent();
-        }
+    public boolean canUse(HealthContainer container, LivingEntity entity) {
         LimbContainer limbContainer = container.getLimbContainer();
-        return limbContainer.hasLimb(limb -> this.findEffect(limb.getStatusEffects()).isPresent());
+        return limbContainer.getLimbs()
+                .anyMatch(limb -> this.applicator.findRecoverableEffect(container, entity, limb).isPresent());
     }
 
-    public void recover(HealthContainer container, @Nullable Limb part) {
-        StatusEffectType<?> type = this.effect.value();
-        StatusEffectMap effects = type.isGlobalEffect() ? container.getGlobalStatusEffects() : part.getStatusEffects();
-        this.findEffect(effects)
-                .ifPresent(StatusEffect::markForRemoval);
-    }
-    
-    @Nullable
-    public Optional<StatusEffect> findEffect(StatusEffectMap map) {
-        Optional<StatusEffect> holder = map.getEffect(this.effect);
-        return holder.filter(this.predicate);
+    public void recover(HealthContainer container, LivingEntity entity, Limb limb) {
+        this.applicator.findRecoverableEffect(container, entity, limb).ifPresent(effect -> {
+            this.applicator.apply(container, entity, effect, limb);
+        });
     }
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
-        StatusEffectType<?> type = effect.value();
         MutableComponent recoveryLabel = Component.literal("> ");
         if (this.extendedTooltip) {
             recoveryLabel.append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption))).append(" - ");
         }
-        Component displayName = this.displayName != CommonComponents.EMPTY ? this.displayName : type.getDisplayName();
-        recoveryLabel.append(displayName).withStyle(ChatFormatting.DARK_GRAY);
+        Component label = this.applicator.getDisplayText().plainCopy().withStyle(ChatFormatting.DARK_GRAY);
+        recoveryLabel.append(label).withStyle(ChatFormatting.DARK_GRAY);
         tooltipAdder.accept(recoveryLabel);
     }
 }
