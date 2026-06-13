@@ -233,5 +233,9 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
         public Component getLabel() {
             return this.label.get();
         }
+
+        public BleedConfiguration.BleedStageConfig getConfig() {
+            return this.configProvider.apply(MedicalSystem.getConfig().statusEffects.bleedConfiguration);
+        }
     }
 }

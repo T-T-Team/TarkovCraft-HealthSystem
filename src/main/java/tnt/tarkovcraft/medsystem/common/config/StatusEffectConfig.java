@@ -17,12 +17,6 @@ public final class StatusEffectConfig {
     @Configurable.Gui.Slider
     public float bleedChance = 0.025F;
 
-    @SuppressWarnings("unused")
-    @Configurable
-    @Configurable.Comment(value = {"Default duration of bleeding status effect", "-1 means infinite duration"}, localize = true)
-    @Configurable.Range(min = -1)
-    public int bleedDuration = -1;
-
     @Configurable
     @Configurable.Comment(value = {"Configure max bleed duration for effect stacking", "Set to 0 to disable all limits"}, localize = true)
     @Configurable.Range(min = 0)
