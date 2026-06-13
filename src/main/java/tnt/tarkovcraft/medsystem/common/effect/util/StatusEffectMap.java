@@ -31,6 +31,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
     ).xmap(StatusEffectMap::new, t -> t.effects);
 
     private final Map<StatusEffectType<?>, StatusEffect> effects;
+    private final StatusEffectSubmitter submitter = StatusEffectSubmitter.list();
 
     public StatusEffectMap() {
         this.effects = new LinkedHashMap<>();
@@ -44,8 +45,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         if (this.effects.isEmpty())
             return;
         Iterator<Map.Entry<StatusEffectType<?>, StatusEffect>> it = effects.entrySet().iterator();
-        ListStatusEffectSubmitter submitter = StatusEffectSubmitter.list();
-        ctx.withEffectSubmitter(submitter);
+        ctx.withEffectSubmitter(this.submitter);
         LivingEntity entity = ctx.entity();
         while (it.hasNext()) {
             StatusEffect effect = it.next().getValue();
@@ -62,7 +62,7 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
             }
         }
         if (entity.isAlive()) {
-            this.submitPendingEffects(submitter, entity, ctx.limb());
+            this.submitPendingEffects(this.submitter, entity, ctx.limb());
         }
     }
 
@@ -170,13 +170,18 @@ public final class StatusEffectMap implements Iterable<StatusEffect> {
         return this.listEffects().iterator();
     }
 
-    private void submitPendingEffects(ListStatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
-        submitter.forEach(delayedEffect -> {
+    public StatusEffectSubmitter getEffectSubmitter() {
+        return this.submitter;
+    }
+
+    private void submitPendingEffects(StatusEffectSubmitter submitter, LivingEntity entity, @Nullable Limb limb) {
+        submitter.accept(delayedEffect -> {
             if (limb != null) {
                 StatusEffectHelper.addEffect(this, entity, limb, delayedEffect.getDelay(), delayedEffect.createInstance());
             } else {
                 StatusEffectHelper.addGlobalEffect(this, entity, delayedEffect.getDelay(), delayedEffect.createInstance());
             }
         });
+        submitter.clear();
     }
 }

@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.effect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectSubmitter;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectWithDelay;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 
@@ -68,6 +69,16 @@ public interface StatusEffectContext extends StatusEffectSubmitter {
         }
 
         @Override
+        public void clear() {
+            this.submitter.clear();
+        }
+
+        @Override
+        public void accept(Consumer<StatusEffectWithDelay> consumer) {
+            this.submitter.accept(consumer);
+        }
+
+        @Override
         public Limb limb() {
             return this.limb;
         }
@@ -98,6 +109,16 @@ public interface StatusEffectContext extends StatusEffectSubmitter {
         @Override
         public void submit(int delay, StatusEffect template) {
             this.submitter.submit(delay, template);
+        }
+
+        @Override
+        public void clear() {
+            this.submitter.clear();
+        }
+
+        @Override
+        public void accept(Consumer<StatusEffectWithDelay> consumer) {
+            this.submitter.accept(consumer);
         }
 
         @Override

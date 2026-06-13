@@ -25,7 +25,13 @@ public class ListStatusEffectSubmitter implements StatusEffectSubmitter {
         this.effects.get().add(new StatusEffectWithDelay(ConstantNumberProvider.of(delay), template));
     }
 
-    public void forEach(Consumer<StatusEffectWithDelay> consumer) {
+    @Override
+    public void clear() {
+        this.effects.ifPresent(List::clear);
+    }
+
+    @Override
+    public void accept(Consumer<StatusEffectWithDelay> consumer) {
         this.effects.ifPresent(effects -> effects.forEach(consumer));
     }
 }
