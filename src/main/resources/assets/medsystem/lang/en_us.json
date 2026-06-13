@@ -297,6 +297,8 @@
   "config.medsystem.option.maxFractureDuration": "Max fracture duration (stacked)",
   "config.medsystem.option.maxFractureDuration.comment.0": "Configure max fracture duration for effect stacking",
   "config.medsystem.option.maxFractureDuration.comment.1": "Set to 0 to disable all limits",
+  "config.medsystem.option.fractureRecoveryTime": "Fracture recovery time",
+  "config.medsystem.option.fractureRecoveryTime.comment.0": "How long it will take for fractures to heal after applying splints",
   "config.medsystem.option.bluntToolFractureMultiplier": "Blunt tool fracture multiplier",
   "config.medsystem.option.bluntToolFractureMultiplier.comment.0": "Fracture chance multiplier for items from '#medsystem:blunt_tools' tag - shovels, pickaxes, hoes and mace",
   "config.medsystem.option.allowInjuryRecoveryScaling": "Injury recovery effect scaling",

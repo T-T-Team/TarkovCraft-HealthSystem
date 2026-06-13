@@ -6,6 +6,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicatorType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -25,6 +26,10 @@ public record FractureEffectRecoveryApplicator(int duration) implements EffectRe
 
     public static FractureEffectRecoveryApplicator of(TickValue duration) {
         return new FractureEffectRecoveryApplicator(duration.tickValue());
+    }
+
+    public static FractureEffectRecoveryApplicator splint() {
+        return new FractureEffectRecoveryApplicator(MedicalSystem.getConfig().statusEffects.fractureRecoveryTime);
     }
 
     @Override
@@ -53,7 +58,6 @@ public record FractureEffectRecoveryApplicator(int duration) implements EffectRe
     }
 
     private boolean isRecoverableFracture(StatusEffect effect) {
-        return effect.getType().is(MedSystemTags.StatusEffects.IS_FRACTURE)
-                && (effect.isInfinite() || effect.getDuration() > this.duration);
+        return effect.getType().is(MedSystemTags.StatusEffects.IS_FRACTURE) && effect.isInfinite();
     }
 }
