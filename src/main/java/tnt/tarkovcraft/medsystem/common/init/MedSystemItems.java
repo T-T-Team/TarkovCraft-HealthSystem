@@ -73,7 +73,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 600)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(5))
-                                    .removesEffect(FractureEffectRecoveryApplicator.of(Duration.minutes(5)))
+                                    .removesEffect(FractureEffectRecoveryApplicator.splint())
                                     .build()
                             )
             )

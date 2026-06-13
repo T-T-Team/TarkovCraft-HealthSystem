@@ -1,6 +1,8 @@
 package tnt.tarkovcraft.medsystem.common.config;
 
 import dev.toma.configuration.config.Configurable;
+import dev.toma.configuration.config.UpdateRestrictions;
+import tnt.tarkovcraft.core.common.data.duration.Duration;
 
 public final class StatusEffectConfig {
 
@@ -48,6 +50,12 @@ public final class StatusEffectConfig {
     @Configurable.Comment(value = {"Configure max fracture duration for effect stacking", "Set to 0 to disable all limits"}, localize = true)
     @Configurable.Range(min = 0)
     public int maxFractureDuration = 0;
+
+    @Configurable
+    @Configurable.Comment(value = "How long it will take for fractures to heal after applying splints", localize = true)
+    @Configurable.Range(min = 1)
+    @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
+    public int fractureRecoveryTime = Duration.minutes(5).tickValue();
 
     @SuppressWarnings("unused")
     @Configurable
