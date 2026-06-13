@@ -150,7 +150,7 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
         DamageSource source = event.getSource();
-        if (!event.isCanceled() && HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        if (HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
             UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
             if (!options.downedStateAllowed() || bloodSystem.hasBledOut())

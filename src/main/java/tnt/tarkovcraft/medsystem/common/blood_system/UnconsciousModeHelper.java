@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.common.blood_system;
 
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.init.CoreAttributes;
@@ -48,6 +50,7 @@ public final class UnconsciousModeHelper {
 
     public static void onUnconsciousModeEnabled(LivingEntity entity, EntityBloodSystem bloodSystem) {
         BloodSystemConfig config = MedicalSystem.getConfig().bloodSystem;
+        Level level = entity.level();
 
         EntityPoseManager.setEntityPose(entity, entity.getVehicle() != null && entity.getVehicle().shouldRiderSit()
                 ? UnconsciousSittingEntityPose.INSTANCE
@@ -64,9 +67,13 @@ public final class UnconsciousModeHelper {
         entity.ejectPassengers();
 
         RandomSource random = entity.getRandom();
-        if (random.nextFloat() < config.unconsciousHeldItemDropChance) {
-            EntityHelper.dropEquippedItem(entity, EquipmentSlot.MAINHAND);
-            EntityHelper.dropEquippedItem(entity, EquipmentSlot.OFFHAND);
+        if (!level.isClientSide()) {
+            ServerLevel serverLevel = (ServerLevel) entity.level();
+            GameRules gameRules = serverLevel.getGameRules();
+            if (!gameRules.get(GameRules.KEEP_INVENTORY) && random.nextFloat() < config.unconsciousHeldItemDropChance) {
+                EntityHelper.dropEquippedItem(entity, EquipmentSlot.MAINHAND);
+                EntityHelper.dropEquippedItem(entity, EquipmentSlot.OFFHAND);
+            }
         }
 
         if (!config.unconsciousEntityTargeting.canTargetEntity(entity, bloodSystem)) {
