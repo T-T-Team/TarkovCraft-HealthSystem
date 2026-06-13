@@ -43,6 +43,7 @@ import tnt.tarkovcraft.medsystem.util.HealthHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 public final class DamageHandler {
 
@@ -106,7 +107,66 @@ public final class DamageHandler {
     }
 
     // Entity damage application
-    @SubscribeEvent
+    // FIXME: Temporary workaround via mixins. Post event unusable due to being triggered after death processing
+    public static void applyDamage(LivingEntity entity, DamageSource source, Stack<DamageContainer> damageContainers) {
+        if (!HealthSystem.hasCustomHealth(entity))
+            return;
+        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
+        DamageContext context = entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
+        DamageContainer damageContainer = damageContainers.peek();
+        float damage = damageContainer.getNewDamage();
+        Map<Limb, Float> distributedDamage = context.getDamage(damage);
+
+        // apply armor skill based on armor reduction
+        float armorReduction = damageContainer.getReduction(DamageContainer.Reduction.ARMOR);
+        if (armorReduction > 0.0F) {
+            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, armorReduction);
+        }
+
+        // apply health container damage
+        LimbContainer limbContainer = container.getLimbContainer();
+        limbContainer.hurt(context, damage);
+        float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
+        int lostLimbCount = context.getLostLimbsCount();
+        if (totalDamage > 0.0F) {
+            context.triggerAdvancements(entity);
+            // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
+            // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
+            if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+                // apply post-damage effects
+                triggerStatusEffectEvent(entity, container, context, distributedDamage, totalDamage, lostLimbCount);
+                // blood decals
+                addBloodParticles(entity, source, container, context, totalDamage);
+            }
+        }
+
+        // Clean data and apply
+        entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                .ifPresent(DamageContext::reset);
+        HealthHelper.synchronizeHealth(entity, container);
+
+        // Death processing
+        HealthSystem.synchronizeEntity(entity); // send status to a client before death or further processing so that a client knows which body part caused death
+        if (container.isDead()) {
+            entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
+            return;
+        }
+
+        // limbs lost statistic - after death processing to avoid counting lost limbs on entity death
+        if (lostLimbCount > 0) {
+            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST, lostLimbCount);
+        }
+
+        // disable sprinting if an entity can no longer sprint
+        MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
+        if (entity.isSprinting() && !component.canSprint(entity)) {
+            entity.setSprinting(false);
+        }
+    }
+
+    /*@SubscribeEvent
     private void onLivingApplyDamage(LivingDamageEvent.Post event) {
         LivingEntity entity = event.getEntity();
         if (!HealthSystem.hasCustomHealth(entity))
@@ -164,7 +224,7 @@ public final class DamageHandler {
         if (entity.isSprinting() && !component.canSprint(entity)) {
             entity.setSprinting(false);
         }
-    }
+    }*/
 
     // Armor damaging
     @SubscribeEvent
@@ -181,7 +241,7 @@ public final class DamageHandler {
                 .ifPresent(context -> component.applyItemDamage(event, context));
     }
 
-    private void triggerStatusEffectEvent(LivingEntity entity, HealthContainer container, DamageContext context, Map<Limb, Float> damage, float total, int lostLimbs) {
+    private static void triggerStatusEffectEvent(LivingEntity entity, HealthContainer container, DamageContext context, Map<Limb, Float> damage, float total, int lostLimbs) {
         // global damage event
         HealthEventContext globalCtx = HealthEventContext.withParams(entity, container, container.getRootLimb(), builder -> {
             builder.add(HealthEventParams.DAMAGE_CONTEXT, context);
@@ -203,7 +263,7 @@ public final class DamageHandler {
         }
     }
 
-    private void addBloodParticles(LivingEntity entity, DamageSource source, HealthContainer container, DamageContext context, float damage) {
+    private static void addBloodParticles(LivingEntity entity, DamageSource source, HealthContainer container, DamageContext context, float damage) {
         BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
         if (!config.enableBloodDecals || context.getHits().isEmpty())
             return;
