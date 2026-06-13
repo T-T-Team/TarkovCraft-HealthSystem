@@ -35,10 +35,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemSkillEvents;
 import tnt.tarkovcraft.medsystem.network.message.S2C_OpenLimbSelectScreen;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class HealingItem extends InteractableItem {
 
@@ -138,7 +135,7 @@ public class HealingItem extends InteractableItem {
 
                 // adjust vanilla health pool
                 HealthHelper.synchronizeHealth(target, container);
-                if (cycleIndex + 1 > cycleLimit || (limb != null && !attributes.canUseOnLimb(limb, itemStack, container, interaction.self(), target))) {
+                if (cycleIndex + 1 > cycleLimit || (limb != null && !attributes.canUseOnLimb(limb, itemStack, container, target))) {
                     origin.useItemRemaining = 0;
                 } else {
                     HealthSystem.synchronizeEntity(target);
@@ -158,7 +155,7 @@ public class HealingItem extends InteractableItem {
         }
 
         HealthContainer container = HealthContainer.getAttached(target);
-        Limb limb = container.hasLimb(targetLimb) ? container.getLimbByCode(targetLimb) : null;
+        Limb limb = container.hasLimb(targetLimb) ? container.getLimbByCode(targetLimb) : container.getRootLimb();
         int consume = 0;
         // dead limb recovery
         if (attributes.isSurgeryItem()) {
@@ -173,8 +170,8 @@ public class HealingItem extends InteractableItem {
         // effect recovery + consumption for recovery
         List<EffectRecovery> recoveries = attributes.recoveries();
         for (EffectRecovery recovery : recoveries) {
-            if (recovery.canRecover(container, limb) && checkDurability(itemStack, consume + recovery.consumption())) {
-                recovery.recover(container, limb);
+            if (recovery.canRecover(container, target, limb) && checkDurability(itemStack, consume + recovery.consumption())) {
+                recovery.recover(container, target, limb);
                 consume += recovery.consumption();
             }
         }
@@ -250,14 +247,14 @@ public class HealingItem extends InteractableItem {
         HealthContainer container = HealthContainer.getAttached(entity);
         HealItemAttributes attributes = this.getHealingAttributes(itemStack);
         List<LimbWithPriority> limbs = container.getLimbContainer().getLimbs()
-                .map(part -> new LimbWithPriority(part, part.isVital() ? MedSystemConstants.HEAL_VITAL_PART_MULTIPLIER : 1.0F))
+                .map(limb -> new LimbWithPriority(limb, limb.isVital() ? MedSystemConstants.HEAL_VITAL_PART_MULTIPLIER : 1.0F))
                 .toList();
 
         if (attributes.isSurgeryItem()) {
             limbs.forEach(this::addSurgeryHealingPriorities);
         }
         if (attributes.isRecoveryItem()) {
-            limbs.forEach(part -> this.addStatusEffectHealingPriorities(part, attributes.recoveries()));
+            limbs.forEach(limb -> this.addStatusEffectHealingPriorities(container, entity, limb, attributes.recoveries()));
         }
         if (attributes.isHealing()) {
             limbs.forEach(this::addHealthHealingPriorities);
@@ -276,22 +273,18 @@ public class HealingItem extends InteractableItem {
         }
     }
 
-    private void addStatusEffectHealingPriorities(LimbWithPriority priorityLimb, List<EffectRecovery> recoveries) {
+    private void addStatusEffectHealingPriorities(HealthContainer container, LivingEntity entity, LimbWithPriority priorityLimb, List<EffectRecovery> recoveries) {
         Limb limb = priorityLimb.limb;
         StatusEffectMap statusEffects = limb.getStatusEffects();
         if (statusEffects.isEmpty())
             return;
 
-
-        Map<StatusEffectType<?>, StatusEffect> map = statusEffects.getEffects();
-        for (Map.Entry<StatusEffectType<?>, StatusEffect> entry : map.entrySet()) {
-            StatusEffectType<?> type = entry.getKey();
-            StatusEffect effect = entry.getValue();
-            for (EffectRecovery recovery : recoveries) {
-                if (recovery.effect().value() == type && recovery.predicate().test(effect)) {
-                    int healPriority = type.getHealingPriority(effect);
-                    priorityLimb.add(healPriority);
-                }
+        for (EffectRecovery recovery : recoveries) {
+            Optional<StatusEffect> effect = recovery.applicator().findRecoverableEffect(container, entity, limb);
+            int priority = effect.map(statusEffect -> statusEffect.getType().getHealingPriority(statusEffect))
+                    .orElse(0);
+            if (priority > 0) {
+                priorityLimb.add(priority);
             }
         }
     }

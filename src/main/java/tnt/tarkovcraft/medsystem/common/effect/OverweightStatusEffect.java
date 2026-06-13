@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
@@ -47,6 +48,7 @@ public class OverweightStatusEffect extends SimpleStatusEffect {
     }
 
     @Override
+    @Nullable
     public ResourceLocation getCustomIcon() {
         return this.limitExceeded ? MAX_OVERWEIGHT_ICON : null;
     }

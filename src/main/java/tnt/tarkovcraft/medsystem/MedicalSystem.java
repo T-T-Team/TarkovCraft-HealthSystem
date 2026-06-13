@@ -62,7 +62,7 @@ public final class MedicalSystem {
         MedSystemStats.REGISTRY.register(modEventBus);
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
         MedSystemStatusEffects.REGISTRY.register(modEventBus);
-        MedSystemStatusEffectPredicates.REGISTRY.register(modEventBus);
+        MedSystemEffectRecoveryApplicators.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
         MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
         MedSystemHealthEventSources.REGISTRY.register(modEventBus);
@@ -95,7 +95,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.STATUS_EFFECT);
         event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
         event.register(MedSystemRegistries.STATE_MATCHER);
-        event.register(MedSystemRegistries.STATUS_EFFECT_PREDICATE);
+        event.register(MedSystemRegistries.EFFECT_RECOVERY_APPLICATOR);
         event.register(MedSystemRegistries.HEALTH_EVENT_TRIGGER_SOURCE);
         event.register(MedSystemRegistries.HEALTH_EVENT_FUNCTION);
         event.register(MedSystemRegistries.HEALTH_EVENT_CONDITION);

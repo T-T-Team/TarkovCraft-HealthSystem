@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import tnt.tarkovcraft.core.common.data.duration.*;
+import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import java.util.function.IntFunction;
 public abstract class StatusEffect {
 
     public static final Component PAINFUL_LABEL = Component.translatable("label.medsystem.painful").withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY);
+    public static final Component RECOVERING_LABEL = Component.translatable("label.medsystem.recovering").withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY);
     public static final DurationFormatSettings DURATION_SETTINGS = new DurationFormatSettings();
     public static final int INFINITE_DURATION = -1;
 
@@ -108,15 +110,24 @@ public abstract class StatusEffect {
         return this.getDuration() < 0;
     }
 
+    @Nullable
     public Component getCustomDisplayName() {
         return null;
     }
 
+    @Nullable
     public ResourceLocation getCustomIcon() {
         return null;
     }
 
-    protected @Nullable Integer getCustomHealingPriority() {
+    // allows override of effect type for display purposes
+    @Nullable
+    public EffectType getEffectType() {
+        return null;
+    }
+
+    @Nullable
+    protected Integer getCustomHealingPriority() {
         return null;
     }
 

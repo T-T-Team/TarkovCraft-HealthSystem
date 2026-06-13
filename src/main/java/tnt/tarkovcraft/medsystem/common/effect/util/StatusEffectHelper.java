@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.effect.util;
 
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
@@ -19,7 +20,6 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.StatusEffectQueue;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemCriterionTriggers;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -98,5 +98,17 @@ public final class StatusEffectHelper {
         return container.getLimbContainer().getStatusEffects()
                 .filter(effect -> effect.getType().is(tag))
                 .findAny();
+    }
+
+    public static ResourceLocation getTextureResource(StatusEffectType<?> type) {
+        return getTextureResource(type.getIdentifier());
+    }
+
+    public static ResourceLocation getTextureResource(ResourceLocation baseId) {
+        return getTextureResource(baseId.getNamespace(), baseId.getPath());
+    }
+
+    public static ResourceLocation getTextureResource(String namespace, String name) {
+        return ResourceLocation.fromNamespaceAndPath(namespace, "textures/icons/status_effect/" + name + ".png");
     }
 }

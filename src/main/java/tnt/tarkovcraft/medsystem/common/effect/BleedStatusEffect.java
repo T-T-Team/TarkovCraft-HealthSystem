@@ -24,6 +24,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.BleedConfiguration;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
+import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
@@ -49,8 +50,8 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
     public static final Component MODERATE_BLEED = Component.translatable("status_effect.medsystem.bleed.moderate");
     public static final Component HEAVY_BLEED = Component.translatable("status_effect.medsystem.bleed.heavy");
     public static final Component CRITICAL_BLEED = Component.translatable("status_effect.medsystem.bleed.critical");
-    public static final ResourceLocation ICON_LIGHT_BLEED = MedicalSystem.resource("textures/icons/status_effect/light_bleed.png");
-    public static final ResourceLocation ICON_HEAVY_BLEED = MedicalSystem.resource("textures/icons/status_effect/heavy_bleed.png");
+    public static final ResourceLocation ICON_LIGHT_BLEED = StatusEffectHelper.getTextureResource(MedSystemConstants.MOD_ID, "light_bleed");
+    public static final ResourceLocation ICON_HEAVY_BLEED = StatusEffectHelper.getTextureResource(MedSystemConstants.MOD_ID, "heavy_bleed");
     private static final float RAW_DAMAGE_SCALE = 40.0F;
     private static final Component HINT_USE_BANDAGE = Component.translatable("status_effect.medsystem.bleed.bandage.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
     private static final Component HINT_USE_TOURNIQUET = Component.translatable("status_effect.medsystem.bleed.tourniquet.heal_hint").withStyle(ChatFormatting.DARK_GRAY);
@@ -149,11 +150,13 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
     }
 
     @Override
+    @Nullable
     public Component getCustomDisplayName() {
         return this.bleedType.label.get();
     }
 
     @Override
+    @Nullable
     public ResourceLocation getCustomIcon() {
         return this.bleedType.icon.get();
     }
@@ -166,6 +169,10 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
     @Override
     public StatusEffectType<?> getType() {
         return MedSystemStatusEffects.BLEED.value();
+    }
+
+    public BleedType getBleedType() {
+        return bleedType;
     }
 
     @Override
@@ -225,6 +232,10 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
         @Override
         public String getSerializedName() {
             return this.name;
+        }
+
+        public Component getLabel() {
+            return this.label.get();
         }
     }
 }

@@ -107,7 +107,7 @@ public class SelectLimbScreen extends Screen implements HealthContainerScreen {
         display.accept((limbCode, data) -> {
             Limb limb = container.getLimbByCode(limbCode);
             Vector4i rect = data.getGuiPos(scale, center);
-            boolean isLimbHealable = attributes.canUseOnLimb(limb, itemStack, container, selfHealing, target);
+            boolean isLimbHealable = attributes.canUseOnLimb(limb, itemStack, container, target);
             LimbWidget widget = this.addRenderableWidget(new LimbWidget(rect.x, rect.y, rect.z, rect.w, limb, this.font, this));
             widget.setScale(3);
             widget.setColorProvider(value -> {

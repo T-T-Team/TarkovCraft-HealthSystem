@@ -133,6 +133,8 @@
   "label.medsystem.healing.other": "Healing %s, remaining %s",
   "label.medsystem.healing.other.infinite": "Healing %s...",
   "label.medsystem.healing.other.target": "Healing %s",
+  "label.medsystem.effect_recovery.simple": "Heals %s",
+  "label.medsystem.effect_recovery.fracture": "Heals %s (after %s)",
   "label.medsystem.blood_container.mode": "Selected mode: %s (Left-click to change)",
   "label.medsystem.blood_container.mode_changed": "Mode changed to %s",
   "label.medsystem.blood_container.empty_container": "Blood container is empty",
@@ -164,6 +166,7 @@
   "label.medsystem.blood_type": "Blood type: %s",
   "label.unit.liter": "L",
   "label.medsystem.painful": "Painful",
+  "label.medsystem.recovering": "Recovering",
 
   "blood_type.medsystem.unknown": "Unknown",
   "blood_type.medsystem.o_positive": "O+",

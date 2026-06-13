@@ -9,7 +9,6 @@ import tnt.tarkovcraft.core.common.init.CoreItemDataComponents;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.HealItemAttributes;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.api.heal.predicate.IsBleedPredicate;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.consume_effect.RemoveShockConsumeEffect;
 import tnt.tarkovcraft.medsystem.common.effect.BleedStatusEffect;
@@ -17,6 +16,8 @@ import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
 import tnt.tarkovcraft.medsystem.common.effect.group.HealthEffectGroupItem;
 import tnt.tarkovcraft.medsystem.common.effect.group.MobEffectGroupItem;
+import tnt.tarkovcraft.medsystem.common.health.applicator.BleedEffectRecoveryApplicator;
+import tnt.tarkovcraft.medsystem.common.health.applicator.FractureEffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.item.BloodBagItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 import tnt.tarkovcraft.medsystem.common.item.SimpleHealingItem;
@@ -48,7 +49,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 150)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
-                                    .removesEffect(MedSystemStatusEffects.BLEED, new IsBleedPredicate(false), BleedStatusEffect.LIGHT_BLEED)
+                                    .removesEffect(BleedEffectRecoveryApplicator.of(BleedStatusEffect.BleedType.LIGHT, BleedStatusEffect.BleedType.MODERATE))
                                     .build()
                             )
             )
@@ -60,7 +61,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 250)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
-                                    .removesEffect(MedSystemStatusEffects.BLEED, new IsBleedPredicate(true), BleedStatusEffect.HEAVY_BLEED)
+                                    .removesEffect(BleedEffectRecoveryApplicator.of(BleedStatusEffect.BleedType.HEAVY, BleedStatusEffect.BleedType.CRITICAL))
                                     .build()
                             )
             )
@@ -72,7 +73,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 600)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(5))
-                                    .removesEffect(MedSystemStatusEffects.FRACTURE)
+                                    .removesEffect(FractureEffectRecoveryApplicator.of(Duration.minutes(5)))
                                     .build()
                             )
             )
@@ -96,7 +97,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 750)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .unrestrictedHealing(20, 2)
-                                    .removesEffect(4, MedSystemStatusEffects.BLEED, new IsBleedPredicate(false), BleedStatusEffect.LIGHT_BLEED)
+                                    .removesEffect(4, BleedEffectRecoveryApplicator.of(BleedStatusEffect.BleedType.LIGHT))
                                     .build()
                             )
             )

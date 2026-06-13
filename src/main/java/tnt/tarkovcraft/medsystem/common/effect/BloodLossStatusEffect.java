@@ -69,11 +69,13 @@ public class BloodLossStatusEffect extends IntervalAppliedStatusEffect {
     }
 
     @Override
+    @Nullable
     public Component getCustomDisplayName() {
         return this.stage.getTitle();
     }
 
     @Override
+    @Nullable
     public ResourceLocation getCustomIcon() {
         return this.stage.getIcon();
     }

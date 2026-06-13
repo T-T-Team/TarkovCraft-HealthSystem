@@ -47,7 +47,7 @@ public final class StatusEffectType<S extends StatusEffect> {
         this.isGlobalEffect = builder.globalEffect;
         this.isSpecial = builder.special;
         this.healingPriority = builder.healingPriority;
-        this.icon = this.identifier.withPath(path -> "textures/icons/status_effect/" + path + ".png");
+        this.icon = StatusEffectHelper.getTextureResource(this.identifier);
         this.displayName = Component.translatable(this.identifier.toLanguageKey("status_effect"));
     }
 
@@ -77,6 +77,11 @@ public final class StatusEffectType<S extends StatusEffect> {
 
     public EffectType getEffectType() {
         return effectType;
+    }
+
+    public EffectType getContextualEffectType(StatusEffect effect) {
+        EffectType effectType = effect.getEffectType();
+        return effectType != null ? effectType : this.getEffectType();
     }
 
     public EffectVisibility getVisibility() {
