@@ -5,16 +5,16 @@ import dev.toma.configuration.config.Configurable;
 public final class BleedConfiguration {
 
     @Configurable
-    public BleedStageConfig lightBleed = new BleedStageConfig(60, 0.005F, 0, 1);
+    public BleedStageConfig lightBleed = new BleedStageConfig(50, 1.5F, -1, 60, 0.005F, 0, 1);
 
     @Configurable
-    public BleedStageConfig moderateBleed = new BleedStageConfig(45, 0.010F, 0, 2);
+    public BleedStageConfig moderateBleed = new BleedStageConfig(30, 2.5F, -1, 45, 0.010F, 0, 2);
 
     @Configurable
-    public BleedStageConfig heavyBleed = new BleedStageConfig(30, 0.025F, 6000, 5);
+    public BleedStageConfig heavyBleed = new BleedStageConfig(15, 3.0F, -1, 30, 0.025F, 6000, 5);
 
     @Configurable
-    public BleedStageConfig criticalBleed = new BleedStageConfig(10, 0.06F, 12000, 8);
+    public BleedStageConfig criticalBleed = new BleedStageConfig(5, 5.0F, -1, 10, 0.06F, 12000, 8);
 
     public BleedStageConfig getLightBleed() {
         return this.lightBleed;
@@ -35,6 +35,19 @@ public final class BleedConfiguration {
     public static final class BleedStageConfig {
 
         @Configurable
+        @Configurable.Range(min = 0)
+        public int weight;
+
+        @Configurable
+        @Configurable.DecimalRange(min = 0.0F)
+        public float minDamageThreshold;
+
+        @Configurable
+        @Configurable.Range(min = -1)
+        @Configurable.Comment({"Default duration of bleeding status effect", "-1 means infinite duration"})
+        public int bleedDuration;
+
+        @Configurable
         @Configurable.Range(min = 5)
         public int bleedInterval;
 
@@ -52,7 +65,10 @@ public final class BleedConfiguration {
         @Configurable.Gui.Slider
         public int decalCount;
 
-        public BleedStageConfig(int bleedInterval, float bleedAmount, int woundDuration, int decalCount) {
+        public BleedStageConfig(int weight, float minDamageThreshold, int bleedDuration, int bleedInterval, float bleedAmount, int woundDuration, int decalCount) {
+            this.weight = weight;
+            this.minDamageThreshold = minDamageThreshold;
+            this.bleedDuration = bleedDuration;
             this.bleedInterval = bleedInterval;
             this.bleedAmount = bleedAmount;
             this.woundDuration = woundDuration;

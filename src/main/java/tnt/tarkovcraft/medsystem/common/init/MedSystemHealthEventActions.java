@@ -13,6 +13,7 @@ public final class MedSystemHealthEventActions {
     public static final Holder<HealthEventActionType<?>> ADD_STATUS_EFFECT = REGISTRY.register("add_status_effect", key -> new HealthEventActionType<>(key, AddStatusEffectEventAction.CODEC));
     public static final Holder<HealthEventActionType<?>> ADD_MOB_EFFECT = REGISTRY.register("add_mob_effect", key -> new HealthEventActionType<>(key, AddMobEffectEventAction.CODEC));
     public static final Holder<HealthEventActionType<?>> ADD_SHOCK = REGISTRY.register("add_shock", key -> new HealthEventActionType<>(key, AddShockEventAction.CODEC));
+    public static final Holder<HealthEventActionType<?>> ADD_BLEED = REGISTRY.register("add_bleed", key -> new HealthEventActionType<>(key, AddBleedEventAction.CODEC));
     public static final Holder<HealthEventActionType<?>> COPY_INCOMING_EFFECTS = REGISTRY.register("copy_incoming_effects", key -> new HealthEventActionType<>(key, CopyIncomingEffectsEventAction.CODEC));
 
     public static final Holder<HealthEventActionType<?>> WEIGHTED = REGISTRY.register("weighted", key -> new HealthEventActionType<>(key, WeightedEventAction.CODEC));
