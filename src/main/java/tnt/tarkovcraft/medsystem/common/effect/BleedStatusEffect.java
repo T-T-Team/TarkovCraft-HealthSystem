@@ -16,7 +16,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
-import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
@@ -26,7 +25,10 @@ import tnt.tarkovcraft.medsystem.common.config.BleedConfiguration;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
-import tnt.tarkovcraft.medsystem.common.health.*;
+import tnt.tarkovcraft.medsystem.common.health.EntityHitboxContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthContainerDefinition;
+import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStats;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
@@ -135,13 +137,6 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
 
     @Override
     public void onRemoved(StatusEffectContext context) {
-        BleedConfiguration.BleedStageConfig stageConfig = this.getStageConfiguration();
-        if (stageConfig.woundDuration > 0) {
-            context.submit(
-                    Duration.seconds(5),
-                    new FreshWoundStatusEffect(stageConfig.woundDuration, this.bleedType == BleedType.CRITICAL ? BleedType.MODERATE : BleedType.LIGHT)
-            );
-        }
     }
 
     @Override

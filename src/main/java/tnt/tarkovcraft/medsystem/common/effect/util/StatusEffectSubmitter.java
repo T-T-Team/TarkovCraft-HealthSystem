@@ -4,13 +4,17 @@ import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-@FunctionalInterface
 public interface StatusEffectSubmitter {
 
-    StatusEffectSubmitter NOOP = (delay, tpl) -> {};
+    StatusEffectSubmitter NOOP = Noop.INSTANCE;
 
     void submit(int delay, StatusEffect template);
+
+    void clear();
+
+    void accept(Consumer<StatusEffectWithDelay> consumer);
 
     default void submit(TickValue delay, StatusEffect template) {
         submit(delay.tickValue(), template);
@@ -20,11 +24,24 @@ public interface StatusEffectSubmitter {
         submit(0, template);
     }
 
-    static ListStatusEffectSubmitter list(List<StatusEffectWithDelay> list) {
+    static StatusEffectSubmitter list(List<StatusEffectWithDelay> list) {
         return new ListStatusEffectSubmitter(list);
     }
 
-    static ListStatusEffectSubmitter list() {
+    static StatusEffectSubmitter list() {
         return new ListStatusEffectSubmitter();
+    }
+
+    enum Noop implements StatusEffectSubmitter {
+        INSTANCE;
+        @Override
+        public void submit(int delay, StatusEffect template) {
+        }
+        @Override
+        public void clear() {
+        }
+        @Override
+        public void accept(Consumer<StatusEffectWithDelay> consumer) {
+        }
     }
 }
