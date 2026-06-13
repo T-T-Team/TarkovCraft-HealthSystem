@@ -23,6 +23,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> bleedTypes, boolean createWound) implements EffectRecoveryApplicator {
 
@@ -66,11 +67,12 @@ public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> ble
     }
 
     @Override
-    public Component getDisplayText() {
-        List<String> localizedLabels = this.bleedTypes.stream().map(BleedStatusEffect.BleedType::getLabel)
-                .map(Component::getString)
-                .toList();
-        return Component.translatable("label.medsystem.effect_recovery.simple", String.join(",", localizedLabels));
+    public void addLabels(Consumer<Component> lineAdder) {
+        this.bleedTypes.forEach(type -> {
+            Component bleedTypeLabel = type.getLabel();
+            Component label = SimpleEffectRecoveryApplicator.createDisplayText(bleedTypeLabel);
+            lineAdder.accept(label);
+        });
     }
 
     @Override

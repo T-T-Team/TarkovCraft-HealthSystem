@@ -15,6 +15,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemEffectRecoveryApplicators;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public record SimpleEffectRecoveryApplicator(Holder<StatusEffectType<?>> effect) implements EffectRecoveryApplicator {
 
@@ -33,13 +34,17 @@ public record SimpleEffectRecoveryApplicator(Holder<StatusEffectType<?>> effect)
     }
 
     @Override
-    public Component getDisplayText() {
+    public void addLabels(Consumer<Component> lineAdder) {
         StatusEffectType<?> type = this.effect.value();
-        return Component.translatable("label.medsystem.effect_recovery.simple", type.getDisplayName());
+        lineAdder.accept(createDisplayText(type.getDisplayName()));
     }
 
     @Override
     public EffectRecoveryApplicatorType<?> type() {
         return MedSystemEffectRecoveryApplicators.SIMPLE.value();
+    }
+
+    public static Component createDisplayText(Component effect) {
+        return Component.translatable("label.medsystem.effect_recovery.simple", effect);
     }
 }

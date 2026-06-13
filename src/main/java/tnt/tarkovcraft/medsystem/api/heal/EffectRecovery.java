@@ -3,8 +3,6 @@ package tnt.tarkovcraft.medsystem.api.heal;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ExtraCodecs;
@@ -17,7 +15,6 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public record EffectRecovery(int consumption, EffectRecoveryApplicator applicator, boolean extendedTooltip) implements TooltipProvider {
@@ -48,12 +45,15 @@ public record EffectRecovery(int consumption, EffectRecoveryApplicator applicato
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag) {
-        MutableComponent recoveryLabel = Component.literal("> ");
-        if (this.extendedTooltip) {
-            recoveryLabel.append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption))).append(" - ");
-        }
-        Component label = this.applicator.getDisplayText().plainCopy().withStyle(ChatFormatting.DARK_GRAY);
-        recoveryLabel.append(label).withStyle(ChatFormatting.DARK_GRAY);
-        tooltipAdder.accept(recoveryLabel);
+        Component template = Component.literal("> ").withStyle(ChatFormatting.DARK_GRAY);
+        this.applicator.addLabels(text -> {
+            MutableComponent label = template.copy();
+            label.append(text.plainCopy());
+            if (this.extendedTooltip && this.consumption > 1) {
+                Component usesLabel = Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption)).withStyle(ChatFormatting.DARK_GRAY);
+                label.append(" (+").append(usesLabel).append(")");
+            }
+            tooltipAdder.accept(label);
+        });
     }
 }
