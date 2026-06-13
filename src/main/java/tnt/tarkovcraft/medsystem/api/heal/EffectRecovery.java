@@ -46,12 +46,15 @@ public record EffectRecovery(int consumption, EffectRecoveryApplicator applicato
 
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag, DataComponentGetter componentGetter) {
-        MutableComponent recoveryLabel = Component.literal("> ");
-        if (this.extendedTooltip) {
-            recoveryLabel.append(Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption))).append(" - ");
-        }
-        Component label = this.applicator.getDisplayText().plainCopy().withStyle(ChatFormatting.DARK_GRAY);
-        recoveryLabel.append(label).withStyle(ChatFormatting.DARK_GRAY);
-        tooltipAdder.accept(recoveryLabel);
+        Component template = Component.literal("> ").withStyle(ChatFormatting.DARK_GRAY);
+        this.applicator.addLabels(text -> {
+            MutableComponent label = template.copy();
+            label.append(text.plainCopy());
+            if (this.extendedTooltip && this.consumption > 1) {
+                Component usesLabel = Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption)).withStyle(ChatFormatting.DARK_GRAY);
+                label.append(" (+").append(usesLabel).append(")");
+            }
+            tooltipAdder.accept(label);
+        });
     }
 }

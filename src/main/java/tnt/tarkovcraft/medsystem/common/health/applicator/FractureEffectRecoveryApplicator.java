@@ -18,6 +18,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public record FractureEffectRecoveryApplicator(int duration) implements EffectRecoveryApplicator {
 
@@ -46,10 +47,10 @@ public record FractureEffectRecoveryApplicator(int duration) implements EffectRe
     }
 
     @Override
-    public Component getDisplayText() {
+    public void addLabels(Consumer<Component> lineAdder) {
         Component fractureLabel = MedSystemStatusEffects.FRACTURE.value().getDisplayName();
         Component durationLabel = Duration.format(this.duration);
-        return Component.translatable("label.medsystem.effect_recovery.fracture", fractureLabel, durationLabel);
+        lineAdder.accept(Component.translatable("label.medsystem.effect_recovery.fracture", fractureLabel, durationLabel));
     }
 
     @Override

@@ -9,6 +9,7 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface EffectRecoveryApplicator {
 
@@ -19,7 +20,7 @@ public interface EffectRecoveryApplicator {
 
     void apply(HealthContainer container, LivingEntity entity, StatusEffect effect, Limb limb);
 
-    Component getDisplayText();
+    void addLabels(Consumer<Component> lineAdder);
 
     EffectRecoveryApplicatorType<?> type();
 }

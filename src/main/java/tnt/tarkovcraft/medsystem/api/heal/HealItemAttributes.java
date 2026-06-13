@@ -199,7 +199,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         }
 
         public Builder removesEffect(int cost, EffectRecoveryApplicator applicator) {
-            return this.removesEffect(cost, applicator, false);
+            return this.removesEffect(cost, applicator, true);
         }
 
         public Builder removesEffect(EffectRecoveryApplicator applicator) {
@@ -207,7 +207,7 @@ public record HealItemAttributes(boolean applyGlobally, boolean alwaysConsumable
         }
 
         public Builder removesEffect(int cost, Holder<StatusEffectType<?>> effect) {
-            return this.removesEffect(cost, new SimpleEffectRecoveryApplicator(effect), false);
+            return this.removesEffect(cost, new SimpleEffectRecoveryApplicator(effect), true);
         }
 
         public Builder consumeEffect(ConsumeEffect effect) {
