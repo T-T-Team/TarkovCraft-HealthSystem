@@ -97,6 +97,10 @@ public final class LimbContainer implements Iterable<Limb> {
         return this.limbs.values().stream();
     }
 
+    public Stream<Limb> getLimbsByType(LimbType limbType) {
+        return this.getLimbs().filter(limb -> limb.is(limbType));
+    }
+
     public Stream<Limb> getTaggedLimbs(Identifier tag) {
         return this.getLimbs().filter(limb -> limb.isTagged(tag));
     }

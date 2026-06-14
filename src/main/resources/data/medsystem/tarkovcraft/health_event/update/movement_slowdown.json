@@ -2,10 +2,6 @@
   "event_source": "medsystem:update",
   "conditions": [
     {
-      "type": "medsystem:is_limb",
-      "limb": "leg"
-    },
-    {
       "type": "medsystem:logical",
       "operator": "not",
       "conditions": [
@@ -20,11 +16,13 @@
       "operator": "or",
       "conditions": [
         {
-          "type": "medsystem:is_dead_limb"
+          "type": "medsystem:has_dead_limb",
+          "limb": "leg"
         },
         {
           "type": "medsystem:has_effect",
-          "tag": "medsystem:movement_restricting"
+          "tag": "medsystem:movement_restricting",
+          "limb": "leg"
         }
       ]
     }

@@ -2,44 +2,42 @@
   "event_source": "medsystem:update",
   "conditions": [
     {
-      "type": "medsystem:is_root_limb"
+      "type": "medsystem:logical",
+      "operator": "not",
+      "conditions": [
+        {
+          "type": "medsystem:has_effect",
+          "tag": "medsystem:is_pain_relief"
+        }
+      ]
     },
     {
-      "type": "medsystem:has_dead_limb",
-      "limb": "arm"
+      "type": "medsystem:logical",
+      "operator": "or",
+      "conditions": [
+        {
+          "type": "medsystem:has_dead_limb",
+          "limb": "arm"
+        },
+        {
+          "type": "medsystem:has_effect",
+          "limb": "arm",
+          "tag": "medsystem:is_fracture"
+        }
+      ]
     }
   ],
   "actions": [
     {
       "type": "medsystem:add_mob_effect",
       "effect": "minecraft:weakness",
-      "duration": 25,
-      "amplifier_modifiers": [
-        {
-          "type": "medsystem:dead_limb_scale",
-          "limb": "arm",
-          "limb_operator": "add",
-          "scale": -1
-        }
-      ]
+      "duration": 25
     },
     {
       "type": "medsystem:add_mob_effect",
       "effect": "minecraft:mining_fatigue",
       "duration": 25,
-      "amplifier_modifiers": [
-        {
-          "type": "medsystem:dead_limb_scale",
-          "limb": "arm",
-          "limb_operator": "multiply",
-          "scale": 2
-        },
-        {
-          "type": "medsystem:calculation",
-          "operator": "subtract",
-          "value": 1
-        }
-      ]
+      "amplifier": 1
     }
   ]
 }

@@ -1,9 +1,9 @@
-# Release 2.8.0+26.1.2
-- Reworked Fracture effect
-  - No longer immediately healed by splints. Now by default it takes 5 minutes to be fully cured
-  - Duration is configurable
-- Bleeds are now more configurable
-  - You can set weights for each bleed type, min received damage to be able to receive each bleed type
-  - Per bleed type duration configs
-- Fixed unconscious mode not working correctly with newer NeoForge versions
-- Reworked healing logic to be more flexible for future use
+# Release 2.9.0+26.1.2
+- Fractures on arms now also cause weakness and mining fatigue
+- Weakness and Mining fatigue are no longer scaled by amount of affected limbs
+- Statistics, Skill and Health screens are now synchronized correctly when receiving update while having the screen open
+- Fixed issues with blood decals texture layering
+- Tooltip improvements for bandages and tourniquets
+- All keybinds are now in single `TarkovCraft` category
+- Internal registry overhaul and simplification
+- Optimization of health effects

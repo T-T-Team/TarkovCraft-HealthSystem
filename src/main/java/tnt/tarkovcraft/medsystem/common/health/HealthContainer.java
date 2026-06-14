@@ -10,6 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
@@ -21,7 +22,9 @@ import tnt.tarkovcraft.core.util.Cached;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventSources;
 
 import java.util.Optional;
 
@@ -89,12 +92,22 @@ public final class HealthContainer {
             this.clearBoundData(entity);
             return;
         }
+        Level level = entity.level();
+        long gameTime = level.getGameTime();
 
+        // Status effect tick
         this.effectQueue.update(this, entity);
         StatusEffectMap globalEffects = this.getGlobalStatusEffects();
         globalEffects.painEffectTick(entity, 20, false);
+
+        // Limb tick
         StatusEffectContext.MutableContext statusEffectContext = new StatusEffectContext.MutableContext(this, entity);
         this.limbContainer.update(statusEffectContext);
+
+        // health tick event
+        if (gameTime % 20 == 0) {
+            MedicalSystem.HEALTH_EVENT.triggerEvent(MedSystemHealthEventSources.UPDATE, HealthEventContext.simple(entity, this, this.getRootLimb()));
+        }
 
         // synchronization
         if (this.changed) {
