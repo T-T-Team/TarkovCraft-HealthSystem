@@ -11,7 +11,6 @@ import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import java.util.List;
@@ -66,7 +65,7 @@ public record DeadLimbRecoveryEffectGroupItem(float health) implements EffectGro
     }
 
     @Override
-    public EffectGroupItemType<?> getType() {
-        return MedSystemStatusEffectGroupItems.DEAD_LIMB_RECOVERY.value();
+    public MapCodec<? extends EffectGroupItem> codec() {
+        return CODEC;
     }
 }

@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 
 public record RemoveVanillaAttributeModifierBloodLevelEffect(Holder<Attribute> attribute, Identifier modifier) implements BloodLevelEffect {
 
@@ -24,7 +23,7 @@ public record RemoveVanillaAttributeModifierBloodLevelEffect(Holder<Attribute> a
     }
 
     @Override
-    public BloodLevelEffectType<?> getType() {
-        return MedSystemBloodLevelEffects.REMOVE_VANILLA_ATTRIBUTE_MODIFIER.value();
+    public MapCodec<? extends BloodLevelEffect> codec() {
+        return CODEC;
     }
 }

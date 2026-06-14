@@ -2,7 +2,6 @@ package tnt.tarkovcraft.medsystem.common.health.state;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.entity.LivingEntity;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 
 public final class IsBabyEntityStateMatcher implements EntityStateMatcher {
 
@@ -18,7 +17,7 @@ public final class IsBabyEntityStateMatcher implements EntityStateMatcher {
     }
 
     @Override
-    public EntityStateMatcherType<?> getType() {
-        return MedSystemStateFilters.IS_BABY.value();
+    public MapCodec<? extends EntityStateMatcher> codec() {
+        return CODEC;
     }
 }

@@ -6,17 +6,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
-import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
 import tnt.tarkovcraft.core.common.util.AttributeNumber;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 
-public record UnconsciousBloodLevelEffect(NumberProvider duration, AttributeNumber chance, UnconsciousOptions options) implements BloodLevelEffect {
+public record UnconsciousBloodLevelEffect(int duration, AttributeNumber chance, UnconsciousOptions options) implements BloodLevelEffect {
 
     public static final MapCodec<UnconsciousBloodLevelEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            NumberProviderType.CODEC.fieldOf("duration").forGetter(UnconsciousBloodLevelEffect::duration),
+            NumberProvider.DURATION.fieldOf("duration").forGetter(UnconsciousBloodLevelEffect::duration),
             AttributeNumber.CODEC.optionalFieldOf("chance", AttributeNumber.constant(1.0)).forGetter(UnconsciousBloodLevelEffect::chance),
             UnconsciousOptions.CODEC.fieldOf("options").forGetter(UnconsciousBloodLevelEffect::options)
     ).apply(instance, UnconsciousBloodLevelEffect::new));
@@ -25,7 +23,7 @@ public record UnconsciousBloodLevelEffect(NumberProvider duration, AttributeNumb
     public void applyEffects(LivingEntity entity, ServerLevel level, EntityBloodSystem bloodSystem) {
         double chance = this.chance.getValue(entity);
         RandomSource random = entity.getRandom();
-        applyUnconsciousMode(bloodSystem, random, (float) chance, this.duration.intValue(), this.options);
+        applyUnconsciousMode(bloodSystem, random, (float) chance, this.duration, this.options);
     }
 
     public static void applyUnconsciousMode(EntityBloodSystem bloodSystem, RandomSource random, float chance, int duration, UnconsciousOptions options) {
@@ -40,7 +38,7 @@ public record UnconsciousBloodLevelEffect(NumberProvider duration, AttributeNumb
     }
 
     @Override
-    public BloodLevelEffectType<?> getType() {
-        return MedSystemBloodLevelEffects.UNCONSCIOUS.value();
+    public MapCodec<? extends BloodLevelEffect> codec() {
+        return CODEC;
     }
 }

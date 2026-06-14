@@ -4,11 +4,10 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedList;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventActions;
 
 public record WeightedEventAction(WeightedList<HealthEventAction> entries) implements HealthEventAction {
 
-    public static final MapCodec<WeightedEventAction> CODEC = WeightedList.codec(HealthEventActionType.CODEC)
+    public static final MapCodec<WeightedEventAction> CODEC = WeightedList.codec(HealthEventAction.CODEC)
             .xmap(WeightedEventAction::new, WeightedEventAction::entries).fieldOf("entries");
 
     @Override
@@ -20,7 +19,7 @@ public record WeightedEventAction(WeightedList<HealthEventAction> entries) imple
     }
 
     @Override
-    public HealthEventActionType<?> getType() {
-        return MedSystemHealthEventActions.WEIGHTED.value();
+    public MapCodec<? extends HealthEventAction> codec() {
+        return CODEC;
     }
 }

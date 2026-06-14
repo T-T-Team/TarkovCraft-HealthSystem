@@ -11,7 +11,6 @@ import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.TimeRange;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 
 public record ConfigurableUnconsciousBloodLevelEffect(AttributeNumber chance, UnconsciousOptions options) implements BloodLevelEffect {
 
@@ -31,7 +30,7 @@ public record ConfigurableUnconsciousBloodLevelEffect(AttributeNumber chance, Un
     }
 
     @Override
-    public BloodLevelEffectType<?> getType() {
-        return MedSystemBloodLevelEffects.CONFIGURABLE_UNCONSCIOUS.value();
+    public MapCodec<? extends BloodLevelEffect> codec() {
+        return CODEC;
     }
 }

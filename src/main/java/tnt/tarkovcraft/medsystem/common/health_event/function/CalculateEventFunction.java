@@ -6,7 +6,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.core.util.NumberFormatter;
 import tnt.tarkovcraft.core.util.NumberOperator;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventFunctions;
 
 public record CalculateEventFunction(NumberOperator operator, float value, NumberFormatter.RoundingMode rounding) implements HealthEventFunction {
 
@@ -22,7 +21,7 @@ public record CalculateEventFunction(NumberOperator operator, float value, Numbe
     }
 
     @Override
-    public HealthEventFunctionType<?> getType() {
-        return MedSystemHealthEventFunctions.CALCULATION.value();
+    public MapCodec<? extends HealthEventFunction> codec() {
+        return CODEC;
     }
 }

@@ -16,7 +16,6 @@ import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.function.Consumer;
 
@@ -77,7 +76,7 @@ public record StatusEffectRemovingEffectGroupItem(TagKey<StatusEffectType<?>> ta
     }
 
     @Override
-    public EffectGroupItemType<?> getType() {
-        return MedSystemStatusEffectGroupItems.STATUS_EFFECT_REMOVING.value();
+    public MapCodec<? extends EffectGroupItem> codec() {
+        return CODEC;
     }
 }

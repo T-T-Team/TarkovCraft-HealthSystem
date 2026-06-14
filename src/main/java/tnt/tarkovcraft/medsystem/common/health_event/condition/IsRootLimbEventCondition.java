@@ -5,7 +5,6 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 public final class IsRootLimbEventCondition implements HealthEventCondition {
 
@@ -23,7 +22,7 @@ public final class IsRootLimbEventCondition implements HealthEventCondition {
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.IS_ROOT_LIMB.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }

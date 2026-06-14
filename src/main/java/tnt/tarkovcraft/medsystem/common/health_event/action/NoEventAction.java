@@ -2,7 +2,6 @@ package tnt.tarkovcraft.medsystem.common.health_event.action;
 
 import com.mojang.serialization.MapCodec;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventActions;
 
 public class NoEventAction implements HealthEventAction {
 
@@ -18,7 +17,7 @@ public class NoEventAction implements HealthEventAction {
     }
 
     @Override
-    public HealthEventActionType<?> getType() {
-        return MedSystemHealthEventActions.NONE.value();
+    public MapCodec<? extends HealthEventAction> codec() {
+        return CODEC;
     }
 }

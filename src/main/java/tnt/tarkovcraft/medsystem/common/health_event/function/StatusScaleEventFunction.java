@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventFunctions;
 
 public record StatusScaleEventFunction(boolean localDamage, float scale) implements HealthEventFunction {
 
@@ -21,7 +20,7 @@ public record StatusScaleEventFunction(boolean localDamage, float scale) impleme
     }
 
     @Override
-    public HealthEventFunctionType<?> getType() {
-        return MedSystemHealthEventFunctions.DAMAGE_SCALE.value();
+    public MapCodec<? extends HealthEventFunction> codec() {
+        return CODEC;
     }
 }

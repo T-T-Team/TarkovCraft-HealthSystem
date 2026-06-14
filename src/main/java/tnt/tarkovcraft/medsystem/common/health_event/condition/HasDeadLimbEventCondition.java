@@ -7,7 +7,6 @@ import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 import java.util.Set;
 
@@ -24,7 +23,7 @@ public record HasDeadLimbEventCondition(Set<LimbType> limb) implements HealthEve
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.HAS_DEAD_LIMB.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }

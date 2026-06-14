@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common.health_event.condition;
 import com.mojang.serialization.MapCodec;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 public final class IsDeadLimbEventCondition implements HealthEventCondition {
 
@@ -18,7 +17,7 @@ public final class IsDeadLimbEventCondition implements HealthEventCondition {
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.IS_DEAD_LIMB.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }

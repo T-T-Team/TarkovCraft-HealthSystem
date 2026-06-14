@@ -15,7 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.function.Consumer;
 
@@ -93,7 +92,7 @@ public record MobEffectGroupItem(Holder<MobEffect> effect, int amplifier, boolea
     }
 
     @Override
-    public EffectGroupItemType<?> getType() {
-        return MedSystemStatusEffectGroupItems.MOB_EFFECT.value();
+    public MapCodec<? extends EffectGroupItem> codec() {
+        return CODEC;
     }
 }

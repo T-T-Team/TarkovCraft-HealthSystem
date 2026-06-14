@@ -10,7 +10,6 @@ import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventActions;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,8 +49,8 @@ public final class AddBleedEventAction implements HealthEventAction {
     }
 
     @Override
-    public HealthEventActionType<?> getType() {
-        return MedSystemHealthEventActions.ADD_BLEED.value();
+    public MapCodec<? extends HealthEventAction> codec() {
+        return CODEC;
     }
 
     private boolean canUseBleedStage(BleedStatusEffect.BleedType type, float damage) {

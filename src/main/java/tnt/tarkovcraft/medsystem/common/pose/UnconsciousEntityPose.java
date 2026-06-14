@@ -1,10 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.pose;
 
 import com.mojang.serialization.MapCodec;
-import tnt.tarkovcraft.core.common.pose.CoreEntityPoseFlags;
-import tnt.tarkovcraft.core.common.pose.EntityPoseFlag;
-import tnt.tarkovcraft.core.common.pose.EntityPoseType;
-import tnt.tarkovcraft.core.common.pose.EntityStatusPose;
+import tnt.tarkovcraft.core.common.pose.*;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemEntityPoses;
 
 import java.util.Set;
@@ -27,7 +24,7 @@ public final class UnconsciousEntityPose extends EntityStatusPose {
     }
 
     @Override
-    public EntityPoseType<?> getType() {
+    public EntityPose.Type<?> getType() {
         return MedSystemEntityPoses.UNCONSCIOUS.value();
     }
 }

@@ -10,7 +10,6 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
@@ -32,8 +31,8 @@ public final class DeathBloodLevelEffect implements BloodLevelEffect {
     }
 
     @Override
-    public BloodLevelEffectType<?> getType() {
-        return MedSystemBloodLevelEffects.DEATH.value();
+    public MapCodec<? extends BloodLevelEffect> codec() {
+        return CODEC;
     }
 
     private Optional<StatusEffect> findBleedEffect(LivingEntity entity) {

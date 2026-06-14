@@ -11,9 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.level.Level;
-import tnt.tarkovcraft.core.common.data.number.ConstantNumberProvider;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
-import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemConsumeEffects;
@@ -21,15 +19,11 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemConsumeEffects;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
 
-public record RemoveShockConsumeEffect(NumberProvider amount) implements ConsumeEffect {
+public record RemoveShockConsumeEffect(float amount) implements ConsumeEffect {
 
-    public static final MapCodec<RemoveShockConsumeEffect> CODEC = NumberProviderType.VALUE_CODEC
+    public static final MapCodec<RemoveShockConsumeEffect> CODEC = NumberProvider.POSITIVE_FLOAT
             .xmap(RemoveShockConsumeEffect::new, RemoveShockConsumeEffect::amount).fieldOf("amount");
     public static final StreamCodec<RegistryFriendlyByteBuf, RemoveShockConsumeEffect> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
-
-    public RemoveShockConsumeEffect(float amount) {
-        this(ConstantNumberProvider.of(amount));
-    }
 
     public static Component createTooltipLabel(float amount) {
         return createTooltipLabel(String.format(Locale.ROOT, "%.1f%%", amount * 100), style -> style.withColor(ChatFormatting.GREEN));
@@ -41,14 +35,14 @@ public record RemoveShockConsumeEffect(NumberProvider amount) implements Consume
     }
 
     public Component createTooltipLabel() {
-        return createTooltipLabel(this.amount.floatValue());
+        return createTooltipLabel(this.amount);
     }
 
     @Override
     public boolean apply(Level level, ItemStack stack, LivingEntity entity) {
         if (BloodSystemManager.isEnabled(entity)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
-            bloodSystem.removeShock(this.amount.floatValue());
+            bloodSystem.removeShock(this.amount);
             return true;
         }
         return false;

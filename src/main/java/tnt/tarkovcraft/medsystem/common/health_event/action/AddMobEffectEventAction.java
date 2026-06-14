@@ -12,8 +12,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.function.HealthEventFunction;
-import tnt.tarkovcraft.medsystem.common.health_event.function.HealthEventFunctionType;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventActions;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +25,8 @@ public record AddMobEffectEventAction(Holder<MobEffect> type, int duration, int 
             Codec.BOOL.optionalFieldOf("ambient", true).forGetter(AddMobEffectEventAction::ambient),
             Codec.BOOL.optionalFieldOf("show_particles", false).forGetter(AddMobEffectEventAction::visible),
             Codec.BOOL.optionalFieldOf("show_icon", true).forGetter(AddMobEffectEventAction::showIcon),
-            HealthEventFunctionType.CODEC.listOf().optionalFieldOf("duration_modifiers", Collections.emptyList()).forGetter(AddMobEffectEventAction::durationModifiers),
-            HealthEventFunctionType.CODEC.listOf().optionalFieldOf("amplifier_modifiers", Collections.emptyList()).forGetter(AddMobEffectEventAction::amplifierModifiers)
+            HealthEventFunction.CODEC.listOf().optionalFieldOf("duration_modifiers", Collections.emptyList()).forGetter(AddMobEffectEventAction::durationModifiers),
+            HealthEventFunction.CODEC.listOf().optionalFieldOf("amplifier_modifiers", Collections.emptyList()).forGetter(AddMobEffectEventAction::amplifierModifiers)
     ).apply(instance, AddMobEffectEventAction::new));
 
     @Override
@@ -41,13 +39,13 @@ public record AddMobEffectEventAction(Holder<MobEffect> type, int duration, int 
     }
 
     @Override
-    public HealthEventActionType<?> getType() {
-        return MedSystemHealthEventActions.ADD_MOB_EFFECT.value();
+    public MapCodec<? extends HealthEventAction> codec() {
+        return CODEC;
     }
 
     private MobEffectInstance createMobEffectInstance(HealthEventContext context) {
-        int duration = Mth.floor(HealthEventFunctionType.applyFunctions(this.duration, context, this.durationModifiers));
-        int amplifier = Mth.floor(HealthEventFunctionType.applyFunctions(this.amplifier, context, this.amplifierModifiers));
+        int duration = Mth.floor(HealthEventFunction.applyFunctions(this.duration, context, this.durationModifiers));
+        int amplifier = Mth.floor(HealthEventFunction.applyFunctions(this.amplifier, context, this.amplifierModifiers));
         return new MobEffectInstance(this.type, duration, amplifier, this.ambient, this.visible, this.showIcon);
     }
 }

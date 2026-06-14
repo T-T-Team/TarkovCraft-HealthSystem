@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.LogicalOperator;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public record LogicalEntityStateMatcher(LogicalOperator operator, List<EntitySta
 
     public static final MapCodec<LogicalEntityStateMatcher> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             LogicalOperator.CODEC.fieldOf("operator").forGetter(LogicalEntityStateMatcher::operator),
-            EntityStateMatcherType.CODEC.listOf().fieldOf("values").forGetter(LogicalEntityStateMatcher::values)
+            EntityStateMatcher.CODEC.listOf().fieldOf("values").forGetter(LogicalEntityStateMatcher::values)
     ).apply(instance, LogicalEntityStateMatcher::new));
 
     @Override
@@ -21,7 +20,7 @@ public record LogicalEntityStateMatcher(LogicalOperator operator, List<EntitySta
     }
 
     @Override
-    public EntityStateMatcherType<?> getType() {
-        return MedSystemStateFilters.LOGICAL.value();
+    public MapCodec<? extends EntityStateMatcher> codec() {
+        return CODEC;
     }
 }

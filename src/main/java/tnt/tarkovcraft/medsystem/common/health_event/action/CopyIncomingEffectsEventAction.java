@@ -9,7 +9,6 @@ import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventActions;
 
 public record CopyIncomingEffectsEventAction() implements HealthEventAction {
 
@@ -33,7 +32,7 @@ public record CopyIncomingEffectsEventAction() implements HealthEventAction {
     }
 
     @Override
-    public HealthEventActionType<?> getType() {
-        return MedSystemHealthEventActions.COPY_INCOMING_EFFECTS.value();
+    public MapCodec<? extends HealthEventAction> codec() {
+        return CODEC;
     }
 }

@@ -6,7 +6,6 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public record IsLimbTypeEventCondition(List<LimbType> limbs) implements HealthEv
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.IS_LIMB.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }
