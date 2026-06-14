@@ -20,7 +20,6 @@ import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
@@ -46,14 +45,12 @@ import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
-import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.client.screen.UnconsciousActionScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
@@ -119,14 +116,6 @@ public final class MedicalSystemClient {
 
     public static MedSystemClientConfig getConfig() {
         return config;
-    }
-
-    public static void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
-        Minecraft minecraft = Minecraft.getInstance();
-        Screen screen = minecraft.screen;
-        if (screen instanceof HealthContainerScreen healthContainerScreen) {
-            healthContainerScreen.onHealthContainerUpdated(holder, container);
-        }
     }
 
     public static void openUnconsciousActionScreen(LivingEntity entity) {

@@ -11,10 +11,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import org.jspecify.annotations.Nullable;
+import tnt.tarkovcraft.core.api.AttachmentSyncCallbackListener;
+import tnt.tarkovcraft.core.api.client.SynchronizableScreen;
+import tnt.tarkovcraft.core.client.TarkovCraftCoreClient;
 import tnt.tarkovcraft.core.util.Cached;
-import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
@@ -30,6 +34,7 @@ public final class HealthContainer {
             Codec.BOOL.optionalFieldOf("invalidated", false).forGetter(t -> t.invalidated)
     ).apply(instance, HealthContainer::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, HealthContainer> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(MAP_CODEC.codec());
+    public static final SynchronizableScreen.DataSource HEALTH = new SynchronizableScreen.DataSource(MedicalSystem.createIdentifier("health"));
 
     private final EntityType<?> type;
     private final LimbContainer limbContainer;
@@ -155,7 +160,7 @@ public final class HealthContainer {
         return HealthSystem.getHealthContainerDefinition(this.type);
     }
 
-    public static final class SyncHandler implements AttachmentSyncHandler<HealthContainer> {
+    public static final class SyncHandler implements AttachmentSyncHandler<HealthContainer>, AttachmentSyncCallbackListener<HealthContainer> {
 
         @Override
         public void write(RegistryFriendlyByteBuf buf, HealthContainer attachment, boolean initialSync) {
@@ -164,9 +169,12 @@ public final class HealthContainer {
 
         @Override
         public @Nullable HealthContainer read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable HealthContainer previousValue) {
-            HealthContainer container = STREAM_CODEC.decode(buf);
-            MedicalSystemClient.onHealthContainerUpdated(holder, container);
-            return container;
+            return STREAM_CODEC.decode(buf);
+        }
+
+        @Override
+        public void onDataSynced(IAttachmentHolder holder, AttachmentType<HealthContainer> attachmentType, HealthContainer attachment) {
+            TarkovCraftCoreClient.synchronizeCurrentScreen(HEALTH);
         }
     }
 }

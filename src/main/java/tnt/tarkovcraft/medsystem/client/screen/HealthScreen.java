@@ -5,7 +5,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-public class HealthScreen extends CharacterSubScreen implements HealthContainerScreen {
+public class HealthScreen extends CharacterSubScreen {
 
     public static final Identifier HEALTH_ICON = MedicalSystem.createIdentifier("textures/icons/health.png");
     public static final Identifier DROPLET_ICON = MedicalSystem.createIdentifier("textures/icons/droplet.png");
@@ -48,8 +47,9 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
     }
 
     @Override
-    public void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
-        this.init(this.width, this.height);
+    public void sync(DataSource source) {
+        if (source.equals(HealthContainer.HEALTH) || source.equals(EntityBloodSystem.BLOOD_SYSTEM))
+            this.init(this.width, this.height);
     }
 
     @Override
