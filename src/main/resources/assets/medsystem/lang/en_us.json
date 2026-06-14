@@ -110,7 +110,6 @@
   "entity_interaction.medsystem.rescue_downed_entity": "Rescue",
   "entity_interaction.medsystem.rescue_downed_entity.response.unable_to_rescue": "Entity is not in rescue state",
 
-  "key.category.medsystem.keymap": "Medical system",
   "key.medsystem.give_up": "Give up",
   "key.medsystem.open_health": "Show health UI",
 

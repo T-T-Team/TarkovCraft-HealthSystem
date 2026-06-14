@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.api.event.client.RegisterOnScreenHintEvent;
 import tnt.tarkovcraft.core.api.event.client.RegisterPostShaderProgramsEvent;
+import tnt.tarkovcraft.core.client.TarkovCraftCoreClient;
 import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
@@ -64,20 +65,19 @@ import java.util.UUID;
 @Mod(value = MedSystemConstants.MOD_ID, dist = Dist.CLIENT)
 public final class MedicalSystemClient {
 
-    public static final KeyMapping.Category KEYMAPPING_CATEGORY = new KeyMapping.Category(MedicalSystem.createIdentifier("keymap"));
     public static final KeyMapping KEY_GIVE_UP = new KeyMapping(
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "give_up"),
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             InputConstants.KEY_X,
-            KEYMAPPING_CATEGORY
+            TarkovCraftCoreClient.SHARED_CATEGORY
     );
     public static final KeyMapping KEY_OPEN_HEALTH = new KeyMapping(
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "open_health"),
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            KEYMAPPING_CATEGORY
+            TarkovCraftCoreClient.SHARED_CATEGORY
     );
     public static final ParticleLimit BLOOD_PARTICLES_LIMIT = new ParticleLimit(2000);
     private static MedSystemClientConfig config;
