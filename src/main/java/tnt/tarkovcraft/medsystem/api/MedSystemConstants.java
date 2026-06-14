@@ -1,5 +1,8 @@
 package tnt.tarkovcraft.medsystem.api;
 
+import net.minecraft.resources.Identifier;
+import tnt.tarkovcraft.medsystem.MedicalSystem;
+
 public final class MedSystemConstants {
 
     // General
@@ -18,4 +21,8 @@ public final class MedSystemConstants {
 
     // entity state
     public static final String DEFAULT_ENTITY_STATE = "default";
+
+    // Limb tags
+    public static final Identifier ATTACK_ARM = MedicalSystem.createIdentifier("attack_arm");
+    public static final Identifier OFFHAND_ARM = MedicalSystem.createIdentifier("offhand_arm");
 }

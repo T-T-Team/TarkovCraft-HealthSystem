@@ -75,6 +75,7 @@ public final class MedSystemRegistries {
         registerObject(helper, "logical", LogicalEventCondition.CODEC);
         registerObject(helper, "lost_limb", LostLimbEventCondition.CODEC);
         registerObject(helper, "item_predicate", ItemPredicateEventCondition.CODEC);
+        registerObject(helper, "has_limb_tag", IsTaggedLimbEventCondition.CODEC);
     }
 
     public static void registerHealthEventActions(RegisterEvent.RegisterHelper<MapCodec<? extends HealthEventAction>> helper) {
