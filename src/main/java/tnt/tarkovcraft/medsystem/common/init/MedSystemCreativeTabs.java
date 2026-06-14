@@ -7,7 +7,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 public final class MedSystemCreativeTabs {

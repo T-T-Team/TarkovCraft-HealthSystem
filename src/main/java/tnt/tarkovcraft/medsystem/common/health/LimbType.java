@@ -10,8 +10,6 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.IntFunction;
 

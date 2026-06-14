@@ -2,9 +2,6 @@ package tnt.tarkovcraft.medsystem.common.config;
 
 import dev.toma.configuration.config.Configurable;
 import dev.toma.configuration.config.UpdateRestrictions;
-import dev.toma.configuration.config.validate.ValidationResult;
-import dev.toma.configuration.config.validate.Validator;
-import dev.toma.configuration.config.value.IConfigValueReadable;
 import net.minecraft.world.entity.EquipmentSlot;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;

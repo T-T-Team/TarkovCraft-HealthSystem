@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.effect;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import tnt.tarkovcraft.medsystem.common.effect.group.EffectGroupHolder;

@@ -13,8 +13,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tnt.tarkovcraft.core.util.UserActionResult;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
 public record C2S_RescueDownedEntity(int entityId) implements CustomPacketPayload {

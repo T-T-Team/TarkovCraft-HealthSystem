@@ -7,15 +7,15 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "LivingEntityMixin",
-    "FoodDataMixin",
-    "ProjectileUtilMixin",
     "DeathProtectionMixin",
-    "PlayerMixin"
+    "FoodDataMixin",
+    "LivingEntityMixin",
+    "PlayerMixin",
+    "ProjectileUtilMixin"
   ],
   "client": [
+    "client.EntityHitboxDebugRendererMixin",
     "client.LivingEntityRendererMixin",
-    "client.PlayerModelMixin",
-    "client.EntityHitboxDebugRendererMixin"
+    "client.PlayerModelMixin"
   ]
 }
