@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.sounds.AbstractSoundInstance;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -25,9 +24,9 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.lwjgl.glfw.GLFW;
 import tnt.tarkovcraft.core.api.event.client.RegisterOnScreenHintEvent;
 import tnt.tarkovcraft.core.api.event.client.RegisterPostShaderProgramsEvent;
+import tnt.tarkovcraft.core.client.TarkovCraftCoreClient;
 import tnt.tarkovcraft.core.client.overlay.StaminaLayer;
 import tnt.tarkovcraft.core.client.screen.navigation.CoreNavigators;
 import tnt.tarkovcraft.core.client.screen.navigation.NavigationEntry;
@@ -47,12 +46,10 @@ import tnt.tarkovcraft.medsystem.client.screen.UnconsciousActionScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
-import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItems;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemParticleTypes;
 import tnt.tarkovcraft.medsystem.integration.core.GiveUpOnScreenHint;
 import tnt.tarkovcraft.medsystem.network.message.C2S_RequestGiveUp;
@@ -63,20 +60,19 @@ import java.util.UUID;
 @Mod(value = MedSystemConstants.MOD_ID, dist = Dist.CLIENT)
 public final class MedicalSystemClient {
 
-    public static final String KEYMAPPING_CATEGORY = "key.category.medsystem.keymap";
     public static final KeyMapping KEY_GIVE_UP = new KeyMapping(
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "give_up"),
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             InputConstants.KEY_X,
-            KEYMAPPING_CATEGORY
+            TarkovCraftCoreClient.SHARED_CATEGORY
     );
     public static final KeyMapping KEY_OPEN_HEALTH = new KeyMapping(
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "open_health"),
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
             InputConstants.UNKNOWN.getValue(),
-            KEYMAPPING_CATEGORY
+            TarkovCraftCoreClient.SHARED_CATEGORY
     );
     private static MedSystemClientConfig config;
 
