@@ -22,7 +22,7 @@ public interface EffectRecoveryApplicator {
 
     void apply(HealthContainer container, LivingEntity entity, StatusEffect effect, Limb limb);
 
-    void addLabels(Consumer<Component> lineAdder);
+    void addLabels(Consumer<Component> recoveryLabelAdder, Consumer<Component> noteAdder);
 
     MapCodec<? extends EffectRecoveryApplicator> codec();
 }

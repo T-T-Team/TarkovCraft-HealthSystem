@@ -57,6 +57,12 @@ public final class StatusEffectConfig {
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     public int fractureRecoveryTime = Duration.minutes(5).tickValue();
 
+    @Configurable
+    @Configurable.Comment("How long it will take for fractures to heal after applying bandages")
+    @Configurable.Range(min = 1)
+    @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
+    public int fractureRecoveryTimeBandage = Duration.minutes(45).tickValue();
+
     @SuppressWarnings("unused")
     @Configurable
     @Configurable.Comment(value = "Fracture chance multiplier for items from '#medsystem:blunt_tools' tag - shovels, pickaxes, hoes and mace", localize = true)

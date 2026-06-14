@@ -16,6 +16,7 @@ import tnt.tarkovcraft.medsystem.common.effect.group.*;
 import tnt.tarkovcraft.medsystem.common.health.applicator.BleedEffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.health.applicator.FractureEffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.health.applicator.SimpleEffectRecoveryApplicator;
+import tnt.tarkovcraft.medsystem.common.health.applicator.StagedEffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.health.state.*;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventTriggerSource;
 import tnt.tarkovcraft.medsystem.common.health_event.action.*;
@@ -60,6 +61,7 @@ public final class MedSystemRegistries {
         registerObject(helper, "simple", SimpleEffectRecoveryApplicator.CODEC);
         registerObject(helper, "bleed", BleedEffectRecoveryApplicator.CODEC);
         registerObject(helper, "fracture", FractureEffectRecoveryApplicator.CODEC);
+        registerObject(helper, "staged", StagedEffectRecoveryApplicator.CODEC);
     }
 
     public static void registerHealthEventConditions(RegisterEvent.RegisterHelper<MapCodec<? extends HealthEventCondition>> helper) {

@@ -3,6 +3,7 @@ package tnt.tarkovcraft.medsystem.common.health.applicator;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -32,9 +33,9 @@ public record SimpleEffectRecoveryApplicator(Holder<StatusEffectType<?>> effect)
     }
 
     @Override
-    public void addLabels(Consumer<Component> lineAdder) {
+    public void addLabels(Consumer<Component> recoveryLabelAdder, Consumer<Component> noteAdder) {
         StatusEffectType<?> type = this.effect.value();
-        lineAdder.accept(createDisplayText(type.getDisplayName()));
+        recoveryLabelAdder.accept(createDisplayText(type.getDisplayName()));
     }
 
     @Override
@@ -42,7 +43,7 @@ public record SimpleEffectRecoveryApplicator(Holder<StatusEffectType<?>> effect)
         return CODEC;
     }
 
-    public static Component createDisplayText(Component effect) {
+    public static MutableComponent createDisplayText(Component effect) {
         return Component.translatable("label.medsystem.effect_recovery.simple", effect);
     }
 }

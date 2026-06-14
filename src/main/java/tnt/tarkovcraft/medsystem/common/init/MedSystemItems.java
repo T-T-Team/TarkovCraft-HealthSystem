@@ -16,8 +16,10 @@ import tnt.tarkovcraft.medsystem.common.effect.ConcussionStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.PainReliefEffect;
 import tnt.tarkovcraft.medsystem.common.effect.group.HealthEffectGroupItem;
 import tnt.tarkovcraft.medsystem.common.effect.group.MobEffectGroupItem;
+import tnt.tarkovcraft.medsystem.common.health.LimbSelection;
 import tnt.tarkovcraft.medsystem.common.health.applicator.BleedEffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.health.applicator.FractureEffectRecoveryApplicator;
+import tnt.tarkovcraft.medsystem.common.health.applicator.StagedEffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.item.BloodBagItem;
 import tnt.tarkovcraft.medsystem.common.item.HealingItem;
 import tnt.tarkovcraft.medsystem.common.item.SimpleHealingItem;
@@ -49,7 +51,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 150)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
-                                    .removesEffect(BleedEffectRecoveryApplicator.of(BleedStatusEffect.BleedType.LIGHT, BleedStatusEffect.BleedType.MODERATE))
+                                    .removesEffect(BleedEffectRecoveryApplicator.of(LimbSelection.ALL, BleedStatusEffect.BleedType.LIGHT, BleedStatusEffect.BleedType.MODERATE))
                                     .build()
                             )
             )
@@ -61,7 +63,22 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 250)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
-                                    .removesEffect(BleedEffectRecoveryApplicator.of(BleedStatusEffect.BleedType.HEAVY, BleedStatusEffect.BleedType.CRITICAL))
+                                    .removesEffect(BleedEffectRecoveryApplicator.of(LimbSelection.ARM_LEG, BleedStatusEffect.BleedType.HEAVY, BleedStatusEffect.BleedType.CRITICAL))
+                                    .build()
+                            )
+            )
+    );
+    public static final DeferredItem<HealingItem> PRESSURE_DRESSING = REGISTRY.registerItem(
+            "pressure_dressing",
+            properties -> new HealingItem(
+                    properties
+                            .component(CoreItemDataComponents.WEIGHT, 200)
+                            .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
+                                    .setMinUseTime(Duration.seconds(7))
+                                    .removesEffect(StagedEffectRecoveryApplicator.of(
+                                            BleedEffectRecoveryApplicator.of(LimbSelection.ALL, BleedStatusEffect.BleedType.LIGHT, BleedStatusEffect.BleedType.MODERATE, BleedStatusEffect.BleedType.HEAVY, BleedStatusEffect.BleedType.CRITICAL),
+                                            FractureEffectRecoveryApplicator.pressureDressing()
+                                    ))
                                     .build()
                             )
             )
@@ -97,7 +114,7 @@ public final class MedSystemItems {
                             .component(CoreItemDataComponents.WEIGHT, 750)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .unrestrictedHealing(20, 2)
-                                    .removesEffect(4, BleedEffectRecoveryApplicator.of(BleedStatusEffect.BleedType.LIGHT))
+                                    .removesEffect(4, BleedEffectRecoveryApplicator.of(LimbSelection.ALL, BleedStatusEffect.BleedType.LIGHT))
                                     .build()
                             )
             )

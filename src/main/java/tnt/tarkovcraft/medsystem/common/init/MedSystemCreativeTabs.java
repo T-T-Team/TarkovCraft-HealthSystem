@@ -20,6 +20,7 @@ public final class MedSystemCreativeTabs {
                 output.accept(MedSystemItems.EMERGENCY_SURGERY_KIT);
                 output.accept(MedSystemItems.BANDAGE);
                 output.accept(MedSystemItems.TOURNIQUET);
+                output.accept(MedSystemItems.PRESSURE_DRESSING);
                 output.accept(MedSystemItems.SPLINT);
                 output.accept(MedSystemItems.PAINKILLERS);
                 output.accept(MedSystemItems.FIRST_AID_KIT);

@@ -15,6 +15,8 @@ import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public record EffectRecovery(int consumption, EffectRecoveryApplicator applicator, boolean extendedTooltip) implements TooltipProvider {
@@ -46,14 +48,16 @@ public record EffectRecovery(int consumption, EffectRecoveryApplicator applicato
     @Override
     public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag flag) {
         Component template = Component.literal("> ").withStyle(ChatFormatting.DARK_GRAY);
+        List<Component> notes = new ArrayList<>();
         this.applicator.addLabels(text -> {
             MutableComponent label = template.copy();
-            label.append(text.plainCopy());
+            label.append(text.copy());
             if (this.extendedTooltip && this.consumption > 1) {
                 Component usesLabel = Component.translatable("tooltip.medsystem.heal_attributes.recoveries.use_label", String.valueOf(consumption)).withStyle(ChatFormatting.DARK_GRAY);
                 label.append(" (+").append(usesLabel).append(")");
             }
             tooltipAdder.accept(label);
-        });
+        }, note -> notes.add(note.copy().withStyle(ChatFormatting.DARK_GRAY)));
+        notes.forEach(tooltipAdder);
     }
 }
