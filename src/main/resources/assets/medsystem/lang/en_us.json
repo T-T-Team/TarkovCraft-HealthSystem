@@ -106,6 +106,14 @@
   "medsystem.limb.left_leg": "Left Leg",
   "medsystem.limb.legs": "Legs",
 
+  "medsystem.limb_type.head": "Head",
+  "medsystem.limb_type.torso": "Body",
+  "medsystem.limb_type.stomach": "Stomach",
+  "medsystem.limb_type.arm": "Arms",
+  "medsystem.limb_type.leg": "Legs",
+  "medsystem.limb_type.animal": "Animals",
+  "medsystem.limb_type.other": "Other",
+
   "entity_interaction.medsystem.shared.response.entity_too_far": "Entity is too far",
   "entity_interaction.medsystem.rescue_downed_entity": "Rescue",
   "entity_interaction.medsystem.rescue_downed_entity.response.unable_to_rescue": "Entity is not in rescue state",
@@ -133,7 +141,7 @@
   "label.medsystem.healing.other.infinite": "Healing %s...",
   "label.medsystem.healing.other.target": "Healing %s",
   "label.medsystem.effect_recovery.simple": "Heals %s",
-  "label.medsystem.effect_recovery.fracture": "Heals %s (after %s)",
+  "label.medsystem.effect_recovery.fracture": "Heals %s after %s",
   "label.medsystem.blood_container.mode": "Selected mode: %s (Left-click to change)",
   "label.medsystem.blood_container.mode_changed": "Mode changed to %s",
   "label.medsystem.blood_container.empty_container": "Blood container is empty",
@@ -166,6 +174,7 @@
   "label.unit.liter": "L",
   "label.medsystem.painful": "Painful",
   "label.medsystem.recovering": "Recovering",
+  "label.medsystem.applicable_on": "Applicable on: %s",
 
   "blood_type.medsystem.unknown": "Unknown",
   "blood_type.medsystem.o_positive": "O+",

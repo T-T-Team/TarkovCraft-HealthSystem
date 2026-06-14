@@ -1,6 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.health;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
@@ -30,11 +31,13 @@ public enum LimbType implements StringRepresentable {
     private final String serializedName;
     private final int surgeryPriority;
     private final int hitboxColor;
+    private final Component label;
 
     LimbType(String serializedName, int surgeryPriority, int hitboxColor) {
         this.serializedName = serializedName;
         this.surgeryPriority = surgeryPriority;
         this.hitboxColor = hitboxColor;
+        this.label = Component.translatable("medsystem.limb_type." + serializedName);
     }
 
     @Override
@@ -53,5 +56,9 @@ public enum LimbType implements StringRepresentable {
 
     public int getSurgeryHealingPriority() {
         return surgeryPriority;
+    }
+
+    public Component getLabel() {
+        return label;
     }
 }

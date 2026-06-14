@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.Codecs;
@@ -15,6 +16,7 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
+import tnt.tarkovcraft.medsystem.common.health.LimbSelection;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.EnumSet;
@@ -22,19 +24,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> bleedTypes, boolean createWound) implements EffectRecoveryApplicator {
+public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> bleedTypes, LimbSelection limbFilter, boolean createWound) implements EffectRecoveryApplicator {
 
     public static final MapCodec<BleedEffectRecoveryApplicator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codecs.enumSet(BleedStatusEffect.BleedType.CODEC).fieldOf("bleed_types").forGetter(t -> t.bleedTypes),
+            LimbSelection.CODEC.optionalFieldOf("limb_filter", LimbSelection.ALL).forGetter(t -> t.limbFilter),
             Codec.BOOL.optionalFieldOf("create_wound", true).forGetter(t -> t.createWound)
     ).apply(instance, BleedEffectRecoveryApplicator::new));
 
-    public static BleedEffectRecoveryApplicator of(boolean wound, BleedStatusEffect.BleedType first, BleedStatusEffect.BleedType... rest) {
-        return new BleedEffectRecoveryApplicator(EnumSet.of(first, rest), wound);
+    public static BleedEffectRecoveryApplicator of(boolean wound, LimbSelection filter, BleedStatusEffect.BleedType first, BleedStatusEffect.BleedType... rest) {
+        return new BleedEffectRecoveryApplicator(EnumSet.of(first, rest), filter, wound);
     }
 
-    public static BleedEffectRecoveryApplicator of(BleedStatusEffect.BleedType first, BleedStatusEffect.BleedType... rest) {
-        return new BleedEffectRecoveryApplicator(EnumSet.of(first, rest), true);
+    public static BleedEffectRecoveryApplicator of(LimbSelection filter, BleedStatusEffect.BleedType first, BleedStatusEffect.BleedType... rest) {
+        return new BleedEffectRecoveryApplicator(EnumSet.of(first, rest), filter, true);
     }
 
     @Override
@@ -64,11 +67,12 @@ public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> ble
     }
 
     @Override
-    public void addLabels(Consumer<Component> lineAdder) {
+    public void addLabels(Consumer<Component> recoveryLabelAdder, Consumer<Component> noteAdder) {
         this.bleedTypes.forEach(type -> {
             Component bleedTypeLabel = type.getLabel();
-            Component label = SimpleEffectRecoveryApplicator.createDisplayText(bleedTypeLabel);
-            lineAdder.accept(label);
+            MutableComponent label = SimpleEffectRecoveryApplicator.createDisplayText(bleedTypeLabel);
+            this.limbFilter.appendApplicableOnLabel(label);
+            recoveryLabelAdder.accept(label);
         });
     }
 
