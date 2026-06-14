@@ -3,7 +3,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
@@ -97,7 +97,11 @@ public final class LimbContainer implements Iterable<Limb> {
         return this.limbs.values().stream();
     }
 
-    public Stream<Limb> getTaggedLimbs(Identifier tag) {
+    public Stream<Limb> getLimbsByType(LimbType limbType) {
+        return this.getLimbs().filter(limb -> limb.is(limbType));
+    }
+
+    public Stream<Limb> getTaggedLimbs(ResourceLocation tag) {
         return this.getLimbs().filter(limb -> limb.isTagged(tag));
     }
 

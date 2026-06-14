@@ -2,11 +2,8 @@
   "event_source": "medsystem:update",
   "conditions": [
     {
-      "type": "medsystem:is_limb",
+      "type": "medsystem:has_dead_limb",
       "limb": "stomach"
-    },
-    {
-      "type": "medsystem:is_dead_limb"
     }
   ],
   "actions": {

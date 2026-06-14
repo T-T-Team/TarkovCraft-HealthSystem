@@ -194,7 +194,7 @@ public final class Limb {
         return Math.min(this.maxHealth - 1, reductionsSum);
     }
 
-    public boolean isTagged(Identifier tag) {
+    public boolean isTagged(ResourceLocation tag) {
         return this.definition.isTagged(tag);
     }
 

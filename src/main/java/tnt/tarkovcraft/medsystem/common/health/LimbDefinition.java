@@ -2,7 +2,7 @@ package tnt.tarkovcraft.medsystem.common.health;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import tnt.tarkovcraft.core.util.Codecs;
@@ -13,13 +13,13 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import java.util.Collections;
 import java.util.Set;
 
-public record LimbDefinition(LimbType type, boolean vital, float baseHealth, Set<Identifier> tags, DamageConfiguration damageConfiguration) {
+public record LimbDefinition(LimbType type, boolean vital, float baseHealth, Set<ResourceLocation> tags, DamageConfiguration damageConfiguration) {
 
     public static final Codec<LimbDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             LimbType.CODEC.fieldOf("type").forGetter(LimbDefinition::type),
             Codec.BOOL.optionalFieldOf("vital", false).forGetter(LimbDefinition::vital),
             ExtraCodecs.POSITIVE_FLOAT.fieldOf("base_health").forGetter(LimbDefinition::baseHealth),
-            Codecs.hashSet(Identifier.CODEC).optionalFieldOf("tags", Collections.emptySet()).forGetter(LimbDefinition::tags),
+            Codecs.hashSet(ResourceLocation.CODEC).optionalFieldOf("tags", Collections.emptySet()).forGetter(LimbDefinition::tags),
             DamageConfiguration.CODEC.optionalFieldOf("damage_configuration", DamageConfiguration.DEFAULT).forGetter(LimbDefinition::damageConfiguration)
     ).apply(instance, LimbDefinition::new));
 
@@ -27,7 +27,7 @@ public record LimbDefinition(LimbType type, boolean vital, float baseHealth, Set
         return new Limb(this, code);
     }
 
-    public boolean isTagged(Identifier tag) {
+    public boolean isTagged(ResourceLocation tag) {
         return this.tags.contains(tag);
     }
 
