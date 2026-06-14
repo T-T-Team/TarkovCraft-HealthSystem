@@ -52,9 +52,13 @@ public class FractureStatusEffect extends EntityCausedStatusEffect {
     public void addAdditionalInfo(Consumer<Component> tooltip) {
         if (this.isInfinite()) {
             tooltip.accept(HINT);
-        } else {
-            tooltip.accept(RECOVERING_LABEL);
         }
+    }
+
+    @Override
+    public void addCustomTags(Consumer<Component> tags) {
+        if (!this.isInfinite())
+            tags.accept(RECOVERING_LABEL);
     }
 
     @Override
