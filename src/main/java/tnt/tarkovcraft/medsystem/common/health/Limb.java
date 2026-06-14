@@ -193,6 +193,10 @@ public final class Limb {
         return Math.min(this.maxHealth - 1, reductionsSum);
     }
 
+    public boolean isTagged(Identifier tag) {
+        return this.definition.isTagged(tag);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Limb part)) return false;
