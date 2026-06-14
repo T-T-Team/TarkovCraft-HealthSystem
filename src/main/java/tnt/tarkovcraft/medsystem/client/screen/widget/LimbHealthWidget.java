@@ -148,6 +148,7 @@ public class LimbHealthWidget extends AbstractWidget {
                     if (type.is(MedSystemTags.StatusEffects.IS_PAIN_CAUSING)) {
                         tooltip.add(StatusEffect.PAINFUL_LABEL);
                     }
+                    effect.addCustomTags(tooltip::add);
                     graphics.setTooltipForNextFrame(this.font, tooltip, Optional.empty(), mouseX, mouseY);
                 }
             }

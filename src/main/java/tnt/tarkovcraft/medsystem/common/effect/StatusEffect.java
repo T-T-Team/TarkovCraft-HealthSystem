@@ -69,6 +69,13 @@ public abstract class StatusEffect {
 
     }
 
+    /**
+     * Allows you to add custom tags such as "Painful" on the bottom of tooltip
+     * @param tags Tag text registration
+     */
+    public void addCustomTags(Consumer<Component> tags) {
+    }
+
     public boolean isVisible() {
         return true;
     }
