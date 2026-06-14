@@ -4,7 +4,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
@@ -25,7 +24,6 @@ import tnt.tarkovcraft.medsystem.client.screen.widget.LimbWidget;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectVisibility;
@@ -37,10 +35,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-public class HealthScreen extends CharacterSubScreen implements HealthContainerScreen {
+public class HealthScreen extends CharacterSubScreen {
 
-    public static final ResourceLocation HEALTH_ICON = MedicalSystem.resource("textures/icons/health.png");
-    public static final ResourceLocation DROPLET_ICON = MedicalSystem.resource("textures/icons/droplet.png");
+    public static final ResourceLocation HEALTH_ICON = MedicalSystem.createIdentifier("textures/icons/health.png");
+    public static final ResourceLocation DROPLET_ICON = MedicalSystem.createIdentifier("textures/icons/droplet.png");
 
     private HealthContainer healthContainer;
 
@@ -49,8 +47,9 @@ public class HealthScreen extends CharacterSubScreen implements HealthContainerS
     }
 
     @Override
-    public void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
-        this.init(this.minecraft, this.width, this.height);
+    public void sync(DataSource source) {
+        if (source.equals(HealthContainer.HEALTH) || source.equals(EntityBloodSystem.BLOOD_SYSTEM))
+            this.init(this.minecraft, this.width, this.height);
     }
 
     @Override

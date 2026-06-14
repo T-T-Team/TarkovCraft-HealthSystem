@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 public class HealthLayer implements LayeredDraw.Layer {
 
-    public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/health");
+    public static final ResourceLocation LAYER_ID = MedicalSystem.createIdentifier("layer/health");
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {

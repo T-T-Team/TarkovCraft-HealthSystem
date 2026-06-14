@@ -14,10 +14,10 @@ import java.util.Optional;
 
 public interface MedSystemDamageTypes {
 
-    ResourceKey<DamageType> FRACTURE = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("fracture"));
-    ResourceKey<DamageType> BLEED = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("bleed"));
-    ResourceKey<DamageType> TOXIC_SIDE_EFFECT = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("toxic_side_effect"));
-    ResourceKey<DamageType> IMMUNE_REACTION = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.resource("immune_reaction"));
+    ResourceKey<DamageType> FRACTURE = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("fracture"));
+    ResourceKey<DamageType> BLEED = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("bleed"));
+    ResourceKey<DamageType> TOXIC_SIDE_EFFECT = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("toxic_side_effect"));
+    ResourceKey<DamageType> IMMUNE_REACTION = ResourceKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("immune_reaction"));
 
     static DamageSource causeFractureDamage(RegistryAccess access) {
         return new DamageSource(of(access, FRACTURE));

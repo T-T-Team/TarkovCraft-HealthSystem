@@ -29,7 +29,7 @@ import java.util.Map;
 public final class ExplosionHitCalculator implements HitCalculator {
 
     public static final ExplosionHitCalculator INSTANCE = new ExplosionHitCalculator();
-    public static final ResourceLocation METADATA_PRESSURE_FLAG = MedicalSystem.resource("pressure");
+    public static final ResourceLocation METADATA_PRESSURE_FLAG = MedicalSystem.createIdentifier("pressure");
     private static final float EXPLOSION_DAMAGE_SCALING = 2.5F;
     private static final float AIR_PRESSURE_MULTIPLIER = 0.5F;
     private static final float WATER_PRESSURE_MULTIPLIER = 1.2F;

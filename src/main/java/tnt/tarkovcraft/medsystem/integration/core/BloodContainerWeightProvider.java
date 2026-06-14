@@ -11,7 +11,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 
 public class BloodContainerWeightProvider implements WeightProvider {
 
-    public static final ResourceLocation PROVIDER_ID = MedicalSystem.resource("weight/item/blood_container");
+    public static final ResourceLocation PROVIDER_ID = MedicalSystem.createIdentifier("weight/item/blood_container");
 
     @Override
     public WeightSource getSource() {

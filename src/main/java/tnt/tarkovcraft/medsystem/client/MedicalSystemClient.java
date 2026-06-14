@@ -18,7 +18,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
@@ -40,13 +39,11 @@ import tnt.tarkovcraft.medsystem.client.overlay.HealthLayer;
 import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
-import tnt.tarkovcraft.medsystem.client.screen.HealthContainerScreen;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.client.screen.UnconsciousActionScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
-import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItems;
@@ -111,21 +108,13 @@ public final class MedicalSystemClient {
         return config;
     }
 
-    public static void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
-        Minecraft minecraft = Minecraft.getInstance();
-        Screen screen = minecraft.screen;
-        if (screen instanceof HealthContainerScreen healthContainerScreen) {
-            healthContainerScreen.onHealthContainerUpdated(holder, container);
-        }
-    }
-
     public static void openUnconsciousActionScreen(LivingEntity entity) {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.setScreen(new UnconsciousActionScreen(entity));
     }
 
     private void setup(FMLClientSetupEvent event) {
-        ItemProperties.register(MedSystemItems.BLOODBAG.asItem(), MedicalSystem.resource("blood_volume"), (itemStack, level, entity, seed) -> {
+        ItemProperties.register(MedSystemItems.BLOODBAG.asItem(), MedicalSystem.createIdentifier("blood_volume"), (itemStack, level, entity, seed) -> {
             BloodContainer container = itemStack.get(MedSystemItemComponents.BLOOD_CONTAINER);
             if (container == null) {
                 return 0.0F;

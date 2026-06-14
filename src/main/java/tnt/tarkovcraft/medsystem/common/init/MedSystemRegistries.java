@@ -114,19 +114,19 @@ public final class MedSystemRegistries {
 
     public static final class Keys {
 
-        public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect"));
-        public static final ResourceKey<Registry<MapCodec<? extends EffectGroupItem>>> EFFECT_GROUP_ITEM = ResourceKey.createRegistryKey(MedicalSystem.resource("status_effect/effect_group"));
+        public static final ResourceKey<Registry<StatusEffectType<?>>> STATUS_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("status_effect"));
+        public static final ResourceKey<Registry<MapCodec<? extends EffectGroupItem>>> EFFECT_GROUP_ITEM = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("status_effect/effect_group"));
 
-        public static final ResourceKey<Registry<MapCodec<? extends EntityStateMatcher>>> STATE_MATCHER = ResourceKey.createRegistryKey(MedicalSystem.resource("health/state_matcher"));
+        public static final ResourceKey<Registry<MapCodec<? extends EntityStateMatcher>>> STATE_MATCHER = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health/state_matcher"));
 
-        public static final ResourceKey<Registry<MapCodec<? extends EffectRecoveryApplicator>>> EFFECT_RECOVERY_APPLICATOR = ResourceKey.createRegistryKey(MedicalSystem.resource("effect_recovery_applicator"));
+        public static final ResourceKey<Registry<MapCodec<? extends EffectRecoveryApplicator>>> EFFECT_RECOVERY_APPLICATOR = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("effect_recovery_applicator"));
 
-        public static final ResourceKey<Registry<HealthEventTriggerSource>> HEALTH_EVENT_TRIGGER_SOURCE = ResourceKey.createRegistryKey(MedicalSystem.resource("health_event/source"));
-        public static final ResourceKey<Registry<MapCodec<? extends HealthEventCondition>>> HEALTH_EVENT_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.resource("health_event/condition"));
-        public static final ResourceKey<Registry<MapCodec<? extends HealthEventAction>>> HEALTH_EVENT_ACTION = ResourceKey.createRegistryKey(MedicalSystem.resource("health_event/action"));
-        public static final ResourceKey<Registry<MapCodec<? extends HealthEventFunction>>> HEALTH_EVENT_FUNCTION = ResourceKey.createRegistryKey(MedicalSystem.resource("health_event/function"));
+        public static final ResourceKey<Registry<HealthEventTriggerSource>> HEALTH_EVENT_TRIGGER_SOURCE = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health_event/source"));
+        public static final ResourceKey<Registry<MapCodec<? extends HealthEventCondition>>> HEALTH_EVENT_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health_event/condition"));
+        public static final ResourceKey<Registry<MapCodec<? extends HealthEventAction>>> HEALTH_EVENT_ACTION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health_event/action"));
+        public static final ResourceKey<Registry<MapCodec<? extends HealthEventFunction>>> HEALTH_EVENT_FUNCTION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health_event/function"));
 
-        public static final ResourceKey<Registry<MapCodec<? extends BloodLevelEffect>>> BLOOD_LEVEL_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("blood_system/effect"));
-        public static final ResourceKey<Registry<ConsumeEffectType<?>>> CONSUME_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.resource("consume_effect"));
+        public static final ResourceKey<Registry<MapCodec<? extends BloodLevelEffect>>> BLOOD_LEVEL_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("blood_system/effect"));
+        public static final ResourceKey<Registry<ConsumeEffectType<?>>> CONSUME_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("consume_effect"));
     }
 }

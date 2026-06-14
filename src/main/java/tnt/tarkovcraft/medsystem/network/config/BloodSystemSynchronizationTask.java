@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 public record BloodSystemSynchronizationTask(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
 
-    public static final Type TYPE = new Type(MedicalSystem.resource("blood_system_sync"));
+    public static final Type TYPE = new Type(MedicalSystem.createIdentifier("blood_system_sync"));
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {

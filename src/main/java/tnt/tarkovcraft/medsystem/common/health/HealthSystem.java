@@ -33,12 +33,11 @@ import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Stream;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener {
 
     public static final Marker MARKER = MarkerManager.getMarker("HealthSystemManager");
-    public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_system");
+    public static final ResourceLocation IDENTIFIER = MedicalSystem.createIdentifier("health_system");
     private final Map<EntityType<?>, HealthContainerDefinition> healthContainers = new HashMap<>();
     private final List<HitCalculatorRule> rules = new ArrayList<>();
 

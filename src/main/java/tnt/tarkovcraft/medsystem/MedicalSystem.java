@@ -124,7 +124,7 @@ public final class MedicalSystem {
         event.register(BloodContainerWeightProvider.PROVIDER_ID, new BloodContainerWeightProvider());
     }
 
-    public static ResourceLocation resource(String path) {
+    public static ResourceLocation createIdentifier(String path) {
         return ResourceLocation.fromNamespaceAndPath(MedSystemConstants.MOD_ID, path);
     }
 }

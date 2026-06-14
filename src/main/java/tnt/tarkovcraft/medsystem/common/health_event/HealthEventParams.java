@@ -14,7 +14,7 @@ public final class HealthEventParams {
     public static final LootContextParam<ItemStack> ITEM = key("item");
 
     private static <T> LootContextParam<T> key(String path) {
-        return new LootContextParam<>(MedicalSystem.resource(path));
+        return new LootContextParam<>(MedicalSystem.createIdentifier(path));
     }
 
     private HealthEventParams() {}

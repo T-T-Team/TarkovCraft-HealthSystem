@@ -134,12 +134,12 @@ public final class BloodSystemManager {
 
     private static final class ConfigurationLoader extends SimplePreparableReloadListener<BloodConfiguration> {
 
-        private static final ResourceLocation ID = MedicalSystem.resource("blood_configuration");
+        private static final ResourceLocation ID = MedicalSystem.createIdentifier("blood_configuration");
         private BloodConfiguration config = BloodConfiguration.missingConfiguration();
 
         @Override
         protected BloodConfiguration prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
-            Optional<Resource> optional = resourceManager.getResource(MedicalSystem.resource("tarkovcraft/blood_system/blood_configuration.json"));
+            Optional<Resource> optional = resourceManager.getResource(MedicalSystem.createIdentifier("tarkovcraft/blood_system/blood_configuration.json"));
             Resource resource = optional.orElseThrow(() -> new IllegalStateException("Blood configuration file not found"));
             BloodConfiguration configuration;
             try (Reader reader = resource.openAsReader()) {
@@ -168,7 +168,7 @@ public final class BloodSystemManager {
 
     private final class BloodAssignmentLoader extends SimpleJsonResourceReloadListener {
 
-        private static final ResourceLocation ID = MedicalSystem.resource("blood_assignment");
+        private static final ResourceLocation ID = MedicalSystem.createIdentifier("blood_assignment");
         private final Map<EntityType<?>, EntityBloodSystemDefinition> assignmentMap = new HashMap<>();
 
         private BloodAssignmentLoader() {

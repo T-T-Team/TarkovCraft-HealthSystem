@@ -30,7 +30,7 @@ public final class MedSystemDataAttachments {
     );
     public static final Supplier<AttachmentType<EntityBloodSystem>> BLOOD_SYSTEM = REGISTRY.register("blood_system", () -> AttachmentType.builder(EntityBloodSystem::invalid)
             .serialize(EntityBloodSystem.CODEC)
-            .sync(EntityBloodSystem.STREAM_CODEC)
+            .sync(new EntityBloodSystem.SyncHandler())
             .build()
     );
 }

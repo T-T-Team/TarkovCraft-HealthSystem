@@ -10,7 +10,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 public final class PainEffectShaderProgram extends StatusEffectShaderProgram {
 
     public static final PainEffectShaderProgram INSTANCE = new PainEffectShaderProgram();
-    private static final ResourceLocation IDENTIFIER = MedicalSystem.resource("pain");
+    private static final ResourceLocation IDENTIFIER = MedicalSystem.createIdentifier("pain");
     private static final float DECAY_RATE = 0.015F;
 
     private PainEffectShaderProgram() {}

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 public record HealthContainerSynchronizationTask(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
 
-    public static final Type TYPE = new Type(MedicalSystem.resource("health_container_sync"));
+    public static final Type TYPE = new Type(MedicalSystem.createIdentifier("health_container_sync"));
 
     @Override
     public void run(Consumer<CustomPacketPayload> sender) {

@@ -27,7 +27,7 @@ public class InjuryRecoveryStatusEffect extends StatusEffect {
             Codec.INT.fieldOf("reduction").forGetter(t -> t.reduction)
     ).apply(instance, InjuryRecoveryStatusEffect::new));
     private static final Component INFO = Component.translatable("status_effect.medsystem.injury_recovery.info").withStyle(ChatFormatting.DARK_GRAY);
-    private static final ResourceLocation REDUCTION_ID = MedicalSystem.resource("reduction/injury_recovery");
+    private static final ResourceLocation REDUCTION_ID = MedicalSystem.createIdentifier("reduction/injury_recovery");
 
     private final int reduction;
 

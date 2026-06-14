@@ -6,10 +6,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector2f;
 import org.joml.Vector4i;
+import tnt.tarkovcraft.core.api.client.SynchronizableScreen;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.renderable.LabelRenderable;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
@@ -37,7 +37,7 @@ import tnt.tarkovcraft.medsystem.network.message.C2S_SelectLimb;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectLimbScreen extends Screen implements HealthContainerScreen {
+public class SelectLimbScreen extends Screen implements SynchronizableScreen {
 
     public static final Component TITLE = TextHelper.createScreenTitle(MedSystemConstants.MOD_ID, "select_body_part").withStyle(ChatFormatting.BOLD).withColor(ColorPalette.TEXT_COLOR);
     public static final Component LABEL_ERROR = TextHelper.createScreenComponent(MedSystemConstants.MOD_ID, "select_body_part", "error.invalid_item");
@@ -54,12 +54,9 @@ public class SelectLimbScreen extends Screen implements HealthContainerScreen {
     }
 
     @Override
-    public void onHealthContainerUpdated(IAttachmentHolder holder, HealthContainer container) {
-        if (!(holder instanceof LivingEntity entity))
-            return;
-        if (entity.getId() == this.entityId) {
+    public void sync(DataSource source) {
+        if (source.equals(HealthContainer.HEALTH))
             this.init(this.minecraft, this.width, this.height);
-        }
     }
 
     @Override

@@ -13,8 +13,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
+import tnt.tarkovcraft.core.api.AttachmentSyncCallbackListener;
+import tnt.tarkovcraft.core.api.client.SynchronizableScreen;
+import tnt.tarkovcraft.core.client.TarkovCraftCoreClient;
 import tnt.tarkovcraft.core.util.Cached;
 import tnt.tarkovcraft.core.util.EventHandler;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -37,6 +42,7 @@ public final class EntityBloodSystem {
             Codec.FLOAT.optionalFieldOf("shock_amount", 0.0F).forGetter(t -> t.shockAmount)
     ).apply(instance, EntityBloodSystem::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, EntityBloodSystem> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
+    public static final SynchronizableScreen.DataSource BLOOD_SYSTEM = new SynchronizableScreen.DataSource(MedicalSystem.createIdentifier("blood_system"));
 
     private final EntityType<?> type;
     private final ResourceLocation bloodType;
@@ -210,7 +216,6 @@ public final class EntityBloodSystem {
         return this.definition.get();
     }
 
-    // TODO 26.1 use immutable itemstack
     public void rescueDownedEntity() {
         this.setUnconscious(100, UnconsciousOptions.RESCUE_DELAY);
         this.shockAmount = 0.0F;
@@ -272,6 +277,24 @@ public final class EntityBloodSystem {
             }
             float recoveryRate = definition.getShockRecoveryRate(inShock);
             this.shockAmount = Mth.clamp(this.shockAmount - recoveryRate, 0.0F, 1.0F);
+        }
+    }
+
+    public static final class SyncHandler implements AttachmentSyncHandler<EntityBloodSystem>, AttachmentSyncCallbackListener<EntityBloodSystem> {
+
+        @Override
+        public void write(RegistryFriendlyByteBuf buf, EntityBloodSystem attachment, boolean initialSync) {
+            STREAM_CODEC.encode(buf, attachment);
+        }
+
+        @Override
+        public @Nullable EntityBloodSystem read(IAttachmentHolder holder, RegistryFriendlyByteBuf buf, @Nullable EntityBloodSystem previousValue) {
+            return STREAM_CODEC.decode(buf);
+        }
+
+        @Override
+        public void onDataSynced(IAttachmentHolder holder, AttachmentType<EntityBloodSystem> attachmentType, EntityBloodSystem attachment) {
+            TarkovCraftCoreClient.synchronizeCurrentScreen(BLOOD_SYSTEM);
         }
     }
 }

@@ -61,7 +61,7 @@ public final class Limb {
     }
 
     public ResourceLocation getUniqueIdentifier() {
-        return MedicalSystem.resource("limb/" + this.limbCode);
+        return MedicalSystem.createIdentifier("limb/" + this.limbCode);
     }
 
     public String getLimbCode() {

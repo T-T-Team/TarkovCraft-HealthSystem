@@ -119,7 +119,7 @@ public class BloodLossStatusEffect extends IntervalAppliedStatusEffect {
         Stage(String serializedName, @Nullable Component tooltip) {
             this.serializedName = serializedName;
             this.title = Component.translatable("status_effect.medsystem.bloodloss.stage." + serializedName);
-            this.icon = MedicalSystem.resource("textures/icons/status_effect/bloodloss_" + serializedName + ".png");
+            this.icon = MedicalSystem.createIdentifier("textures/icons/status_effect/bloodloss_" + serializedName + ".png");
             this.tooltip = tooltip;
         }
 

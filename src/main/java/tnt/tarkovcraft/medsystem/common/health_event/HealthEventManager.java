@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 public final class HealthEventManager extends SimpleJsonResourceReloadListener {
 
     public static final Marker MARKER = MarkerManager.getMarker("StatusEffectEventManager");
-    public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("health_event");
+    public static final ResourceLocation IDENTIFIER = MedicalSystem.createIdentifier("health_event");
     private final Multimap<HealthEventTriggerSource, NamedStatusEffectEvent> eventMappings = ArrayListMultimap.create();
 
     public HealthEventManager() {

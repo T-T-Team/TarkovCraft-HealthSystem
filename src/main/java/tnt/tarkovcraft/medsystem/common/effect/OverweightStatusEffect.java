@@ -19,7 +19,7 @@ public class OverweightStatusEffect extends SimpleStatusEffect {
     ).apply(instance, OverweightStatusEffect::new));
     private static final Component HINT = Component.translatable("status_effect.medsystem.overweight.info").withStyle(ChatFormatting.DARK_GRAY);
     private static final Component HINT_MAX = Component.translatable("status_effect.medsystem.max_overweight.info").withStyle(ChatFormatting.DARK_GRAY);
-    private static final ResourceLocation MAX_OVERWEIGHT_ICON = MedicalSystem.resource("textures/icons/status_effect/max_overweight.png");
+    private static final ResourceLocation MAX_OVERWEIGHT_ICON = MedicalSystem.createIdentifier("textures/icons/status_effect/max_overweight.png");
 
     private final boolean limitExceeded;
 

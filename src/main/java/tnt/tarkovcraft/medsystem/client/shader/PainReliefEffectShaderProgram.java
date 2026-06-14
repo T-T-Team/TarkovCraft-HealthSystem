@@ -13,7 +13,7 @@ import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 public class PainReliefEffectShaderProgram extends StatusEffectShaderProgram {
 
     public static final PainReliefEffectShaderProgram INSTANCE = new PainReliefEffectShaderProgram();
-    private static final ResourceLocation IDENTIFIER = MedicalSystem.resource("pain_relief");
+    private static final ResourceLocation IDENTIFIER = MedicalSystem.createIdentifier("pain_relief");
 
     private PainReliefEffectShaderProgram() {}
 

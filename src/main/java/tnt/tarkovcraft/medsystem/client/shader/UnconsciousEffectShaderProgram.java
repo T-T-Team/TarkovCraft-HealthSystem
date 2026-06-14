@@ -11,7 +11,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 public class UnconsciousEffectShaderProgram implements PostEffectShaderProgram {
 
     public static final UnconsciousEffectShaderProgram INSTANCE = new UnconsciousEffectShaderProgram();
-    public static final ResourceLocation IDENTIFIER = MedicalSystem.resource("unconscious");
+    public static final ResourceLocation IDENTIFIER = MedicalSystem.createIdentifier("unconscious");
     private boolean unconscious;
     private long gameTime;
 

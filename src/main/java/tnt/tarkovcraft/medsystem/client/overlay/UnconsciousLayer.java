@@ -23,7 +23,7 @@ import java.util.List;
 
 public class UnconsciousLayer implements LayeredDraw.Layer {
 
-    public static final ResourceLocation LAYER_ID = MedicalSystem.resource("layer/unconscious");
+    public static final ResourceLocation LAYER_ID = MedicalSystem.createIdentifier("layer/unconscious");
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {

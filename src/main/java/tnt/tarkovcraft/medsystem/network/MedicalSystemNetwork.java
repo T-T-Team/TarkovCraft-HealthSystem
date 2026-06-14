@@ -21,7 +21,7 @@ public final class MedicalSystemNetwork {
 
     public static ResourceLocation createId(Class<? extends CustomPacketPayload> type) {
         String name = type.getSimpleName().toLowerCase(Locale.ROOT);
-        return MedicalSystem.resource("net/" + name);
+        return MedicalSystem.createIdentifier("net/" + name);
     }
 
     @SubscribeEvent

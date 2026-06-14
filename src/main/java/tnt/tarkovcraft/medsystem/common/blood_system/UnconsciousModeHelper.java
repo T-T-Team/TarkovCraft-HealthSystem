@@ -31,7 +31,7 @@ import static tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier.m
 
 public final class UnconsciousModeHelper {
 
-    public static final ResourceLocation UNCONSCIOUS_ATTRIBUTE_MODIFIER = MedicalSystem.resource("unconscious");
+    public static final ResourceLocation UNCONSCIOUS_ATTRIBUTE_MODIFIER = MedicalSystem.createIdentifier("unconscious");
 
     public static void onChanged(boolean unconscious, LivingEntity entity, EntityBloodSystem bloodSystem) {
         updateEntityDimensions(entity);

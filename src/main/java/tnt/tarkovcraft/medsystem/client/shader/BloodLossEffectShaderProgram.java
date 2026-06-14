@@ -12,7 +12,7 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 public final class BloodLossEffectShaderProgram extends SimpleScalingShaderProgram {
 
     public static final BloodLossEffectShaderProgram INSTANCE = new BloodLossEffectShaderProgram();
-    private static final ResourceLocation IDENTIFIER = MedicalSystem.resource("bloodloss");
+    private static final ResourceLocation IDENTIFIER = MedicalSystem.createIdentifier("bloodloss");
 
     private BloodLossEffectShaderProgram() {}
 
