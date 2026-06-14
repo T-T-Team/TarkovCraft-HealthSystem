@@ -11,7 +11,6 @@ import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.attribute.EntityAttributeData;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 
 public record RemoveAttributeModifierBloodLevelEffect(Holder<Attribute> attribute, ResourceLocation modifier) implements BloodLevelEffect {
 
@@ -29,7 +28,7 @@ public record RemoveAttributeModifierBloodLevelEffect(Holder<Attribute> attribut
     }
 
     @Override
-    public BloodLevelEffectType<?> getType() {
-        return MedSystemBloodLevelEffects.REMOVE_ATTRIBUTE_MODIFIER.value();
+    public MapCodec<? extends BloodLevelEffect> codec() {
+        return CODEC;
     }
 }

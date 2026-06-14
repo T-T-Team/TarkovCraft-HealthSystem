@@ -1,6 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.effect.util;
 
-import tnt.tarkovcraft.core.common.data.number.ConstantNumberProvider;
 import tnt.tarkovcraft.core.util.Lazy;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 
@@ -22,7 +21,7 @@ public class ListStatusEffectSubmitter implements StatusEffectSubmitter {
 
     @Override
     public void submit(int delay, StatusEffect template) {
-        this.effects.get().add(new StatusEffectWithDelay(ConstantNumberProvider.of(delay), template));
+        this.effects.get().add(new StatusEffectWithDelay(delay, template));
     }
 
     @Override

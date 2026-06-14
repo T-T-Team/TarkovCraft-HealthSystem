@@ -14,7 +14,7 @@ public record BloodLevelEffectHolder(NumberRange range, List<BloodLevelEffect> e
 
     public static final Codec<BloodLevelEffectHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             NumberRange.CODEC.fieldOf("volume_range").forGetter(BloodLevelEffectHolder::range),
-            Codecs.list(BloodLevelEffectType.CODEC).fieldOf("effects").forGetter(BloodLevelEffectHolder::effects)
+            Codecs.list(BloodLevelEffect.CODEC).fieldOf("effects").forGetter(BloodLevelEffectHolder::effects)
     ).apply(instance, BloodLevelEffectHolder::new));
 
     public boolean canApply(float volume) {

@@ -16,7 +16,6 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDamageTypes;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -102,7 +101,7 @@ public record HealthEffectGroupItem(UUID effectId, float amount, int interval) i
     }
 
     @Override
-    public EffectGroupItemType<?> getType() {
-        return MedSystemStatusEffectGroupItems.HEALTH.value();
+    public MapCodec<? extends EffectGroupItem> codec() {
+        return CODEC;
     }
 }

@@ -4,8 +4,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.pose.EntityPose;
 import tnt.tarkovcraft.core.common.pose.EntityPoseFlag;
-import tnt.tarkovcraft.core.common.pose.EntityPoseType;
-import tnt.tarkovcraft.core.common.pose.EntityStatusPose;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemEntityPoses;
 
@@ -34,7 +32,7 @@ public final class UnconsciousDraggedEntityPose implements EntityPose {
     }
 
     @Override
-    public EntityPoseType<?> getType() {
+    public EntityPose.Type<?> getType() {
         return MedSystemEntityPoses.UNCONSCIOUS_DRAGGED.value();
     }
 }

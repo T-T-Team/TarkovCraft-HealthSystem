@@ -12,7 +12,6 @@ import net.minecraft.world.entity.LivingEntity;
 import org.joml.Vector2fc;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
-import tnt.tarkovcraft.core.common.data.number.NumberProviderType;
 import tnt.tarkovcraft.core.common.util.AttributeNumber;
 import tnt.tarkovcraft.core.util.Cached;
 import tnt.tarkovcraft.core.util.Codecs;
@@ -34,7 +33,7 @@ public final class EntityBloodSystemDefinition {
     public static final Codec<EntityBloodSystemDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codecs.hashSet(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).fieldOf("entity_types").forGetter(t -> t.entityTypes),
             Codec.unboundedMap(ResourceLocation.CODEC, ExtraCodecs.NON_NEGATIVE_INT).fieldOf("blood_types").forGetter(t -> t.bloodTypes),
-            NumberProviderType.valueCodec(ExtraCodecs.POSITIVE_FLOAT).fieldOf("blood_volume").forGetter(t -> t.bloodVolume),
+            NumberProvider.POSITIVE_FLOAT.fieldOf("blood_volume").forGetter(t -> t.bloodVolume),
             AttributeNumber.CODEC.fieldOf("blood_recovery").forGetter(t -> t.bloodRecovery),
             UnconsciousModeSettings.CODEC.optionalFieldOf("unconscious_mode", UnconsciousModeSettings.DEFAULT).forGetter(t -> t.unconsciousMode),
             EntityShockData.CODEC.optionalFieldOf("shock_attributes", EntityShockData.DEFAULT).forGetter(t -> t.shockData),
@@ -46,7 +45,7 @@ public final class EntityBloodSystemDefinition {
 
     private final Set<EntityType<?>> entityTypes;
     private final Map<ResourceLocation, Integer> bloodTypes;
-    private final NumberProvider bloodVolume;
+    private final float bloodVolume;
     private final AttributeNumber bloodRecovery;
     private final UnconsciousModeSettings unconsciousMode;
     private final EntityShockData shockData;
@@ -56,7 +55,7 @@ public final class EntityBloodSystemDefinition {
     private final WeightedList<ResourceLocation> weightedBloodTypes;
     private final Cached<EntityDimensions> unconsciousModeDimensions;
 
-    private EntityBloodSystemDefinition(Set<EntityType<?>> entityTypes, Map<ResourceLocation, Integer> bloodTypes, NumberProvider bloodVolume, AttributeNumber bloodRecovery, UnconsciousModeSettings unconsciousMode, EntityShockData shockData, BloodEffectAttributes effectAttributes, List<BloodLevelEffectHolder> effectList) {
+    private EntityBloodSystemDefinition(Set<EntityType<?>> entityTypes, Map<ResourceLocation, Integer> bloodTypes, float bloodVolume, AttributeNumber bloodRecovery, UnconsciousModeSettings unconsciousMode, EntityShockData shockData, BloodEffectAttributes effectAttributes, List<BloodLevelEffectHolder> effectList) {
         this.entityTypes = entityTypes;
         this.bloodTypes = bloodTypes;
         this.bloodVolume = bloodVolume;
@@ -108,7 +107,7 @@ public final class EntityBloodSystemDefinition {
     }
 
     public float getMaxBloodVolume() {
-        return this.bloodVolume.floatValue();
+        return this.bloodVolume;
     }
 
     public boolean canUseBloodType(ResourceLocation bloodType) {

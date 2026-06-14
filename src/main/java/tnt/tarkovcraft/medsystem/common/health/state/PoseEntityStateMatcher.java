@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import tnt.tarkovcraft.core.util.Codecs;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 import tnt.tarkovcraft.medsystem.util.MedsystemCodecs;
 
 import java.util.EnumSet;
@@ -22,7 +21,7 @@ public record PoseEntityStateMatcher(Set<Pose> targets) implements EntityStateMa
     }
 
     @Override
-    public EntityStateMatcherType<?> getType() {
-        return MedSystemStateFilters.POSE.value();
+    public MapCodec<? extends EntityStateMatcher> codec() {
+        return CODEC;
     }
 }

@@ -8,7 +8,6 @@ import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 public record HasStatusEffectEventCondition(TagKey<StatusEffectType<?>> tag) implements HealthEventCondition {
 
@@ -24,7 +23,7 @@ public record HasStatusEffectEventCondition(TagKey<StatusEffectType<?>> tag) imp
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.HAS_EFFECT.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }

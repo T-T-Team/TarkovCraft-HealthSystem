@@ -8,7 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicator;
-import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicatorType;
 import tnt.tarkovcraft.medsystem.common.config.BleedConfiguration;
 import tnt.tarkovcraft.medsystem.common.effect.BleedStatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.FreshWoundStatusEffect;
@@ -16,11 +15,9 @@ import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemEffectRecoveryApplicators;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -76,8 +73,8 @@ public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> ble
     }
 
     @Override
-    public EffectRecoveryApplicatorType<?> type() {
-        return MedSystemEffectRecoveryApplicators.BLEED.value();
+    public MapCodec<? extends EffectRecoveryApplicator> codec() {
+        return CODEC;
     }
 
     private boolean isHealableBleed(BleedStatusEffect bleed) {

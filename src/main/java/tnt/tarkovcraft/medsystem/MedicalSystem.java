@@ -12,6 +12,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
@@ -44,6 +45,7 @@ public final class MedicalSystem {
         config = Configuration.registerConfig(MedSystemConfig.class, ConfigFormats.YAML).getConfigInstance();
 
         modEventBus.addListener(this::setup);
+        modEventBus.addListener(this::register);
         modEventBus.addListener(this::createRegistries);
         modEventBus.addListener(this::registerCustomWeightProviders);
         modEventBus.register(new MedicalSystemNetwork());
@@ -62,17 +64,11 @@ public final class MedicalSystem {
         MedSystemStats.REGISTRY.register(modEventBus);
         MedSystemSkillEvents.REGISTRY.register(modEventBus);
         MedSystemStatusEffects.REGISTRY.register(modEventBus);
-        MedSystemEffectRecoveryApplicators.REGISTRY.register(modEventBus);
         MedSystemCreativeTabs.REGISTRY.register(modEventBus);
-        MedSystemStatusEffectGroupItems.REGISTRY.register(modEventBus);
         MedSystemHealthEventSources.REGISTRY.register(modEventBus);
-        MedSystemHealthEventFunctions.REGISTRY.register(modEventBus);
-        MedSystemHealthEventConditions.REGISTRY.register(modEventBus);
-        MedSystemHealthEventActions.REGISTRY.register(modEventBus);
-        MedSystemStateFilters.REGISTRY.register(modEventBus);
         MedSystemParticleTypes.REGISTRY.register(modEventBus);
         MedSystemArgumentTypes.REGISTRY.register(modEventBus);
-        MedSystemBloodLevelEffects.REGISTRY.register(modEventBus);
+        MedSystemConsumeEffects.REGISTRY.register(modEventBus);
         MedSystemEntityPoses.REGISTRY.register(modEventBus);
         MedSystemCriterionTriggers.REGISTRY.register(modEventBus);
         MedSystemConsumeEffects.REGISTRY.register(modEventBus);
@@ -80,6 +76,16 @@ public final class MedicalSystem {
 
     public static MedSystemConfig getConfig() {
         return config;
+    }
+
+    private void register(RegisterEvent event) {
+        event.register(MedSystemRegistries.Keys.EFFECT_GROUP_ITEM, MedSystemRegistries::registerEffectGroupItems);
+        event.register(MedSystemRegistries.Keys.STATE_MATCHER, MedSystemRegistries::registerStateMatchers);
+        event.register(MedSystemRegistries.Keys.EFFECT_RECOVERY_APPLICATOR, MedSystemRegistries::registerEffectRecoveryApplicators);
+        event.register(MedSystemRegistries.Keys.HEALTH_EVENT_CONDITION, MedSystemRegistries::registerHealthEventConditions);
+        event.register(MedSystemRegistries.Keys.HEALTH_EVENT_ACTION, MedSystemRegistries::registerHealthEventActions);
+        event.register(MedSystemRegistries.Keys.HEALTH_EVENT_FUNCTION, MedSystemRegistries::registerHealthEventFunctions);
+        event.register(MedSystemRegistries.Keys.BLOOD_LEVEL_EFFECT, MedSystemRegistries::registerBloodLevelEffects);
     }
 
     private void setup(FMLCommonSetupEvent event) {

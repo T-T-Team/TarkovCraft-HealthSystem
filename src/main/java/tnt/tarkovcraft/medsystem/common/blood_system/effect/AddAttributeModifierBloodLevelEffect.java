@@ -10,7 +10,6 @@ import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 
 public record AddAttributeModifierBloodLevelEffect(Holder<Attribute> attribute, AttributeModifier modifier) implements BloodLevelEffect {
 
@@ -25,7 +24,7 @@ public record AddAttributeModifierBloodLevelEffect(Holder<Attribute> attribute, 
     }
 
     @Override
-    public BloodLevelEffectType<?> getType() {
-        return MedSystemBloodLevelEffects.ADD_ATTRIBUTE_MODIFIER.value();
+    public MapCodec<? extends BloodLevelEffect> codec() {
+        return CODEC;
     }
 }

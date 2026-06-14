@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public final class EffectGroupHolder {
 
     public static final Codec<EffectGroupHolder> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            EffectGroupItemType.CODEC.fieldOf("data").forGetter(t -> t.item),
+            EffectGroupItem.CODEC.fieldOf("data").forGetter(t -> t.item),
             Codec.INT.fieldOf("duration").forGetter(t -> t.duration),
             Codec.INT.optionalFieldOf("delay", 0).forGetter(t -> t.delay),
             Codec.BOOL.optionalFieldOf("active", false).forGetter(t -> t.active)

@@ -8,12 +8,10 @@ import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.common.data.duration.TickValue;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicator;
-import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicatorType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemEffectRecoveryApplicators;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 
@@ -54,8 +52,8 @@ public record FractureEffectRecoveryApplicator(int duration) implements EffectRe
     }
 
     @Override
-    public EffectRecoveryApplicatorType<?> type() {
-        return MedSystemEffectRecoveryApplicators.FRACTURE.value();
+    public MapCodec<? extends EffectRecoveryApplicator> codec() {
+        return CODEC;
     }
 
     private boolean isRecoverableFracture(StatusEffect effect) {

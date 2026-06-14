@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 public final class LostLimbEventCondition implements HealthEventCondition {
 
@@ -20,7 +19,7 @@ public final class LostLimbEventCondition implements HealthEventCondition {
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.LOST_LIMB.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }

@@ -11,7 +11,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcher;
-import tnt.tarkovcraft.medsystem.common.health.state.EntityStateMatcherType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
@@ -24,7 +23,7 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
     public static final Codec<HealthContainerDefinition> CODEC = RecordCodecBuilder.<HealthContainerDefinition>create(instance -> instance.group(
             Codecs.list(BuiltInRegistries.ENTITY_TYPE.byNameCodec()).fieldOf("targets").forGetter(HealthContainerDefinition::targets),
             LimbConfiguration.CODEC.fieldOf("limb_configuration").forGetter(HealthContainerDefinition::limbConfiguration),
-            Codec.unboundedMap(Codec.string(1, 64), EntityStateMatcherType.CODEC).optionalFieldOf("custom_state_definitions", Collections.emptyMap()).forGetter(HealthContainerDefinition::customStateDefinitions),
+            Codec.unboundedMap(Codec.string(1, 64), EntityStateMatcher.CODEC).optionalFieldOf("custom_state_definitions", Collections.emptyMap()).forGetter(HealthContainerDefinition::customStateDefinitions),
             EntityHitboxContainer.CODEC.fieldOf("hitbox_container").forGetter(HealthContainerDefinition::hitboxContainer),
             HealthContainerDisplay.CODEC.fieldOf("display_configuration").forGetter(HealthContainerDefinition::display),
             BloodDecalSettings.CODEC.optionalFieldOf("blood_decals", BloodDecalSettings.DEFAULT).forGetter(HealthContainerDefinition::decalSettings)

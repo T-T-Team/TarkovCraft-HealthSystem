@@ -14,13 +14,11 @@ import tnt.tarkovcraft.core.common.attribute.AttributeInstance;
 import tnt.tarkovcraft.core.common.attribute.AttributeSystem;
 import tnt.tarkovcraft.core.common.attribute.EntityAttributeData;
 import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifier;
-import tnt.tarkovcraft.core.common.attribute.modifier.AttributeModifierType;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.function.Consumer;
 
@@ -30,7 +28,7 @@ public record AttributeModifierEffectGroupItem(Holder<Attribute> attribute, Attr
 
     public static final MapCodec<AttributeModifierEffectGroupItem> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             CoreRegistries.ATTRIBUTE.holderByNameCodec().fieldOf("attribute").forGetter(t -> t.attribute),
-            AttributeModifierType.ID_CODEC.fieldOf("modifier").forGetter(t -> t.modifier),
+            AttributeModifier.CODEC.fieldOf("modifier").forGetter(t -> t.modifier),
             EffectType.CODEC.fieldOf("classification").forGetter(t -> t.classification),
             ComponentSerialization.CODEC.fieldOf("label").forGetter(t -> t.valueLabel)
     ).apply(instance, AttributeModifierEffectGroupItem::new));
@@ -93,7 +91,7 @@ public record AttributeModifierEffectGroupItem(Holder<Attribute> attribute, Attr
     }
 
     @Override
-    public EffectGroupItemType<?> getType() {
-        return MedSystemStatusEffectGroupItems.ATTRIBUTE.value();
+    public MapCodec<? extends EffectGroupItem> codec() {
+        return CODEC;
     }
 }

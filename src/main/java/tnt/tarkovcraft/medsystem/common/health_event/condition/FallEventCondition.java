@@ -8,7 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 public record FallEventCondition(float minFallDistance, float modifier) implements HealthEventCondition {
 
@@ -31,7 +30,7 @@ public record FallEventCondition(float minFallDistance, float modifier) implemen
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.FALL_FRACTURE.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }

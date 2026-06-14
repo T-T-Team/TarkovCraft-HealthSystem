@@ -10,7 +10,7 @@ import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbContainer;
 import tnt.tarkovcraft.medsystem.common.health.LimbType;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventFunctions;
+import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 
 import java.util.Set;
 
@@ -34,7 +34,7 @@ public record DeadLimbScaleEventFunction(Set<LimbType> limb, float scale, Number
     }
 
     @Override
-    public HealthEventFunctionType<?> getType() {
-        return MedSystemHealthEventFunctions.DEAD_LIMB_SCALE.value();
+    public MapCodec<? extends HealthEventFunction> codec() {
+        return CODEC;
     }
 }

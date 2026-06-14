@@ -13,7 +13,6 @@ import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSyste
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffectGroupItems;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -72,7 +71,7 @@ public record BloodRecoveryEffectGroupItem(float amount) implements EffectGroupI
     }
 
     @Override
-    public EffectGroupItemType<?> getType() {
-        return MedSystemStatusEffectGroupItems.BLOOD_RECOVERY.value();
+    public MapCodec<? extends EffectGroupItem> codec() {
+        return CODEC;
     }
 }

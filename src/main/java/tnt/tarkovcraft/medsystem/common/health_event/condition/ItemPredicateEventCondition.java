@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventResult;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemHealthEventConditions;
 
 public record ItemPredicateEventCondition(TagKey<Item> predicate) implements HealthEventCondition {
 
@@ -24,7 +23,7 @@ public record ItemPredicateEventCondition(TagKey<Item> predicate) implements Hea
     }
 
     @Override
-    public HealthEventConditionType<?> getType() {
-        return MedSystemHealthEventConditions.ITEM_PREDICATE.value();
+    public MapCodec<? extends HealthEventCondition> codec() {
+        return CODEC;
     }
 }

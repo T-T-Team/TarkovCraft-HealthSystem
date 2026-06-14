@@ -4,11 +4,10 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.init.CoreRegistries;
+import tnt.tarkovcraft.core.common.pose.EntityPose;
 import tnt.tarkovcraft.core.common.pose.EntityPoseManager;
-import tnt.tarkovcraft.core.common.pose.EntityPoseType;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemStateFilters;
 
-public record CustomEntityPoseStateMatcher(Holder<EntityPoseType<?>> type) implements EntityStateMatcher {
+public record CustomEntityPoseStateMatcher(Holder<EntityPose.Type<?>> type) implements EntityStateMatcher {
 
     public static final MapCodec<CustomEntityPoseStateMatcher> CODEC = CoreRegistries.ENTITY_POSE.holderByNameCodec()
             .xmap(CustomEntityPoseStateMatcher::new, CustomEntityPoseStateMatcher::type).fieldOf("pose");
@@ -19,7 +18,7 @@ public record CustomEntityPoseStateMatcher(Holder<EntityPoseType<?>> type) imple
     }
 
     @Override
-    public EntityStateMatcherType<?> getType() {
-        return MedSystemStateFilters.CUSTOM_POSE.value();
+    public MapCodec<? extends EntityStateMatcher> codec() {
+        return CODEC;
     }
 }

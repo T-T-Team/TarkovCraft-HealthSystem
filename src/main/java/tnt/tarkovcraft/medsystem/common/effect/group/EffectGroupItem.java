@@ -1,11 +1,18 @@
 package tnt.tarkovcraft.medsystem.common.effect.group;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.network.chat.Component;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectContext;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface EffectGroupItem {
+
+    Codec<EffectGroupItem> CODEC = MedSystemRegistries.EFFECT_GROUP_ITEM.byNameCodec()
+            .dispatch(EffectGroupItem::codec, Function.identity());
 
     void init(EffectGroupHolder holder, StatusEffectContext context);
 
@@ -23,5 +30,5 @@ public interface EffectGroupItem {
 
     EffectGroupHolder tryToMergeWith(EffectGroupHolder current, EffectGroupHolder other);
 
-    EffectGroupItemType<?> getType();
+    MapCodec<? extends EffectGroupItem> codec();
 }

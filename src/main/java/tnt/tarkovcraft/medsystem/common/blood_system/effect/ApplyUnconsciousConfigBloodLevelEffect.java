@@ -7,7 +7,6 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
-import tnt.tarkovcraft.medsystem.common.init.MedSystemBloodLevelEffects;
 
 public final class ApplyUnconsciousConfigBloodLevelEffect implements BloodLevelEffect {
 
@@ -27,7 +26,7 @@ public final class ApplyUnconsciousConfigBloodLevelEffect implements BloodLevelE
     }
 
     @Override
-    public BloodLevelEffectType<?> getType() {
-        return MedSystemBloodLevelEffects.APPLY_UNCONSCIOUS_CONFIG.value();
+    public MapCodec<? extends BloodLevelEffect> codec() {
+        return CODEC;
     }
 }
