@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": "#minecraft:wool_carpets",
+    "P": "minecraft:paper",
+    "I": "#c:nuggets/iron",
+    "S": "#c:strings"
+  },
+  "pattern": [
+    "P  ",
+    "CCC",
+    " IS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medsystem:pressure_dressing"
+  }
+}
