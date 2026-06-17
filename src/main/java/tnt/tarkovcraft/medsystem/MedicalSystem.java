@@ -71,7 +71,6 @@ public final class MedicalSystem {
         MedSystemConsumeEffects.REGISTRY.register(modEventBus);
         MedSystemEntityPoses.REGISTRY.register(modEventBus);
         MedSystemCriterionTriggers.REGISTRY.register(modEventBus);
-        MedSystemConsumeEffects.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
