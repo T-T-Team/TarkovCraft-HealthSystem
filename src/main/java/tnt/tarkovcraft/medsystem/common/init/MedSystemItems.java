@@ -48,7 +48,7 @@ public final class MedSystemItems {
             "bandage",
             properties -> new HealingItem(
                     properties
-                            .component(CoreItemDataComponents.WEIGHT, 150)
+                            .component(CoreItemDataComponents.WEIGHT, 50)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(2))
                                     .removesEffect(BleedEffectRecoveryApplicator.of(LimbSelection.ALL, BleedStatusEffect.BleedType.LIGHT, BleedStatusEffect.BleedType.MODERATE))
@@ -60,7 +60,7 @@ public final class MedSystemItems {
             "tourniquet",
             properties -> new HealingItem(
                     properties
-                            .component(CoreItemDataComponents.WEIGHT, 250)
+                            .component(CoreItemDataComponents.WEIGHT, 150)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(3))
                                     .removesEffect(BleedEffectRecoveryApplicator.of(LimbSelection.ARM_LEG, BleedStatusEffect.BleedType.HEAVY, BleedStatusEffect.BleedType.CRITICAL))
@@ -72,7 +72,7 @@ public final class MedSystemItems {
             "pressure_dressing",
             properties -> new HealingItem(
                     properties
-                            .component(CoreItemDataComponents.WEIGHT, 200)
+                            .component(CoreItemDataComponents.WEIGHT, 90)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(7))
                                     .removesEffect(StagedEffectRecoveryApplicator.of(
@@ -87,7 +87,7 @@ public final class MedSystemItems {
             "splint",
             properties -> new HealingItem(
                     properties
-                            .component(CoreItemDataComponents.WEIGHT, 600)
+                            .component(CoreItemDataComponents.WEIGHT, 400)
                             .component(MedSystemItemComponents.HEAL_ATTRIBUTES, HealItemAttributes.builder()
                                     .setMinUseTime(Duration.seconds(5))
                                     .removesEffect(FractureEffectRecoveryApplicator.splint())
