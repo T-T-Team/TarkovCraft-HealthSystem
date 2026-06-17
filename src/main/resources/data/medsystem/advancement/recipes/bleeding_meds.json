@@ -18,7 +18,8 @@
       "medsystem:first_aid_kit",
       "medsystem:bandage",
       "medsystem:tourniquet",
-      "medsystem:bloodbag"
+      "medsystem:bloodbag",
+      "medsystem:pressure_dressing"
     ]
   }
 }

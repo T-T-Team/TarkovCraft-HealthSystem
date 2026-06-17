@@ -17,7 +17,8 @@
     "recipes": [
       "medsystem:splint",
       "medsystem:painkillers",
-      "medsystem:morphine_injector"
+      "medsystem:morphine_injector",
+      "medsystem:pressure_dressing"
     ]
   }
 }
