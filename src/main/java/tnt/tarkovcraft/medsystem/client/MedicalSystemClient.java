@@ -120,7 +120,7 @@ public final class MedicalSystemClient {
 
     public static void openUnconsciousActionScreen(LivingEntity entity) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.setScreen(new UnconsciousActionScreen(entity));
+        minecraft.gui.setScreen(new UnconsciousActionScreen(entity));
     }
 
     @SuppressWarnings({"RedundantCast", "unchecked"})
@@ -165,7 +165,7 @@ public final class MedicalSystemClient {
         }
         if (KEY_OPEN_HEALTH.consumeClick()) {
             if (HealthSystem.hasCustomHealth(player)) {
-                minecraft.setScreen(new HealthScreen(null, player.getUUID()));
+                minecraft.gui.setScreen(new HealthScreen(null, player.getUUID()));
             }
         }
     }
@@ -237,7 +237,7 @@ public final class MedicalSystemClient {
         Player player = minecraft.player;
         if (player == null)
             return;
-        Screen screen = minecraft.screen;
+        Screen screen = minecraft.gui.screen();
         if (screen != null)
             return; // allows screen events
         if (BloodSystemManager.isUnconscious(player)) {

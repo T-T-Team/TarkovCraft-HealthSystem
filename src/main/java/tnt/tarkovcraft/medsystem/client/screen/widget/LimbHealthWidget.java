@@ -1,8 +1,8 @@
 package tnt.tarkovcraft.medsystem.client.screen.widget;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -244,13 +244,13 @@ public class LimbHealthWidget extends AbstractWidget {
                     // background
                     int left = parent.getX() + parent.frameSize + 1 + i * 9;
                     int top = parent.getY() + parent.frameSize + 5;
-                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.CONTAINER.getSprite(vital, false, false), left, top, 9, 9);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.HeartType.CONTAINER.getSprite(vital, false, false), left, top, 9, 9);
 
                     // health
                     int healthOffset = 2 * i;
                     if (health > healthOffset) {
                         boolean halfHeart = health - healthOffset == 1;
-                        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.NORMAL.getSprite(vital, halfHeart, false), left, top, 9, 9);
+                        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.HeartType.NORMAL.getSprite(vital, halfHeart, false), left, top, 9, 9);
                     }
                 }
             }
@@ -258,8 +258,8 @@ public class LimbHealthWidget extends AbstractWidget {
             private void renderSimplifiedDisplay(GuiGraphicsExtractor graphics, LimbHealthWidget parent, int health, boolean vital) {
                 int left = parent.getX() + parent.frameSize + 1;
                 int top = parent.getY() + parent.frameSize + 5;
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.CONTAINER.getSprite(vital, false, false), left, top, 9, 9);
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.HeartType.NORMAL.getSprite(vital, true, false), left, top, 9, 9);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.HeartType.CONTAINER.getSprite(vital, false, false), left, top, 9, 9);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Hud.HeartType.NORMAL.getSprite(vital, true, false), left, top, 9, 9);
 
                 Component text = Component.literal(health + "x");
                 graphics.text(parent.font, text, left + 12, top, ColorPalette.WHITE);

@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.health.calc;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.util.HitboxHelper;
@@ -22,7 +22,7 @@ public final class MeleeHitCalculator implements HitCalculator {
         LivingEntity entity = context.entity();
         double distance = attacker.distanceTo(entity) + Math.max(entity.getBbWidth(), entity.getBbHeight());
 
-        Vec3 from = attacker.getType() == EntityType.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
+        Vec3 from = attacker.getType() == EntityTypes.PLAYER ? attacker.getEyePosition() : new Vec3(attacker.getX(), attacker.getY() + attacker.getBbHeight() / 2.0, attacker.getZ());
         Vec3 to = from.add(attacker.getHeadLookAngle().scale(distance));
         Ray ray = new Ray(from, to);
 

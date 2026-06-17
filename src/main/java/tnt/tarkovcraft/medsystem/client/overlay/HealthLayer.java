@@ -42,7 +42,7 @@ public class HealthLayer implements GuiLayer {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
         Entity camera = client.getCameraEntity();
-        if (camera == null || client.options.hideGui)
+        if (camera == null || client.gui.hud.isHidden())
             return;
         if (player.isSpectator() && player == camera)
             return;

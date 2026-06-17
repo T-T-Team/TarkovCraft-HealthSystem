@@ -67,11 +67,11 @@ public class UnconsciousActionScreen extends Screen {
     @Override
     public void tick() {
         if (this.entity.isRemoved() || !this.entity.isAlive()) {
-            this.minecraft.setScreen(null);
+            this.minecraft.gui.setScreen(null);
         }
         double distance = this.minecraft.player.distanceToSqr(this.entity);
         if (distance > EntityInteraction.MAX_DISTANCE_SQR) {
-            this.minecraft.setScreen(null);
+            this.minecraft.gui.setScreen(null);
         }
     }
 
@@ -92,7 +92,7 @@ public class UnconsciousActionScreen extends Screen {
 
     private void interactionCompleteCallback(EntityInteraction interaction) {
         interaction.onActionPerformed(this.minecraft.player, this.entity);
-        this.minecraft.setScreen(null);
+        this.minecraft.gui.setScreen(null);
     }
 
     private static final class InteractionButton extends AbstractButton {

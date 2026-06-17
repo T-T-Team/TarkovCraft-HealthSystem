@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.health_event.condition;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.advancements.criterion.ItemPredicate;
+import net.minecraft.advancements.predicates.ItemPredicate;
 import net.minecraft.world.item.ItemStack;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;

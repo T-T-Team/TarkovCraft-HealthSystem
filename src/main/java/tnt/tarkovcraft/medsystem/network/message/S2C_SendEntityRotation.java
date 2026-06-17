@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -31,7 +31,7 @@ public record S2C_SendEntityRotation(int entityId, float yBodyRot) implements Cu
     public void handleMessage(IPayloadContext context) {
         Player sender = context.player();
         Entity entity = sender.level().getEntity(this.entityId);
-        if (entity.getType() != EntityType.PLAYER)
+        if (entity.getType() != EntityTypes.PLAYER)
             return;
         Player target = (Player) entity;
         MedSystemConfig config = MedicalSystem.getConfig();

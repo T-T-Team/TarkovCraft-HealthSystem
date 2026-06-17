@@ -30,7 +30,7 @@ public class UnconsciousLayer implements GuiLayer {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
         Font font = client.font;
-        if (client.options.hideGui)
+        if (client.gui.hud.isHidden())
             return;
         if (player.isSpectator())
             return;

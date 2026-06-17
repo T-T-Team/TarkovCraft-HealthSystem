@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
-import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredRegister;

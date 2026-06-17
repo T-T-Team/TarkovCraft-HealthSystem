@@ -7,6 +7,6 @@ public final class ClientNetworkHandler {
 
     public static void openLimbSelectionScreen(boolean selfHealing, int entityID) {
         Minecraft client = Minecraft.getInstance();
-        client.setScreen(new SelectLimbScreen(selfHealing, entityID));
+        client.gui.setScreen(new SelectLimbScreen(selfHealing, entityID));
     }
 }

@@ -70,7 +70,7 @@ public class SelectLimbScreen extends Screen implements SynchronizableScreen {
         } else {
             Entity entity = this.minecraft.level.getEntity(this.entityId);
             if (!(entity instanceof LivingEntity livingEntity)) {
-                this.minecraft.setScreen(null);
+                this.minecraft.gui.setScreen(null);
                 return;
             }
             subtitle = Component.translatable("label.medsystem.healing.other.target", entity.getDisplayName()).withStyle(ChatFormatting.YELLOW);
@@ -152,7 +152,7 @@ public class SelectLimbScreen extends Screen implements SynchronizableScreen {
     private void limbClicked(Limb part) {
         InteractionTarget target = new InteractionTarget(this.selfHealing, this.entityId, part.getLimbCode());
         ClientPacketDistributor.sendToServer(new C2S_SelectLimb(target));
-        this.minecraft.setScreen(null);
+        this.minecraft.gui.setScreen(null);
     }
 
     private void addError() {
