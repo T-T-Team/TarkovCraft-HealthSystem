@@ -9,6 +9,8 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.function.Consumer;
+
 public class ConcussionEffectShaderProgram extends SimpleEffectShaderProgram {
 
     private static final Identifier IDENTIFIER = MedicalSystem.createIdentifier("concussion");
@@ -42,5 +44,10 @@ public class ConcussionEffectShaderProgram extends SimpleEffectShaderProgram {
     @Override
     protected float applySmoothing(float start, float end, float delta) {
         return EasingType.IN_OUT_SINE.apply(super.applySmoothing(start, end, delta));
+    }
+
+    @Override
+    public void applyDynamicUniforms(Consumer<Identifier> passIdentifierConsumer) {
+        passIdentifierConsumer.accept(PIPELINE);
     }
 }

@@ -11,6 +11,8 @@ import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.function.Consumer;
+
 public class PainReliefEffectShaderProgram extends SimpleEffectShaderProgram {
 
     private static final Identifier IDENTIFIER = MedicalSystem.createIdentifier("pain_relief");
@@ -44,5 +46,10 @@ public class PainReliefEffectShaderProgram extends SimpleEffectShaderProgram {
     @Override
     protected boolean canApply(LivingEntity entity, HealthContainer container, StatusEffectMap map) {
         return !map.hasEffect(MedSystemStatusEffects.BLOODLOSS);
+    }
+
+    @Override
+    public void applyDynamicUniforms(Consumer<Identifier> passIdentifierConsumer) {
+        passIdentifierConsumer.accept(PIPELINE);
     }
 }
