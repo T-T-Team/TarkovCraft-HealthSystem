@@ -195,11 +195,13 @@ public final class MedicalSystemClient {
     }
 
     private void registerShaderPrograms(RegisterPostShaderProgramsEvent event) {
-        event.registerWithDynamicPipeline(new PainEffectShaderProgram(), PainEffectShaderProgram.PIPELINE);
-        event.registerWithDynamicPipeline(new ConcussionEffectShaderProgram(), ConcussionEffectShaderProgram.PIPELINE);
-        event.registerWithDynamicPipeline(new BloodLossEffectShaderProgram(), BloodLossEffectShaderProgram.PIPELINE);
-        event.registerWithDynamicPipeline(new PainReliefEffectShaderProgram(), PainReliefEffectShaderProgram.PIPELINE);
-        event.register(new UnconsciousEffectShaderProgram());
+        event.registerMany(
+                new PainEffectShaderProgram(),
+                new ConcussionEffectShaderProgram(),
+                new BloodLossEffectShaderProgram(),
+                new PainReliefEffectShaderProgram(),
+                new UnconsciousEffectShaderProgram()
+        );
     }
 
     private void registerParticleProviders(RegisterParticleProvidersEvent event) {

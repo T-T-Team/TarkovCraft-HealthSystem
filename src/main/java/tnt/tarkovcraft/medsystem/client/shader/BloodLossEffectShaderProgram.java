@@ -15,6 +15,8 @@ import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 
+import java.util.function.Consumer;
+
 public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
 
     private static final Identifier IDENTIFIER = MedicalSystem.createIdentifier("bloodloss");
@@ -71,5 +73,10 @@ public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
     @Override
     public @Nullable GpuBufferSlice getDynamicUniformBuffer() {
         return ShaderHelper.scaleTransform(this.interpolatedStrength);
+    }
+
+    @Override
+    public void applyDynamicUniforms(Consumer<Identifier> passIdentifierConsumer) {
+        passIdentifierConsumer.accept(PIPELINE);
     }
 }

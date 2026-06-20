@@ -8,6 +8,8 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemStatusEffects;
 
+import java.util.function.Consumer;
+
 public class PainEffectShaderProgram extends SimpleEffectShaderProgram {
 
     private static final Identifier IDENTIFIER = MedicalSystem.createIdentifier("pain");
@@ -37,5 +39,10 @@ public class PainEffectShaderProgram extends SimpleEffectShaderProgram {
     @Override
     public ShaderType getShaderType() {
         return ShaderType.COSMETIC;
+    }
+
+    @Override
+    public void applyDynamicUniforms(Consumer<Identifier> passIdentifierConsumer) {
+        passIdentifierConsumer.accept(PIPELINE);
     }
 }
