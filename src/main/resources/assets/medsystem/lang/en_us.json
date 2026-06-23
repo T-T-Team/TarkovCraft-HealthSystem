@@ -311,6 +311,8 @@
   "config.medsystem.option.maxFractureDuration.comment.1": "Set to 0 to disable all limits",
   "config.medsystem.option.fractureRecoveryTime": "Fracture recovery time",
   "config.medsystem.option.fractureRecoveryTime.comment.0": "How long it will take for fractures to heal after applying splints",
+  "config.medsystem.option.fractureRecoveryTimeBandage": "Fracture recovery time (Pressure Dressing)",
+  "config.medsystem.option.fractureRecoveryTimeBandage.comment.0": "How long it will take for fractures to heal after applying pressure dressing",
   "config.medsystem.option.bluntToolFractureMultiplier": "Blunt tool fracture multiplier",
   "config.medsystem.option.bluntToolFractureMultiplier.comment.0": "Fracture chance multiplier for items from '#medsystem:blunt_tools' tag - shovels, pickaxes, hoes and mace",
   "config.medsystem.option.allowInjuryRecoveryScaling": "Injury recovery effect scaling",

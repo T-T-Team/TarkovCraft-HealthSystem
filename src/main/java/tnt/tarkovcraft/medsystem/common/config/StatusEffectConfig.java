@@ -58,7 +58,7 @@ public final class StatusEffectConfig {
     public int fractureRecoveryTime = Duration.minutes(5).tickValue();
 
     @Configurable
-    @Configurable.Comment("How long it will take for fractures to heal after applying bandages")
+    @Configurable.Comment(value = "How long it will take for fractures to heal after applying bandages", localize = true)
     @Configurable.Range(min = 1)
     @Configurable.UpdateRestriction(UpdateRestrictions.GAME_RESTART)
     public int fractureRecoveryTimeBandage = Duration.minutes(15).tickValue();
