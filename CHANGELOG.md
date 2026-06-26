@@ -1,10 +1,10 @@
-# Release 2.9.0+26.1.2
+# Release 2.9.1+26.1.2
 - Some medical items are now limb-based - meaning you can use them only on specific limbs
   - Splints are now only usable on arms and legs
   - Tourniquets are now only usable on arms and legs
   - Added pressure dressing item - 7-second use time
     - Fixes all types of bleeds
-    - Fixes fractures with a 45-minute delay
+    - Fixes fractures with a 15-minute delay
     - Can be applied on all limbs
     - Heals in stages; First heals bleeds, then fractures
 - Fractures on arms now also cause weakness and mining fatigue
@@ -16,3 +16,5 @@
 - All keybinds are now in single `TarkovCraft` category
 - Internal registry overhaul and simplification
 - Optimization of health effects
+- Rebalanced item weights
+- Fixed a small memory leak from custom shaders
