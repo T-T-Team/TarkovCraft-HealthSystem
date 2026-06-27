@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "C": "#minecraft:wool_carpets",
-    "P": "minecraft:paper",
-    "I": "#c:nuggets/iron",
-    "S": "#c:strings"
+    "C": {
+      "tag": "minecraft:wool_carpets"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "I": {
+      "tag": "c:nuggets/iron"
+    },
+    "S": {
+      "tag": "c:strings"
+    }
   },
   "pattern": [
     "P  ",
