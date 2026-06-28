@@ -6,20 +6,15 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '25'
 
-      - name: Prepare Gradle Wrapper
-        run: chmod +x ./gradlew
+      - run: chmod +x ./gradlew
 
-      - name: Gradle setup
-        uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v4
 
-      - name: Push to maven
-        run: ./gradlew publish -PMAVEN_PUBLIC_URL=${{ secrets.MAVEN_URL }} -PMAVEN_USERNAME=${{ secrets.MAVEN_USER }} -PMAVEN_PASSWORD=${{ secrets.MAVEN_PASS }} --no-configuration-cache
+      - run: ./gradlew publish -PMAVEN_PUBLIC_URL=${{ secrets.MAVEN_URL }} -PMAVEN_USERNAME=${{ secrets.MAVEN_USER }} -PMAVEN_PASSWORD=${{ secrets.MAVEN_PASS }} --no-configuration-cache
