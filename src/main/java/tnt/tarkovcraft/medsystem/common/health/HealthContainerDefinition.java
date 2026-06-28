@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import tnt.tarkovcraft.core.util.Codecs;
@@ -57,13 +58,17 @@ public record HealthContainerDefinition(List<EntityType<?>> targets, LimbConfigu
         }
 
         HealthContainer container = new HealthContainer(entity.getType(), this);
+        AttributeMap attributes = entity.getAttributes();
+        AttributeInstance maxHealthAttribute = attributes.getInstance(Attributes.MAX_HEALTH);
         float containerMaxHealth = this.limbConfiguration.getMaxHealth();
-        float entityMaxHealth = entity.getMaxHealth();
+        float entityMaxHealth = (float) maxHealthAttribute.getBaseValue();
         float diff = containerMaxHealth - entityMaxHealth;
         AttributeModifier modifier = new AttributeModifier(HealthSystem.IDENTIFIER, diff, AttributeModifier.Operation.ADD_VALUE);
         AttributeInstance instance = entity.getAttribute(Attributes.MAX_HEALTH);
         instance.addOrReplacePermanentModifier(modifier);
         HealthHelper.synchronizeHealth(entity, container);
+        LimbContainer limbContainer = container.getLimbContainer();
+        limbContainer.recoverFullHealth();
         entity.setData(MedSystemDataAttachments.HEALTH_CONTAINER, container);
     }
 }
