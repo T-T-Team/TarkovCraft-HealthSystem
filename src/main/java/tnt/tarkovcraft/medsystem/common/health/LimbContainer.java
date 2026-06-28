@@ -140,6 +140,12 @@ public final class LimbContainer implements Iterable<Limb> {
         }
     }
 
+    public void recoverFullHealth() {
+        for (Limb limb : this.limbs.values()) {
+            limb.healUpTo(limb.getMaxHealth());
+        }
+    }
+
     public float heal(float amount, @Nullable Limb limb) {
         if (limb != null && !limb.isDead()) {
             return this.healSpecificLimb(limb, amount);
