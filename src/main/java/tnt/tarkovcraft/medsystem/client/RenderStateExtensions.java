@@ -9,6 +9,7 @@ public final class RenderStateExtensions {
     public static final ContextKey<Boolean> SPECIAL_POSE = create("special_pose");
     public static final ContextKey<Boolean> PASSENGER = create("passenger");
     public static final ContextKey<Boolean> UNCONSCIOUS = create("unconscious");
+    public static final ContextKey<Float> COLLAPSE_ANIMATION_AMOUNT = create("collapse_anim_amount");
 
     private static <T> ContextKey<T> create(String code) {
         return new ContextKey<>(MedicalSystem.createIdentifier(code));

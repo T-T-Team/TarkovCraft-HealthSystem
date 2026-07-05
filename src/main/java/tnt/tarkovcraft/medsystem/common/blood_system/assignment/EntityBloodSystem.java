@@ -37,16 +37,19 @@ public final class EntityBloodSystem {
             Identifier.CODEC.fieldOf("blood_type").forGetter(t -> t.bloodType),
             Codec.FLOAT.fieldOf("blood_volume").forGetter(t -> t.bloodVolume),
             Codec.INT.optionalFieldOf("remaining_unconscious_time", 0).forGetter(t -> t.remainingUnconsciousTime),
+            Codec.INT.optionalFieldOf("unconscious_time", 0).forGetter(t -> t.unconsciousTime),
             UnconsciousOptions.CODEC.optionalFieldOf("unconscious_options", UnconsciousOptions.EMPTY).forGetter(t -> t.unconsciousOptions),
             Codec.FLOAT.optionalFieldOf("shock_amount", 0.0F).forGetter(t -> t.shockAmount)
     ).apply(instance, EntityBloodSystem::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, EntityBloodSystem> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
     public static final SynchronizableScreen.DataSource BLOOD_SYSTEM = new SynchronizableScreen.DataSource(MedicalSystem.createIdentifier("blood_system"));
+    public static final int COLLAPSE_ANIM_DURATION = 15;
 
     private final EntityType<?> type;
     private final Identifier bloodType;
     private float bloodVolume;
     private int remainingUnconsciousTime;
+    private int unconsciousTime;
     private int unconsciousInvulnerability;
     private UnconsciousOptions unconsciousOptions;
     private float shockAmount;
@@ -57,14 +60,15 @@ public final class EntityBloodSystem {
     public final EventHandler<BloodSystemListener> eventHandler;
 
     EntityBloodSystem(EntityType<?> type, Identifier bloodType, float bloodVolume) {
-        this(type, bloodType, bloodVolume, 0, UnconsciousOptions.EMPTY, 0.0F);
+        this(type, bloodType, bloodVolume, 0, 0, UnconsciousOptions.EMPTY, 0.0F);
     }
 
-    private EntityBloodSystem(EntityType<?> type, Identifier bloodType, float bloodVolume, int remainingUnconsciousTime, UnconsciousOptions options, float shockAmount) {
+    private EntityBloodSystem(EntityType<?> type, Identifier bloodType, float bloodVolume, int remainingUnconsciousTime, int unconsciousTime, UnconsciousOptions options, float shockAmount) {
         this.type = type;
         this.bloodType = bloodType;
         this.bloodVolume = bloodVolume;
         this.remainingUnconsciousTime = remainingUnconsciousTime;
+        this.unconsciousTime = unconsciousTime;
         this.unconsciousOptions = options;
         this.shockAmount = shockAmount;
 
@@ -129,11 +133,21 @@ public final class EntityBloodSystem {
         return remainingUnconsciousTime;
     }
 
+    public float getCollapseAnimAmount(float delta) {
+        int lastUnconsciousTime = Math.max(0, this.unconsciousTime - 1);
+        float start = this.getCollapseAmount(lastUnconsciousTime);
+        float end = this.getCollapseAmount(this.unconsciousTime);
+        return Mth.lerp(delta, start, end);
+    }
+
     public UnconsciousOptions getActiveUnconsciousModeOptions() {
         return !this.isUnconscious() ? UnconsciousOptions.EMPTY : this.unconsciousOptions;
     }
 
     public void setUnconscious(int durationTicks, UnconsciousOptions options) {
+        if (this.remainingUnconsciousTime <= 0) {
+            this.unconsciousTime = 0;
+        }
         this.remainingUnconsciousTime = Math.max(0, durationTicks);
         this.unconsciousOptions = options;
         this.markForUpdate();
@@ -254,6 +268,7 @@ public final class EntityBloodSystem {
             --this.unconsciousInvulnerability;
             return;
         }
+        ++this.unconsciousTime;
         if (this.remainingUnconsciousTime > 0 && --this.remainingUnconsciousTime <= 0) {
             // rescue time out, cause death
             if (this.unconsciousOptions.allowRescue()) {
@@ -277,6 +292,10 @@ public final class EntityBloodSystem {
             float recoveryRate = definition.getShockRecoveryRate(inShock);
             this.shockAmount = Mth.clamp(this.shockAmount - recoveryRate, 0.0F, 1.0F);
         }
+    }
+
+    private float getCollapseAmount(int value) {
+        return Mth.clamp((float) value / (float) COLLAPSE_ANIM_DURATION, 0.0F, 1.0F);
     }
 
     public static final class SyncHandler implements AttachmentSyncHandler<EntityBloodSystem>, AttachmentSyncCallbackListener<EntityBloodSystem> {
