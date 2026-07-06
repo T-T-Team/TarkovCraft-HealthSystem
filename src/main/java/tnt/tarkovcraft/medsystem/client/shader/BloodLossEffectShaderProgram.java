@@ -50,4 +50,9 @@ public final class BloodLossEffectShaderProgram extends SimpleScalingShaderProgr
     public ShaderType getShaderType() {
         return ShaderType.COSMETIC;
     }
+
+    @Override
+    public void resetShader() {
+        this.strength = 0.0F;
+    }
 }
