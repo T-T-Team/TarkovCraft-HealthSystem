@@ -79,4 +79,9 @@ public class BloodLossEffectShaderProgram implements PostEffectShaderProgram {
     public void applyDynamicUniforms(Consumer<Identifier> passIdentifierConsumer) {
         passIdentifierConsumer.accept(PIPELINE);
     }
+
+    @Override
+    public void resetShader() {
+        this.strength = 0.0F;
+    }
 }

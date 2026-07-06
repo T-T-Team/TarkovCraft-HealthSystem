@@ -55,6 +55,11 @@ public abstract class SimpleEffectShaderProgram implements PostEffectShaderProgr
         return ShaderHelper.scaleTransform(this.smoothStrength);
     }
 
+    @Override
+    public void resetShader() {
+        this.strength = 0.0F;
+    }
+
     protected boolean canApply(LivingEntity entity, HealthContainer container, StatusEffectMap map) {
         return true;
     }
