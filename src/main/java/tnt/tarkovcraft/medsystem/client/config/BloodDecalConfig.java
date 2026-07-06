@@ -59,14 +59,14 @@ public final class BloodDecalConfig {
     @Configurable.Gui.NumberFormat("0.0#")
     @Configurable.Gui.Slider
     @Configurable.Comment(value = "How much motion is applied to decals on received damage", localize = true)
-    public float damageMotionScale = 0.1F;
+    public float damageMotionScale = 0.25F;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0F, max = 1.5F)
     @Configurable.Gui.NumberFormat("0.0#")
     @Configurable.Gui.Slider
     @Configurable.Comment(value = "How much motion is applied to decals on received damage from projectiles", localize = true)
-    public float projectileDamageMotionScale = 0.25F;
+    public float projectileDamageMotionScale = 0.6F;
 
     public int getDecalColor(int inputColor) {
         if (this.forceBloodDecalColor) {

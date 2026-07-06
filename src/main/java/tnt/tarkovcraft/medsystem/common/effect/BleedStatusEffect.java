@@ -125,11 +125,11 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                         BloodDripParticleOptions options = new BloodDripParticleOptions(particleColor);
                         Vec3 position = this.getParticlePosition(entity, container, limb);
                         Vec3 delta = entity.getDeltaMovement();
-                        double baseDelta = 0.025;
+                        double baseDelta = 0.03;
                         double xd = random.nextFloat() * (baseDelta * 2.0F) - baseDelta + delta.x;
-                        double yd = 0.1F + delta.y;
+                        double yd = 0.02F;
                         double zd = random.nextFloat() * (baseDelta * 2.0F) - baseDelta + delta.z;
-                        HealthHelper.submitServerBleedParticles(options, Mth.ceil(stageConfig.decalCount * decalMultiplier), position.x, position.y, position.z, xd, yd, zd, 1.5, entity);
+                        HealthHelper.submitServerBleedParticles(options, Mth.ceil(stageConfig.decalCount * decalMultiplier), position.x, position.y, position.z, xd, yd, zd, 3.5, entity);
                     }
                 }
             }
