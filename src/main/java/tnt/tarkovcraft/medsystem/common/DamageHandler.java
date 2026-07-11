@@ -27,6 +27,7 @@ import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.damage.DamageResolver;
 import tnt.tarkovcraft.medsystem.common.health.*;
 import tnt.tarkovcraft.medsystem.common.health.calc.*;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
@@ -65,8 +66,8 @@ public final class DamageHandler {
         }
 
         HitCalculationContext context = new HitCalculationContext(livingEntity, container, source);
-        HitCalculator hitCalculator = MedicalSystem.HEALTH_SYSTEM.getHitCalculator(context);
-        HitCalculationResult result = hitCalculator.calculateHits(context);
+        DamageResolver resolver = MedicalSystem.DAMAGE_RESOLVER.getResolver(context);
+        HitCalculationResult result = resolver.calculate(context);
 
         Level level = entity.level();
         MinecraftServer server = level.getServer();

@@ -1,0 +1,20 @@
+{
+  "priority": -750,
+  "conditions": [
+    {
+      "type": "medsystem:damage_predicate",
+      "predicate": {
+        "tags": [
+          {
+            "id": "minecraft:is_fall",
+            "expected": true
+          }
+        ]
+      }
+    }
+  ],
+  "calculator": {
+    "function": "medsystem:fall",
+    "damage_scale": 1.7
+  }
+}

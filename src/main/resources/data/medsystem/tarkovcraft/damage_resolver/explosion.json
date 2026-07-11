@@ -1,0 +1,22 @@
+{
+  "priority": -750,
+  "conditions": [
+    {
+      "type": "medsystem:damage_predicate",
+      "predicate": {
+        "tags": [
+          {
+            "id": "minecraft:is_explosion",
+            "expected": true
+          }
+        ]
+      }
+    }
+  ],
+  "calculator": {
+    "function": "medsystem:explosion",
+    "damage_scale": 2.5,
+    "air_pressure": 0.5,
+    "water_pressure": 1.2
+  }
+}

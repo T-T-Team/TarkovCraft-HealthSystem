@@ -9,12 +9,7 @@ import tnt.tarkovcraft.medsystem.util.HitboxHelper;
 import java.util.Comparator;
 import java.util.List;
 
-public final class ProjectileHitCalculator implements HitCalculator {
-
-    public static final ProjectileHitCalculator DEFAULT = new ProjectileHitCalculator();
-
-    private ProjectileHitCalculator() {
-    }
+public record ProjectileHitCalculator(float pierceDecay) implements HitCalculator {
 
     @Override
     public HitCalculationResult calculateHits(HitCalculationContext context) {
@@ -32,9 +27,9 @@ public final class ProjectileHitCalculator implements HitCalculator {
             int limit = Math.min(hits.size(), pierceAmount);
             return HitCalculationResult.of(hits.subList(0, limit))
                     .withRayCast(ray)
-                    .withDamageDistributor(original -> DecayingDamageDistributor.PROJECTILE);
+                    .withDamageDistributor(_ -> new DecayingDamageDistributor(this.pierceDecay));
         }
 
-        return context.approximate(ray).withDamageDistributor(original -> DecayingDamageDistributor.PROJECTILE);
+        return context.approximate(ray).withDamageDistributor(_ -> new DecayingDamageDistributor(this.pierceDecay));
     }
 }

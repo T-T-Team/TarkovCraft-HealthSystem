@@ -12,15 +12,6 @@ import java.util.List;
 
 public record SpecificBodyPartHitCalculator(SpecificLimbDamage damage) implements HitCalculator {
 
-    public static boolean canApply(HitCalculationContext ctx) {
-        return ctx.source() instanceof SpecificLimbDamage;
-    }
-
-    public static SpecificBodyPartHitCalculator createInstance(HitCalculationContext ctx) {
-        SpecificLimbDamage source = (SpecificLimbDamage) ctx.source();
-        return new SpecificBodyPartHitCalculator(source);
-    }
-
     @Override
     public HitCalculationResult calculateHits(HitCalculationContext context) {
         HealthContainer container = context.container();
