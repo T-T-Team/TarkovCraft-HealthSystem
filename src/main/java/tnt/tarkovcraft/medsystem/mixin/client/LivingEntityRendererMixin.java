@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.medsystem.client.UnconsciousPoseHelper;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends EntityRenderer<T> {
@@ -25,12 +26,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
             cancellable = true
     )
     private void medsystem$setupRotations(T entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale, CallbackInfo ci) {
-        if (!UnconsciousPoseHelper.shouldApplyUnconsciousAttributes(entity)) // TODO default pose
+        if (!UnconsciousPoseHelper.shouldApplyUnconsciousAttributes(entity))
             return;
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        float collapseAnimAmount = bloodSystem.getCollapseAnimAmount(partialTick);
+
         poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - yBodyRot));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
-        poseStack.mulPose(Axis.YP.rotationDegrees(270.0F));
-        poseStack.translate(0.0, -0.9, -0.1);
+        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F * collapseAnimAmount));
+        poseStack.mulPose(Axis.YP.rotationDegrees(270.0F * collapseAnimAmount));
+        poseStack.translate(0.0, -0.9 * collapseAnimAmount, -0.15 * collapseAnimAmount);
         ci.cancel();
     }
 }
