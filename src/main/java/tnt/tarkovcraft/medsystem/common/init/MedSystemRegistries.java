@@ -10,6 +10,11 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.blood_system.effect.*;
+import tnt.tarkovcraft.medsystem.common.damage.condition.DamageCondition;
+import tnt.tarkovcraft.medsystem.common.damage.condition.DamageSourceCondition;
+import tnt.tarkovcraft.medsystem.common.damage.condition.DamageTypeCondition;
+import tnt.tarkovcraft.medsystem.common.damage.condition.IsSpecificLimbDamage;
+import tnt.tarkovcraft.medsystem.common.damage.function.*;
 import tnt.tarkovcraft.medsystem.common.consume_effect.ConsumeEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.group.*;
@@ -30,6 +35,9 @@ public final class MedSystemRegistries {
     public static final Registry<MapCodec<? extends EntityStateMatcher>> STATE_MATCHER = new RegistryBuilder<>(Keys.STATE_MATCHER).create();
 
     public static final Registry<MapCodec<? extends EffectRecoveryApplicator>> EFFECT_RECOVERY_APPLICATOR = new RegistryBuilder<>(Keys.EFFECT_RECOVERY_APPLICATOR).create();
+
+    public static final Registry<MapCodec<? extends DamageCondition>> DAMAGE_CONDITIONS = new RegistryBuilder<>(Keys.DAMAGE_CONDITIONS).create();
+    public static final Registry<MapCodec<? extends DamageFunction>> DAMAGE_FUNCTIONS = new RegistryBuilder<>(Keys.DAMAGE_FUNCTIONS).create();
 
     public static final Registry<HealthEventTriggerSource> HEALTH_EVENT_TRIGGER_SOURCE = new RegistryBuilder<>(Keys.HEALTH_EVENT_TRIGGER_SOURCE).create();
     public static final Registry<MapCodec<? extends HealthEventCondition>> HEALTH_EVENT_CONDITION = new RegistryBuilder<>(Keys.HEALTH_EVENT_CONDITION).create();
@@ -62,6 +70,24 @@ public final class MedSystemRegistries {
         registerObject(helper, "bleed", BleedEffectRecoveryApplicator.CODEC);
         registerObject(helper, "fracture", FractureEffectRecoveryApplicator.CODEC);
         registerObject(helper, "staged", StagedEffectRecoveryApplicator.CODEC);
+    }
+
+    public static void registerDamageConditions(RegisterEvent.RegisterHelper<MapCodec<? extends DamageCondition>> helper) {
+        registerObject(helper, "builtin/specific_limb", IsSpecificLimbDamage.CODEC);
+        registerObject(helper, "damage_predicate", DamageSourceCondition.CODEC);
+        registerObject(helper, "damage_type", DamageTypeCondition.CODEC);
+    }
+
+    public static void registerDamageFunctions(RegisterEvent.RegisterHelper<MapCodec<? extends DamageFunction>> helper) {
+        registerObject(helper, "builtin/generic", GenericDamageFunction.CODEC);
+        registerObject(helper, "builtin/specific_limb", SpecificLimbDamageFunction.CODEC);
+        registerObject(helper, "builtin/broken_limb", BrokenLimbDamageFunction.CODEC);
+        registerObject(helper, "builtin/poison", PoisonDamageFunction.CODEC);
+        registerObject(helper, "melee_damage", MeleeHitFunction.CODEC);
+        registerObject(helper, "projectile_damage", ProjectileDamageFunction.CODEC);
+        registerObject(helper, "fall", FallDamageFunction.CODEC);
+        registerObject(helper, "explosion", ExplosionDamageFunction.CODEC);
+        registerObject(helper, "in_liquid", InLiquidDamageFunction.CODEC);
     }
 
     public static void registerHealthEventConditions(RegisterEvent.RegisterHelper<MapCodec<? extends HealthEventCondition>> helper) {
@@ -123,6 +149,9 @@ public final class MedSystemRegistries {
         public static final ResourceKey<Registry<MapCodec<? extends EntityStateMatcher>>> STATE_MATCHER = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health/state_matcher"));
 
         public static final ResourceKey<Registry<MapCodec<? extends EffectRecoveryApplicator>>> EFFECT_RECOVERY_APPLICATOR = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("effect_recovery_applicator"));
+
+        public static final ResourceKey<Registry<MapCodec<? extends DamageCondition>>> DAMAGE_CONDITIONS = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("damage_resolver/condition"));
+        public static final ResourceKey<Registry<MapCodec<? extends DamageFunction>>> DAMAGE_FUNCTIONS = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("damage_resolver/function"));
 
         public static final ResourceKey<Registry<HealthEventTriggerSource>> HEALTH_EVENT_TRIGGER_SOURCE = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health_event/source"));
         public static final ResourceKey<Registry<MapCodec<? extends HealthEventCondition>>> HEALTH_EVENT_CONDITION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("health_event/condition"));

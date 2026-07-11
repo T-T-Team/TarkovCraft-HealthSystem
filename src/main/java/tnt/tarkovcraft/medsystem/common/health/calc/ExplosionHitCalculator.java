@@ -1,8 +1,6 @@
 package tnt.tarkovcraft.medsystem.common.health.calc;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,20 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class ExplosionHitCalculator implements HitCalculator {
+public record ExplosionHitCalculator(float damageScale, float airPressureMultiplier, float waterPressureMultiplier) implements HitCalculator {
 
-    public static final ExplosionHitCalculator INSTANCE = new ExplosionHitCalculator();
     public static final ResourceLocation METADATA_PRESSURE_FLAG = MedicalSystem.createIdentifier("pressure");
-    private static final float EXPLOSION_DAMAGE_SCALING = 2.5F;
-    private static final float AIR_PRESSURE_MULTIPLIER = 0.5F;
-    private static final float WATER_PRESSURE_MULTIPLIER = 1.2F;
-
-    private ExplosionHitCalculator() {
-    }
-
-    public static boolean isExplosion(HitCalculationContext context) {
-        return context.isDamageType(DamageTypeTags.IS_EXPLOSION) && resolveSourcePosition(context) != null;
-    }
 
     private static Entity getSourceEntity(HitCalculationContext context) {
         return context.getProjectile();
@@ -87,27 +74,20 @@ public final class ExplosionHitCalculator implements HitCalculator {
 
         // More limbs hit = bigger explosion damage share applied
         int damagedLimbs = Math.min(limbCount, hits.size());
-        float envPressureMultiplier = sourceEntity != null && sourceEntity.isInWater() && context.entity().isInWater() ? WATER_PRESSURE_MULTIPLIER : AIR_PRESSURE_MULTIPLIER;
-        float limbDamageScale = (EXPLOSION_DAMAGE_SCALING / limbCount) * damagedLimbs;
+        float envPressureMultiplier = sourceEntity != null && sourceEntity.isInWater() && context.entity().isInWater() ? this.waterPressureMultiplier : this.airPressureMultiplier;
+        float limbDamageScale = (this.damageScale / limbCount) * damagedLimbs;
         HitCalculationResult result = HitCalculationResult.of(hits);
         usedTraces.forEach(result::withRayCast);
         result.withDamageDistributor(original -> new ExplosionDamageDistributor(limbDamageScale, envPressureMultiplier));
         return result;
     }
 
-    private Vec3 clipLimb(AABB aabb, Vec3 position, LivingEntity entity, List<Ray> traceOutput) {
-        int traceCount = TraceGenerator.rayLimit();
-        for (int i = 0; i < traceCount; i++) {
-            Ray ray = TraceGenerator.generateRay(i, position, aabb);
-            Vec3 hitLoc = this.clipLimb(ray, entity, traceOutput);
-            if (hitLoc != null) {
-                return hitLoc;
-            }
-        }
-        return null;
+    private @Nullable Vec3 clipLimb(AABB aabb, Vec3 position, LivingEntity entity, List<Ray> traceOutput) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        return HitboxHelper.trace(config.useExplosionPerformanceMode, aabb, position, ray -> this.clipLimb(ray, entity, traceOutput));
     }
 
-    private Vec3 clipLimb(Ray ray, LivingEntity entity, List<Ray> traceOutput) {
+    private @Nullable Vec3 clipLimb(Ray ray, LivingEntity entity, List<Ray> traceOutput) {
         ClipContext context = new ClipContext(ray.from(), ray.to(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
         Level level = entity.level();
         BlockHitResult result = level.clip(context);
@@ -139,42 +119,6 @@ public final class ExplosionHitCalculator implements HitCalculator {
                 damageMap.put(hitInfo.limb(), limbDamage);
             }
             return damageMap;
-        }
-    }
-
-    private static final class TraceGenerator {
-
-        private static final int PERFORMANCE_MODE_RAYS = 3;
-        private static final int DEFAULT_MODE_RAYS = 11;
-        private static final RayGenerator[] GENERATORS = new RayGenerator[] {
-                // center, bottom center, top center
-                (src, aabb) -> Ray.create(src, aabb.getCenter()),
-                (src, aabb) -> Ray.create(src, aabb.getBottomCenter()),
-                (src, aabb) -> Ray.create(src, new Vec3(Mth.lerp(0.5, aabb.minX, aabb.maxX), aabb.maxY, Mth.lerp(0.5, aabb.minZ, aabb.maxZ))),
-                // bottom corners
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.minX, aabb.minY, aabb.minZ)),
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.minX, aabb.minY, aabb.maxZ)),
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.maxX, aabb.minY, aabb.maxZ)),
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.maxX, aabb.minY, aabb.minZ)),
-                // top corners
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.minX, aabb.maxY, aabb.minZ)),
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.minX, aabb.maxY, aabb.maxZ)),
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.maxX, aabb.maxY, aabb.maxZ)),
-                (src, aabb) -> Ray.create(src, new Vec3(aabb.maxX, aabb.maxY, aabb.minZ))
-        };
-
-        static int rayLimit() {
-            MedSystemConfig config = MedicalSystem.getConfig();
-            return config.useExplosionPerformanceMode ? PERFORMANCE_MODE_RAYS : DEFAULT_MODE_RAYS;
-        }
-
-        static Ray generateRay(int rayIndex, Vec3 from, AABB context) {
-            return GENERATORS[rayIndex].generate(from, context);
-        }
-
-        @FunctionalInterface
-        private interface RayGenerator {
-            Ray generate(Vec3 from, AABB aabb);
         }
     }
 }

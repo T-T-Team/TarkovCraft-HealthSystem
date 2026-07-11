@@ -1,0 +1,15 @@
+{
+  "priority": -750,
+  "conditions": [
+    {
+      "type": "medsystem:damage_type",
+      "values": [
+        "minecraft:lava"
+      ]
+    }
+  ],
+  "calculator": {
+    "function": "medsystem:in_liquid",
+    "damage_scale": 2.5
+  }
+}

@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.util;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -12,9 +13,13 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public final class HitboxHelper {
+
+    private static final Generator[] TRACE_GENERATORS = initTraceGenerators();
+    private static final int PERF_TRACES = 3;
 
     public static Stream<HitInfo> approximateHits(Ray ray, LivingEntity entity, HealthContainer container) {
         return getEntityHitboxes(entity, container)
@@ -81,8 +86,67 @@ public final class HitboxHelper {
         return raycast(ray, ctx.entity(), ctx.container());
     }
 
+    public static Vec3 getTopCenter(AABB aabb) {
+        return new Vec3(Mth.lerp(0.5, aabb.minX, aabb.maxX), aabb.maxY, Mth.lerp(0.5, aabb.minZ, aabb.maxZ));
+    }
+
+    public static <T> @Nullable T tracePoint(boolean perfMode, AABB aabb, Function<Vec3, T> trace) {
+        int limit = perfMode ? PERF_TRACES : TRACE_GENERATORS.length;
+        for (int i = 0; i < limit; i++) {
+            Generator generator = TRACE_GENERATORS[i];
+            Vec3 entryPoint = generator.generate(aabb);
+            T result = trace.apply(entryPoint);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public static <T> @Nullable T trace(boolean perfMode, AABB aabb, Vec3 entryPoint, Function<Ray, T> trace) {
+        int limit = perfMode ? PERF_TRACES : TRACE_GENERATORS.length;
+        for (int i = 0; i < limit; i++) {
+            Generator generator = TRACE_GENERATORS[i];
+            Ray ray = generator.generateRay(aabb, entryPoint);
+            T result = trace.apply(ray);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
     private static @Nullable Vec3 raycast(Ray ray, AABB aabb) {
         return PositionedAABB.tryIntersect(aabb, ray)
                 .orElse(null);
+    }
+
+    private static Generator[] initTraceGenerators() {
+        return new Generator[] {
+                // center, bottom center, top center
+                AABB::getCenter,
+                AABB::getBottomCenter,
+                HitboxHelper::getTopCenter,
+                // bottom corners
+                aabb -> new Vec3(aabb.minX, aabb.minY, aabb.minZ),
+                aabb -> new Vec3(aabb.minX, aabb.minY, aabb.maxZ),
+                aabb -> new Vec3(aabb.maxX, aabb.minY, aabb.maxZ),
+                aabb -> new Vec3(aabb.maxX, aabb.minY, aabb.minZ),
+                // top corners
+                aabb -> new Vec3(aabb.minX, aabb.maxY, aabb.minZ),
+                aabb -> new Vec3(aabb.minX, aabb.maxY, aabb.maxZ),
+                aabb -> new Vec3(aabb.maxX, aabb.maxY, aabb.maxZ),
+                aabb -> new Vec3(aabb.maxX, aabb.maxY, aabb.minZ)
+        };
+    }
+
+    @FunctionalInterface
+    private interface Generator {
+
+        Vec3 generate(AABB aabb);
+
+        default Ray generateRay(AABB aabb, Vec3 entryPoint) {
+            return new Ray(entryPoint, this.generate(aabb));
+        }
     }
 }

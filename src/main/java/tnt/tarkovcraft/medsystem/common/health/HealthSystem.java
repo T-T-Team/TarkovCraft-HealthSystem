@@ -15,7 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
@@ -24,40 +23,25 @@ import tnt.tarkovcraft.medsystem.api.event.PainCheckEvent;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectHelper;
 import tnt.tarkovcraft.medsystem.common.effect.util.StatusEffectMap;
-import tnt.tarkovcraft.medsystem.common.health.calc.*;
-import tnt.tarkovcraft.medsystem.common.health.distributor.PoisonDamageDistributor;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationContext;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemTags;
 import tnt.tarkovcraft.medsystem.network.message.S2C_SendHealthDefinitions;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class HealthSystem extends SimpleJsonResourceReloadListener {
 
     public static final Marker MARKER = MarkerManager.getMarker("HealthSystemManager");
     public static final ResourceLocation IDENTIFIER = MedicalSystem.createIdentifier("health_system");
     private final Map<EntityType<?>, HealthContainerDefinition> healthContainers = new HashMap<>();
-    private final List<HitCalculatorRule> rules = new ArrayList<>();
 
     public HealthSystem() {
         super(new Gson(), "tarkovcraft/health");
-
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.SPECIFIC_PART, SpecificBodyPartHitCalculator::canApply, SpecificBodyPartHitCalculator::createInstance));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, FallDamageHitCalculator::isFall, ctx -> FallDamageHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, ExplosionHitCalculator::isExplosion, ctx -> ExplosionHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.ENVIRONMENT, LavaHitCalculator::canApply, ctx -> LavaHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, MovementDamageHitCalculator::canApply, ctx -> MovementDamageHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.EFFECTS, ctx -> ctx.isDamage(NeoForgeMod.POISON_DAMAGE), ctx -> new DelegateHitCalculator(GenericHitCalculator.INSTANCE, PoisonDamageDistributor.INSTANCE)));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.GENERIC, ctx -> ctx.getAttackingEntity() == null && ctx.isDamageType(MedSystemTags.DamageTypes.IS_GENERIC), ctx -> GenericHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.MELEE, ctx -> ctx.getAttackingEntity() != null && ctx.source().isDirect(), ctx -> MeleeHitCalculator.INSTANCE));
-        this.registerHitCalculatorRule(new HitCalculatorRule(HitCalculatorRule.PROJECTILE, ctx -> ctx.getProjectile() != null, ctx -> ProjectileHitCalculator.DEFAULT));
-    }
-
-    public synchronized void registerHitCalculatorRule(HitCalculatorRule rule) {
-        this.rules.add(rule);
-        this.rules.sort(Comparator.comparingInt(HitCalculatorRule::priority));
     }
 
     public static boolean hasCustomHealth(Entity entity) {
@@ -120,15 +104,7 @@ public final class HealthSystem extends SimpleJsonResourceReloadListener {
         }
     }
 
-    public HitCalculator getHitCalculator(HitCalculationContext context) {
-        for (HitCalculatorRule rule : this.rules) {
-            if (rule.validate(context)) {
-                return rule.createCalculator(context);
-            }
-        }
-        return GenericHitCalculator.INSTANCE;
-    }
-
+    @Deprecated
     public static int getProjectilePiercing(HitCalculationContext context) {
         int pierceLevel = 1;
         if (context.getProjectile() instanceof AbstractArrow arrow) {

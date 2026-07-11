@@ -1,0 +1,16 @@
+{
+  "priority": 300,
+  "conditions": [
+    {
+      "type": "medsystem:damage_predicate",
+      "predicate": {
+        "is_direct": false
+      },
+      "filter": "projectile"
+    }
+  ],
+  "calculator": {
+    "function": "medsystem:projectile_damage",
+    "pierce_decay": 0.5
+  }
+}

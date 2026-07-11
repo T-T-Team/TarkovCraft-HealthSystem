@@ -11,8 +11,6 @@ import java.util.Map;
 
 public record DecayingDamageDistributor(float decayFactor) implements DamageDistributor {
 
-    public static final DecayingDamageDistributor PROJECTILE = new DecayingDamageDistributor(0.5F);
-
     @Override
     public Map<Limb, Float> distribute(DamageContext context, float damage) {
         List<HitInfo> hits = context.getHits();

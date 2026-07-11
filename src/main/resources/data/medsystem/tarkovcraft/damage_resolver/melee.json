@@ -1,0 +1,15 @@
+{
+  "priority": 200,
+  "conditions": [
+    {
+      "type": "medsystem:damage_predicate",
+      "predicate": {
+        "is_direct": true
+      },
+      "filter": "direct"
+    }
+  ],
+  "calculator": {
+    "function": "medsystem:melee_damage"
+  }
+}
