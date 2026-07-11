@@ -19,6 +19,7 @@ import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
 import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.damage.DamageResolverManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventManager;
 import tnt.tarkovcraft.medsystem.common.init.*;
@@ -31,6 +32,7 @@ public final class MedicalSystem {
 
     public static final Logger LOGGER = LogManager.getLogger("MedicalSystem");
 
+    public static final DamageResolverManager DAMAGE_RESOLVER = new DamageResolverManager();
     public static final HealthSystem HEALTH_SYSTEM = new HealthSystem();
     public static final HealthEventManager HEALTH_EVENT = new HealthEventManager();
     public static final BloodSystemManager BLOOD_SYSTEM = new BloodSystemManager();
@@ -76,6 +78,8 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.Keys.EFFECT_GROUP_ITEM, MedSystemRegistries::registerEffectGroupItems);
         event.register(MedSystemRegistries.Keys.STATE_MATCHER, MedSystemRegistries::registerStateMatchers);
         event.register(MedSystemRegistries.Keys.EFFECT_RECOVERY_APPLICATOR, MedSystemRegistries::registerEffectRecoveryApplicators);
+        event.register(MedSystemRegistries.Keys.DAMAGE_CONDITIONS, MedSystemRegistries::registerDamageConditions);
+        event.register(MedSystemRegistries.Keys.DAMAGE_FUNCTIONS, MedSystemRegistries::registerDamageFunctions);
         event.register(MedSystemRegistries.Keys.HEALTH_EVENT_CONDITION, MedSystemRegistries::registerHealthEventConditions);
         event.register(MedSystemRegistries.Keys.HEALTH_EVENT_ACTION, MedSystemRegistries::registerHealthEventActions);
         event.register(MedSystemRegistries.Keys.HEALTH_EVENT_FUNCTION, MedSystemRegistries::registerHealthEventFunctions);
@@ -87,6 +91,8 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.EFFECT_GROUP_ITEM);
         event.register(MedSystemRegistries.STATE_MATCHER);
         event.register(MedSystemRegistries.EFFECT_RECOVERY_APPLICATOR);
+        event.register(MedSystemRegistries.DAMAGE_CONDITIONS);
+        event.register(MedSystemRegistries.DAMAGE_FUNCTIONS);
         event.register(MedSystemRegistries.HEALTH_EVENT_TRIGGER_SOURCE);
         event.register(MedSystemRegistries.HEALTH_EVENT_FUNCTION);
         event.register(MedSystemRegistries.HEALTH_EVENT_CONDITION);
@@ -95,6 +101,7 @@ public final class MedicalSystem {
     }
 
     private void addReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(DamageResolverManager.IDENTIFIER, DAMAGE_RESOLVER);
         event.addListener(HealthSystem.IDENTIFIER, HEALTH_SYSTEM);
         event.addListener(HealthEventManager.IDENTIFIER, HEALTH_EVENT);
         BLOOD_SYSTEM.registerServerDataListeners(event);
