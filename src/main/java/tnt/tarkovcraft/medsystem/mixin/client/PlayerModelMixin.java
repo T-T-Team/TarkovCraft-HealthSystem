@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.medsystem.client.RenderStateExtensions;
 import tnt.tarkovcraft.medsystem.client.util.UnconsciousModelHelper;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousAnimationState;
 
 @Mixin(PlayerModel.class)
 public abstract class PlayerModelMixin extends HumanoidModel<AvatarRenderState> {
@@ -26,8 +27,9 @@ public abstract class PlayerModelMixin extends HumanoidModel<AvatarRenderState> 
     private void medsystem$setupAnim(AvatarRenderState renderState, CallbackInfo ci) {
         if (!RenderStateExtensions.shouldApplyUnconsciousAttributes(renderState) || !RenderStateExtensions.hasSpecialPoseRenderer(renderState))
             return;
+        UnconsciousAnimationState animationState = renderState.getRenderDataOrDefault(RenderStateExtensions.UNCONSCIOUS_ANIMATION, UnconsciousAnimationState.DEFAULT_STATE);
         PlayerModel model = (PlayerModel) (Object) this;
-        UnconsciousModelHelper.applyPlayerUnconsciousTransforms(model);
+        UnconsciousModelHelper.applyPlayerUnconsciousTransforms(model, animationState);
         ci.cancel();
     }
 }

@@ -36,6 +36,7 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousState;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
@@ -152,7 +153,8 @@ public final class MedicalSystemEventHandler {
         DamageSource source = event.getSource();
         if (HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
-            UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+            UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
+            UnconsciousOptions options = unconsciousState.getUnconsciousOptions();
             if (!options.downedStateAllowed() || bloodSystem.hasBledOut())
                 return; // do not allow duplicate rescues
 
@@ -176,7 +178,7 @@ public final class MedicalSystemEventHandler {
                 HealthSystem.synchronizeEntity(entity);
 
                 // set unconscious
-                bloodSystem.setUnconscious(config.bloodSystem.rescueWaitDuration, UnconsciousOptions.DOWNED);
+                bloodSystem.setUnconscious(entity, config.bloodSystem.rescueWaitDuration, UnconsciousOptions.DOWNED);
                 bloodSystem.synchronizeImmediately(entity);
 
                 // set a short invulnerability window to prevent immediate follow-up damage

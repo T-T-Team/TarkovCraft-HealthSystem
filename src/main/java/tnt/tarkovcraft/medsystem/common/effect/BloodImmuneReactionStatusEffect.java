@@ -61,8 +61,8 @@ public final class BloodImmuneReactionStatusEffect extends IntervalAppliedStatus
         if (context.isServerSide() && this.reactionProgress >= this.unconsciousThreshold && BloodSystemManager.isEnabled(entity)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
             EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
-            if (definition.isUnconsciousModeAllowed() && (!bloodSystem.isUnconscious() || !bloodSystem.getActiveUnconsciousModeOptions().allowRescue())) {
-                bloodSystem.setOrExtendedUnconscious(100, UnconsciousOptions.IMMUNE_REACTION);
+            if (definition.isUnconsciousModeAllowed() && (!bloodSystem.isUnconscious() || !bloodSystem.getUnconsciousState().getUnconsciousOptions().allowRescue())) {
+                bloodSystem.setOrExtendedUnconscious(entity, 100, UnconsciousOptions.IMMUNE_REACTION);
             }
         }
         if (context.isServerSide() && this.reactionProgress >= 1.0F) {

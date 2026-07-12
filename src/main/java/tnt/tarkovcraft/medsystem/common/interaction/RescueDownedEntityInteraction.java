@@ -21,7 +21,7 @@ public final class RescueDownedEntityInteraction implements EntityInteraction {
         if (bloodSystem == null) {
             return UserActionResult.failure(NOT_RESCUABLE);
         }
-        UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+        UnconsciousOptions options = bloodSystem.getUnconsciousState().getUnconsciousOptions();
         if (!bloodSystem.isUnconscious() || !options.allowRescue()) {
             return UserActionResult.failure(NOT_RESCUABLE);
         }

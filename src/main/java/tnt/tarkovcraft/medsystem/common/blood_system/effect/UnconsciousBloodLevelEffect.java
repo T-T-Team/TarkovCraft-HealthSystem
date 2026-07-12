@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.core.common.data.number.NumberProvider;
 import tnt.tarkovcraft.core.common.util.AttributeNumber;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousState;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 
@@ -23,17 +24,18 @@ public record UnconsciousBloodLevelEffect(int duration, AttributeNumber chance, 
     public void applyEffects(LivingEntity entity, ServerLevel level, EntityBloodSystem bloodSystem) {
         double chance = this.chance.getValue(entity);
         RandomSource random = entity.getRandom();
-        applyUnconsciousMode(bloodSystem, random, (float) chance, this.duration, this.options);
+        applyUnconsciousMode(bloodSystem, entity, random, (float) chance, this.duration, this.options);
     }
 
-    public static void applyUnconsciousMode(EntityBloodSystem bloodSystem, RandomSource random, float chance, int duration, UnconsciousOptions options) {
-        if (duration <= 0 || chance <= 0 || bloodSystem.getActiveUnconsciousModeOptions() == UnconsciousOptions.DOWNED)
+    public static void applyUnconsciousMode(EntityBloodSystem bloodSystem, LivingEntity entity, RandomSource random, float chance, int duration, UnconsciousOptions options) {
+        UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
+        if (duration <= 0 || chance <= 0 || unconsciousState.getUnconsciousOptions().is(UnconsciousOptions.TAG_DOWNED))
             return;
         EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
         if (!definition.isUnconsciousModeAllowed())
             return;
         if (chance >= 1.0F || random.nextFloat() < chance) {
-            bloodSystem.setOrExtendedUnconscious(duration, options);
+            bloodSystem.setOrExtendedUnconscious(entity, duration, options);
         }
     }
 
