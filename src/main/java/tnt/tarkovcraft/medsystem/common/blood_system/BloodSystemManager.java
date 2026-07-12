@@ -79,7 +79,8 @@ public final class BloodSystemManager {
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
         if (bloodSystem == null)
             return false;
-        UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+        UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
+        UnconsciousOptions options = unconsciousState.getUnconsciousOptions();
         return !bloodSystem.hasBledOut() && bloodSystem.isUnconscious() && options.allowSkip() && !EntityHelper.isCreativeOrSpectator(entity);
     }
 

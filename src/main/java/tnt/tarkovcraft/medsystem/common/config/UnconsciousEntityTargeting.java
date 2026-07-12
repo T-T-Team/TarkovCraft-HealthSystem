@@ -21,7 +21,7 @@ public enum UnconsciousEntityTargeting {
     }
 
     private static boolean skipRescueModeTargeting(LivingEntity entity, EntityBloodSystem bloodSystem) {
-        UnconsciousOptions options = bloodSystem.getActiveUnconsciousModeOptions();
+        UnconsciousOptions options = bloodSystem.getUnconsciousState().getUnconsciousOptions();
         return !options.allowRescue();
     }
 

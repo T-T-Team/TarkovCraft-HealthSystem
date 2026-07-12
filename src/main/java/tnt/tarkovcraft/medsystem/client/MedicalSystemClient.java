@@ -49,6 +49,8 @@ import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
 import tnt.tarkovcraft.medsystem.client.screen.UnconsciousActionScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousAnimationState;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousState;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -135,7 +137,10 @@ public final class MedicalSystemClient {
                     state.setRenderData(RenderStateExtensions.SPECIAL_POSE, definition.hasSpecialUnconsciousPoseRenderer());
                     state.setRenderData(RenderStateExtensions.PASSENGER, entity.isPassenger());
                     state.setRenderData(RenderStateExtensions.UNCONSCIOUS, bloodSystem.isUnconscious());
-                    state.setRenderData(RenderStateExtensions.COLLAPSE_ANIMATION_AMOUNT, bloodSystem.getCollapseAnimAmount(state.partialTick));
+                    UnconsciousAnimationState animationState = bloodSystem.getUnconsciousAnimationState(state.partialTick);
+                    if (animationState != null) {
+                        state.setRenderData(RenderStateExtensions.UNCONSCIOUS_ANIMATION, animationState);
+                    }
                 }
         );
     }
