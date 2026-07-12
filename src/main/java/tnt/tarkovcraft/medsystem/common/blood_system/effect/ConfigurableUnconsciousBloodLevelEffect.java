@@ -26,7 +26,7 @@ public record ConfigurableUnconsciousBloodLevelEffect(AttributeNumber chance, Un
         RandomSource random = entity.getRandom();
         int duration = range.getDurationInSeconds(random);
         float chance = (float) this.chance.getValue(entity);
-        UnconsciousBloodLevelEffect.applyUnconsciousMode(bloodSystem, random, chance, duration, this.options);
+        UnconsciousBloodLevelEffect.applyUnconsciousMode(bloodSystem, entity, random, chance, duration, this.options);
     }
 
     @Override

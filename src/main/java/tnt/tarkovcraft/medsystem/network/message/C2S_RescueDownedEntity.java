@@ -34,7 +34,7 @@ public record C2S_RescueDownedEntity(int entityId) implements CustomPacketPayloa
             UserActionResult<Void> result = EntityInteractions.evaluateInteraction(player, livingEntity, EntityInteractions.RESCUE_DOWNED);
             if (result.isSuccess()) {
                 EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(livingEntity);
-                bloodSystem.rescueDownedEntity();
+                bloodSystem.rescueDownedEntity(livingEntity);
                 EntityInteractions.onInteractionCompletedCallback(player, livingEntity, EntityInteractions.RESCUE_DOWNED);
             } else {
                 player.displayClientMessage(result.message(), true);

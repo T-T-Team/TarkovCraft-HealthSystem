@@ -6,6 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -124,6 +125,15 @@ public final class EntityBloodSystemDefinition {
 
     public boolean isDownedStateEnabled() {
         return this.isUnconsciousModeAllowed() && this.unconsciousMode.downedOnDeath();
+    }
+
+    public Map<String, Float> calculateUnconsciousPose(RandomSource random) {
+        List<String> animationFields = this.unconsciousMode.animationFields();
+        if (animationFields.isEmpty())
+            return Collections.emptyMap();
+        Map<String, Float> metadata = new HashMap<>();
+        animationFields.forEach(field -> metadata.put(field, random.nextFloat()));
+        return metadata;
     }
 
     public EntityDimensions getDimensionsForUnconsciousMode() {

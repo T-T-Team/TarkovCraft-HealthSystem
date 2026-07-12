@@ -23,7 +23,14 @@
   "unconscious_mode": {
     "enabled": true,
     "downed_on_death": true,
-    "custom_pose": true
+    "custom_pose": true,
+    "unconscious_dimensions": [ 1.0, 0.4 ],
+    "animation_fields": [
+      "right_arm",
+      "left_arm",
+      "right_leg",
+      "left_leg"
+    ]
   },
   "shock_attributes": {
     "reception_multiplier": 1.0,

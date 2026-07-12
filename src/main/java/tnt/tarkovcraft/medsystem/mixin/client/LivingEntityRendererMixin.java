@@ -1,7 +1,7 @@
 package tnt.tarkovcraft.medsystem.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import tnt.tarkovcraft.medsystem.client.UnconsciousPoseHelper;
-import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
+import tnt.tarkovcraft.medsystem.client.util.UnconsciousModelHelper;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends EntityRenderer<T> {
@@ -28,13 +28,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
     private void medsystem$setupRotations(T entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale, CallbackInfo ci) {
         if (!UnconsciousPoseHelper.shouldApplyUnconsciousAttributes(entity))
             return;
-        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
-        float collapseAnimAmount = bloodSystem.getCollapseAnimAmount(partialTick);
-
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - yBodyRot));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F * collapseAnimAmount));
-        poseStack.mulPose(Axis.YP.rotationDegrees(270.0F * collapseAnimAmount));
-        poseStack.translate(0.0, -0.9 * collapseAnimAmount, -0.15 * collapseAnimAmount);
+        UnconsciousModelHelper.setupHumanoidRotations(entity, poseStack, yBodyRot, partialTick);
         ci.cancel();
+    }
+
+    @Inject(
+            method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;prepareMobModel(Lnet/minecraft/world/entity/Entity;FFF)V")
+    )
+    private void medsystem$render(T entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
+        UnconsciousModelHelper.partialTick = partialTicks; // capture partial tick value
     }
 }

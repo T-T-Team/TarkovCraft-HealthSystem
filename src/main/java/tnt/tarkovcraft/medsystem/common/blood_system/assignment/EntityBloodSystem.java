@@ -9,6 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,12 +24,11 @@ import tnt.tarkovcraft.core.client.TarkovCraftCoreClient;
 import tnt.tarkovcraft.core.util.Cached;
 import tnt.tarkovcraft.core.util.EventHandler;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
-import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousModeHelper;
-import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.*;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
+import java.util.Map;
 import javax.annotation.Nullable;
 
 public final class EntityBloodSystem {
@@ -37,44 +37,36 @@ public final class EntityBloodSystem {
             BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("entity_type").forGetter(t -> t.type),
             ResourceLocation.CODEC.fieldOf("blood_type").forGetter(t -> t.bloodType),
             Codec.FLOAT.fieldOf("blood_volume").forGetter(t -> t.bloodVolume),
-            Codec.INT.optionalFieldOf("remaining_unconscious_time", 0).forGetter(t -> t.remainingUnconsciousTime),
-            Codec.INT.optionalFieldOf("unconscious_time", 0).forGetter(t -> t.unconsciousTime),
-            UnconsciousOptions.CODEC.optionalFieldOf("unconscious_options", UnconsciousOptions.EMPTY).forGetter(t -> t.unconsciousOptions),
+            UnconsciousState.CODEC.optionalFieldOf("unconscious_state", UnconsciousState.createConscious()).forGetter(t -> t.unconsciousState),
             Codec.FLOAT.optionalFieldOf("shock_amount", 0.0F).forGetter(t -> t.shockAmount)
     ).apply(instance, EntityBloodSystem::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, EntityBloodSystem> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
     public static final SynchronizableScreen.DataSource BLOOD_SYSTEM = new SynchronizableScreen.DataSource(MedicalSystem.createIdentifier("blood_system"));
-    public static final int COLLAPSE_ANIM_DURATION = 15;
 
     private final EntityType<?> type;
     private final ResourceLocation bloodType;
     private float bloodVolume;
-    private int remainingUnconsciousTime;
-    private int unconsciousTime;
-    private int unconsciousInvulnerability;
-    private UnconsciousOptions unconsciousOptions;
+    private final UnconsciousState unconsciousState;
     private float shockAmount;
 
     private final Cached<EntityBloodSystemDefinition> definition;
-    private Boolean lastUnconsciousState;
     private boolean synchronizationNeeded;
     public final EventHandler<BloodSystemListener> eventHandler;
 
     EntityBloodSystem(EntityType<?> type, ResourceLocation bloodType, float bloodVolume) {
-        this(type, bloodType, bloodVolume, 0, 0, UnconsciousOptions.EMPTY, 0.0F);
+        this(type, bloodType, bloodVolume, UnconsciousState.createConscious(), 0.0F);
     }
 
-    private EntityBloodSystem(EntityType<?> type, ResourceLocation bloodType, float bloodVolume, int remainingUnconsciousTime, int unconsciousTime, UnconsciousOptions options, float shockAmount) {
+    private EntityBloodSystem(EntityType<?> type, ResourceLocation bloodType, float bloodVolume, UnconsciousState unconsciousState, float shockAmount) {
         this.type = type;
         this.bloodType = bloodType;
         this.bloodVolume = bloodVolume;
-        this.remainingUnconsciousTime = remainingUnconsciousTime;
-        this.unconsciousTime = unconsciousTime;
-        this.unconsciousOptions = options;
+        this.unconsciousState = unconsciousState;
         this.shockAmount = shockAmount;
 
         this.definition = Cached.create(this::loadDefinition);
         this.eventHandler = EventHandler.create();
+        this.unconsciousState.addListener(new UnconsciousListener(this));
     }
 
     public static EntityBloodSystem invalid(IAttachmentHolder holder) {
@@ -94,8 +86,8 @@ public final class EntityBloodSystem {
 
     public void tick(LivingEntity entity) {
         this.bloodTick(entity);
-        this.unconsciousTick(entity);
-        this.shockTick();
+        this.unconsciousState.tick(entity);
+        this.shockTick(entity);
 
         if (this.synchronizationNeeded) {
             this.synchronizationNeeded = false;
@@ -127,44 +119,30 @@ public final class EntityBloodSystem {
     }
 
     public boolean isUnconscious() {
-        return this.getDefinition().isUnconsciousModeAllowed() && this.remainingUnconsciousTime > 0 && (this.unconsciousInvulnerability <= 0 || this.unconsciousOptions.allowRescue());
+        return this.getDefinition().isUnconsciousModeAllowed() && this.unconsciousState.isUnconscious();
     }
 
-    public int getRemainingUnconsciousTime() {
-        return remainingUnconsciousTime;
+    public UnconsciousState getUnconsciousState() {
+        return this.unconsciousState;
     }
 
-    public float getCollapseAnimAmount(float delta) {
-        int lastUnconsciousTime = Math.max(0, this.unconsciousTime - 1);
-        float start = this.getCollapseAmount(lastUnconsciousTime);
-        float end = this.getCollapseAmount(this.unconsciousTime);
-        return Mth.lerp(delta, start, end);
+    public void setUnconscious(LivingEntity entity, int durationTicks, UnconsciousOptions options) {
+        this.setUnconscious(entity, durationTicks, options, false);
     }
 
-    public UnconsciousOptions getActiveUnconsciousModeOptions() {
-        return !this.isUnconscious() ? UnconsciousOptions.EMPTY : this.unconsciousOptions;
-    }
-
-    public void setUnconscious(int durationTicks, UnconsciousOptions options) {
-        if (this.remainingUnconsciousTime <= 0) {
-            this.unconsciousTime = 0;
+    public void setUnconscious(LivingEntity entity, int durationTicks, UnconsciousOptions options, boolean force) {
+        Map<String, Float> metadata = null;
+        if (!this.isUnconscious()) {
+            EntityBloodSystemDefinition definition = this.getDefinition();
+            RandomSource randomSource = entity.getRandom();
+            metadata = definition.calculateUnconsciousPose(randomSource);
         }
-        this.remainingUnconsciousTime = Math.max(0, durationTicks);
-        this.unconsciousOptions = options;
+        this.unconsciousState.setUnconscious(durationTicks, options, force, metadata);
         this.markForUpdate();
     }
 
-    public void setOrExtendedUnconscious(int durationTicks, UnconsciousOptions options) {
-        this.setUnconscious(Math.max(this.remainingUnconsciousTime, durationTicks), options);
-    }
-
-    public void setUnconsciousPrevention(int duration) {
-        this.unconsciousInvulnerability = Math.max(0, duration);
-        this.markForUpdate();
-    }
-
-    public void setOrExtendedUnconsciousPrevention(int duration) {
-        this.setUnconsciousPrevention(Math.max(this.unconsciousInvulnerability, duration));
+    public void setOrExtendedUnconscious(LivingEntity entity, int durationTicks, UnconsciousOptions options) {
+        this.setUnconscious(entity, Math.max(this.unconsciousState.getRemainingUnconsciousDuration(), durationTicks), options);
     }
 
     public float causeBloodLoss(float amount) {
@@ -230,9 +208,13 @@ public final class EntityBloodSystem {
         return this.definition.get();
     }
 
-    public void rescueDownedEntity() {
-        this.setUnconscious(100, UnconsciousOptions.RESCUE_DELAY);
+    public void rescueDownedEntity(LivingEntity entity) {
+        this.setUnconscious(entity, 100, UnconsciousOptions.RESCUE_DELAY);
         this.shockAmount = 0.0F;
+    }
+
+    public @Nullable UnconsciousAnimationState getUnconsciousAnimationState(float delta) {
+        return this.isUnconscious() ? this.unconsciousState.calculateAnimationState(delta) : null;
     }
 
     private EntityBloodSystemDefinition loadDefinition() {
@@ -258,45 +240,17 @@ public final class EntityBloodSystem {
             definition.applyEffects(entity, (ServerLevel) level, this);
     }
 
-    private void unconsciousTick(LivingEntity entity) {
-        boolean unconscious = this.remainingUnconsciousTime > 0;
-        if (this.lastUnconsciousState == null || unconscious != this.lastUnconsciousState) {
-            UnconsciousModeHelper.onChanged(unconscious, entity, this);
-            this.markForUpdate();
-        }
-        this.lastUnconsciousState = unconscious;
-        if (this.unconsciousInvulnerability > 0 && !this.unconsciousOptions.allowRescue()) {
-            --this.unconsciousInvulnerability;
-            return;
-        }
-        ++this.unconsciousTime;
-        if (this.remainingUnconsciousTime > 0 && --this.remainingUnconsciousTime <= 0) {
-            // rescue time out, cause death
-            if (this.unconsciousOptions.allowRescue()) {
-                this.causeBloodLoss(Float.MAX_VALUE);
-                this.setOrExtendedUnconscious(30, UnconsciousOptions.BLOODLOSS);
-            } else {
-                this.unconsciousOptions = UnconsciousOptions.EMPTY;
-                this.setUnconsciousPrevention(100);
-            }
-        }
-    }
-
-    private void shockTick() {
+    private void shockTick(LivingEntity entity) {
         if (this.shockAmount > 0) {
             EntityBloodSystemDefinition definition = this.getDefinition();
             boolean isUnconscious = this.isUnconscious();
             boolean inShock = definition.isInShock(isUnconscious, this.shockAmount);
-            if (inShock && (!isUnconscious || this.unconsciousOptions == UnconsciousOptions.PAIN_SHOCK)) {
-                this.setOrExtendedUnconscious(50, UnconsciousOptions.PAIN_SHOCK);
+            if (inShock && (!isUnconscious || this.unconsciousState.getUnconsciousOptions() == UnconsciousOptions.PAIN_SHOCK)) {
+                this.setOrExtendedUnconscious(entity, 50, UnconsciousOptions.PAIN_SHOCK);
             }
             float recoveryRate = definition.getShockRecoveryRate(inShock);
             this.shockAmount = Mth.clamp(this.shockAmount - recoveryRate, 0.0F, 1.0F);
         }
-    }
-
-    private float getCollapseAmount(int value) {
-        return Mth.clamp((float) value / (float) COLLAPSE_ANIM_DURATION, 0.0F, 1.0F);
     }
 
     public static final class SyncHandler implements AttachmentSyncHandler<EntityBloodSystem>, AttachmentSyncCallbackListener<EntityBloodSystem> {
@@ -314,6 +268,26 @@ public final class EntityBloodSystem {
         @Override
         public void onDataSynced(IAttachmentHolder holder, AttachmentType<EntityBloodSystem> attachmentType, EntityBloodSystem attachment) {
             TarkovCraftCoreClient.synchronizeCurrentScreen(BLOOD_SYSTEM);
+        }
+    }
+
+    private record UnconsciousListener(EntityBloodSystem bloodSystem) implements UnconsciousState.Listener {
+
+        @Override
+        public void onUnconsciousStateChanged(LivingEntity entity, boolean unconscious) {
+            UnconsciousModeHelper.onChanged(unconscious, entity, this.bloodSystem);
+            this.bloodSystem.markForUpdate();
+        }
+
+        @Override
+        public void onWakeUp(LivingEntity entity, UnconsciousOptions options, int totalUnconsciousDuration) {
+            if (options.allowRescue()) { // entity was in rescue mode and was not rescued
+                this.bloodSystem.causeBloodLoss(Float.MAX_VALUE);
+                this.bloodSystem.setOrExtendedUnconscious(entity, 50, UnconsciousOptions.DOWNED_NO_RESCUE);
+            } else {
+                this.bloodSystem.unconsciousState.setInvulnerableDuration(100);
+            }
+            this.bloodSystem.markForUpdate();
         }
     }
 }
