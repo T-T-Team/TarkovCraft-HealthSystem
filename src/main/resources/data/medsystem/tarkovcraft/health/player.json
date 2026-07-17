@@ -70,18 +70,8 @@
       "targets": "crouching"
     },
     "laying": {
-      "type": "medsystem:logical",
-      "operator": "or",
-      "values": [
-        {
-          "type": "medsystem:pose",
-          "targets": "swimming"
-        },
-        {
-          "type": "medsystem:custom_pose",
-          "pose": "medsystem:unconscious"
-        }
-      ]
+      "type": "medsystem:pose",
+      "targets": "swimming"
     },
     "sitting": {
       "type": "medsystem:logical",
@@ -95,6 +85,10 @@
           "pose": "medsystem:unconscious_sitting"
         }
       ]
+    },
+    "unconscious": {
+      "type": "medsystem:custom_pose",
+      "pose": "medsystem:unconscious"
     }
   },
   "hitbox_container": {
@@ -121,6 +115,13 @@
           "pos": [ 0, 0.1, 0.7 ],
           "size": [ 0.25, 0.2 ]
         }
+      },
+      "unconscious": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.1, -0.7 ],
+          "size": [ 0.25, 0.2 ]
+        }
       }
     },
     "body": {
@@ -143,6 +144,13 @@
           "pos": [ 0, 0.1, 0.3 ],
           "size": [ 0.25, 0.2 ]
         }
+      },
+      "unconscious": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.1, -0.3 ],
+          "size": [ 0.25, 0.2 ]
+        }
       }
     },
     "stomach": {
@@ -163,6 +171,13 @@
         "yaw": "yaw_body",
         "aabb": {
           "pos": [ 0, 0.1, -0.1 ],
+          "size": [ 0.2, 0.2 ]
+        }
+      },
+      "unconscious": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0, 0.1, 0.05 ],
           "size": [ 0.2, 0.2 ]
         }
       }
@@ -188,6 +203,13 @@
           "pos": [ -0.4, 0.1, 0.15 ],
           "size": [ 0.25, 0.2 ]
         }
+      },
+      "unconscious": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.5, 0.1, -0.2 ],
+          "size": [ 0.25, 0.2 ]
+        }
       }
     },
     "left_arm": {
@@ -209,6 +231,13 @@
         "yaw": "yaw_body",
         "aabb": {
           "pos": [ 0.4, 0.1, 0.15 ],
+          "size": [ 0.25, 0.2 ]
+        }
+      },
+      "unconscious": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.5, 0.1, -0.2 ],
           "size": [ 0.25, 0.2 ]
         }
       }
@@ -241,6 +270,13 @@
           "pos": [ -0.3, 0.575, 0.5 ],
           "size": [ 0.3, 0.15 ]
         }
+      },
+      "unconscious": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ -0.25, 0.1, 0.5 ],
+          "size": [ 0.25, 0.2 ]
+        }
       }
     },
     "left_leg": {
@@ -270,6 +306,13 @@
         "aabb": {
           "pos": [ 0.3, 0.575, 0.5 ],
           "size": [ 0.3, 0.15 ]
+        }
+      },
+      "unconscious": {
+        "yaw": "yaw_body",
+        "aabb": {
+          "pos": [ 0.25, 0.1, 0.5 ],
+          "size": [ 0.25, 0.2 ]
         }
       }
     }
