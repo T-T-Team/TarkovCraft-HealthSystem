@@ -176,7 +176,7 @@ public final class LimbContainer implements Iterable<Limb> {
             context.addLostLimb(limb);
         }
         // no need to redistribute damage from vital parts
-        if (!limb.isVital() && leftover > 0) {
+        if (!limb.isVital() && leftover > 0.01F) {
             Collection<Limb> aliveLimbs = this.getLimbs().filter(Limb::isAlive).toList();
             if (aliveLimbs.isEmpty()) {
                 return;
