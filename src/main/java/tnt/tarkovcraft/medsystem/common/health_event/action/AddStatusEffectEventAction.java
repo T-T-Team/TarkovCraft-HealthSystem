@@ -37,7 +37,6 @@ public record AddStatusEffectEventAction(StatusEffectWithDelay effect, List<Heal
         if (!isGlobalEffect && !targetLimb.canApplyStatusEffect(statusEffect.getType()))
             return true;
         // at least 1 tick delay is required to prevent CMEs while ticking
-        // FIXME utilize limb effect submitter
         int delay = Math.max(1, Mth.floor(HealthEventFunction.applyFunctions(this.effect.getDelay(), ctx, this.delayModifiers)));
         StatusEffectMap effects = isGlobalEffect ? ctx.getHealthContainer().getGlobalStatusEffects() : targetLimb.getStatusEffects();
         StatusEffectHelper.addEffect(effects, ctx.getEntity(), targetLimb, delay, statusEffect);
