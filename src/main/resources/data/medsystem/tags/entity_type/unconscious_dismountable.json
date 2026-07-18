@@ -1,0 +1,6 @@
+{
+  "values": [
+    { "id": "sable_player_ragdoll:ragdoll_seat", "required": false },
+    { "id": "sable_player_ragdoll:ragdoll_doll", "required": false }
+  ]
+}
