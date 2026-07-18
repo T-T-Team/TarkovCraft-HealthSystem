@@ -4,12 +4,14 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TriState;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -236,6 +238,13 @@ public final class MedicalSystemEventHandler {
         Entity entity = event.getEntity();
         // TODO block mount/dismount unless initiated by other entity
         if (entity instanceof LivingEntity livingEntity && BloodSystemManager.isUnconscious(livingEntity)) {
+            TagKey<EntityType<?>> allowedEntities = event.isMounting()
+                    ? MedSystemTags.Entities.UNCONSCIOUS_MOUNTABLE
+                    : MedSystemTags.Entities.UNCONSCIOUS_DISMOUNTABLE;
+            Entity entityToMount = event.getEntityBeingMounted();
+            if (entityToMount != null && entityToMount.is(allowedEntities)) {
+                return;
+            }
             event.setCanceled(true);
         }
     }

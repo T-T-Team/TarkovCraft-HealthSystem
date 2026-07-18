@@ -30,5 +30,7 @@ public final class MedSystemTags {
     public static final class Entities {
 
         public static final TagKey<EntityType<?>> NO_LIMB_HIT_APPROXIMATION = TagKey.create(Registries.ENTITY_TYPE, MedicalSystem.createIdentifier("no_limb_hit_approximation"));
+        public static final TagKey<EntityType<?>> UNCONSCIOUS_MOUNTABLE = TagKey.create(Registries.ENTITY_TYPE, MedicalSystem.createIdentifier("unconscious_mountable"));
+        public static final TagKey<EntityType<?>> UNCONSCIOUS_DISMOUNTABLE = TagKey.create(Registries.ENTITY_TYPE, MedicalSystem.createIdentifier("unconscious_dismountable"));
     }
 }
