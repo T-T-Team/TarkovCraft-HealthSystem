@@ -1,7 +1,5 @@
 package tnt.tarkovcraft.medsystem.common.damage;
 
-import net.minecraft.advancements.predicates.DamageSourcePredicate;
-import net.minecraft.advancements.predicates.TagPredicate;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
