@@ -240,7 +240,7 @@ public final class MedicalSystemEventHandler {
                     ? MedSystemTags.Entities.UNCONSCIOUS_MOUNTABLE
                     : MedSystemTags.Entities.UNCONSCIOUS_DISMOUNTABLE;
             Entity entityToMount = event.getEntityBeingMounted();
-            if (entityToMount != null && entityToMount.is(allowedEntities)) {
+            if (entityToMount != null && entityToMount.getType().is(allowedEntities)) {
                 return;
             }
             event.setCanceled(true);
