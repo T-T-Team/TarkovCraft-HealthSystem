@@ -17,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.AttachmentSyncHandler;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.core.api.AttachmentSyncCallbackListener;
 import tnt.tarkovcraft.core.api.client.SynchronizableScreen;
 import tnt.tarkovcraft.core.client.TarkovCraftCoreClient;
@@ -28,8 +27,8 @@ import tnt.tarkovcraft.medsystem.common.blood_system.*;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
-import java.util.Map;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public final class EntityBloodSystem {
 

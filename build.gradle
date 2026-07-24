@@ -94,15 +94,24 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+def integration = { dependencyHandler, runtime, notation ->
+    dependencyHandler.add(runtime.toString().toBoolean() ? "implementation" : "compileOnly", notation)
+}
+
 dependencies {
     // Configuration
     implementation "dev.toma.configuration:configuration-${project.minecraft_version}:${project.configuration}-neoforge"
-
     // Core library
     implementation "tnt.tarkovcraft:tarkovcraft_core:${project.core}"
 
+    // Integrations/Compatibility ----
+
     // Carry on
-    compileOnly "maven.modrinth:carry-on:${project.carryon}"
+    integration(delegate, project.carryon_runtime, "maven.modrinth:carry-on:${project.carryon}")
+
+    // Sable integration
+    integration(delegate, project.sable_runtime, "maven.modrinth:sable:${project.sable}")
+    integration(delegate, project.sable_runtime, "maven.modrinth:sable-ragdolls:${project.sable_ragdolls}")
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

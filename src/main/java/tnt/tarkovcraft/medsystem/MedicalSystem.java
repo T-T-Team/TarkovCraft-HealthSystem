@@ -27,7 +27,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventManager;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
-import tnt.tarkovcraft.medsystem.integration.carryon.CarryOnIntegration;
+import tnt.tarkovcraft.medsystem.integration.MedSystemIntegrations;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
@@ -94,10 +94,7 @@ public final class MedicalSystem {
     private void setup(FMLCommonSetupEvent event) {
         LOGGER.info("Checking loaded mods for compatibility...");
         ModList modList = ModList.get();
-        if (modList.isLoaded("carryon")) {
-            LOGGER.info("'Carry On' mod detected, enabling integration");
-            CarryOnIntegration.initCommon();
-        }
+        MedSystemIntegrations.setupIntegrations(modList);
     }
 
     private void createRegistries(NewRegistryEvent event) {
