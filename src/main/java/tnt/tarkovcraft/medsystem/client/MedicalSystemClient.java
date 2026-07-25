@@ -137,8 +137,8 @@ public final class MedicalSystemClient {
                     state.setRenderData(RenderStateExtensions.SPECIAL_POSE, definition.hasSpecialUnconsciousPoseRenderer());
                     state.setRenderData(RenderStateExtensions.PASSENGER, entity.isPassenger());
                     state.setRenderData(RenderStateExtensions.UNCONSCIOUS, bloodSystem.isUnconscious());
-                    UnconsciousAnimationState animationState = bloodSystem.getUnconsciousAnimationState(state.partialTick);
-                    if (animationState != null) {
+                    if (bloodSystem.isUnconscious() && bloodSystem.getUnconsciousState().shouldAnimate()) {
+                        UnconsciousAnimationState animationState = bloodSystem.getUnconsciousAnimationState(state.partialTick);
                         state.setRenderData(RenderStateExtensions.UNCONSCIOUS_ANIMATION, animationState);
                     }
                 }

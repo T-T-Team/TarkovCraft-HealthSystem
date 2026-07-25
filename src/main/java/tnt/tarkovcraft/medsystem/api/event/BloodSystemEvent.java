@@ -28,6 +28,10 @@ public abstract class BloodSystemEvent extends Event {
         public UnconsciousStart(LivingEntity entity, EntityBloodSystem bloodSystem) {
             super(entity, bloodSystem);
         }
+
+        public void disableModelAnimation() {
+            this.getBloodSystem().getUnconsciousState().setAnimate(false);
+        }
     }
 
     public static final class UnconsciousEnd extends BloodSystemEvent {
