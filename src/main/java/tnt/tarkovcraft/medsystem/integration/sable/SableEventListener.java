@@ -5,8 +5,11 @@ import dev.leo.sableplayerragdoll.api.RagdollAPI;
 import dev.leo.sableplayerragdoll.api.RagdollLaunchOptions;
 import dev.leo.sableplayerragdoll.api.RagdollSession;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,6 +34,7 @@ public final class SableEventListener {
         if (level.isClientSide())
             return;
         if (entity instanceof ServerPlayer player) {
+            event.disableModelAnimation();
             RagdollAPI.launch(player, this.computeRagdollVelocity(player), RAGDOLL_OPTIONS);
         }
     }
@@ -44,7 +48,18 @@ public final class SableEventListener {
     }
 
     private Vec3 computeRagdollVelocity(LivingEntity entity) {
-        return entity.getLookAngle().scale(-10.0);
+        int hurtAt = entity.getLastHurtByMobTimestamp();
+        DamageSource damageSource = entity.getLastDamageSource();
+        float lookAngleScaleF = 10.0F;
+        if (entity.tickCount - hurtAt < 10 && damageSource != null) {
+            Entity attacker = damageSource.isDirect() ? damageSource.getDirectEntity() : damageSource.getEntity();
+            if (attacker != null) {
+                return attacker instanceof Projectile projectile
+                        ? projectile.getDeltaMovement()
+                        : attacker.getLookAngle().scale(lookAngleScaleF);
+            }
+        }
+        return entity.getLookAngle().scale(-lookAngleScaleF);
     }
 
     private record IsConsciousDespawnCondition() implements DespawnCondition {
