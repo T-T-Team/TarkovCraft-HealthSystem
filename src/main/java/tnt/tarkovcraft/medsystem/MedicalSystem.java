@@ -4,7 +4,9 @@ import dev.toma.configuration.Configuration;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -24,6 +26,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventManager;
 import tnt.tarkovcraft.medsystem.common.init.*;
 import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
+import tnt.tarkovcraft.medsystem.integration.MedSystemIntegrations;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
 
@@ -42,6 +45,7 @@ public final class MedicalSystem {
     public MedicalSystem(IEventBus modEventBus, ModContainer container) {
         config = Configuration.registerSimpleYmlConfig(MedSystemConfig.class);
 
+        modEventBus.addListener(this::setup);
         modEventBus.addListener(this::register);
         modEventBus.addListener(this::createRegistries);
         modEventBus.addListener(this::registerCustomWeightProviders);
@@ -84,6 +88,12 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.Keys.HEALTH_EVENT_ACTION, MedSystemRegistries::registerHealthEventActions);
         event.register(MedSystemRegistries.Keys.HEALTH_EVENT_FUNCTION, MedSystemRegistries::registerHealthEventFunctions);
         event.register(MedSystemRegistries.Keys.BLOOD_LEVEL_EFFECT, MedSystemRegistries::registerBloodLevelEffects);
+    }
+
+    private void setup(FMLCommonSetupEvent event) {
+        LOGGER.info("Checking loaded mods for compatibility...");
+        ModList modList = ModList.get();
+        MedSystemIntegrations.setupIntegrations(modList);
     }
 
     private void createRegistries(NewRegistryEvent event) {

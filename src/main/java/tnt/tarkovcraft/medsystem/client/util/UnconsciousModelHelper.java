@@ -9,6 +9,15 @@ import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousAnimationState;
 
 public final class UnconsciousModelHelper {
 
+    public static boolean shouldAnimateUnconscious(LivingEntityRenderState renderState) {
+        boolean passenger = renderState.getRenderDataOrDefault(RenderStateExtensions.PASSENGER, false);
+        boolean unconscious = renderState.getRenderDataOrDefault(RenderStateExtensions.UNCONSCIOUS, false);
+        if (passenger)
+            return false;
+        UnconsciousAnimationState animationState = renderState.getRenderData(RenderStateExtensions.UNCONSCIOUS_ANIMATION);
+        return unconscious && animationState != null;
+    }
+
     public static void setupHumanoidRotations(LivingEntityRenderState state, PoseStack poseStack, float bodyRot) {
         UnconsciousAnimationState animationState = state.getRenderDataOrDefault(RenderStateExtensions.UNCONSCIOUS_ANIMATION, UnconsciousAnimationState.DEFAULT_STATE);
         float collapseAnimAmount = animationState.collapseProgress();
