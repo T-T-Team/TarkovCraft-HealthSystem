@@ -15,6 +15,7 @@ public final class UnconsciousState {
             Codec.INT.optionalFieldOf("wake_up_timer", 0).forGetter(t -> t.wakeUpTimer),
             Codec.INT.optionalFieldOf("unconscious_duration", 0).forGetter(t -> t.unconsciousDuration),
             Codec.INT.optionalFieldOf("invulnerable_duration", 0).forGetter(t -> t.invulnerableDuration),
+            Codec.BOOL.optionalFieldOf("animate", true).forGetter(t -> t.animate),
             UnconsciousOptions.CODEC.optionalFieldOf("options", UnconsciousOptions.EMPTY).forGetter(t -> t.options),
             Codec.unboundedMap(Codec.STRING, Codec.FLOAT).optionalFieldOf("pose_metadata", Collections.emptyMap()).forGetter(t -> t.poseMetadata)
     ).apply(instance, UnconsciousState::new));
@@ -24,22 +25,24 @@ public final class UnconsciousState {
     private int wakeUpTimer;
     private int unconsciousDuration;
     private int invulnerableDuration;
+    private boolean animate;
     private UnconsciousOptions options;
     private final Map<String, Float> poseMetadata;
 
     private final List<Listener> listeners = new ArrayList<>();
     private Boolean lastUnconsciousState;
 
-    public UnconsciousState(int wakeUpTimer, int unconsciousDuration, int invulnerableDuration, UnconsciousOptions options, Map<String, Float> poseMetadata) {
+    public UnconsciousState(int wakeUpTimer, int unconsciousDuration, int invulnerableDuration, boolean animate, UnconsciousOptions options, Map<String, Float> poseMetadata) {
         this.wakeUpTimer = wakeUpTimer;
         this.unconsciousDuration = unconsciousDuration;
         this.invulnerableDuration = invulnerableDuration;
+        this.animate = animate;
         this.options = options;
         this.poseMetadata = new HashMap<>(poseMetadata);
     }
 
     public static UnconsciousState createConscious() {
-        return new UnconsciousState(0, 0, 0, UnconsciousOptions.EMPTY, Collections.emptyMap());
+        return new UnconsciousState(0, 0, 0, true, UnconsciousOptions.EMPTY, Collections.emptyMap());
     }
 
     public void addListener(Listener listener) {
@@ -68,6 +71,14 @@ public final class UnconsciousState {
         }
     }
 
+    public void setAnimate(boolean animate) {
+        this.animate = animate;
+    }
+
+    public boolean shouldAnimate() {
+        return this.animate;
+    }
+
     public boolean isUnconscious() {
         return this.wakeUpTimer > 0 && (this.invulnerableDuration <= 0 || this.options.allowRescue());
     }
@@ -84,6 +95,7 @@ public final class UnconsciousState {
         if (this.wakeUpTimer <= 0) {
             this.unconsciousDuration = 0;
         }
+        this.animate = true;
         if (force) {
             this.invulnerableDuration = 0;
         }

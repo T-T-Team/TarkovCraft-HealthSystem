@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tnt.tarkovcraft.medsystem.client.UnconsciousPoseHelper;
 import tnt.tarkovcraft.medsystem.client.util.UnconsciousModelHelper;
 
 @Mixin(LivingEntityRenderer.class)
@@ -26,7 +25,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
             cancellable = true
     )
     private void medsystem$setupRotations(T entity, PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale, CallbackInfo ci) {
-        if (!UnconsciousPoseHelper.shouldApplyUnconsciousAttributes(entity))
+        if (!UnconsciousModelHelper.shouldAnimateUnconscious(entity))
             return;
         UnconsciousModelHelper.setupHumanoidRotations(entity, poseStack, yBodyRot, partialTick);
         ci.cancel();

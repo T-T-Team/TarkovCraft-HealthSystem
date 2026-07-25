@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import tnt.tarkovcraft.medsystem.client.UnconsciousPoseHelper;
 import tnt.tarkovcraft.medsystem.client.util.UnconsciousModelHelper;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousAnimationState;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
@@ -27,7 +26,7 @@ public abstract class PlayerModelMixin<T extends LivingEntity> extends HumanoidM
             cancellable = true
     )
     private void medsystem$setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
-        if (!UnconsciousPoseHelper.shouldApplyUnconsciousAttributes(entity))
+        if (!UnconsciousModelHelper.shouldAnimateUnconscious(entity))
             return;
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
         UnconsciousAnimationState animationState = UnconsciousModelHelper.getUnconsciousAnimationState(bloodSystem, UnconsciousModelHelper.partialTick);

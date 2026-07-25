@@ -5,13 +5,23 @@ import com.mojang.math.Axis;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousAnimationState;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousState;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 
 public final class UnconsciousModelHelper {
 
     // stored partial tick value from LivingEntityRenderer#render method to be used for animations where this value is not accessible
     public static float partialTick;
+
+    public static boolean shouldAnimateUnconscious(LivingEntity entity) {
+        if (entity.isPassenger() || !BloodSystemManager.isEnabled(entity))
+            return false;
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        UnconsciousState state = bloodSystem.getUnconsciousState();
+        return bloodSystem.isUnconscious() && state.shouldAnimate();
+    }
 
     public static void setupHumanoidRotations(LivingEntity entity, PoseStack poseStack, float bodyRot, float partialTick) {
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
