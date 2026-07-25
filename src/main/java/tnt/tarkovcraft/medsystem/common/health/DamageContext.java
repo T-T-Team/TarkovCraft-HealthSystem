@@ -36,6 +36,10 @@ public final class DamageContext {
         this.lostLimbs.clear();
     }
 
+    public boolean isInitialized() {
+        return this.context != null && this.result != null;
+    }
+
     public HitCalculationContext getCalculationContext() {
         return this.context;
     }

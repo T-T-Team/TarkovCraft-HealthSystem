@@ -3,7 +3,6 @@ package tnt.tarkovcraft.medsystem.common;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
@@ -11,18 +10,17 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
 import tnt.tarkovcraft.core.common.skill.SkillSystem;
 import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
-import tnt.tarkovcraft.core.network.message.S2C_MakeParticles;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
@@ -50,7 +48,7 @@ public final class DamageHandler {
     private static HitCalculationResultDebugInfo hitDebugInfo = null;
 
     // Hitbox collision detection
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     private void onInvulnerabilityCheck(EntityInvulnerabilityCheckEvent event) {
         if (event.isInvulnerable())
             return;
@@ -102,9 +100,16 @@ public final class DamageHandler {
             return;
         if (entity.level().isClientSide())
             return;
+        if (event.isCanceled()) {
+            entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                    .ifPresent(DamageContext::reset);
+            return;
+        }
         ArmorSystem armorSystem = MedicalSystem.getConfig().armor.armorSystem;
         ArmorComponent component = armorSystem.getComponent();
         entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT).ifPresent(context -> {
+            if (!context.isInitialized())
+                return;
             component.applyDamageReduction(event, context);
         });
     }
