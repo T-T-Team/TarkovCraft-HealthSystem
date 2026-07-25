@@ -1,9 +1,7 @@
-# Release 2.10.0+1.21.1
-- Moved damage resolvers to datapacks
-  - this will allow for better mod integrations in the future
-- Fixed server freeze when using damage multipliers lower than 1 and taking damage
-- Fixed compatibility with Sable ragdolls mod
-- Improved unconscious mode animation
-- Bleed out now damages head instead of all limbs
-- Improved bleed decal particles (requires config reset)
-- Shaders now reset properly when changing spectated entity or respawning
+# Release 2.10.1+1.21.1
+- Better integration with Sable ragdolls
+  - Now you enter ragdoll state automatically when entering unconscious mode
+  - ragdoll positions/directions are calculated dynamically based on damage type
+- Fixed crash related to Epic Knight's mod damage blocking feature handling
+- Improved API for unconscious mode to allow animation overrides
+- Fixed bleed out damage not being applied to root limb
