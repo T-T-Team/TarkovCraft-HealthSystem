@@ -38,7 +38,7 @@ public final class DeathBloodLevelEffect implements BloodLevelEffect {
         DamageSource source = limb != null
                 ? new LimbDamageSource(MedSystemDamageTypes.of(access, MedSystemDamageTypes.BLEED), causingEntity.orElse(null), limb.getLimbCode())
                 : MedSystemDamageTypes.causeBleedDamage(access, causingEntity);
-        entity.hurt(MedSystemDamageTypes.causeBleedDamage(access, causingEntity), 4.0F);
+        entity.hurt(source, 4.0F);
     }
 
     @Override
