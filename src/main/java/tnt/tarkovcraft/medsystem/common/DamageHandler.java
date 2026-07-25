@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -45,7 +46,7 @@ public final class DamageHandler {
     private static HitCalculationResultDebugInfo hitDebugInfo = null;
 
     // Hitbox collision detection
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     private void onInvulnerabilityCheck(EntityInvulnerabilityCheckEvent event) {
         if (event.isInvulnerable())
             return;
@@ -94,9 +95,16 @@ public final class DamageHandler {
             return;
         if (entity.level().isClientSide())
             return;
+        if (event.isCanceled()) {
+            entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                    .ifPresent(DamageContext::reset);
+            return;
+        }
         ArmorSystem armorSystem = MedicalSystem.getConfig().armor.armorSystem;
         ArmorComponent component = armorSystem.getComponent();
         entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT).ifPresent(context -> {
+            if (!context.isInitialized())
+                return;
             component.applyDamageReduction(event, context);
         });
     }
