@@ -1,20 +1,27 @@
-name: Publish Maven
+name: Maven release
 on:
+  push:
+    tags:
+      - 'version/*'
   workflow_dispatch:
 
+env:
+  JAVA_VENDOR: 'microsoft'
+  JAVA_VERSION: '21'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  publish:
+  maven-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '21'
-
+          distribution: ${{ env.JAVA_VENDOR }}
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v6
       - run: chmod +x ./gradlew
-
-      - uses: gradle/actions/setup-gradle@v4
-
-      - run: ./gradlew publish -PMAVEN_PUBLIC_URL=${{ secrets.MAVEN_URL }} -PMAVEN_USERNAME=${{ secrets.MAVEN_USER }} -PMAVEN_PASSWORD=${{ secrets.MAVEN_PASS }} --no-configuration-cache
+      - run: ./gradlew publish -PMAVEN_PUBLIC_URL=${{ secrets.MAVEN_PUBLIC_URL }} -PMAVEN_PRIVATE_URL=${{ secrets.MAVEN_URL }} -PMAVEN_USERNAME=${{ secrets.MAVEN_USER }} -PMAVEN_PASSWORD=${{ secrets.MAVEN_PASS }} --no-configuration-cache

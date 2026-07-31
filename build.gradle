@@ -1,12 +1,8 @@
-import net.darkhax.curseforgegradle.*
-
 plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.moddev' version "${moddev_version}"
     id 'idea'
-    id 'net.darkhax.curseforgegradle' version "${cursegradle_plugin_version}"
-    id 'com.modrinth.minotaur' version "${modrinth_plugin_version}"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -149,55 +145,6 @@ tasks.withType(Jar).configureEach {
     archiveBaseName = "${mod_id}-neoforge"
 }
 
-tasks.register('publishToCurseForge', TaskPublishCurseForge) {
-    dependsOn(tasks.jar)
-    apiToken = project.hasProperty("CURSEFORGE_TOKEN") ? project.findProperty("CURSEFORGE_TOKEN").toString() : ""
-    debugMode = debug.toBoolean()
-
-    def uploadFile = upload(curseforge_project_id, tasks.jar.archiveFile)
-    uploadFile.changelogType = Constants.CHANGELOG_MARKDOWN
-    uploadFile.changelog = file("./CHANGELOG.md").exists() ? file('./CHANGELOG.md') : "-- No changelog provided --"
-    uploadFile.releaseType = getReleaseChannel()
-    uploadFile.displayName = "${mod_id}-neoforge-${version}"
-    uploadFile.addModLoader('NeoForge')
-    uploadFile.addEnvironment('Client', 'Server')
-    uploadFile.addJavaVersion("Java 21")
-    uploadFile.addRequirement("configuration")
-    uploadFile.addRequirement("tarkovcraft-core")
-    compatible_mc_versions.split(",").each { gameVersion ->
-        uploadFile.addGameVersion(gameVersion)
-    }
-}
-
-List compatibleVersions = compatible_mc_versions.split(",")
-modrinth {
-    token.set(project.hasProperty("MODRINTH_TOKEN") ? project.findProperty("MODRINTH_TOKEN").toString() : "")
-    projectId.set(modrinth_project_id)
-    versionNumber.set("${version}")
-    versionName.set("${mod_id}-neoforge-${version}")
-    versionType.set(getReleaseChannel())
-    uploadFile.set(jar)
-    gameVersions.set(compatibleVersions)
-    debugMode.set(debug.toBoolean())
-    changelog.set(
-            providers.provider {
-                def changelogFile = file("./CHANGELOG.md")
-                changelogFile.exists() ? changelogFile.text : "-- No changelog provided --"
-            }
-    )
-    loaders.set(["neoforge"])
-    dependencies {
-        required.project("configuration")
-        required.project("tarkovcraft-core")
-    }
-}
-tasks.modrinth.dependsOn(tasks.jar)
-
-tasks.register('publishMod') {
-    group = "publishing"
-}
-tasks.publishMod.dependsOn(tasks.publish, tasks.publishToCurseForge, tasks.modrinth)
-
 idea {
     module {
         downloadSources = true
@@ -218,7 +165,7 @@ publishing {
     }
 
     repositories {
-        String mavenType = getReleaseChannel() == null ? "MAVEN_PRIVATE_URL" : "MAVEN_PUBLIC_URL"
+        String mavenType = isDevelopmentVersion() ? "MAVEN_PRIVATE_URL" : "MAVEN_PUBLIC_URL"
         maven {
             url = uri(project.findProperty(mavenType).toString() ?: "")
             credentials {
@@ -229,22 +176,7 @@ publishing {
     }
 }
 
-def isPublishing() {
-    gradle.startParameter.taskNames.any { it.toLowerCase().contains('publish') }
-}
-
-def getReleaseChannel() {
+def isDevelopmentVersion() {
     def versionString = version.toString()
-    if (versionString.contains("beta")) {
-        return Constants.RELEASE_TYPE_BETA
-    } else if (versionString.contains("alpha")) {
-        return Constants.RELEASE_TYPE_ALPHA
-    } else if (versionString.contains("dev")) {
-        boolean devChannelAllowed = project.hasProperty("IGNORE_CHANNEL") ? Boolean.parseBoolean(project.findProperty("IGNORE_CHANNEL").toString()) : false
-        if (isPublishing() && !devChannelAllowed)
-            throw new GradleException("Attempted to publish development version: " + versionString)
-        return null
-    } else {
-        return Constants.RELEASE_TYPE_RELEASE
-    }
+    return versionString.contains("dev")
 }
