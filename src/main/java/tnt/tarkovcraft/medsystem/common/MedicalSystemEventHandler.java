@@ -146,7 +146,7 @@ public final class MedicalSystemEventHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     private void onLivingDeath(LivingDeathEvent event) {
         if (event.isCanceled())
             return;
