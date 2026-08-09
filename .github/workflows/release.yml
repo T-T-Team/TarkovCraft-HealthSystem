@@ -7,8 +7,6 @@ on:
 env:
   JAVA_VENDOR: 'microsoft'
   JAVA_VERSION: '25'
-  GAME_VERSION: '26.2'
-  MOD_LOADER: 'neoforge'
   GAME_DEPENDENCIES: 'configuration,tarkovcraft-core'
   CURSEFORGE_PROJECT: '1268501'
   MODRINTH_PROJECT: 'sodxIUKj'
@@ -60,11 +58,8 @@ jobs:
           path: 'artifacts'
       - uses: T-T-Team/curseforge-publish-action@v2
         with:
-          artifact-directory: 'artifacts'
           token: ${{ secrets.CF_TOKEN }}
           project-id: ${{ env.CURSEFORGE_PROJECT }}
-          game-version: ${{ env.GAME_VERSION }}
-          mod-loader: ${{ env.MOD_LOADER }}
           java-version: Java ${{ env.JAVA_VERSION }}
           changelog-content: ${{ needs.prepare-changelog.outputs.changelog }}
           required-dependencies: ${{ env.GAME_DEPENDENCIES }}
@@ -81,11 +76,8 @@ jobs:
           path: 'artifacts'
       - uses: T-T-Team/modrinth-publish-action@v2
         with:
-          artifact-directory: 'artifacts'
           token: ${{ secrets.MODRINTH_TOKEN }}
           project-id: ${{ env.MODRINTH_PROJECT }}
-          game-version: ${{ env.GAME_VERSION }}
-          mod-loader: ${{ env.MOD_LOADER }}
           changelog-content: ${{ needs.prepare-changelog.outputs.changelog }}
           required-dependencies: ${{ env.GAME_DEPENDENCIES }}
           debug-mode: ${{ vars.DEBUG }}
