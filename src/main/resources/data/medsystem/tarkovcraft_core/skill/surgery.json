@@ -1,39 +1,30 @@
 {
-  "description": {
+  "display_name": {
     "translate": "skill.medsystem.surgery"
   },
-  "leveling": {
+  "category": "practical",
+  "configuration": {
     "max_level": 100,
-    "base_exp": 10.0,
-    "additional_exp": 5.0,
-    "max_exp": 100.0
+    "progression_strategy": {
+      "type": "tarkovcraft_core:incremental",
+      "initial_experience": 10.0,
+      "per_level_experience": 5.0,
+      "max_experience": 100.0
+    }
   },
-  "trackers": [
+  "triggers": [
     {
-      "id": "3ea0f284-68eb-43f6-9b2f-004c8d5e2103",
-      "event": "medsystem:limb_fixed",
-      "tracker": {
+      "trigger": "medsystem:limb_fixed",
+      "configuration": {
         "type": "tarkovcraft_core:simple",
         "value": 3.0
       }
     }
   ],
-  "stats": [
+  "bonuses": [
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.surgery.bonus.injury_duration"
-        },
-        "description_key": "skill.medsystem.surgery.bonus.injury_duration.description",
-        "icon": "medsystem:textures/icons/skill/bonus/injury_duration.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "injury_duration",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:injury_recovery_duration",
         "id": "medsystem:skill/surgery",
@@ -45,20 +36,8 @@
       }
     },
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.surgery.bonus.injury_scale"
-        },
-        "description_key": "skill.medsystem.surgery.bonus.injury_scale.description",
-        "icon": "medsystem:textures/icons/skill/bonus/injury_amount.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "injury_scale",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:injury_amount",
         "id": "medsystem:skill/surgery",

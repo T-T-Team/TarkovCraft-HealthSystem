@@ -68,9 +68,9 @@ other player factions, just driving around in custom vehicles, ambushing enemies
 # Version support
 Here you can find an overview of all currently maintained versions
 
-| Minecraft | Mod version                                                                                                                                                                              | Note                         |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
-| 26.2      | ![26.2](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=26.2&label=&color=00AA00)       | maintained                   |
-| 26.1      | ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=26.1.2&label=&color=00AA00)     | maintained                   |
-| 1.21.11   | ![1.21.11](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=1.21.11&label=&color=DD0000) | no support                   |
-| 1.21.1    | ![1.21.1](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=1.21.1&label=&color=CCCC00)   | maintained until stable 26.2 |
+| Minecraft | Mod version                                                                                                                                                                              | Note              |
+|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| 26.2      | ![26.2](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=26.2&label=&color=00AA00)       | maintained        |
+| 26.1      | ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=26.1.2&label=&color=CCCC00)     | long term support |
+| 1.21.11   | ![1.21.11](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=1.21.11&label=&color=DD0000) | no support        |
+| 1.21.1    | ![1.21.1](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=1.21.1&label=&color=CCCC00)   | long term support |
