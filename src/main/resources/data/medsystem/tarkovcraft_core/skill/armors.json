@@ -1,39 +1,31 @@
 {
-  "description": {
+  "display_name": {
     "translate": "skill.medsystem.armors"
   },
-  "leveling": {
+  "category": "combat",
+  "configuration": {
     "max_level": 100,
-    "base_exp": 10.0,
-    "additional_exp": 5.0,
-    "max_exp": 100.0
+    "progression_strategy": {
+      "type": "tarkovcraft_core:incremental",
+      "initial_experience": 10.0,
+      "per_level_experience": 5.0,
+      "max_experience": 100.0
+    }
   },
-  "trackers": [
+  "triggers": [
     {
-      "id": "a606bc3d-ada5-4e99-bd4b-d735864a883f",
-      "event": "medsystem:armor_use",
-      "tracker": {
+      "trigger": "medsystem:armor_use",
+      "configuration": {
         "type": "tarkovcraft_core:simple",
-        "value": 0.25
+        "value": 0.25,
+        "limit": 5.0
       }
     }
   ],
-  "stats": [
+  "bonuses": [
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.armors.bonus.armor_durability"
-        },
-        "description_key": "skill.medsystem.armors.bonus.armor_durability.description",
-        "icon": "medsystem:textures/icons/skill/bonus/armor_durability.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "armor_durability",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:armor_durability",
         "id": "medsystem:skill/armors",

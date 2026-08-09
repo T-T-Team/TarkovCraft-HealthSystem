@@ -1,39 +1,30 @@
 {
-  "description": {
+  "display_name": {
     "translate": "skill.medsystem.firstaid"
   },
-  "leveling": {
+  "category": "practical",
+  "configuration": {
     "max_level": 100,
-    "base_exp": 10.0,
-    "additional_exp": 5.0,
-    "max_exp": 100.0
+    "progression_strategy": {
+      "type": "tarkovcraft_core:incremental",
+      "initial_experience": 10.0,
+      "per_level_experience": 5.0,
+      "max_experience": 100.0
+    }
   },
-  "trackers": [
+  "triggers": [
     {
-      "id": "2fde38e4-2b0c-41b0-afc4-257fe2a22df1",
-      "event": "medsystem:healing_used",
-      "tracker": {
+      "trigger": "medsystem:healing_used",
+      "configuration": {
         "type": "tarkovcraft_core:simple",
         "value": 1.25
       }
     }
   ],
-  "stats": [
+  "bonuses": [
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.firstaid.bonus.positive_effect_duration"
-        },
-        "description_key": "skill.medsystem.firstaid.bonus.positive_effect_duration.description",
-        "icon": "medsystem:textures/icons/skill/bonus/positive_effect_duration.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "positive_effect_duration",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:positive_effect_duration",
         "id": "medsystem:skill/firstaid",
@@ -45,20 +36,8 @@
       }
     },
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.firstaid.bonus.positive_effect_chance"
-        },
-        "description_key": "skill.medsystem.firstaid.bonus.positive_effect_chance.description",
-        "icon": "medsystem:textures/icons/skill/bonus/positive_effect_chance.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "positive_effect_chance",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:positive_effect_chance",
         "id": "medsystem:skill/firstaid",
@@ -70,20 +49,8 @@
       }
     },
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.firstaid.bonus.negative_effect_duration"
-        },
-        "description_key": "skill.medsystem.firstaid.bonus.negative_effect_duration.description",
-        "icon": "medsystem:textures/icons/skill/bonus/negative_effect_duration.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "negative_effect_duration",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:negative_effect_duration",
         "id": "medsystem:skill/firstaid",
@@ -95,20 +62,8 @@
       }
     },
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.firstaid.bonus.negative_effect_chance"
-        },
-        "description_key": "skill.medsystem.firstaid.bonus.negative_effect_chance.description",
-        "icon": "medsystem:textures/icons/skill/bonus/negative_effect_chance.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "negative_effect_chance",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:negative_effect_chance",
         "id": "medsystem:skill/firstaid",

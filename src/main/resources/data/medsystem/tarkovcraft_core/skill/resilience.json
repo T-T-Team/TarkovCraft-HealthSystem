@@ -1,39 +1,31 @@
 {
-  "description": {
+  "display_name": {
     "translate": "skill.medsystem.resilience"
   },
-  "leveling": {
+  "category": "combat",
+  "configuration": {
     "max_level": 100,
-    "base_exp": 10.0,
-    "additional_exp": 5.0,
-    "max_exp": 100.0
+    "progression_strategy": {
+      "type": "tarkovcraft_core:incremental",
+      "initial_experience": 10.0,
+      "per_level_experience": 5.0,
+      "max_experience": 100.0
+    }
   },
-  "trackers": [
+  "triggers": [
     {
-      "id": "3ea0f284-68eb-43f6-9b2f-004c8d5e2103",
-      "event": "medsystem:damage_taken",
-      "tracker": {
+      "trigger": "medsystem:damage_taken",
+      "configuration": {
         "type": "tarkovcraft_core:simple",
-        "value": 0.1
+        "value": 0.1,
+        "limit": 5.0
       }
     }
   ],
-  "stats": [
+  "bonuses": [
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.resilience.bonus.shock_scale"
-        },
-        "description_key": "skill.medsystem.resilience.bonus.shock_scale.description",
-        "icon": "medsystem:textures/icons/skill/bonus/shock_scale.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:skill_level_range",
-          "min": 1
-        }
-      ],
-      "apply": {
+      "name": "shock_scale",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:shock_scale",
         "id": "medsystem:skill/resilience",
@@ -45,19 +37,8 @@
       }
     },
     {
-      "display": {
-        "name": {
-          "translate": "skill.medsystem.resilience.bonus.blood_regeneration"
-        },
-        "description_key": "skill.medsystem.resilience.bonus.blood_regeneration.description",
-        "icon": "medsystem:textures/icons/skill/bonus/blood_regeneration.png"
-      },
-      "conditions": [
-        {
-          "type": "tarkovcraft_core:is_max_skill_level"
-        }
-      ],
-      "apply": {
+      "name": "blood_regeneration",
+      "bonus": {
         "type": "tarkovcraft_core:add_attribute_modifier",
         "attribute": "medsystem:blood_regeneration_amount",
         "id": "medsystem:skill/resilience",
