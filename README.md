@@ -65,32 +65,12 @@ other player factions, just driving around in custom vehicles, ambushing enemies
 
 ---
 
-# FAQ
+# Version support
+Here you can find an overview of all currently maintained versions
 
-> **Q: How can I recover dead limbs?**
->
-> **A:** You need to craft Emergency Surgery Kit and then use it on your limb (use time is 15 seconds). After recovering the limb, it will have reduced max health for 5 minutes)
-
-> **Q: How can I check if specific limb has any status effect?**
->
-> **A:** Status effects are rendered on HUD next to your health stats, however it does show all effects at once. If you want to check specific limbs, you can do so via Character screen - `O` keybind by default and then by going to Health tab
-
-> **Q: I want to use vanilla armor calculation**
->
-> **A:** In case you do not like the more realistic version of armor protection, you can simply toggle `Simple Armor Calculation` in the MedSystem config
-
-> **Q: I do not like status effects, can I disable it?**
->
-> **A:** Of course, it can be found under `Enable status effects` in the MedSystem config
-
-> **Q: Will you add the health system for more entities, e.g. Witches, …?**
->
-> **A:** Yes, we plan to gradually add more entities
-
-> **Q: Will the mod be backported to older Minecraft versions?**
->
-> **A:** No. The project relies on features only available in newer Minecraft versions. Supporting older versions would require extensive rewrites of core systems, which would slow down overall development.
-
-> **Q: Which Minecraft version is supported?**
->
-> **A:** We're currently targeting Minecraft 1.22 once it's available. We may port to newer versions in the future, unless major rewrites in the Minecraft codebase make it impractical. Once the mod reaches a stable state with robust features, we'll evaluate the best version to continue development on.
+| Minecraft | Mod version                                                                                                                                                                              | Note              |
+|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| 26.2      | ![26.2](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=26.2&label=&color=00AA00)       | maintained        |
+| 26.1      | ![26.1](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=26.1.2&label=&color=CCCC00)     | long term support |
+| 1.21.11   | ![1.21.11](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=1.21.11&label=&color=DD0000) | no support        |
+| 1.21.1    | ![1.21.1](https://img.shields.io/maven-metadata/v?metadataUrl=https://repo.repsy.io/toma/public/tnt/tarkovcraft/medsystem/maven-metadata.xml&versionSuffix=1.21.1&label=&color=CCCC00)   | long term support |

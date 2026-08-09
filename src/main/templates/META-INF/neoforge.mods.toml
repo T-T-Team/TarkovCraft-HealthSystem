@@ -25,6 +25,7 @@ version="${mod_version}" #mandatory
 displayName="${mod_name}" #mandatory
 authors="${mod_authors}" #optional
 logoFile="assets/logo.png"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/med-system"
 updateJSONURL="https://raw.githubusercontent.com/T-T-Team/TarkovCraft-HealthSystem/refs/heads/dev/version/1.21.1/version-tracker.json"
 description='''${mod_description}'''
 
