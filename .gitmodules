@@ -1,3 +1,6 @@
 [submodule "datapacks/vanilla-player-health-pack"]
 	path = datapacks/vanilla-player-health-pack
 	url = https://github.com/T-T-Team/vanilla-player-health-pack.git
+[submodule "datapacks/simple-mob-health-pack"]
+	path = datapacks/simple-mob-health-pack
+	url = https://github.com/T-T-Team/simple-mob-health-pack.git
