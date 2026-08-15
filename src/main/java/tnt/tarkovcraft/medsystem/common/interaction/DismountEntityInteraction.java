@@ -5,8 +5,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import tnt.tarkovcraft.core.common.pose.EntityPoseManager;
 import tnt.tarkovcraft.core.util.UserActionResult;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousModeHelper;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemEntityInteractions;
+import tnt.tarkovcraft.medsystem.common.pose.UnconsciousEntityPose;
 import tnt.tarkovcraft.medsystem.util.HealthHelper;
 
 public final class DismountEntityInteraction extends EntityInteraction {
@@ -28,7 +31,11 @@ public final class DismountEntityInteraction extends EntityInteraction {
 
     @Override
     protected void onInteractionFinished(Player origin, LivingEntity target) {
-        HealthHelper.doWithEntityControlOverride(target, target::stopRiding);
+        HealthHelper.doWithEntityControlOverride(target, () -> {
+            target.stopRiding();
+            EntityPoseManager.setEntityPose(target, UnconsciousEntityPose.INSTANCE);
+            UnconsciousModeHelper.updateEntityDimensions(target);
+        });
     }
 
     @Override

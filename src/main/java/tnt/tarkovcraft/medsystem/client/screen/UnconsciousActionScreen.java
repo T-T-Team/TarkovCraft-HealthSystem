@@ -23,7 +23,6 @@ import tnt.tarkovcraft.medsystem.common.interaction.EntityInteraction;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 public class UnconsciousActionScreen extends Screen {
 
@@ -91,31 +90,61 @@ public class UnconsciousActionScreen extends Screen {
     private void interactionCompleteCallback(EntityInteraction interaction) {
         interaction.onActionPerformed(this.minecraft.player, this.entity);
         this.minecraft.setScreen(null);
+        this.interactionData.finishInteraction(this.minecraft.player, this.entity);
+        ClientPacketDistributor.sendToServer(C2S_RequestInteractionState.finish(interaction.type(), this.entity));
+        this.minecraft.gui.setScreen(null);
+    }
+
+    @Override
+    public void removed() {
+        if (this.interactionData.isAnyInteractionActive()) {
+            EntityInteraction interaction = this.interactionData.getActiveInteraction();
+            this.interactionData.cancelInteraction(this.minecraft.player, this.entity);
+            ClientPacketDistributor.sendToServer(C2S_RequestInteractionState.cancel(interaction.type(), this.entity));
+        }
     }
 
     private static final class InteractionButton extends AbstractButton {
 
         private final EntityInteraction interaction;
-        private final Consumer<EntityInteraction> callback;
+
+        private InteractStateCallback onInitiate = _ -> {};
+        private InteractStateCallback onCancel = _ -> {};
+        private InteractStateCallback onFinish = _ -> {};
         private long pressStartTs = -1;
 
-        public InteractionButton(int x, int y, int width, int height, EntityInteraction interaction, Consumer<EntityInteraction> callback) {
-            super(x, y, width, height, interaction.actionName());
+        public InteractionButton(int x, int y, int width, int height, EntityInteraction interaction) {
+            super(x, y, width, height, interaction.getDisplayName());
             this.interaction = interaction;
-            this.callback = callback;
+        }
+
+        public void setOnInitiate(InteractStateCallback onInitiate) {
+            this.onInitiate = onInitiate;
+        }
+
+        public void setOnCancel(InteractStateCallback onCancel) {
+            this.onCancel = onCancel;
+        }
+
+        public void setOnFinish(InteractStateCallback onFinish) {
+            this.onFinish = onFinish;
         }
 
         @Override
         public void onPress() {
             if (this.pressStartTs > 0) {
                 this.pressStartTs = -1;
+                this.onCancel.onStateChangedCallback(this.interaction);
                 return;
             }
+            if (this.interaction.getInteractionDuration() <= 0) {
+                this.onFinish.onStateChangedCallback(this.interaction);
             if (this.interaction.actionDuration() <= 0) {
                 this.callback.accept(this.interaction);
                 return;
             }
             this.pressStartTs = System.currentTimeMillis();
+            this.onInitiate.onStateChangedCallback(this.interaction);
         }
 
         @Override
@@ -127,7 +156,7 @@ public class UnconsciousActionScreen extends Screen {
             graphics.drawString(font, content, this.getX() + (this.width - contentWidth) / 2, this.getY() + (this.height - 8) / 2, this.active ? 0xFFFFFFFF : 0xFFAAAAAA);
 
             if (this.isPressed() && this.isFinished()) {
-                this.callback.accept(this.interaction);
+                this.onFinish.onStateChangedCallback(this.interaction);
                 this.pressStartTs = -1;
             }
         }
@@ -157,6 +186,11 @@ public class UnconsciousActionScreen extends Screen {
 
         private boolean isFinished() {
             return this.pressStartTs + this.interaction.actionDuration() * 50L < System.currentTimeMillis();
+        }
+
+        @FunctionalInterface
+        public interface InteractStateCallback {
+            void onStateChangedCallback(EntityInteraction interaction);
         }
     }
 }
