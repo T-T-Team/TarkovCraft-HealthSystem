@@ -18,7 +18,7 @@ import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
-import tnt.tarkovcraft.medsystem.common.TarkovCraftCommand;
+import tnt.tarkovcraft.medsystem.common.command.MedSystemTarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.damage.DamageResolverManager;
@@ -117,7 +117,7 @@ public final class MedicalSystem {
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
-        TarkovCraftCommand.create(event.getDispatcher(), event.getBuildContext());
+        MedSystemTarkovCraftCommand.create(event.getDispatcher(), event.getBuildContext());
     }
 
     private void registerCustomWeightProviders(RegisterWeightProvidersEvent event) {
