@@ -1,49 +1,74 @@
 package tnt.tarkovcraft.medsystem.common.interaction;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.core.util.UserActionResult;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.api.event.EntityInteractionEvent;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
-// TODO refactor to normal entity interactions not tied to unconscious system
-public interface EntityInteraction {
+public abstract class EntityInteraction {
 
-    Component ENTITY_TOO_FAR = createValidationMessage(MedSystemConstants.MOD_ID, "shared", "entity_too_far");
-    int MAX_DISTANCE_SQR = 16;
+    public static final Codec<EntityInteraction> CODEC = MedSystemRegistries.ENTITY_INTERACTION.byNameCodec().dispatch(EntityInteraction::type, EntityInteractionType::codec);
+    public static final UserActionResult<Void> ENTITY_TOO_FAR = UserActionResult.failure(EntityInteractionType.getErrorMessage(EntityInteractionType.SHARED_ERROR_IDENTIFIER, "entity_too_far"));
+    public static final UserActionResult<Void> INTERACTION_CANCELLED = UserActionResult.failure(EntityInteractionType.getErrorMessage(EntityInteractionType.SHARED_ERROR_IDENTIFIER, "cancelled"));
+    public static final int MAX_DISTANCE_SQR = 16;
 
-    /**
-     * Checks if the action can be performed on the target entity. Evaluated on both sides.
-     * @param origin Interaction entity
-     * @param target Interaction target
-     * @return Action result either with an error message or empty result
-     */
-    UserActionResult<Void> evaluateValidity(Player origin, LivingEntity target);
+    public abstract EntityInteractionType<?> type();
 
-    /**
-     * Called when action is performed. Always called only on the client side
-     * @param origin Interaction entity
-     * @param target Interaction target
-     */
-    void onActionPerformed(Player origin, LivingEntity target);
+    protected abstract UserActionResult<Void> checkInteractionAvailability(Player origin, LivingEntity target);
 
-    Component actionName();
+    protected abstract void onInteractionFinished(Player origin, LivingEntity target);
 
-    int actionDuration();
+    protected void onInteractionFailedOrCancelled(Player origin, LivingEntity target) {
+    }
 
-    default int maxDistanceSqr() {
+    public abstract int getInteractionDuration();
+
+    protected int maxDistanceSqr() {
         return MAX_DISTANCE_SQR;
     }
 
-    default boolean is(EntityInteraction other) {
-        return other == this;
+    public final Component getDisplayName() {
+        return this.type().getDisplayName();
     }
 
-    static Component createActionName(String namespace, String name) {
-        return Component.translatable("entity_interaction." + namespace + "." + name);
+    public final UserActionResult<Void> checkAvailability(Player origin, LivingEntity target) {
+        double distanceSq = origin.distanceToSqr(target);
+        if (distanceSq > this.maxDistanceSqr()) {
+            return ENTITY_TOO_FAR;
+        }
+        ItemStack interactionItem = origin.getMainHandItem();
+        EntityInteractionEvent.UnconsciousInteractionEvaluation evaluationEvent = NeoForge.EVENT_BUS.post(new EntityInteractionEvent.UnconsciousInteractionEvaluation(interactionItem, origin, target, this));
+        if (!evaluationEvent.isSuccessful()) {
+            return evaluationEvent.getInteractionResult();
+        }
+        return this.checkInteractionAvailability(origin, target);
     }
 
-    static Component createValidationMessage(String namespace, String name, String error) {
-        return Component.translatable("entity_interaction." + namespace + "." + name + ".response." + error);
+    public final void finishInteraction(Player origin, LivingEntity target) {
+        UserActionResult<Void> result = this.checkAvailability(origin, target);
+        if (result.isSuccess()) {
+            this.onInteractionFinished(origin, target);
+        } else {
+            this.onInteractionFailedOrCancelled(origin, target);
+        }
+        NeoForge.EVENT_BUS.post(new EntityInteractionEvent.UnconsciousInteractionFinished(origin.getMainHandItem(), origin, target, this, result));
+    }
+
+    public final void cancelInteraction(Player origin, LivingEntity target) {
+        this.onInteractionFailedOrCancelled(origin, target);
+        NeoForge.EVENT_BUS.post(new EntityInteractionEvent.UnconsciousInteractionFinished(origin.getMainHandItem(), origin, target, this, INTERACTION_CANCELLED));
+    }
+
+    protected final UserActionResult<Void> createFailureResponse(String code, Object... args) {
+        Component message = this.type().getValidationErrorMessage(code, args);
+        return UserActionResult.failure(message);
     }
 }

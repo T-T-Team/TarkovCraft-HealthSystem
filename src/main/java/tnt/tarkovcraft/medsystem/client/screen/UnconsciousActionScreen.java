@@ -12,6 +12,7 @@ import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import tnt.tarkovcraft.core.client.screen.ColorPalette;
 import tnt.tarkovcraft.core.client.screen.renderable.ShapeRenderable;
 import tnt.tarkovcraft.core.client.screen.widget.ListWidget;
@@ -19,8 +20,12 @@ import tnt.tarkovcraft.core.common.data.duration.DurationUnit;
 import tnt.tarkovcraft.core.util.UserActionResult;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 import tnt.tarkovcraft.medsystem.common.interaction.EntityInteraction;
-import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractionData;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractionType;
+import tnt.tarkovcraft.medsystem.network.message.C2S_RequestInteractionState;
 
 import java.time.Duration;
 import java.util.List;
@@ -32,6 +37,7 @@ public class UnconsciousActionScreen extends Screen {
     private static final Component TITLE = TextHelper.createScreenTitle(MedSystemConstants.MOD_ID, "entity_interaction");
 
     private final LivingEntity entity;
+    private EntityInteractionData interactionData;
 
     public UnconsciousActionScreen(LivingEntity entity) {
         super(TITLE);
@@ -40,9 +46,10 @@ public class UnconsciousActionScreen extends Screen {
 
     @Override
     protected void init() {
+        this.interactionData = this.minecraft.player.getData(MedSystemDataAttachments.INTERACTION_DATA);
         this.addRenderableOnly(new ShapeRenderable(0, 0, this.width, this.height, ColorPalette.BG_TRANSPARENT_WEAK));
 
-        List<EntityInteraction> interactions = EntityInteractions.getInteractions();
+        List<EntityInteractionType<?>> interactions = MedSystemRegistries.ENTITY_INTERACTION.stream().toList();
         int displayCount = Math.min(interactions.size(), 7);
         int displayHeight = displayCount * 20;
         int colWidth = this.width / 6;
@@ -75,11 +82,12 @@ public class UnconsciousActionScreen extends Screen {
         }
     }
 
-    private InteractionButton createInteractionButton(EntityInteraction interaction, int index) {
+    private InteractionButton createInteractionButton(EntityInteractionType<?> interactionType, int index) {
         int buttonWidth = this.width / 6;
         int left = (this.width - buttonWidth) / 2;
-        InteractionButton button = new InteractionButton(left, index * 20, buttonWidth, 20, interaction, this::interactionCompleteCallback);
-        UserActionResult<Void> evaluationResult = EntityInteractions.evaluateInteraction(this.minecraft.player, this.entity, interaction);
+        EntityInteraction interaction = interactionType.createNewInteractionInstance(this.minecraft.player, this.entity);
+        InteractionButton button = new InteractionButton(left, index * 20, buttonWidth, 20, interaction, this::onInteractionStarted, this::interactionCompleteCallback);
+        UserActionResult<Void> evaluationResult = interaction.checkAvailability(this.minecraft.player, this.entity);
         button.active = evaluationResult.isSuccess();
         if (evaluationResult.isFailure()) {
             Component formattedMessage = evaluationResult.message().plainCopy().withStyle(ChatFormatting.RED);
@@ -90,21 +98,38 @@ public class UnconsciousActionScreen extends Screen {
         return button;
     }
 
+    private void onInteractionStarted(EntityInteraction interaction) {
+        this.interactionData.startInteraction(interaction.type(), this.minecraft.player, this.entity);
+        ClientPacketDistributor.sendToServer(new C2S_RequestInteractionState(interaction.type(), C2S_RequestInteractionState.State.START, this.entity));
+    }
+
     private void interactionCompleteCallback(EntityInteraction interaction) {
-        interaction.onActionPerformed(this.minecraft.player, this.entity);
+        this.interactionData.finishInteraction(this.minecraft.player, this.entity);
+        ClientPacketDistributor.sendToServer(new C2S_RequestInteractionState(interaction.type(), C2S_RequestInteractionState.State.FINISH, this.entity));
         this.minecraft.gui.setScreen(null);
+    }
+
+    @Override
+    public void removed() {
+        if (this.interactionData.isAnyInteractionActive()) {
+            EntityInteraction interaction = this.interactionData.getActiveInteraction();
+            this.interactionData.cancelInteraction(this.minecraft.player, this.entity);
+            ClientPacketDistributor.sendToServer(new C2S_RequestInteractionState(interaction.type(), C2S_RequestInteractionState.State.CANCEL, this.entity));
+        }
     }
 
     private static final class InteractionButton extends AbstractButton {
 
         private final EntityInteraction interaction;
-        private final Consumer<EntityInteraction> callback;
+        private final Consumer<EntityInteraction> startCallback;
+        private final Consumer<EntityInteraction> finishCallback;
         private long pressStartTs = -1;
 
-        public InteractionButton(int x, int y, int width, int height, EntityInteraction interaction, Consumer<EntityInteraction> callback) {
-            super(x, y, width, height, interaction.actionName());
+        public InteractionButton(int x, int y, int width, int height, EntityInteraction interaction, Consumer<EntityInteraction> startCallback, Consumer<EntityInteraction> finishCallback) {
+            super(x, y, width, height, interaction.getDisplayName());
             this.interaction = interaction;
-            this.callback = callback;
+            this.startCallback = startCallback;
+            this.finishCallback = finishCallback;
         }
 
         @Override
@@ -113,11 +138,12 @@ public class UnconsciousActionScreen extends Screen {
                 this.pressStartTs = -1;
                 return;
             }
-            if (this.interaction.actionDuration() <= 0) {
-                this.callback.accept(this.interaction);
+            if (this.interaction.getInteractionDuration() <= 0) {
+                this.finishCallback.accept(this.interaction);
                 return;
             }
             this.pressStartTs = System.currentTimeMillis();
+            this.startCallback.accept(this.interaction);
         }
 
         @Override
@@ -129,7 +155,7 @@ public class UnconsciousActionScreen extends Screen {
             graphics.text(font, content, this.getX() + (this.width - contentWidth) / 2, this.getY() + (this.height - 8) / 2, this.active ? 0xFFFFFFFF : 0xFFAAAAAA);
 
             if (this.isPressed() && this.isFinished()) {
-                this.callback.accept(this.interaction);
+                this.finishCallback.accept(this.interaction);
                 this.pressStartTs = -1;
             }
         }
@@ -143,7 +169,7 @@ public class UnconsciousActionScreen extends Screen {
                 if (this.isHovered) {
                     return CommonComponents.GUI_CANCEL;
                 }
-                int durationMs = this.interaction.actionDuration() * 50;
+                int durationMs = this.interaction.getInteractionDuration() * 50;
                 long elapsed = System.currentTimeMillis() - this.pressStartTs;
                 long remaining = durationMs - elapsed;
                 int remainingTicks = (int) (remaining / 50L);
@@ -158,7 +184,7 @@ public class UnconsciousActionScreen extends Screen {
         }
 
         private boolean isFinished() {
-            return this.pressStartTs + this.interaction.actionDuration() * 50L < System.currentTimeMillis();
+            return this.pressStartTs + this.interaction.getInteractionDuration() * 50L < System.currentTimeMillis();
         }
     }
 }

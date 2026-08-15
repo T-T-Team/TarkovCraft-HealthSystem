@@ -236,13 +236,13 @@ public final class MedicalSystemEventHandler {
     @SubscribeEvent
     private void canMountEntity(EntityMountEvent event) {
         Entity entity = event.getEntity();
-        // TODO block mount/dismount unless initiated by other entity
         if (entity instanceof LivingEntity livingEntity && BloodSystemManager.isUnconscious(livingEntity)) {
             TagKey<EntityType<?>> allowedEntities = event.isMounting()
                     ? MedSystemTags.Entities.UNCONSCIOUS_MOUNTABLE
                     : MedSystemTags.Entities.UNCONSCIOUS_DISMOUNTABLE;
             Entity entityToMount = event.getEntityBeingMounted();
-            if (entityToMount != null && entityToMount.is(allowedEntities)) {
+            boolean externallyControlled = entity.getExistingData(MedSystemDataAttachments.EXTERNALLY_CONTROLLED).orElse(false);
+            if (entityToMount != null && (externallyControlled || entityToMount.is(allowedEntities))) {
                 return;
             }
             event.setCanceled(true);

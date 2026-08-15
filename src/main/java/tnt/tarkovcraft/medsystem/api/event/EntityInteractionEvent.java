@@ -79,14 +79,32 @@ public abstract class EntityInteractionEvent extends Event {
     public static final class UnconsciousInteractionFinished extends EntityInteractionEvent {
 
         private final EntityInteraction interaction;
+        private final UserActionResult<Void> interactionResult;
 
-        public UnconsciousInteractionFinished(ItemStack itemStack, LivingEntity interactionEntity, LivingEntity originEntity, EntityInteraction interaction) {
+        public UnconsciousInteractionFinished(ItemStack itemStack, LivingEntity interactionEntity, LivingEntity originEntity, EntityInteraction interaction, UserActionResult<Void> interactionResult) {
             super(itemStack, interactionEntity, originEntity);
             this.interaction = interaction;
+            this.interactionResult = interactionResult;
+        }
+
+        public boolean wasSuccessful() {
+            return this.interactionResult.isSuccess();
+        }
+
+        public boolean wasFailed() {
+            return this.interactionResult.isFailure();
+        }
+
+        public boolean wasCancelled() {
+            return this.wasFailed() && this.interactionResult == EntityInteraction.INTERACTION_CANCELLED;
         }
 
         public EntityInteraction getInteraction() {
             return interaction;
+        }
+
+        public UserActionResult<Void> getInteractionResult() {
+            return interactionResult;
         }
     }
 }
