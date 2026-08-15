@@ -30,7 +30,6 @@ import tnt.tarkovcraft.medsystem.network.message.C2S_RequestInteractionState;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 public class UnconsciousActionScreen extends Screen {
 
@@ -86,7 +85,10 @@ public class UnconsciousActionScreen extends Screen {
         int buttonWidth = this.width / 6;
         int left = (this.width - buttonWidth) / 2;
         EntityInteraction interaction = interactionType.createNewInteractionInstance(this.minecraft.player, this.entity);
-        InteractionButton button = new InteractionButton(left, index * 20, buttonWidth, 20, interaction, this::onInteractionStarted, this::interactionCompleteCallback);
+        InteractionButton button = new InteractionButton(left, index * 20, buttonWidth, 20, interaction);
+        button.setOnInitiate(this::onInteractionStarted);
+        button.setOnCancel(this::onInteractCancelled);
+        button.setOnFinish(this::interactionCompleteCallback);
         UserActionResult<Void> evaluationResult = interaction.checkAvailability(this.minecraft.player, this.entity);
         button.active = evaluationResult.isSuccess();
         if (evaluationResult.isFailure()) {
@@ -99,13 +101,19 @@ public class UnconsciousActionScreen extends Screen {
     }
 
     private void onInteractionStarted(EntityInteraction interaction) {
-        this.interactionData.startInteraction(interaction.type(), this.minecraft.player, this.entity);
-        ClientPacketDistributor.sendToServer(new C2S_RequestInteractionState(interaction.type(), C2S_RequestInteractionState.State.START, this.entity));
+        long initiationTime = this.minecraft.level.getGameTime();
+        this.interactionData.startInteraction(interaction.type(), this.minecraft.player, this.entity, initiationTime);
+        ClientPacketDistributor.sendToServer(C2S_RequestInteractionState.start(interaction.type(), this.entity, initiationTime));
+    }
+
+    private void onInteractCancelled(EntityInteraction interaction) {
+        this.interactionData.cancelInteraction(this.minecraft.player, this.entity);
+        ClientPacketDistributor.sendToServer(C2S_RequestInteractionState.cancel(interaction.type(), this.entity));
     }
 
     private void interactionCompleteCallback(EntityInteraction interaction) {
         this.interactionData.finishInteraction(this.minecraft.player, this.entity);
-        ClientPacketDistributor.sendToServer(new C2S_RequestInteractionState(interaction.type(), C2S_RequestInteractionState.State.FINISH, this.entity));
+        ClientPacketDistributor.sendToServer(C2S_RequestInteractionState.finish(interaction.type(), this.entity));
         this.minecraft.gui.setScreen(null);
     }
 
@@ -114,36 +122,49 @@ public class UnconsciousActionScreen extends Screen {
         if (this.interactionData.isAnyInteractionActive()) {
             EntityInteraction interaction = this.interactionData.getActiveInteraction();
             this.interactionData.cancelInteraction(this.minecraft.player, this.entity);
-            ClientPacketDistributor.sendToServer(new C2S_RequestInteractionState(interaction.type(), C2S_RequestInteractionState.State.CANCEL, this.entity));
+            ClientPacketDistributor.sendToServer(C2S_RequestInteractionState.cancel(interaction.type(), this.entity));
         }
     }
 
     private static final class InteractionButton extends AbstractButton {
 
         private final EntityInteraction interaction;
-        private final Consumer<EntityInteraction> startCallback;
-        private final Consumer<EntityInteraction> finishCallback;
+
+        private InteractStateCallback onInitiate = _ -> {};
+        private InteractStateCallback onCancel = _ -> {};
+        private InteractStateCallback onFinish = _ -> {};
         private long pressStartTs = -1;
 
-        public InteractionButton(int x, int y, int width, int height, EntityInteraction interaction, Consumer<EntityInteraction> startCallback, Consumer<EntityInteraction> finishCallback) {
+        public InteractionButton(int x, int y, int width, int height, EntityInteraction interaction) {
             super(x, y, width, height, interaction.getDisplayName());
             this.interaction = interaction;
-            this.startCallback = startCallback;
-            this.finishCallback = finishCallback;
+        }
+
+        public void setOnInitiate(InteractStateCallback onInitiate) {
+            this.onInitiate = onInitiate;
+        }
+
+        public void setOnCancel(InteractStateCallback onCancel) {
+            this.onCancel = onCancel;
+        }
+
+        public void setOnFinish(InteractStateCallback onFinish) {
+            this.onFinish = onFinish;
         }
 
         @Override
         public void onPress(InputWithModifiers input) {
             if (this.pressStartTs > 0) {
                 this.pressStartTs = -1;
+                this.onCancel.onStateChangedCallback(this.interaction);
                 return;
             }
             if (this.interaction.getInteractionDuration() <= 0) {
-                this.finishCallback.accept(this.interaction);
+                this.onFinish.onStateChangedCallback(this.interaction);
                 return;
             }
             this.pressStartTs = System.currentTimeMillis();
-            this.startCallback.accept(this.interaction);
+            this.onInitiate.onStateChangedCallback(this.interaction);
         }
 
         @Override
@@ -155,7 +176,7 @@ public class UnconsciousActionScreen extends Screen {
             graphics.text(font, content, this.getX() + (this.width - contentWidth) / 2, this.getY() + (this.height - 8) / 2, this.active ? 0xFFFFFFFF : 0xFFAAAAAA);
 
             if (this.isPressed() && this.isFinished()) {
-                this.finishCallback.accept(this.interaction);
+                this.onFinish.onStateChangedCallback(this.interaction);
                 this.pressStartTs = -1;
             }
         }
@@ -185,6 +206,11 @@ public class UnconsciousActionScreen extends Screen {
 
         private boolean isFinished() {
             return this.pressStartTs + this.interaction.getInteractionDuration() * 50L < System.currentTimeMillis();
+        }
+
+        @FunctionalInterface
+        public interface InteractStateCallback {
+            void onStateChangedCallback(EntityInteraction interaction);
         }
     }
 }
