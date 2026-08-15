@@ -1,45 +1,56 @@
 package tnt.tarkovcraft.medsystem.common.interaction;
 
-import net.minecraft.network.chat.Component;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import tnt.tarkovcraft.core.util.UserActionResult;
-import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.network.message.C2S_RescueDownedEntity;
+import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemEntityInteractions;
 
-public final class RescueDownedEntityInteraction implements EntityInteraction {
+// TODO stop death countdown when rescue interaction is active
+public final class RescueDownedEntityInteraction extends EntityInteraction {
 
-    private static final Component NAME = EntityInteraction.createActionName(MedSystemConstants.MOD_ID, "rescue_downed_entity");
-    private static final Component NOT_RESCUABLE = EntityInteraction.createValidationMessage(MedSystemConstants.MOD_ID, "rescue_downed_entity", "unable_to_rescue");
+    public static final RescueDownedEntityInteraction INSTANCE = new RescueDownedEntityInteraction();
+    public static final MapCodec<RescueDownedEntityInteraction> CODEC = MapCodec.unit(INSTANCE);
+    public static final StreamCodec<RegistryFriendlyByteBuf, RescueDownedEntityInteraction> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    private static final String ERR_UNABLE_TO_RESCUE = "unable_to_rescue";
+
+    private RescueDownedEntityInteraction() {}
 
     @Override
-    public UserActionResult<Void> evaluateValidity(Player origin, LivingEntity target) {
+    protected UserActionResult<Void> checkInteractionAvailability(Player origin, LivingEntity target) {
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
         if (bloodSystem == null) {
-            return UserActionResult.failure(NOT_RESCUABLE);
+            return this.createFailureResponse(ERR_UNABLE_TO_RESCUE);
         }
         UnconsciousOptions options = bloodSystem.getUnconsciousState().getUnconsciousOptions();
         if (!bloodSystem.isUnconscious() || !options.allowRescue()) {
-            return UserActionResult.failure(NOT_RESCUABLE);
+            return this.createFailureResponse(ERR_UNABLE_TO_RESCUE);
         }
         return UserActionResult.successEmpty();
     }
 
     @Override
-    public void onActionPerformed(Player origin, LivingEntity target) {
-        ClientPacketDistributor.sendToServer(new C2S_RescueDownedEntity(target.getId()));
+    protected void onInteractionFinished(Player origin, LivingEntity target) {
+        if (!HealthSystem.hasCustomHealth(target) || !BloodSystemManager.isUnconscious(target))
+            return;
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
+        bloodSystem.rescueDownedEntity(target);
+        bloodSystem.synchronizeImmediately(target);
     }
 
     @Override
-    public Component actionName() {
-        return NAME;
+    public int getInteractionDuration() {
+        return 200; // TODO configurable value
     }
 
     @Override
-    public int actionDuration() {
-        return 100;
+    public EntityInteractionType<?> type() {
+        return MedSystemEntityInteractions.RESCUE_DOWNED_ENTITY.value();
     }
 }

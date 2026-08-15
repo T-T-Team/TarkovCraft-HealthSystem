@@ -25,7 +25,6 @@ import tnt.tarkovcraft.medsystem.common.damage.DamageResolverManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventManager;
 import tnt.tarkovcraft.medsystem.common.init.*;
-import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
 import tnt.tarkovcraft.medsystem.integration.MedSystemIntegrations;
 import tnt.tarkovcraft.medsystem.integration.core.BloodContainerWeightProvider;
 import tnt.tarkovcraft.medsystem.network.MedicalSystemNetwork;
@@ -56,8 +55,6 @@ public final class MedicalSystem {
         NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
 
-        EntityInteractions.init();
-
         MedSystemAttributes.REGISTRY.register(modEventBus);
         MedSystemItems.REGISTRY.register(modEventBus);
         MedSystemDataAttachments.REGISTRY.register(modEventBus);
@@ -72,6 +69,7 @@ public final class MedicalSystem {
         MedSystemConsumeEffects.REGISTRY.register(modEventBus);
         MedSystemEntityPoses.REGISTRY.register(modEventBus);
         MedSystemCriterionTriggers.REGISTRY.register(modEventBus);
+        MedSystemEntityInteractions.REGISTRY.register(modEventBus);
     }
 
     public static MedSystemConfig getConfig() {
@@ -108,6 +106,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.HEALTH_EVENT_CONDITION);
         event.register(MedSystemRegistries.HEALTH_EVENT_ACTION);
         event.register(MedSystemRegistries.BLOOD_LEVEL_EFFECT);
+        event.register(MedSystemRegistries.ENTITY_INTERACTION);
     }
 
     private void addReloadListeners(AddServerReloadListenersEvent event) {
