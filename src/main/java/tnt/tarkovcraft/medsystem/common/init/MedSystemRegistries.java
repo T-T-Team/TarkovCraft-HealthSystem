@@ -27,6 +27,7 @@ import tnt.tarkovcraft.medsystem.common.health_event.HealthEventTriggerSource;
 import tnt.tarkovcraft.medsystem.common.health_event.action.*;
 import tnt.tarkovcraft.medsystem.common.health_event.condition.*;
 import tnt.tarkovcraft.medsystem.common.health_event.function.*;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractionType;
 
 public final class MedSystemRegistries {
 
@@ -46,6 +47,7 @@ public final class MedSystemRegistries {
 
     public static final Registry<MapCodec<? extends BloodLevelEffect>> BLOOD_LEVEL_EFFECT = new RegistryBuilder<>(Keys.BLOOD_LEVEL_EFFECT).create();
 
+    public static final Registry<EntityInteractionType<?>> ENTITY_INTERACTION = new RegistryBuilder<>(Keys.ENTITY_INTERACTION).sync(true).create();
     public static final Registry<ConsumeEffectType<?>> CONSUME_EFFECT = new RegistryBuilder<>(Keys.CONSUME_EFFECT).create();
 
     public static void registerEffectGroupItems(RegisterEvent.RegisterHelper<MapCodec<? extends EffectGroupItem>> helper) {
@@ -160,5 +162,6 @@ public final class MedSystemRegistries {
 
         public static final ResourceKey<Registry<MapCodec<? extends BloodLevelEffect>>> BLOOD_LEVEL_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("blood_system/effect"));
         public static final ResourceKey<Registry<ConsumeEffectType<?>>> CONSUME_EFFECT = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("consume_effect"));
+        public static final ResourceKey<Registry<EntityInteractionType<?>>> ENTITY_INTERACTION = ResourceKey.createRegistryKey(MedicalSystem.createIdentifier("entity_interaction"));
     }
 }

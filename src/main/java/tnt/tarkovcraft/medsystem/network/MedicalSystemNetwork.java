@@ -35,7 +35,7 @@ public final class MedicalSystemNetwork {
         registry.playToServer(C2S_SelectLimb.TYPE, C2S_SelectLimb.CODEC, C2S_SelectLimb::handleMessage);
         registry.playToServer(C2S_RequestGiveUp.TYPE, C2S_RequestGiveUp.CODEC, C2S_RequestGiveUp::handleMessage);
         registry.playToServer(C2S_SendMyRotation.TYPE, C2S_SendMyRotation.CODEC, C2S_SendMyRotation::handleMessage);
-        registry.playToServer(C2S_RescueDownedEntity.TYPE, C2S_RescueDownedEntity.CODEC, C2S_RescueDownedEntity::handleMessage);
+        registry.playToServer(C2S_RequestInteractionState.TYPE, C2S_RequestInteractionState.CODEC, C2S_RequestInteractionState::handleMessage);
 
         registry.configurationToClient(S2C_SendHealthDefinitions.TYPE, S2C_SendHealthDefinitions.CODEC, S2C_SendHealthDefinitions::handleMessage);
         registry.configurationToClient(S2C_SendBloodSystemData.TYPE, S2C_SendBloodSystemData.CODEC, S2C_SendBloodSystemData::handleMessage);

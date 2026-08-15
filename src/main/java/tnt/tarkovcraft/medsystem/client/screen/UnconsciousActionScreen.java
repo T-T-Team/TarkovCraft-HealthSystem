@@ -19,7 +19,6 @@ import tnt.tarkovcraft.core.util.UserActionResult;
 import tnt.tarkovcraft.core.util.helper.TextHelper;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.interaction.EntityInteraction;
-import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractions;
 
 import java.time.Duration;
 import java.util.List;

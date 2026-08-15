@@ -1,5 +1,7 @@
 package tnt.tarkovcraft.medsystem.common.init;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -8,6 +10,7 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
+import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractionData;
 
 import java.util.function.Supplier;
 
@@ -31,6 +34,15 @@ public final class MedSystemDataAttachments {
     public static final Supplier<AttachmentType<EntityBloodSystem>> BLOOD_SYSTEM = REGISTRY.register("blood_system", () -> AttachmentType.builder(EntityBloodSystem::invalid)
             .serialize(EntityBloodSystem.CODEC)
             .sync(new EntityBloodSystem.SyncHandler())
+            .build()
+    );
+    public static final Supplier<AttachmentType<Boolean>> EXTERNALLY_CONTROLLED = REGISTRY.register("externally_controlled", () -> AttachmentType.builder(() -> false)
+            .serialize(Codec.BOOL)
+            .sync(ByteBufCodecs.BOOL)
+            .build()
+    );
+    public static final Supplier<AttachmentType<EntityInteractionData>> INTERACTION_DATA = REGISTRY.register("interaction_data", () -> AttachmentType.builder(EntityInteractionData::create)
+            .serialize(EntityInteractionData.CODEC)
             .build()
     );
 }

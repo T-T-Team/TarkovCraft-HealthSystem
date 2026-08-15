@@ -2,6 +2,7 @@ package tnt.tarkovcraft.medsystem.util;
 
 import com.mojang.serialization.DataResult;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -11,6 +12,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.health.*;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -173,6 +175,17 @@ public final class HealthHelper {
                 : Collections.singletonList(new Vec3(mx, my, mz));
         S2C_MakeParticles message = new S2C_MakeParticles(options, x, y, z, true, true, movements);
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, message);
+    }
+
+    public static void doWithEntityControlOverride(Entity entity, Runnable action) {
+        boolean controlled = entity.getData(MedSystemDataAttachments.EXTERNALLY_CONTROLLED);
+        if (controlled) {
+            action.run();
+            return;
+        }
+        entity.setData(MedSystemDataAttachments.EXTERNALLY_CONTROLLED, true);
+        action.run();
+        entity.removeData(MedSystemDataAttachments.EXTERNALLY_CONTROLLED);
     }
 
     private static List<Vec3> randomizeParticleMovements(RandomSource random, double x, double y, double z, double randomizeFactor, int outputSize) {

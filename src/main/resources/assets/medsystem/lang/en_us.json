@@ -115,9 +115,11 @@
   "medsystem.limb_type.animal": "Animals",
   "medsystem.limb_type.other": "Other",
 
-  "entity_interaction.medsystem.shared.response.entity_too_far": "Entity is too far",
+  "entity_interaction.medsystem.shared.error.entity_too_far": "Entity is too far",
   "entity_interaction.medsystem.rescue_downed_entity": "Rescue",
-  "entity_interaction.medsystem.rescue_downed_entity.response.unable_to_rescue": "Entity is not in rescue state",
+  "entity_interaction.medsystem.rescue_downed_entity.error.unable_to_rescue": "Entity is not in rescue state",
+  "entity_interaction.medsystem.dismount_entity": "Dismount entity",
+  "entity_interaction.medsystem.dismount_entity.error.not_in_vehicle": "Entity is not in vehicle",
 
   "key.medsystem.give_up": "Give up",
   "key.medsystem.open_health": "Show health UI",
