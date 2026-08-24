@@ -40,12 +40,10 @@ import tnt.tarkovcraft.medsystem.client.overlay.UnconsciousLayer;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDecalParticle;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticle;
 import tnt.tarkovcraft.medsystem.client.screen.HealthScreen;
-import tnt.tarkovcraft.medsystem.client.screen.UnconsciousActionScreen;
 import tnt.tarkovcraft.medsystem.client.shader.*;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodContainer;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousAnimationState;
-import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousState;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystemDefinition;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -110,11 +108,6 @@ public final class MedicalSystemClient {
 
     public static MedSystemClientConfig getConfig() {
         return config;
-    }
-
-    public static void openUnconsciousActionScreen(LivingEntity entity) {
-        Minecraft minecraft = Minecraft.getInstance();
-        minecraft.setScreen(new UnconsciousActionScreen(entity));
     }
 
     private void setup(FMLClientSetupEvent event) {

@@ -15,7 +15,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.common.data.duration.Duration;
 import tnt.tarkovcraft.medsystem.common.argument.StatusEffectArgument;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
@@ -28,6 +27,7 @@ import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemRegistries;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public final class StatusEffectSubCommand {
@@ -160,7 +160,7 @@ public final class StatusEffectSubCommand {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
         StatusEffectType<?> type = reference.value();
         if (type.isSpecialStatusEffect()) {
-            throw INVALID_STATUS_EFFECT.create(reference.getKey().identifier());
+            throw INVALID_STATUS_EFFECT.create(reference.getKey().location());
         }
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");
         for (Entity entity : entities) {
@@ -179,7 +179,7 @@ public final class StatusEffectSubCommand {
         Holder.Reference<StatusEffectType<?>> reference = ResourceArgument.getResource(ctx, "type", MedSystemRegistries.Keys.STATUS_EFFECT);
         StatusEffectType<?> type = reference.value();
         if (type.isSpecialStatusEffect()) {
-            throw INVALID_STATUS_EFFECT.create(reference.getKey().identifier());
+            throw INVALID_STATUS_EFFECT.create(reference.getKey().location());
         }
         String limbCode = StringArgumentType.getString(ctx, "limb");
         Collection<? extends Entity> entities = EntityArgument.getEntities(ctx, "target");

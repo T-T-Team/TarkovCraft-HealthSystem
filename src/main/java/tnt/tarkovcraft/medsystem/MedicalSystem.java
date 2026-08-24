@@ -19,8 +19,8 @@ import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
-import tnt.tarkovcraft.medsystem.common.command.MedSystemTarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.command.MedSystemTarkovCraftCommand;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.damage.DamageResolverManager;
 import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
@@ -107,7 +107,6 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.HEALTH_EVENT_CONDITION);
         event.register(MedSystemRegistries.HEALTH_EVENT_ACTION);
         event.register(MedSystemRegistries.BLOOD_LEVEL_EFFECT);
-        event.register(MedSystemRegistries.ENTITY_INTERACTION);
         event.register(MedSystemRegistries.CONSUME_EFFECT);
     }
 

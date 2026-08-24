@@ -1,9 +1,6 @@
 package tnt.tarkovcraft.medsystem.integration.sable;
 
-import dev.leo.sableplayerragdoll.api.DespawnCondition;
-import dev.leo.sableplayerragdoll.api.RagdollAPI;
-import dev.leo.sableplayerragdoll.api.RagdollLaunchOptions;
-import dev.leo.sableplayerragdoll.api.RagdollSession;
+import dev.leo.sableplayerragdoll.api.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -14,8 +11,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import tnt.tarkovcraft.core.api.EntityInteraction;
+import tnt.tarkovcraft.core.api.event.EntityInteractionEvent;
 import tnt.tarkovcraft.medsystem.api.event.BloodSystemEvent;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.init.MedSystemEntityInteractions;
 
 import java.util.Collections;
 
@@ -33,7 +33,7 @@ public final class SableEventListener {
         Level level = entity.level();
         if (level.isClientSide())
             return;
-        if (entity instanceof ServerPlayer player) {
+        if (entity instanceof ServerPlayer player && !player.isPassenger()) {
             event.disableModelAnimation();
             RagdollAPI.launch(player, this.computeRagdollVelocity(player), RAGDOLL_OPTIONS);
         }
@@ -44,6 +44,29 @@ public final class SableEventListener {
         Player player = event.getEntity();
         if (player instanceof ServerPlayer serverPlayer && BloodSystemManager.isUnconscious(serverPlayer) && !RagdollAPI.isRagdolled(serverPlayer)) {
             RagdollAPI.launch(serverPlayer, this.computeRagdollVelocity(serverPlayer), RAGDOLL_OPTIONS);
+        }
+    }
+
+    // does nothing...
+    /*@SubscribeEvent
+    private void onRagdollInteraction(RagdollInteractEvent event) {
+        ServerPlayer player = event.player();
+        if (player.isCrouching()) {
+            event.setCanceled(true);
+        }
+    }*/
+
+    @SubscribeEvent
+    private void onInteractionFinished(EntityInteractionEvent.OnFinished event) {
+        EntityInteraction.InteractionResult result = event.getInteractionResult();
+        if (result != EntityInteraction.InteractionResult.SUCCESS) {
+            return;
+        }
+        LivingEntity entity = event.getInteractionTarget();
+        if (!(entity instanceof ServerPlayer player))
+            return;
+        if (event.getInteraction().type() == MedSystemEntityInteractions.DISMOUNT_ENTITY.value() && !RagdollAPI.isRagdolled(player)) {
+            RagdollAPI.launch(player, Vec3.ZERO, RAGDOLL_OPTIONS);
         }
     }
 

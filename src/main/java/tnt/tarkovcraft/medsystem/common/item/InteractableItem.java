@@ -17,7 +17,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
-import tnt.tarkovcraft.medsystem.api.event.EntityInteractionEvent;
+import tnt.tarkovcraft.medsystem.api.event.InteractableItemEvent;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemItemComponents;
 import tnt.tarkovcraft.medsystem.util.InteractionHelper;
@@ -248,7 +248,7 @@ public abstract class InteractableItem extends Item {
     }
 
     private boolean isEventInteractionAllowed(ItemStack itemStack, LivingEntity entity, LivingEntity origin) {
-        EntityInteractionEvent.CanInteract event = NeoForge.EVENT_BUS.post(new EntityInteractionEvent.CanInteract(itemStack, entity, origin));
+        InteractableItemEvent.CanInteract event = NeoForge.EVENT_BUS.post(new InteractableItemEvent.CanInteract(origin, entity, itemStack));
         return !event.isCanceled();
     }
 

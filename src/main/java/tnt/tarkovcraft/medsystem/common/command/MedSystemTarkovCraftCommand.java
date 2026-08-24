@@ -65,11 +65,6 @@ public final class MedSystemTarkovCraftCommand {
                                 ReviveSubCommand.node()
                                         .requires(gameMasterOnly())
                         )
-                        .then(
-                                // tarkovcraft interaction ...
-                                InteractionSubCommand.node(context)
-                                        .requires(gameMasterOnly())
-                        )
         );
     }
 

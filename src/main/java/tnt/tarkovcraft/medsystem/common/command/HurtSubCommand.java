@@ -12,7 +12,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
@@ -70,7 +69,7 @@ public final class HurtSubCommand {
         float amount = FloatArgumentType.getFloat(ctx, "amount");
         DamageSource damageSource = new LimbDamageSource(damageTypeHolder, projectile, source, limb);
         for (LivingEntity entity : entities) {
-            entity.hurtServer((ServerLevel) entity.level(), damageSource, amount);
+            entity.hurt(damageSource, amount);
         }
         return 0;
     }
