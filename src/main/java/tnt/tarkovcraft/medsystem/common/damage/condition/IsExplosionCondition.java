@@ -1,6 +1,8 @@
 package tnt.tarkovcraft.medsystem.common.damage.condition;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationContext;
@@ -25,6 +27,10 @@ public final class IsExplosionCondition implements DamageCondition {
 
     @Override
     public boolean test(HitCalculationContext hitCalculationContext) {
+        DamageSource damageSource = hitCalculationContext.source();
+        if (!damageSource.is(DamageTypeTags.IS_EXPLOSION)) {
+            return false;
+        }
         return resolveExplosionPosition(hitCalculationContext).isPresent();
     }
 
