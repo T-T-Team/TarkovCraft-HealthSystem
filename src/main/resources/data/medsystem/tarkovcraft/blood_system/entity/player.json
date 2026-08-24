@@ -23,7 +23,7 @@
     "enabled": true,
     "downed_on_death": true,
     "custom_pose": true,
-    "unconscious_dimensions": [ 1.0, 0.4 ],
+    "unconscious_dimensions": [ 1.5, 0.4 ],
     "animation_fields": [
       "right_arm",
       "left_arm",
