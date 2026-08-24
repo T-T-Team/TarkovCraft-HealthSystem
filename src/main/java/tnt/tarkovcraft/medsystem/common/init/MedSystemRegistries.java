@@ -10,10 +10,7 @@ import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicator;
 import tnt.tarkovcraft.medsystem.common.blood_system.effect.*;
-import tnt.tarkovcraft.medsystem.common.damage.condition.DamageCondition;
-import tnt.tarkovcraft.medsystem.common.damage.condition.DamageSourceCondition;
-import tnt.tarkovcraft.medsystem.common.damage.condition.DamageTypeCondition;
-import tnt.tarkovcraft.medsystem.common.damage.condition.IsSpecificLimbDamage;
+import tnt.tarkovcraft.medsystem.common.damage.condition.*;
 import tnt.tarkovcraft.medsystem.common.damage.function.*;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.group.*;
@@ -76,6 +73,7 @@ public final class MedSystemRegistries {
         registerObject(helper, "builtin/specific_limb", IsSpecificLimbDamage.CODEC);
         registerObject(helper, "damage_predicate", DamageSourceCondition.CODEC);
         registerObject(helper, "damage_type", DamageTypeCondition.CODEC);
+        registerObject(helper, "is_explosion", IsExplosionCondition.CODEC);
     }
 
     public static void registerDamageFunctions(RegisterEvent.RegisterHelper<MapCodec<? extends DamageFunction>> helper) {

@@ -2,15 +2,7 @@
   "priority": -750,
   "conditions": [
     {
-      "type": "medsystem:damage_predicate",
-      "predicate": {
-        "tags": [
-          {
-            "id": "minecraft:is_explosion",
-            "expected": true
-          }
-        ]
-      }
+      "type": "medsystem:is_explosion"
     }
   ],
   "calculator": {

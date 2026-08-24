@@ -13,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
+import tnt.tarkovcraft.medsystem.common.damage.condition.IsExplosionCondition;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
 import tnt.tarkovcraft.medsystem.common.health.Limb;
@@ -28,26 +29,14 @@ public record ExplosionHitCalculator(float damageScale, float airPressureMultipl
 
     public static final Identifier METADATA_PRESSURE_FLAG = MedicalSystem.createIdentifier("pressure");
 
-    private static Entity getSourceEntity(HitCalculationContext context) {
-        return context.getProjectile();
-    }
-
-    private static @Nullable Vec3 resolveSourcePosition(HitCalculationContext context) {
-        if (context.hasDamagePosition()) {
-            return context.source().getSourcePosition().add(0, 0.5, 0);
-        }
-        Entity sourceEntity = getSourceEntity(context);
-        if (sourceEntity != null) {
-            return sourceEntity.getBoundingBox().getCenter();
-        }
-        return null;
-    }
-
-
     @Override
     public HitCalculationResult calculateHits(HitCalculationContext context) {
-        Vec3 explosionPosition = resolveSourcePosition(context);
-        Entity sourceEntity = getSourceEntity(context);
+        Vec3 explosionPosition = IsExplosionCondition.resolveExplosionPosition(context)
+                .orElse(null);
+        if (explosionPosition == null) {
+            return HitCalculationResult.simpleResult(context);
+        }
+        Entity sourceEntity = context.getProjectile();
         List<Ray> usedTraces = new ArrayList<>();
         HealthContainer container = context.container();
         int limbCount = container.getDefinition().limbConfiguration().getLimbCount();
