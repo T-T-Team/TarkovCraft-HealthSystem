@@ -10,7 +10,6 @@ import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.health.DamageContext;
 import tnt.tarkovcraft.medsystem.common.health.HealthContainer;
-import tnt.tarkovcraft.medsystem.common.interaction.EntityInteractionData;
 
 import java.util.function.Supplier;
 
@@ -39,10 +38,6 @@ public final class MedSystemDataAttachments {
     public static final Supplier<AttachmentType<Boolean>> EXTERNALLY_CONTROLLED = REGISTRY.register("externally_controlled", () -> AttachmentType.builder(() -> false)
             .serialize(Codec.BOOL.fieldOf("active"))
             .sync(ByteBufCodecs.BOOL)
-            .build()
-    );
-    public static final Supplier<AttachmentType<EntityInteractionData>> INTERACTION_DATA = REGISTRY.register("interaction_data", () -> AttachmentType.builder(EntityInteractionData::create)
-            .serialize(EntityInteractionData.CODEC)
             .build()
     );
 }

@@ -7,7 +7,6 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TriState;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -30,12 +29,10 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import tnt.tarkovcraft.core.api.event.EntityWeightUpdateEvent;
 import tnt.tarkovcraft.core.api.event.StaminaEvent;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.heal.SideEffectHolder;
-import tnt.tarkovcraft.medsystem.client.MedicalSystemClient;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousState;
@@ -240,9 +237,12 @@ public final class MedicalSystemEventHandler {
             TagKey<EntityType<?>> allowedEntities = event.isMounting()
                     ? MedSystemTags.Entities.UNCONSCIOUS_MOUNTABLE
                     : MedSystemTags.Entities.UNCONSCIOUS_DISMOUNTABLE;
+            if (livingEntity.isDeadOrDying()) {
+                return;
+            }
             Entity entityToMount = event.getEntityBeingMounted();
             boolean externallyControlled = entity.getExistingData(MedSystemDataAttachments.EXTERNALLY_CONTROLLED).orElse(false);
-            if (entityToMount != null && (externallyControlled || entityToMount.is(allowedEntities))) {
+            if (entityToMount != null && (externallyControlled || entityToMount.is(allowedEntities) || !entityToMount.isAlive())) {
                 return;
             }
             event.setCanceled(true);
@@ -280,20 +280,6 @@ public final class MedicalSystemEventHandler {
         Player player = event.getPlayer();
         if (BloodSystemManager.isUnconscious(player)) {
             event.setCanPickup(TriState.FALSE);
-        }
-    }
-
-    @SubscribeEvent
-    private void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        Entity targetEntity = event.getTarget();
-        Player player = event.getEntity();
-        if (player.isCrouching() && targetEntity instanceof LivingEntity entity && HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isUnconscious(entity)) {
-            event.setCancellationResult(InteractionResult.SUCCESS);
-            event.setCanceled(true);
-
-            if (entity.level().isClientSide()) {
-                MedicalSystemClient.openUnconsciousActionScreen(entity);
-            }
         }
     }
 }
