@@ -52,6 +52,9 @@ import java.util.Map;
 public final class DamageHandler {
 
     private static HitCalculationResultDebugInfo hitDebugInfo = null;
+    private static final float DECAL_MELEE_SCALE = 0.5F;
+    private static final float DECAL_PROJECTILE_SCALE = 0.4F;
+    private static final double DECAL_MOTION_LIMIT = 0.6;
 
     // Hitbox collision detection
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -272,19 +275,24 @@ public final class DamageHandler {
         int particleCount = Math.min(Mth.floor(damage / config.damageDecalScale), config.maxDamageDecalsPerHit);
         if (particleCount <= 0)
             return;
-        Vec3 origin = source.getSourcePosition();
-        Vec3 direction = origin != null ? entity.position().subtract(origin) : entity.position();
-        double length = direction.horizontalDistance();
         boolean projectile = source.is(DamageTypeTags.IS_PROJECTILE);
-        float motionScale = projectile ? config.projectileDamageMotionScale : config.damageMotionScale;
-        direction = new Vec3(direction.x / length * motionScale, 0.0, direction.z / length * motionScale);
-        float deviateAmount = 0.05F;
+        Vec3 direction = getDirection(source, projectile);
         BloodDripParticleOptions options = new BloodDripParticleOptions(color);
-        double baseDelta = (deviateAmount * 2.0F) - deviateAmount;
-        double dx = direction.x + baseDelta;
-        double dy = 0.05F;
-        double dz = direction.z + baseDelta;
-        HealthHelper.submitServerBleedParticles(options, particleCount, position.x, position.y, position.z, dx, dy, dz, entity);
+        double dx = Math.min(direction.x, DECAL_MOTION_LIMIT);
+        double dy = 0.05;
+        double dz = Math.min(direction.z, DECAL_MOTION_LIMIT);
+        HealthHelper.submitServerBleedParticles(options, particleCount, position.x, position.y, position.z, dx, dy, dz, 0.6D, entity);
+    }
+
+    private static Vec3 getDirection(DamageSource source, boolean projectile) {
+        Entity damagingEntity = projectile ? source.getDirectEntity() : source.getEntity();
+        Vec3 direction = Vec3.ZERO;
+        float motionScale = 0.0F;
+        if (damagingEntity != null) {
+            direction = projectile ? damagingEntity.getDeltaMovement() : damagingEntity.getLookAngle();
+            motionScale = projectile ? DECAL_PROJECTILE_SCALE : DECAL_MELEE_SCALE;
+        }
+        return direction.multiply(motionScale, 1.0F, motionScale);
     }
 
     public static HitCalculationResultDebugInfo getHitDebugInfo() {
