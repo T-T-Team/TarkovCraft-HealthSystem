@@ -20,7 +20,9 @@ import tnt.tarkovcraft.core.common.statistic.StatisticTracker;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
+import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.config.BleedConfiguration;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.config.StatusEffectConfig;
@@ -118,7 +120,7 @@ public final class BleedStatusEffect extends EntityCausedStatusEffect {
                     // bleed particles
                     float decalMultiplier = bloodLost / stageConfig.bleedAmount;
                     HealthContainer container = context.container();
-                    Integer particleColor = container.getDefinition().decalSettings().getColor(entity);
+                    Integer particleColor = DamageHandler.getBloodColor(entity, container, EntityBloodSystem.getAttached(entity));
                     if (particleColor != null) {
                         RandomSource random = level.getRandom();
                         BloodDripParticleOptions options = new BloodDripParticleOptions(particleColor);

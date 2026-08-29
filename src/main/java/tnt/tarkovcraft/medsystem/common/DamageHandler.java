@@ -1,5 +1,6 @@
 package tnt.tarkovcraft.medsystem.common;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
@@ -16,6 +17,7 @@ import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
 import net.neoforged.neoforge.event.entity.living.ArmorHurtEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import org.jspecify.annotations.Nullable;
 import tnt.tarkovcraft.core.api.MovementStaminaComponent;
 import tnt.tarkovcraft.core.api.event.LivingDamageApplyEvent;
 import tnt.tarkovcraft.core.common.energy.EnergySystem;
@@ -26,11 +28,17 @@ import tnt.tarkovcraft.medsystem.client.config.BloodDecalConfig;
 import tnt.tarkovcraft.medsystem.client.particle.BloodDripParticleOptions;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorComponent;
 import tnt.tarkovcraft.medsystem.common.armor.ArmorSystem;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodConfiguration;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
+import tnt.tarkovcraft.medsystem.common.blood_system.BloodTypeOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
 import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
 import tnt.tarkovcraft.medsystem.common.damage.DamageResolver;
 import tnt.tarkovcraft.medsystem.common.health.*;
-import tnt.tarkovcraft.medsystem.common.health.calc.*;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationContext;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationResult;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitCalculationResultDebugInfo;
+import tnt.tarkovcraft.medsystem.common.health.calc.HitInfo;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventContext;
 import tnt.tarkovcraft.medsystem.common.health_event.HealthEventParams;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemDataAttachments;
@@ -113,60 +121,86 @@ public final class DamageHandler {
     @SubscribeEvent
     private void onLivingApplyDamage(LivingDamageApplyEvent event) {
         LivingEntity entity = event.getEntity();
-        if (!HealthSystem.hasCustomHealth(entity))
-            return;
-        HealthContainer container = entity.getData(MedSystemDataAttachments.HEALTH_CONTAINER);
-        DamageContext context = entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
-                .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
-        float damage = event.getHealthDamage();
-        Map<Limb, Float> distributedDamage = context.getDamage(damage);
-
-        // apply armor skill based on armor reduction
-        float armorReduction = event.getReduction(DamageContainer.Reduction.ARMOR);
-        if (armorReduction > 0.0F) {
-            SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, armorReduction);
-        }
-
-        // apply health container damage
-        LimbContainer limbContainer = container.getLimbContainer();
-        limbContainer.hurt(context, damage);
-        float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
-        int lostLimbCount = context.getLostLimbsCount();
         DamageSource damageSource = event.getDamageSource();
-        if (totalDamage > 0.0F) {
-            context.triggerAdvancements(entity);
-            // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
-            // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
-            if (!damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-                SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
-                // apply post-damage effects
-                triggerStatusEffectEvent(entity, container, context, distributedDamage, totalDamage, lostLimbCount);
-                // blood decals
-                addBloodParticles(entity, damageSource, container, context, totalDamage);
+        HealthContainer container = HealthContainer.getAttached(entity);
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+        Integer bloodDecalColor = getBloodColor(entity, container, bloodSystem);
+        boolean bloodParticlesHandled = false;
+        if (container != null) {
+            // handle limb health, limb based blood particles
+            DamageContext context = entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                    .orElseThrow(() -> new IllegalStateException("Damage context not set for entity " + entity));
+            float damage = event.getHealthDamage();
+            Map<Limb, Float> distributedDamage = context.getDamage(damage);
+
+            // apply armor skill based on armor reduction
+            float armorReduction = event.getReduction(DamageContainer.Reduction.ARMOR);
+            if (armorReduction > 0.0F) {
+                SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.ARMOR_USE, entity, armorReduction);
+            }
+
+            // apply health container damage
+            LimbContainer limbContainer = container.getLimbContainer();
+            limbContainer.hurt(context, damage);
+            float totalDamage = distributedDamage.values().stream().reduce(0.0F, Float::sum);
+            int lostLimbCount = context.getLostLimbsCount();
+            if (totalDamage > 0.0F) {
+                context.triggerAdvancements(entity);
+                // ignore skill leveling from /kill commands and other invulnerability bypassing effects - could be problematic for
+                // specific projectile damage sources... maybe instead the max per-event progress amount should be limited
+                if (!damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                    SkillSystem.triggerAndSynchronize(MedSystemSkillEvents.DAMAGE_TAKEN, entity, totalDamage);
+                    // apply post-damage effects
+                    triggerStatusEffectEvent(entity, container, context, distributedDamage, totalDamage, lostLimbCount);
+                    // blood decals
+                    if (!context.getHits().isEmpty() && bloodDecalColor != null) {
+                        HitInfo hit = context.getHits().getFirst();
+                        Limb damagedLimb = hit.limb();
+                        HealthContainerDefinition definition = container.getDefinition();
+                        EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
+                        String entityState = definition.getCurrentEntityState(entity);
+                        Vec3 pos;
+                        if (hit.entryPoint() != null) {
+                            pos = hit.entryPoint();
+                        } else {
+                            AABB aabb = hitboxContainer.getLimbHitbox(damagedLimb.getLimbCode(), entityState).toWorldSpaceHitbox(entity);
+                            pos = aabb.getCenter();
+                        }
+                        addBloodParticles(entity, damageSource, bloodDecalColor, pos, totalDamage);
+                    }
+                }
+            }
+            // mark blood particle processing as done
+            bloodParticlesHandled = true;
+
+            // Clean data and apply
+            entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
+                    .ifPresent(DamageContext::reset);
+            HealthHelper.synchronizeHealth(entity, container);
+
+            // Death processing
+            HealthSystem.synchronizeEntity(entity); // send status to a client before death or further processing so that a client knows which body part caused death
+            if (container.isDead()) {
+                entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
+                return;
+            }
+
+            // limbs lost statistic - after death processing to avoid counting lost limbs on entity death
+            if (lostLimbCount > 0) {
+                StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST, lostLimbCount);
+            }
+
+            // disable sprinting if an entity can no longer sprint
+            MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
+            if (entity.isSprinting() && !component.canSprint(entity)) {
+                entity.setSprinting(false);
             }
         }
 
-        // Clean data and apply
-        entity.getExistingData(MedSystemDataAttachments.DAMAGE_CONTEXT)
-                .ifPresent(DamageContext::reset);
-        HealthHelper.synchronizeHealth(entity, container);
-
-        // Death processing
-        HealthSystem.synchronizeEntity(entity); // send status to a client before death or further processing so that a client knows which body part caused death
-        if (container.isDead()) {
-            entity.setHealth(0.0F); // cannot use LivingEntity#die as that causes problems with xp/drops
-            return;
-        }
-
-        // limbs lost statistic - after death processing to avoid counting lost limbs on entity death
-        if (lostLimbCount > 0) {
-            StatisticTracker.incrementOptional(entity, MedSystemStats.LIMBS_LOST, lostLimbCount);
-        }
-
-        // disable sprinting if an entity can no longer sprint
-        MovementStaminaComponent component = EnergySystem.MOVEMENT_STAMINA.getComponent();
-        if (entity.isSprinting() && !component.canSprint(entity)) {
-            entity.setSprinting(false);
+        // handle default blood particles
+        if (!bloodParticlesHandled && bloodDecalColor != null && event.getHealthDamage() > 0.0F) {
+            AABB box = entity.getBoundingBox();
+            addBloodParticles(entity, damageSource, bloodDecalColor, box.getCenter(), event.getHealthDamage());
         }
     }
 
@@ -207,10 +241,30 @@ public final class DamageHandler {
         }
     }
 
-    private static void addBloodParticles(LivingEntity entity, DamageSource source, HealthContainer container, DamageContext context, float damage) {
+    public static @Nullable Integer getBloodColor(LivingEntity entity, @Nullable HealthContainer container, @Nullable EntityBloodSystem bloodSystem) {
+        MedSystemConfig config = MedicalSystem.getConfig();
+        if (!config.bloodDecals.enableBloodDecals) {
+            return null;
+        }
+        if (bloodSystem != null) {
+            Identifier bloodType = bloodSystem.getBloodType();
+            BloodConfiguration bloodConfiguration = MedicalSystem.BLOOD_SYSTEM.getConfig();
+            BloodTypeOptions options = bloodConfiguration.getOptions(bloodType).orElse(null);
+            if (options != null) {
+                return options.color();
+            }
+        }
+        if (container != null) {
+            HealthContainerDefinition definition = container.getDefinition();
+            return definition.decalSettings().getColor(entity);
+        }
+        return config.bloodDecals.enableGenericBloodDecals
+                ? Integer.decode(config.bloodDecals.bloodDecalColor)
+                : null;
+    }
+
+    private static void addBloodParticles(LivingEntity entity, DamageSource source, int color, Vec3 position, float damage) {
         BloodDecalConfig config = MedicalSystem.getConfig().bloodDecals;
-        if (!config.enableBloodDecals || context.getHits().isEmpty())
-            return;
         int particleCount = Math.min(Mth.floor(damage / config.damageDecalScale), config.maxDamageDecalsPerHit);
         if (particleCount <= 0)
             return;
@@ -220,29 +274,13 @@ public final class DamageHandler {
         boolean projectile = source.is(DamageTypeTags.IS_PROJECTILE);
         float motionScale = projectile ? config.projectileDamageMotionScale : config.damageMotionScale;
         direction = new Vec3(direction.x / length * motionScale, 0.0, direction.z / length * motionScale);
-        HitInfo result = context.getHits().getFirst();
-        Limb mainDamagedLimb = result.limb();
-        HealthContainerDefinition definition = container.getDefinition();
-        EntityHitboxContainer hitboxContainer = definition.hitboxContainer();
-        String entityState = definition.getCurrentEntityState(entity);
-        Vec3 pos;
-        if (result.entryPoint() != null) {
-            pos = result.entryPoint();
-        } else {
-            AABB aabb = hitboxContainer.getLimbHitbox(mainDamagedLimb.getLimbCode(), entityState).toWorldSpaceHitbox(entity);
-            pos = aabb.getCenter();
-        }
         float deviateAmount = 0.05F;
-        BloodDecalSettings settings = definition.decalSettings();
-        Integer color = settings.getColor(entity);
-        if (color == null)
-            return;
         BloodDripParticleOptions options = new BloodDripParticleOptions(color);
         double baseDelta = (deviateAmount * 2.0F) - deviateAmount;
         double dx = direction.x + baseDelta;
         double dy = 0.05F;
         double dz = direction.z + baseDelta;
-        HealthHelper.submitServerBleedParticles(options, particleCount, pos.x, pos.y, pos.z, dx, dy, dz, entity);
+        HealthHelper.submitServerBleedParticles(options, particleCount, position.x, position.y, position.z, dx, dy, dz, entity);
     }
 
     public static HitCalculationResultDebugInfo getHitDebugInfo() {

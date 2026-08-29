@@ -15,6 +15,10 @@ public final class BloodDecalConfig {
     public boolean enableBloodDecals = true;
 
     @Configurable
+    @Configurable.Comment("Toggles blood decals for ALL entities even if they do not have custom health/blood system enabled")
+    public boolean enableGenericBloodDecals = true;
+
+    @Configurable
     @Configurable.Comment("Forces all blood decals to be have specific color - configure in the option below")
     public boolean forceBloodDecalColor = false;
 
