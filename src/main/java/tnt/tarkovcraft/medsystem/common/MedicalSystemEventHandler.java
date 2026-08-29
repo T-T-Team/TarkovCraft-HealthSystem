@@ -148,41 +148,44 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
         DamageSource source = event.getSource();
-        if (BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-            EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
-            UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
-            UnconsciousOptions options = unconsciousState.getUnconsciousOptions();
-            if (!options.downedStateAllowed() || bloodSystem.hasBledOut())
-                return; // do not allow duplicate rescues
+        int playerCount = entity.level().players().size();
+        if (playerCount > 1 || config.bloodSystem.allowDownedSingleplayer) {
+            if (BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
+                UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
+                UnconsciousOptions options = unconsciousState.getUnconsciousOptions();
+                if (!options.downedStateAllowed() || bloodSystem.hasBledOut())
+                    return; // do not allow duplicate rescues
 
-            RandomSource random = entity.getRandom();
-            EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
-            // Start unconscious mode if allowed instead of death
-            if (definition.isDownedStateEnabled() && random.nextFloat() < config.bloodSystem.unconsciousOnDeathChance) {
-                HealthContainer container = HealthContainer.getAttached(entity);
-                // Prevent unconscious mode if head limb died and config disallows this case
-                if (container != null && config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
-                    // no head body part alive, terminate further processing logic
-                    if (HealthHelper.allLimbsDead(container, LimbType.HEAD))
-                        return;
+                RandomSource random = entity.getRandom();
+                EntityBloodSystemDefinition definition = bloodSystem.getDefinition();
+                // Start unconscious mode if allowed instead of death
+                if (definition.isDownedStateEnabled() && random.nextFloat() < config.bloodSystem.unconsciousOnDeathChance) {
+                    HealthContainer container = HealthContainer.getAttached(entity);
+                    // Prevent unconscious mode if head limb died and config disallows this case
+                    if (container != null && config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
+                        // no head body part alive, terminate further processing logic
+                        if (HealthHelper.allLimbsDead(container, LimbType.HEAD))
+                            return;
+                    }
+                    event.setCanceled(true);
+
+                    // recover vital body part health - otherwise entity would immediately "die" again
+                    if (container != null) {
+                        HealthHelper.recoverVitalLimbs(container, 1.0F);
+                        HealthHelper.synchronizeHealth(entity, container);
+                        HealthSystem.synchronizeEntity(entity);
+                    } else {
+                        entity.setHealth(1.0F);
+                    }
+
+                    // set unconscious
+                    bloodSystem.setUnconscious(entity, config.bloodSystem.rescueWaitDuration, UnconsciousOptions.DOWNED);
+                    bloodSystem.synchronizeImmediately(entity);
+
+                    // set a short invulnerability window to prevent immediate follow-up damage
+                    entity.invulnerableTime = 30;
                 }
-                event.setCanceled(true);
-
-                // recover vital body part health - otherwise entity would immediately "die" again
-                if (container != null) {
-                    HealthHelper.recoverVitalLimbs(container, 1.0F);
-                    HealthHelper.synchronizeHealth(entity, container);
-                    HealthSystem.synchronizeEntity(entity);
-                } else {
-                    entity.setHealth(1.0F);
-                }
-
-                // set unconscious
-                bloodSystem.setUnconscious(entity, config.bloodSystem.rescueWaitDuration, UnconsciousOptions.DOWNED);
-                bloodSystem.synchronizeImmediately(entity);
-
-                // set a short invulnerability window to prevent immediate follow-up damage
-                entity.invulnerableTime = 30;
             }
         }
 

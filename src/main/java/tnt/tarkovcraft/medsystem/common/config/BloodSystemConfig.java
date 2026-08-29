@@ -22,19 +22,16 @@ public final class BloodSystemConfig {
 
     @Configurable
     @Configurable.Comment(value = {
-            "Defines handling of unconscious bleed out stage when the affected player has too low blood level to wake up on their own",
-            "When disabled, bleed out damage will be applied immediately after losing ability to wake up"
-    }, localize = true)
-    public UnconsciousMode bleedOutUnconsciousness = UnconsciousMode.ALLOW;
-
-    @Configurable
-    @Configurable.Comment(value = {
             "Specifies when entities can target unconscious players",
             "ALWAYS - unconscious players will always be attacked",
             "IGNORE_RESCUE - unconscious players will be attacked as long as they're not in rescue mode",
             "NEVER - unconscious players will never be attacked"
     }, localize = true)
     public UnconsciousEntityTargeting unconsciousEntityTargeting = UnconsciousEntityTargeting.NEVER;
+
+    @Configurable
+    @Configurable.Comment(value = "Will trigger downed state if playing alone in singleplayer", localize = true)
+    public boolean allowDownedSingleplayer = false;
 
     @Configurable
     @Configurable.DecimalRange(min = 0.0, max = 1.0)
