@@ -41,7 +41,7 @@ public final class RescueDownedEntityInteraction implements EntityInteraction {
     @Override
     public void onCompleted(Context context) {
         LivingEntity target = context.target();
-        if (!HealthSystem.hasCustomHealth(target) || !BloodSystemManager.isUnconscious(target))
+        if (!BloodSystemManager.isUnconscious(target))
             return;
         EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
         bloodSystem.rescueDownedEntity(target);
