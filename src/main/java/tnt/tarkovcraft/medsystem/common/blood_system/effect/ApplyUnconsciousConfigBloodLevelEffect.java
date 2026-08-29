@@ -5,8 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.config.MedSystemConfig;
-import tnt.tarkovcraft.medsystem.common.config.UnconsciousMode;
+import tnt.tarkovcraft.medsystem.common.config.BloodSystemConfig;
 
 public final class ApplyUnconsciousConfigBloodLevelEffect implements BloodLevelEffect {
 
@@ -18,9 +17,9 @@ public final class ApplyUnconsciousConfigBloodLevelEffect implements BloodLevelE
 
     @Override
     public void applyEffects(LivingEntity entity, ServerLevel level, EntityBloodSystem bloodSystem) {
-        MedSystemConfig config = MedicalSystem.getConfig();
-        UnconsciousMode mode = config.bloodSystem.bleedOutUnconsciousness;
-        if (!mode.allowsUnconsciousState(level)) {
+        BloodSystemConfig config = MedicalSystem.getConfig().bloodSystem;
+        int playerCount = level.getServer().getPlayerCount();
+        if (!config.allowDownedSingleplayer && playerCount <= 1) {
             DeathBloodLevelEffect.INSTANCE.applyEffects(entity, level, bloodSystem);
         }
     }
