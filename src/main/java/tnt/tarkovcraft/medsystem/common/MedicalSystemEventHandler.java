@@ -148,7 +148,7 @@ public final class MedicalSystemEventHandler {
         LivingEntity entity = event.getEntity();
         MedSystemConfig config = MedicalSystem.getConfig();
         DamageSource source = event.getSource();
-        if (HealthSystem.hasCustomHealth(entity) && BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        if (BloodSystemManager.isEnabled(entity) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(entity);
             UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
             UnconsciousOptions options = unconsciousState.getUnconsciousOptions();
@@ -161,7 +161,7 @@ public final class MedicalSystemEventHandler {
             if (definition.isDownedStateEnabled() && random.nextFloat() < config.bloodSystem.unconsciousOnDeathChance) {
                 HealthContainer container = HealthContainer.getAttached(entity);
                 // Prevent unconscious mode if head limb died and config disallows this case
-                if (config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
+                if (container != null && config.bloodSystem.unconsciousOnHeadDeathChance > 0.0F && random.nextFloat() >= config.bloodSystem.unconsciousOnHeadDeathChance) {
                     // no head body part alive, terminate further processing logic
                     if (HealthHelper.allLimbsDead(container, LimbType.HEAD))
                         return;
@@ -169,10 +169,13 @@ public final class MedicalSystemEventHandler {
                 event.setCanceled(true);
 
                 // recover vital body part health - otherwise entity would immediately "die" again
-                HealthHelper.recoverVitalLimbs(container, 1.0F);
-
-                HealthHelper.synchronizeHealth(entity, container);
-                HealthSystem.synchronizeEntity(entity);
+                if (container != null) {
+                    HealthHelper.recoverVitalLimbs(container, 1.0F);
+                    HealthHelper.synchronizeHealth(entity, container);
+                    HealthSystem.synchronizeEntity(entity);
+                } else {
+                    entity.setHealth(1.0F);
+                }
 
                 // set unconscious
                 bloodSystem.setUnconscious(entity, config.bloodSystem.rescueWaitDuration, UnconsciousOptions.DOWNED);
