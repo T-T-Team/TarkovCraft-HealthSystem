@@ -3,8 +3,10 @@
   - Allows you to have health system from other mod but still use the downed/revive functionality
 - Improved blood decal handling
   - Fixed blood decal color not being based on blood type configuration
+  - Spawning/direction logic improved
   - Now blood particles are spawned for all living entities regardless of having custom limb/blood systems defined
   - This can be reverted via new `Enable generic blood decals` configuration option in blood decals section
 - Added `Downed mode in singleplayer` option
   - When disabled (default) you will not enter downed mode in singleplayer as you cannot be rescued either way
-- Removed config `Bleed out unconscious mode`. Replaced by the new option above
+- Removed config option `Bleed out unconscious mode`. Replaced by the new option above
+- Removed config option `Motion scale` and `Projectile motion scale`
