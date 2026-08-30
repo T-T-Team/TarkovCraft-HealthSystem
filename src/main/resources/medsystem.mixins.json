@@ -1,5 +1,5 @@
 {
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "required": true,
   "package": "tnt.tarkovcraft.medsystem.mixin",
   "minVersion": "0.8.7",
