@@ -1,5 +1,5 @@
-# Release 2.13.0+26.2
-- Downed state now work regardless if the player uses the custom health system or not
+# Release 2.13.0+1.21.1
+- Downed state now works regardless if the player uses the custom health system or not
   - Allows you to have health system from other mod but still use the downed/revive functionality
 - Improved blood decal handling
   - Fixed blood decal color not being based on blood type configuration
