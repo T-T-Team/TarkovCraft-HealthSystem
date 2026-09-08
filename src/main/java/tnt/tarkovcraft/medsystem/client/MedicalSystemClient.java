@@ -170,7 +170,7 @@ public final class MedicalSystemClient {
     }
 
     private void registerOnScreenHints(RegisterOnScreenHintEvent event) {
-        event.register(new GiveUpOnScreenHint());
+        event.registerHint(new GiveUpOnScreenHint());
     }
 
     private void registerConditionalItemModelProperties(RegisterConditionalItemModelPropertyEvent event) {

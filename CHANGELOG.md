@@ -1,12 +1,9 @@
-# Release 2.13.0+26.1.2
-- Downed state now work regardless if the player uses the custom health system or not
-  - Allows you to have health system from other mod but still use the downed/revive functionality
-- Improved blood decal handling
-  - Fixed blood decal color not being based on blood type configuration
-  - Spawning/direction logic improved
-  - Now blood particles are spawned for all living entities regardless of having custom limb/blood systems defined
-  - This can be reverted via new `Enable generic blood decals` configuration option in blood decals section
-- Added `Downed mode in singleplayer` option
-  - When disabled (default) you will not enter downed mode in singleplayer as you cannot be rescued either way
-- Removed config option `Bleed out unconscious mode`. Replaced by the new option above
-- Removed config option `Motion scale` and `Projectile motion scale`
+# Release 2.14.1+26.1.2
+- Improved compatibility with modded damage sources - can specify specific limbs for damage via Damage Type tags
+  - `#medsystem:limb/head_damage` - damages head
+  - `#medsystem:limb/torso_damage` - damages chest
+  - `#medsystem:limb/stomach_damage` - damages stomach
+  - `#medsystem:limb/arm_damage` - damages arms
+  - `#medsystem:limb/leg_damage` - damages legs
+  - `#medsystem:limb/animal_damage` - damages special animal limbs
+  - `#medsystem:limb/other_damage` - damages other limb types, unused by default
