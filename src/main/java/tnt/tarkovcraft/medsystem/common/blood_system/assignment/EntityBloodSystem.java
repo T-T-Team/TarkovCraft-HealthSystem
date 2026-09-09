@@ -211,6 +211,7 @@ public final class EntityBloodSystem {
     public void rescueDownedEntity(LivingEntity entity) {
         this.setUnconscious(entity, 100, UnconsciousOptions.RESCUE_DELAY);
         this.shockAmount = 0.0F;
+        this.unconsciousState.cancelRescue();
     }
 
     public @Nullable UnconsciousAnimationState getUnconsciousAnimationState(float delta) {
