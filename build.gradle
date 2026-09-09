@@ -129,8 +129,18 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             core_range             : core_range
     ]
     inputs.properties replaceProperties
-    expand replaceProperties
-    from "src/main/templates"
+
+    // Copy and expand everything, do NOT expand the accesstransformer file as gradles string substitution causes some issues with inner classes
+    from("src/main/templates") {
+        exclude("META-INF/accesstransformer.cfg")
+        expand replaceProperties
+    }
+
+    // Copy the accesstransformer file
+    from("src/main/templates") {
+        include("META-INF/accesstransformer.cfg")
+    }
+
     into "build/generated/sources/modMetadata"
 }
 
