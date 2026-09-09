@@ -25,6 +25,7 @@ import java.util.List;
 public class UnconsciousLayer implements GuiLayer {
 
     public static final Identifier LAYER_ID = MedicalSystem.createIdentifier("layer/unconscious");
+    private static final Component ACTIVE_RESCUE_LABEL = Component.translatable("label.medsystem.unconscious.active_rescue");
 
     @Override
     public void render(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
@@ -45,7 +46,8 @@ public class UnconsciousLayer implements GuiLayer {
             }
             UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
             UnconsciousOptions options = unconsciousState.getUnconsciousOptions();
-            Component reason = options.label();
+            boolean activeRescue = unconsciousState.isBeingRescued();
+            Component reason = activeRescue ? ACTIVE_RESCUE_LABEL : options.label();
             List<FormattedCharSequence> lines = font.split(reason, window.getGuiScaledWidth() / 3 * 2);
             for (int i = 0; i < lines.size(); i++) {
                 FormattedCharSequence line = lines.get(i);
@@ -54,7 +56,8 @@ public class UnconsciousLayer implements GuiLayer {
             }
 
             if (options.allowRescue()) {
-                Duration timer = Duration.ticks(unconsciousState.getRemainingUnconsciousDuration());
+                int timeValue = activeRescue ? unconsciousState.getRescueDuration() : unconsciousState.getRemainingUnconsciousDuration();
+                Duration timer = Duration.ticks(timeValue);
                 Component text = timer.format(DurationFormats.LONG_NAME);
                 int textWidth = font.width(text);
                 guiGraphics.text(font, text, (window.getGuiScaledWidth() - textWidth) / 2, 30 + (lines.size() + 1) * 11, ColorPalette.WHITE, true);

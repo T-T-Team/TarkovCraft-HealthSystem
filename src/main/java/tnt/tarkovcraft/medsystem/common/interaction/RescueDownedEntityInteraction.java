@@ -10,11 +10,10 @@ import tnt.tarkovcraft.core.util.UserActionResult;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.common.blood_system.BloodSystemManager;
 import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousOptions;
+import tnt.tarkovcraft.medsystem.common.blood_system.UnconsciousState;
 import tnt.tarkovcraft.medsystem.common.blood_system.assignment.EntityBloodSystem;
-import tnt.tarkovcraft.medsystem.common.health.HealthSystem;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemEntityInteractions;
 
-// TODO stop death countdown when rescue interaction is active
 public final class RescueDownedEntityInteraction implements EntityInteraction {
 
     public static final RescueDownedEntityInteraction INSTANCE = new RescueDownedEntityInteraction();
@@ -31,11 +30,26 @@ public final class RescueDownedEntityInteraction implements EntityInteraction {
         if (bloodSystem == null) {
             return UserActionResult.failure(Type.getErrorMessage(IDENTIFIER, ERR_UNABLE_TO_RESCUE));
         }
-        UnconsciousOptions options = bloodSystem.getUnconsciousState().getUnconsciousOptions();
+        UnconsciousState unconsciousState = bloodSystem.getUnconsciousState();
+        UnconsciousOptions options = unconsciousState.getUnconsciousOptions();
         if (!bloodSystem.isUnconscious() || !options.allowRescue()) {
             return UserActionResult.failure(Type.getErrorMessage(IDENTIFIER, ERR_UNABLE_TO_RESCUE));
         }
         return UserActionResult.successEmpty();
+    }
+
+    @Override
+    public void onStarted(Context context) {
+        LivingEntity target = context.target();
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
+        if (bloodSystem != null) {
+            UnconsciousState state = bloodSystem.getUnconsciousState();
+            UnconsciousOptions options = state.getUnconsciousOptions();
+            if (options.allowRescue()) {
+                state.setBeingRescued(this.type().duration());
+                bloodSystem.synchronizeImmediately(target);
+            }
+        }
     }
 
     @Override
@@ -50,6 +64,13 @@ public final class RescueDownedEntityInteraction implements EntityInteraction {
 
     @Override
     public void onFailed(Context context, InteractionResult reason) {
+        LivingEntity target = context.target();
+        EntityBloodSystem bloodSystem = EntityBloodSystem.getAttached(target);
+        if (bloodSystem != null) {
+            UnconsciousState state = bloodSystem.getUnconsciousState();
+            state.cancelRescue();
+            bloodSystem.synchronizeImmediately(target);
+        }
     }
 
     @Override

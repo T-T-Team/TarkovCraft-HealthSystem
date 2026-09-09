@@ -33,6 +33,10 @@ public final class DismountEntityInteraction implements EntityInteraction {
     }
 
     @Override
+    public void onStarted(Context context) {
+    }
+
+    @Override
     public void onCompleted(Context context) {
         LivingEntity target = context.target();
         HealthHelper.doWithEntityControlOverride(target, () -> {
