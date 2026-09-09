@@ -161,6 +161,7 @@
   "label.medsystem.blood_insertion.self": "Performing blood transfusion, remaining %s",
   "label.medsystem.blood_extraction.other": "Filling blood bag from %s, remaining %s",
   "label.medsystem.blood_insertion.other": "Performing blood transfusion for %s, remaining %s",
+  "label.medsystem.unconscious.active_rescue": "You are being rescued",
   "label.medsystem.unconscious.info.low_blood_level": "You lost consciousness due to massive blood loss. You can either wait for your friends to save you or give up",
   "label.medsystem.unconscious.info.random_unconsciousness": "You have temporarily lost consciousness due to large blood loss. You may still wake up",
   "label.medsystem.unconscious.info.pain": "You have temporarily lost consciousness due pain shock. You may still wake up",

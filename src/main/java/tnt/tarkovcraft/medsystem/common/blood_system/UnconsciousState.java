@@ -15,6 +15,7 @@ public final class UnconsciousState {
             Codec.INT.optionalFieldOf("wake_up_timer", 0).forGetter(t -> t.wakeUpTimer),
             Codec.INT.optionalFieldOf("unconscious_duration", 0).forGetter(t -> t.unconsciousDuration),
             Codec.INT.optionalFieldOf("invulnerable_duration", 0).forGetter(t -> t.invulnerableDuration),
+            Codec.INT.optionalFieldOf("downed_death_delay", 0).forGetter(t -> t.downedDeathDelay),
             Codec.BOOL.optionalFieldOf("animate", true).forGetter(t -> t.animate),
             UnconsciousOptions.CODEC.optionalFieldOf("options", UnconsciousOptions.EMPTY).forGetter(t -> t.options),
             Codec.unboundedMap(Codec.STRING, Codec.FLOAT).optionalFieldOf("pose_metadata", Collections.emptyMap()).forGetter(t -> t.poseMetadata)
@@ -25,6 +26,7 @@ public final class UnconsciousState {
     private int wakeUpTimer;
     private int unconsciousDuration;
     private int invulnerableDuration;
+    private int downedDeathDelay;
     private boolean animate;
     private UnconsciousOptions options;
     private final Map<String, Float> poseMetadata;
@@ -32,17 +34,18 @@ public final class UnconsciousState {
     private final List<Listener> listeners = new ArrayList<>();
     private Boolean lastUnconsciousState;
 
-    public UnconsciousState(int wakeUpTimer, int unconsciousDuration, int invulnerableDuration, boolean animate, UnconsciousOptions options, Map<String, Float> poseMetadata) {
+    public UnconsciousState(int wakeUpTimer, int unconsciousDuration, int invulnerableDuration, int downedDeathDelay, boolean animate, UnconsciousOptions options, Map<String, Float> poseMetadata) {
         this.wakeUpTimer = wakeUpTimer;
         this.unconsciousDuration = unconsciousDuration;
         this.invulnerableDuration = invulnerableDuration;
+        this.downedDeathDelay = downedDeathDelay;
         this.animate = animate;
         this.options = options;
         this.poseMetadata = new HashMap<>(poseMetadata);
     }
 
     public static UnconsciousState createConscious() {
-        return new UnconsciousState(0, 0, 0, true, UnconsciousOptions.EMPTY, Collections.emptyMap());
+        return new UnconsciousState(0, 0, 0, 0, true, UnconsciousOptions.EMPTY, Collections.emptyMap());
     }
 
     public void addListener(Listener listener) {
@@ -64,11 +67,31 @@ public final class UnconsciousState {
             return;
         }
         ++this.unconsciousDuration;
+        if (this.options.allowRescue() && this.wakeUpTimer > 0 && this.downedDeathDelay > 0) {
+            --this.downedDeathDelay;
+            return;
+        }
         if (this.wakeUpTimer > 0 && --this.wakeUpTimer <= 0) {
             UnconsciousOptions previousOptions = this.options;
             this.options = UnconsciousOptions.EMPTY;
             this.notifyListeners(l -> l.onWakeUp(entity, previousOptions, this.unconsciousDuration));
         }
+    }
+
+    public void setBeingRescued(int rescueDuration) {
+        this.downedDeathDelay = rescueDuration;
+    }
+
+    public void cancelRescue() {
+        this.downedDeathDelay = 0;
+    }
+
+    public boolean isBeingRescued() {
+        return this.downedDeathDelay > 0;
+    }
+
+    public int getRescueDuration() {
+        return this.downedDeathDelay;
     }
 
     public void setAnimate(boolean animate) {
