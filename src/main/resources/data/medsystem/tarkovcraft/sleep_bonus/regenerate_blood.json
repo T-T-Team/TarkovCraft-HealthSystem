@@ -1,0 +1,7 @@
+{
+  "required_duration": 600,
+  "function": {
+    "type": "medsystem:regenerate_blood",
+    "advance_speed": 1.5
+  }
+}

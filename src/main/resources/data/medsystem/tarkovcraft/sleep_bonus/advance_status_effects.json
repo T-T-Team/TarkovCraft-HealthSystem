@@ -1,0 +1,9 @@
+{
+  "function": {
+    "type": "medsystem:advance_status_effects",
+    "advance_speed": {
+      "neutral": 1.5,
+      "negative": 2.0
+    }
+  }
+}
