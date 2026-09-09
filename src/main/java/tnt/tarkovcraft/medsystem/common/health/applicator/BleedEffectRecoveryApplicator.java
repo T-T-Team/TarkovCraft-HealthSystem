@@ -44,7 +44,7 @@ public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> ble
     public Optional<StatusEffect> findRecoverableEffect(HealthContainer container, LivingEntity entity, Limb limb) {
         StatusEffectMap statusEffects = limb.getStatusEffects();
         return statusEffects.getEffect(MedSystemStatusEffects.BLEED)
-                .filter(effect -> this.isHealableBleed((BleedStatusEffect) effect));
+                .filter(effect -> this.isHealableBleed((BleedStatusEffect) effect, limb));
     }
 
     @Override
@@ -81,8 +81,8 @@ public record BleedEffectRecoveryApplicator(Set<BleedStatusEffect.BleedType> ble
         return CODEC;
     }
 
-    private boolean isHealableBleed(BleedStatusEffect bleed) {
+    private boolean isHealableBleed(BleedStatusEffect bleed, Limb limb) {
         BleedStatusEffect.BleedType bleedType = bleed.getBleedType();
-        return this.bleedTypes.contains(bleedType);
+        return this.bleedTypes.contains(bleedType) && this.limbFilter.test(limb);
     }
 }
