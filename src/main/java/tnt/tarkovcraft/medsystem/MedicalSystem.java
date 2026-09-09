@@ -16,6 +16,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tnt.tarkovcraft.core.api.event.RegisterWeightProvidersEvent;
+import tnt.tarkovcraft.core.common.init.CoreRegistries;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.common.DamageHandler;
 import tnt.tarkovcraft.medsystem.common.MedicalSystemEventHandler;
@@ -87,6 +88,7 @@ public final class MedicalSystem {
         event.register(MedSystemRegistries.Keys.HEALTH_EVENT_ACTION, MedSystemRegistries::registerHealthEventActions);
         event.register(MedSystemRegistries.Keys.HEALTH_EVENT_FUNCTION, MedSystemRegistries::registerHealthEventFunctions);
         event.register(MedSystemRegistries.Keys.BLOOD_LEVEL_EFFECT, MedSystemRegistries::registerBloodLevelEffects);
+        event.register(CoreRegistries.Keys.SLEEP_BONUS_FUNCTION, MedSystemRegistries::registerSleepFunctions);
     }
 
     private void setup(FMLCommonSetupEvent event) {

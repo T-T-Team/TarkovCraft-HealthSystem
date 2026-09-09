@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
+import tnt.tarkovcraft.core.api.SleepFunction;
 import tnt.tarkovcraft.medsystem.MedicalSystem;
 import tnt.tarkovcraft.medsystem.api.MedSystemConstants;
 import tnt.tarkovcraft.medsystem.api.heal.EffectRecoveryApplicator;
@@ -24,6 +25,8 @@ import tnt.tarkovcraft.medsystem.common.health_event.HealthEventTriggerSource;
 import tnt.tarkovcraft.medsystem.common.health_event.action.*;
 import tnt.tarkovcraft.medsystem.common.health_event.condition.*;
 import tnt.tarkovcraft.medsystem.common.health_event.function.*;
+import tnt.tarkovcraft.medsystem.integration.core.AdvanceStatusEffectsSleepFunction;
+import tnt.tarkovcraft.medsystem.integration.core.RegenerateBloodSleepFunction;
 
 public final class MedSystemRegistries {
 
@@ -132,6 +135,11 @@ public final class MedSystemRegistries {
         registerObject(helper, "add_attribute_modifier", AddAttributeModifierBloodLevelEffect.CODEC);
         registerObject(helper, "remove_vanilla_attribute_modifier", RemoveVanillaAttributeModifierBloodLevelEffect.CODEC);
         registerObject(helper, "remove_attribute_modifier", RemoveAttributeModifierBloodLevelEffect.CODEC);
+    }
+
+    public static void registerSleepFunctions(RegisterEvent.RegisterHelper<MapCodec<? extends SleepFunction>> helper) {
+        registerObject(helper, "advance_status_effects", AdvanceStatusEffectsSleepFunction.CODEC);
+        registerObject(helper, "regenerate_blood", RegenerateBloodSleepFunction.CODEC);
     }
 
     private static <T> void registerObject(RegisterEvent.RegisterHelper<T> helper, String name, T object) {

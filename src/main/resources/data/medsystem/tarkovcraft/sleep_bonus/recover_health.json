@@ -1,0 +1,7 @@
+{
+  "function": {
+    "type": "tarkovcraft_core:health",
+    "cycle_length": 1000,
+    "amount": 5.0
+  }
+}
