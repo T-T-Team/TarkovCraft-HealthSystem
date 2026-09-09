@@ -1,12 +1,10 @@
-# Release 2.13.0+26.2
-- Downed state now works regardless if the player uses the custom health system or not
-  - Allows you to have health system from other mod but still use the downed/revive functionality
-- Improved blood decal handling
-  - Fixed blood decal color not being based on blood type configuration
-  - Spawning/direction logic improved
-  - Now blood particles are spawned for all living entities regardless of having custom limb/blood systems defined
-  - This can be reverted via new `Enable generic blood decals` configuration option in blood decals section
-- Added `Downed mode in singleplayer` option
-  - When disabled (default) you will not enter downed mode in singleplayer as you cannot be rescued either way
-- Removed config option `Bleed out unconscious mode`. Replaced by the new option above
-- Removed config option `Motion scale` and `Projectile motion scale`
+# Release 2.14.0+26.2
+- Added sleep buffs
+  - Sleeping now provides health, progresses negative status effects and regenerates blood faster
+  - Works with actual sleep time, so getting longer sleeps has better effects
+  - Buffs are completely data-driven and can be modified via datapacks
+- Rescuing downed players now stops the death count down timer
+- Improved on screen hints
+  - When there is any interaction available for given player/entity, it will now suggest to interact with it
+- Fixed issue where you could still use tourniquets etc on non-compatible limbs such as head etc
+- Fixed issue where entering unconscious state did not interrupt sleeping which then lead to different issues
