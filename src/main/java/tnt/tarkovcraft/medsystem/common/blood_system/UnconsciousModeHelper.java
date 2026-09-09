@@ -66,6 +66,10 @@ public final class UnconsciousModeHelper {
         entity.setSprinting(false);
         entity.ejectPassengers();
 
+        if (entity.isSleeping()) {
+            entity.stopSleeping();
+        }
+
         RandomSource random = entity.getRandom();
         if (!level.isClientSide()) {
             ServerLevel serverLevel = (ServerLevel) entity.level();
