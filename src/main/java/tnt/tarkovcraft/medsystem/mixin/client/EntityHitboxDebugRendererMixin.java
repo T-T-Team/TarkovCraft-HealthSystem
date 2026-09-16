@@ -22,7 +22,7 @@ public abstract class EntityHitboxDebugRendererMixin {
             method = "showHitboxes",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/gizmos/Gizmos;cuboid(Lnet/minecraft/world/phys/AABB;Lnet/minecraft/gizmos/GizmoStyle;)Lnet/minecraft/gizmos/GizmoProperties;", ordinal = 2)
     )
-    private void medsystem$showHitboxes(Entity entity, float renderTickDelta, boolean applyColor, CallbackInfo ci) {
+    private void medsystem$showHitboxes(Entity entity, float partialTicks, boolean isServerEntity, CallbackInfo ci) {
         if (!HealthSystem.hasCustomHealth(entity))
             return;
         LivingEntity livingEntity = (LivingEntity) entity;
@@ -36,7 +36,7 @@ public abstract class EntityHitboxDebugRendererMixin {
             LimbDefinition def = entry.getValue();
             LimbType type = def.type();
             Vec3 positionVec = entity.position();
-            Vec3 interpolatedPosition = entity.getPosition(renderTickDelta).subtract(positionVec);
+            Vec3 interpolatedPosition = entity.getPosition(partialTicks).subtract(positionVec);
             EntityHitboxContainer.LimbHitboxDefinition hitboxDefinition = hitboxContainer.getLimbHitbox(code, state);
             AABB aabb = hitboxDefinition.toWorldSpaceHitbox(livingEntity).move(interpolatedPosition);
             Gizmos.cuboid(aabb, GizmoStyle.stroke(type.getHitboxColor() | 0xFF << 24));

@@ -1,6 +1,6 @@
 package tnt.tarkovcraft.medsystem.client.shader;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;

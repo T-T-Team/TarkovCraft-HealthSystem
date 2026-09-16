@@ -186,7 +186,7 @@ public final class MedicalSystemEventHandler {
                     bloodSystem.synchronizeImmediately(entity);
 
                     // set a short invulnerability window to prevent immediate follow-up damage
-                    entity.invulnerableTime = 30;
+                    entity.setInvulnerableTime(30);
                 }
             }
         }

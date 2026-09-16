@@ -2,12 +2,12 @@ package tnt.tarkovcraft.medsystem.common.advancements.criterion;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.predicates.ContextAwarePredicate;
-import net.minecraft.advancements.predicates.entity.EntityPredicate;
 import net.minecraft.advancements.triggers.SimpleCriterionTrigger;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.codec.RegistryCodecs;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.init.MedSystemCriterionTriggers;
@@ -31,12 +31,12 @@ public class ReceiveStatusEffectTrigger extends SimpleCriterionTrigger<ReceiveSt
         return TriggerInstance.CODEC;
     }
 
-    public record TriggerInstance(Optional<ContextAwarePredicate> player,
+    public record TriggerInstance(Optional<Holder<LootItemCondition>> player,
                                   Optional<HolderSet<StatusEffectType<?>>> effects) implements SimpleCriterionTrigger.SimpleInstance {
 
         public static final Codec<TriggerInstance> CODEC = RecordCodecBuilder.create(i -> i.group(
-                EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
-                RegistryCodecs.homogeneousList(MedSystemRegistries.Keys.STATUS_EFFECT).optionalFieldOf("effects").forGetter(TriggerInstance::effects)
+                LootItemCondition.CODEC.optionalFieldOf("player").forGetter(TriggerInstance::player),
+                RegistryCodecs.holderSet(MedSystemRegistries.Keys.STATUS_EFFECT).optionalFieldOf("effects").forGetter(TriggerInstance::effects)
         ).apply(i, TriggerInstance::new));
 
         public boolean matches(StatusEffect effect) {

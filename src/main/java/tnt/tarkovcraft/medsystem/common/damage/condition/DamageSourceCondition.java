@@ -4,12 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.predicates.DamageSourcePredicate;
-import net.minecraft.advancements.predicates.TagPredicate;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -21,13 +18,6 @@ public record DamageSourceCondition(DamageSourcePredicate predicate, EntityFilte
             DamageSourcePredicate.CODEC.fieldOf("predicate").forGetter(DamageSourceCondition::predicate),
             EntityFilter.CODEC.optionalFieldOf("filter", EntityFilter.ANY).forGetter(DamageSourceCondition::filter)
     ).apply(instance, DamageSourceCondition::new));
-
-    public static DamageSourceCondition fromTag(TagKey<DamageType> tag, boolean include) {
-        DamageSourcePredicate predicate = DamageSourcePredicate.Builder.damageType()
-                .tag(include ? TagPredicate.is(tag) : TagPredicate.isNot(tag))
-                .build();
-        return new DamageSourceCondition(predicate, EntityFilter.ANY);
-    }
 
     @Override
     public boolean test(HitCalculationContext context) {

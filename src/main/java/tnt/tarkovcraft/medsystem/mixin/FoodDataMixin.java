@@ -30,10 +30,10 @@ public abstract class FoodDataMixin {
     @ModifyVariable(
             method = "tick",
             at = @At("STORE"),
-            ordinal = 0
+            name = "naturalRegen"
     )
-    private boolean medsystem$canRegenerateHealth(boolean naturalRegeneration) {
-        return naturalRegeneration
+    private boolean medsystem$canRegenerateHealth(boolean naturalRegen) {
+        return naturalRegen
                 && HealthSystem.hasCustomHealth(medsystem$player)
                 && HealthHelper.canHeal(HealthContainer.getAttached(medsystem$player))
                 && !BloodSystemManager.isUnconscious(medsystem$player);

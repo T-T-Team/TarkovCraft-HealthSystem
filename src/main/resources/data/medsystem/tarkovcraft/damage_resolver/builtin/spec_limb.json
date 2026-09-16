@@ -1,0 +1,11 @@
+{
+  "priority": -2147483648,
+  "conditions": [
+    {
+      "type": "medsystem:builtin/specific_limb"
+    }
+  ],
+  "calculator": {
+    "function": "medsystem:builtin/specific_limb"
+  }
+}

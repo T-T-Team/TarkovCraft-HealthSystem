@@ -24,10 +24,10 @@ public abstract class PlayerModelMixin extends HumanoidModel<AvatarRenderState> 
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/HumanoidModel;setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V"),
             cancellable = true
     )
-    private void medsystem$setupAnim(AvatarRenderState renderState, CallbackInfo ci) {
-        if (!RenderStateExtensions.shouldApplyUnconsciousAttributes(renderState) || !RenderStateExtensions.hasSpecialPoseRenderer(renderState))
+    private void medsystem$setupAnim(AvatarRenderState state, CallbackInfo ci) {
+        if (!RenderStateExtensions.shouldApplyUnconsciousAttributes(state) || !RenderStateExtensions.hasSpecialPoseRenderer(state))
             return;
-        UnconsciousAnimationState animationState = renderState.getRenderDataOrDefault(RenderStateExtensions.UNCONSCIOUS_ANIMATION, UnconsciousAnimationState.DEFAULT_STATE);
+        UnconsciousAnimationState animationState = state.getRenderDataOrDefault(RenderStateExtensions.UNCONSCIOUS_ANIMATION, UnconsciousAnimationState.DEFAULT_STATE);
         PlayerModel model = (PlayerModel) (Object) this;
         UnconsciousModelHelper.applyPlayerUnconsciousTransforms(model, animationState);
         ci.cancel();

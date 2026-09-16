@@ -65,14 +65,14 @@ public final class MedicalSystemClient {
     public static final KeyMapping KEY_GIVE_UP = new KeyMapping(
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "give_up"),
             KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.KEY_X,
             TarkovCraftCoreClient.SHARED_CATEGORY
     );
     public static final KeyMapping KEY_OPEN_HEALTH = new KeyMapping(
             TextHelper.createKeybindName(MedSystemConstants.MOD_ID, "open_health"),
             KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.UNKNOWN.getValue(),
             TarkovCraftCoreClient.SHARED_CATEGORY
     );

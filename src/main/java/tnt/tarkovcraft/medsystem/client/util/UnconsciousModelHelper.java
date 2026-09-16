@@ -21,9 +21,9 @@ public final class UnconsciousModelHelper {
     public static void setupHumanoidRotations(LivingEntityRenderState state, PoseStack poseStack, float bodyRot) {
         UnconsciousAnimationState animationState = state.getRenderDataOrDefault(RenderStateExtensions.UNCONSCIOUS_ANIMATION, UnconsciousAnimationState.DEFAULT_STATE);
         float collapseAnimAmount = animationState.collapseProgress();
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0F - bodyRot));
-        poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
-        poseStack.mulPose(Axis.XP.rotationDegrees(90.0F * collapseAnimAmount));
+        poseStack.rotateDegrees(Axis.YP, 90.0F - bodyRot);
+        poseStack.rotateDegrees(Axis.YP, 90.0F);
+        poseStack.rotateDegrees(Axis.XP, 90.0F * collapseAnimAmount);
         poseStack.translate(0.0, -0.9 * collapseAnimAmount, -0.1 * collapseAnimAmount);
     }
 
