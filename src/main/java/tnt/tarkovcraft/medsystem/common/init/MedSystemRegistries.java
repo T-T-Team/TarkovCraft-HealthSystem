@@ -71,6 +71,7 @@ public final class MedSystemRegistries {
 
     public static void registerDamageConditions(RegisterEvent.RegisterHelper<MapCodec<? extends DamageCondition>> helper) {
         registerObject(helper, "builtin/specific_limb", IsSpecificLimbDamage.CODEC);
+        registerObject(helper, "builtin/limb_tags", IsTaggedLimbDamage.CODEC);
         registerObject(helper, "damage_predicate", DamageSourceCondition.CODEC);
         registerObject(helper, "damage_type", DamageTypeCondition.CODEC);
         registerObject(helper, "is_explosion", IsExplosionCondition.CODEC);
@@ -81,6 +82,7 @@ public final class MedSystemRegistries {
         registerObject(helper, "builtin/specific_limb", SpecificLimbDamageFunction.CODEC);
         registerObject(helper, "builtin/broken_limb", BrokenLimbDamageFunction.CODEC);
         registerObject(helper, "builtin/poison", PoisonDamageFunction.CODEC);
+        registerObject(helper, "builtin/limb_tags", SpecificLimbTagDamageFunction.CODEC);
         registerObject(helper, "melee_damage", MeleeHitFunction.CODEC);
         registerObject(helper, "projectile_damage", ProjectileDamageFunction.CODEC);
         registerObject(helper, "fall", FallDamageFunction.CODEC);

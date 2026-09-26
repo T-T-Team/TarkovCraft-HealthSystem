@@ -1,0 +1,20 @@
+{
+  "priority": -2147483648,
+  "conditions": [
+    {
+      "type": "medsystem:builtin/limb_tags"
+    }
+  ],
+  "calculator": {
+    "function": "medsystem:builtin/limb_tags",
+    "mappings": {
+      "head": "medsystem:limb/head_damage",
+      "torso": "medsystem:limb/torso_damage",
+      "stomach": "medsystem:limb/stomach_damage",
+      "arm": "medsystem:limb/arm_damage",
+      "leg": "medsystem:limb/leg_damage",
+      "animal": "medsystem:limb/animal_damage",
+      "other": "medsystem:limb/other_damage"
+    }
+  }
+}

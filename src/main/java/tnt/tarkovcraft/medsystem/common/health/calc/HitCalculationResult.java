@@ -59,7 +59,7 @@ public final class HitCalculationResult {
     }
 
     public static HitCalculationResult simpleMappedResult(HitCalculationContext ctx, Function<LimbHitbox, HitInfo> mapper) {
-        return simpleMappedResult(ctx, t -> true, mapper);
+        return simpleMappedResult(ctx, _ -> true, mapper);
     }
 
     public static HitCalculationResult simpleResult(HitCalculationContext ctx) {
