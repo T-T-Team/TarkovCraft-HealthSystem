@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
 import tnt.tarkovcraft.core.api.SleepFunction;
+import tnt.tarkovcraft.core.util.Codecs;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffect;
 import tnt.tarkovcraft.medsystem.common.effect.StatusEffectType;
 import tnt.tarkovcraft.medsystem.common.effect.util.EffectType;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 
 public record AdvanceStatusEffectsSleepFunction(Map<EffectType, Float> advanceSpeed) implements SleepFunction {
 
-    public static final MapCodec<AdvanceStatusEffectsSleepFunction> CODEC = Codec.unboundedMap(EffectType.CODEC, ExtraCodecs.NON_NEGATIVE_FLOAT)
+    public static final MapCodec<AdvanceStatusEffectsSleepFunction> CODEC = Codec.unboundedMap(EffectType.CODEC, Codecs.NON_NEGATIVE_FLOAT)
             .xmap(AdvanceStatusEffectsSleepFunction::new, AdvanceStatusEffectsSleepFunction::advanceSpeed).fieldOf("advance_speed");
 
     @Override

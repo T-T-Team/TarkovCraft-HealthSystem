@@ -1,0 +1,11 @@
+{
+  "values": [
+    "#medsystem:limb/head_damage",
+    "#medsystem:limb/torso_damage",
+    "#medsystem:limb/stomach_damage",
+    "#medsystem:limb/arm_damage",
+    "#medsystem:limb/leg_damage",
+    "#medsystem:limb/animal_damage",
+    "#medsystem:limb/other_damage"
+  ]
+}
