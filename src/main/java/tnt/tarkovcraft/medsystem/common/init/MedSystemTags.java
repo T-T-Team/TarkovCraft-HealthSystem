@@ -11,10 +11,8 @@ public final class MedSystemTags {
 
     public static final class DamageTypes {
 
-        public static final TagKey<DamageType> IS_GENERIC = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("is_generic"));
-        public static final TagKey<DamageType> IS_MOVEMENT_RESTRICTED = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("movement_restricted"));
-        public static final TagKey<DamageType> BLEED_CAUSING = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("bleed_causing"));
-        public static final TagKey<DamageType> FRACTURE_CAUSING = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("fracture_causing"));
+        // Used for compatibility with modded damage sources to easily map damage to specific limb types
+        public static final TagKey<DamageType> LIMB_DAMAGE_TYPES = TagKey.create(Registries.DAMAGE_TYPE, MedicalSystem.createIdentifier("limb/limb_damage_types"));
     }
 
     public static final class StatusEffects {

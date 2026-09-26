@@ -1,0 +1,6 @@
+{
+  "values": [
+    { "id": "chestcavitybeyond:open_chest", "required": false },
+    { "id": "chestcavitybeyond:organ_loss", "required": false }
+  ]
+}
