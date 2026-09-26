@@ -81,28 +81,3 @@ jobs:
           changelog-content: ${{ needs.prepare-changelog.outputs.changelog }}
           required-dependencies: ${{ env.GAME_DEPENDENCIES }}
           debug-mode: ${{ vars.DEBUG }}
-
-  announce-release-discord:
-    runs-on: ubuntu-latest
-    needs:
-      - prepare-changelog
-      - publish-curseforge
-      - publish-modrinth
-    steps:
-      - uses: T-T-Team/discord-release-announcement-action@v2
-        with:
-          webhook-url: ${{ secrets.WEBHOOK_URL }}
-          message: <@&${{ vars.PUBLISH_ROLE_TAG }}>
-          title: 'Medical System'
-          homepage: ${{ vars.PUBLISH_SOURCES_URL }}
-          changelog: ${{ needs.prepare-changelog.outputs.changelog }}
-          color: '5434377'
-          icon-url: ${{ vars.PUBLISH_ICON }}
-          note: 'CurseForge file may take up to 1 hour to be published'
-          curseforge-url: ${{ vars.PUBLISH_CF_LINK }}
-          modrinth-url: ${{ vars.PUBLISH_MODRINTH_LINK }}
-          sources-url: ${{ vars.PUBLISH_SOURCES_URL }}
-          issue-tracker-url: ${{ vars.PUBLISH_SOURCES_URL }}/issues
-          wiki-url: ${{ vars.PUBLISH_WIKI_URL }}/wiki
-          donation-url: ${{ vars.PUBLISH_DONATE_LINK }}
-          debug-mode: ${{ vars.DEBUG }}
